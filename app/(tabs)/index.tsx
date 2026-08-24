@@ -1,1 +1,1 @@
-export { default } from "@/pages/home";
+export { HomeScreen as default } from "@/pages/home";

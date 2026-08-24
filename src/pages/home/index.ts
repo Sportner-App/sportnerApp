@@ -1,1 +1,1 @@
-export { HomeScreen as default } from "./ui/home-screen";
+export { HomeScreen } from "./home-screen";

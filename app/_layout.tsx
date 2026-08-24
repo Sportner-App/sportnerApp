@@ -1,6 +1,6 @@
-import { AppProviders } from "@/app-core/providers";
-import { colors } from "@/shared/config/colors";
-import { useColorScheme } from "@/shared/lib/use-color-scheme";
+import { colors } from "@/constants/colors";
+import { AppProviders } from "@/contexts";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
   DarkTheme,
   DefaultTheme,
@@ -16,7 +16,8 @@ import "../global.css";
 export { ErrorBoundary } from "expo-router";
 
 export const unstable_settings = {
-  initialRouteName: "(tabs)",
+  // Auth gate önce çalışsın; (tabs) erken mount → çift fetch'i önler.
+  initialRouteName: "index",
 };
 
 SplashScreen.preventAutoHideAsync();
@@ -71,12 +72,22 @@ function RootLayoutNav() {
           },
         }}
       >
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-          <Stack.Screen name="events/create" options={{ headerShown: false }} />
-          <Stack.Screen name="events/[id]" options={{ headerShown: false }} />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(onboarding)" />
+          <Stack.Screen name="events" />
+          <Stack.Screen name="users/[id]" />
+          <Stack.Screen name="notifications" />
+          <Stack.Screen name="profile" />
+          <Stack.Screen name="friends" />
+          <Stack.Screen name="feed" />
+          <Stack.Screen name="posts" />
+          <Stack.Screen name="badges" />
+          <Stack.Screen name="albums" />
+          <Stack.Screen name="report" />
+          <Stack.Screen name="help" />
         </Stack>
       </ThemeProvider>
     </AppProviders>

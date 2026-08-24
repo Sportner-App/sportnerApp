@@ -1,1 +1,0 @@
-export { EventsFeedScreen } from "./ui";

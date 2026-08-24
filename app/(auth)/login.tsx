@@ -1,1 +1,1 @@
-export { LoginScreen as default } from "@/pages/auth";
+export { AuthScreen as default } from "@/pages/auth";

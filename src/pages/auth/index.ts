@@ -1,2 +1,1 @@
-export { LoginScreen } from "./ui/login-screen";
-export { RegisterScreen } from "./ui/register-screen";
+export { AuthScreen } from "./auth-screen";

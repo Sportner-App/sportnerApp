@@ -1,1 +1,1 @@
-export { OnboardingScreen as default } from "./ui/onboarding-screen";
+export { OnboardingScreen } from "./onboarding-screen";
