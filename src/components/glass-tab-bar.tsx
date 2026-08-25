@@ -140,7 +140,8 @@ function TabButton({
         </View>
       </View>
       <Text
-        className={`font-mono text-[10px] ${
+        numberOfLines={1}
+        className={`px-0.5 text-center font-mono text-[9px] ${
           focused ? "text-brand-primary" : "text-slate-400"
         }`}
       >

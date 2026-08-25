@@ -10,12 +10,15 @@ import {
 } from "@/components";
 import { useSession, useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
+import { ProfileHero } from "@/pages/profile/profile-hero";
+import { ReviewsSection } from "@/pages/profile/reviews-section";
 import { SportsSection } from "@/pages/profile/sports-section";
 import { StatsSection } from "@/pages/profile/stats-section";
-import { ProfileHero } from "@/pages/profile/profile-hero";
 import { getPublicProfile } from "@/services/profile-service";
+import { listUserReviews } from "@/services/reviews-service";
 import { sendFriendRequest } from "@/services/social-service";
 import type { UserProfile } from "@/types/profile";
+import type { ApiReview } from "@/types/reviews";
 
 export function PublicProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -23,14 +26,23 @@ export function PublicProfileScreen() {
   const { user } = useSession();
   const { showToast } = useToast();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [reviews, setReviews] = useState<ApiReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
 
   useEffect(() => {
     if (!id) {
       return;
     }
     void getPublicProfile(id)
-      .then(setProfile)
+      .then((next) => {
+        setProfile(next);
+        setReviewsLoading(true);
+        return listUserReviews(next.userId)
+          .then((page) => setReviews(page?.items ?? []))
+          .catch(() => setReviews([]))
+          .finally(() => setReviewsLoading(false));
+      })
       .catch((error) =>
         showToast({
           type: "error",
@@ -61,6 +73,7 @@ export function PublicProfileScreen() {
           <ProfileHero profile={profile} />
           <StatsSection statistics={profile.statistics} />
           <SportsSection profile={profile} />
+          <ReviewsSection reviews={reviews} isLoading={reviewsLoading} />
           <View className="flex-row gap-2">
             {!isMe ? (
               <View className="flex-1">

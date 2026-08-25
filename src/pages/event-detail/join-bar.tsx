@@ -2,8 +2,12 @@ import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components";
-import { EVENT_STATUS, type EventDetail } from "@/types/events";
-import { canAccessEventChat, hasPendingParticipation } from "@/utils/events";
+import type { EventDetail } from "@/types/events";
+import {
+  canAccessEventChat,
+  hasEventEnded,
+  hasPendingParticipation,
+} from "@/utils/events";
 
 type JoinBarProps = {
   event: EventDetail;
@@ -34,9 +38,7 @@ export function JoinBar({
       ? null
       : Math.max(event.maxParticipants - event.participantCount, 0);
 
-  const ended =
-    event.status === EVENT_STATUS.cancelled ||
-    event.status === EVENT_STATUS.completed;
+  const ended = hasEventEnded(event);
 
   const canChat = canAccessEventChat(
     event.myParticipationStatus,
@@ -51,25 +53,29 @@ export function JoinBar({
       ? "Başvuruyu geri çek"
       : "Ayrıl";
 
+  const canLeave = hasJoined && !ended && !isOrganizer;
+
   const primaryLabel = isOrganizer
     ? canChat
       ? "Sohbet"
       : "Sen düzenliyorsun"
-    : hasJoined
-      ? leaveLabel
-      : isFull
-        ? "Etkinlik Dolu"
-        : ended
-          ? "Katılım kapalı"
+    : ended
+      ? hasJoined
+        ? "Etkinlik bitti"
+        : "Katılım kapalı"
+      : hasJoined
+        ? leaveLabel
+        : isFull
+          ? "Etkinlik Dolu"
           : "Katıl";
 
   const primaryAction = isOrganizer
     ? canChat
       ? onChat
       : undefined
-    : hasJoined
+    : canLeave
       ? onLeave
-      : ended || isFull
+      : ended || isFull || hasJoined
         ? undefined
         : onJoin;
 

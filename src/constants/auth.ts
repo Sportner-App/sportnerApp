@@ -17,7 +17,7 @@ export const AUTH_COPY = {
   },
   register: {
     title: "Aramıza\nkatıl.",
-    subtitle: "Kullanıcı adı ve şifreyle hesabını oluştur.",
+    subtitle: "Adın, kullanıcı adın ve istersen bir profil fotoğrafı.",
     submit: "Hesap Oluştur",
     footer: "Zaten hesabın var mı?",
     footerAction: "Giriş yap",

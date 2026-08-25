@@ -10,12 +10,16 @@ import {
   SportLoader,
 } from "@/components";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 
 import { PROFILE_COPY } from "@/constants/profile";
 import { useProfile } from "@/hooks/use-profile";
+import { listUserReviews } from "@/services/reviews-service";
+import type { ApiReview } from "@/types/reviews";
 
 import { MenuSection } from "./menu-section";
 import { ProfileHero } from "./profile-hero";
+import { ReviewsSection } from "./reviews-section";
 import { SportsSection } from "./sports-section";
 import { StatsSection } from "./stats-section";
 
@@ -31,6 +35,21 @@ export function ProfileScreen() {
     refresh,
     logout,
   } = useProfile();
+  const [reviews, setReviews] = useState<ApiReview[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!profile?.userId) {
+      setReviews([]);
+      return;
+    }
+
+    setReviewsLoading(true);
+    void listUserReviews(profile.userId)
+      .then((page) => setReviews(page?.items ?? []))
+      .catch(() => setReviews([]))
+      .finally(() => setReviewsLoading(false));
+  }, [profile?.userId, isRefreshing]);
 
   const openMenu = (key: string) => {
     const routes: Record<string, string> = {
@@ -84,12 +103,16 @@ export function ProfileScreen() {
         </View>
       ) : (
         <>
-          <ProfileHero profile={profile} />
+          <ProfileHero
+            profile={profile}
+            onEdit={() => router.push("/profile/edit")}
+          />
           <StatsSection statistics={profile.statistics} />
           <SportsSection
             profile={profile}
             onPress={() => router.push("/profile/sports")}
           />
+          <ReviewsSection reviews={reviews} isLoading={reviewsLoading} />
           <MenuSection
             onItemPress={openMenu}
             onLogout={logout}

@@ -3,7 +3,9 @@ import { useMemo, useState } from "react";
 
 import { AUTH_BYPASS } from "@/constants/env";
 import { useAuth, useSession, useToast } from "@/contexts";
+import { uploadAvatar } from "@/services/profile-service";
 import type { AuthMode } from "@/types/auth";
+import { pickProfileImage, type PickedMedia } from "@/utils/media-picker";
 
 const USERNAME_PATTERN = /^[a-zA-Z0-9._]+$/;
 
@@ -18,6 +20,7 @@ export function useAuthForm() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [avatar, setAvatar] = useState<PickedMedia | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const isLogin = mode === "login";
@@ -92,10 +95,23 @@ export function useAuthForm() {
           : "Hadi profilini tamamlayalım.",
       });
 
+      if (!isLogin && avatar) {
+        try {
+          await uploadAvatar(avatar);
+        } catch {
+          showToast({
+            type: "error",
+            title: "Fotoğraf yüklenemedi",
+            description: "Hesabın açıldı; fotoğrafı profil kurulumunda ekleyebilirsin.",
+          });
+        }
+      }
+
       await refreshSession?.();
       router.replace(
         response.data.isOnboardingCompleted ? "/(tabs)" : "/(onboarding)",
-      );    } finally {
+      );
+    } finally {
       setIsLoading(false);
     }
   };
@@ -113,6 +129,22 @@ export function useAuthForm() {
     setFirstName,
     lastName,
     setLastName,
+    avatar,
+    chooseAvatar: async () => {
+      const picked = await pickProfileImage();
+      if (picked === "denied") {
+        showToast({
+          type: "error",
+          title: "İzin gerekli",
+          description: "Fotoğraf seçmek için galeri izni vermelisin.",
+        });
+        return;
+      }
+      if (picked !== "cancelled") {
+        setAvatar(picked);
+      }
+    },
+    clearAvatar: () => setAvatar(null),
     isLoading,
     canSubmit,
     isReady,

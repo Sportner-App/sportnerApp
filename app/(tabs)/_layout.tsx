@@ -30,7 +30,7 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="index" options={{ title: "Ana Sayfa" }} />
       <Tabs.Screen name="discover" options={{ title: "Keşfet" }} />
-      <Tabs.Screen name="activity" options={{ title: "Aktivite" }} />
+      <Tabs.Screen name="activity" options={{ title: "Aktivitelerim" }} />
       <Tabs.Screen name="profile" options={{ title: "Profil" }} />
     </Tabs>
   );

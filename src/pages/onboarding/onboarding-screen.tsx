@@ -8,6 +8,7 @@ import { ONBOARDING_COPY } from "@/constants/onboarding";
 import { useOnboarding } from "@/hooks/use-onboarding";
 import { AnimatedBackground } from "@/pages/auth/animated-background";
 
+import { MediaFields } from "./media-fields";
 import { SportsPickerStep } from "./sports-picker-step";
 
 export function OnboardingScreen() {
@@ -69,6 +70,14 @@ export function OnboardingScreen() {
             entering={FadeInUp.duration(500).delay(120)}
             className="mt-8 gap-4 rounded-[28px] border border-white/10 bg-brand-surface/90 p-5"
           >
+            <MediaFields
+              avatar={form.avatar}
+              video={form.video}
+              onPickAvatar={form.chooseAvatar}
+              onPickVideo={form.chooseVideo}
+              onClearAvatar={form.clearAvatar}
+              onClearVideo={form.clearVideo}
+            />
             <Input
               label="Şehir"
               placeholder="Örn. İstanbul"

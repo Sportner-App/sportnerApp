@@ -1,7 +1,6 @@
-import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { View } from "react-native";
 
 import {
   AppScreen,
@@ -13,12 +12,19 @@ import {
 import { useToast } from "@/contexts";
 import { useProfile } from "@/hooks/use-profile";
 import { getApiErrorMessage } from "@/lib/api/errors";
+import { MediaFields } from "@/pages/onboarding/media-fields";
 import {
   updateBio,
   updateCity,
   updateDisplayName,
   uploadAvatar,
+  uploadIntroVideo,
 } from "@/services/profile-service";
+import {
+  pickIntroVideo,
+  pickProfileImage,
+  type PickedMedia,
+} from "@/utils/media-picker";
 
 export function ProfileEditScreen() {
   const router = useRouter();
@@ -29,6 +35,8 @@ export function ProfileEditScreen() {
   const [bio, setBio] = useState("");
   const [city, setCity] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [avatar, setAvatar] = useState<PickedMedia | null>(null);
+  const [video, setVideo] = useState<PickedMedia | null>(null);
 
   useEffect(() => {
     if (!profile) {
@@ -38,44 +46,57 @@ export function ProfileEditScreen() {
     setLastName(profile.lastName ?? "");
     setBio(profile.bio ?? "");
     setCity(profile.city ?? "");
+    setAvatar(
+      profile.avatarUrl
+        ? { uri: profile.avatarUrl, name: "avatar.jpg", type: "image/jpeg" }
+        : null,
+    );
+    setVideo(
+      profile.introVideoUrl
+        ? { uri: profile.introVideoUrl, name: "intro.mp4", type: "video/mp4" }
+        : null,
+    );
   }, [profile]);
 
-  const pickAvatar = async () => {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
+  const chooseMedia = async (kind: "avatar" | "video") => {
+    const picked =
+      kind === "avatar" ? await pickProfileImage() : await pickIntroVideo();
+
+    if (picked === "denied") {
       showToast({
         type: "error",
         title: "İzin gerekli",
-        description: "Fotoğraf seçmek için galeri izni vermelisin.",
+        description:
+          kind === "avatar"
+            ? "Fotoğraf seçmek için galeri izni vermelisin."
+            : "Video seçmek için galeri izni vermelisin.",
       });
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-
-    if (result.canceled || !result.assets[0]) {
+    if (picked === "cancelled") {
       return;
     }
 
-    const asset = result.assets[0];
     try {
-      await uploadAvatar({
-        uri: asset.uri,
-        name: asset.fileName || "avatar.jpg",
-        type: asset.mimeType || "image/jpeg",
-      });
+      if (kind === "avatar") {
+        await uploadAvatar(picked);
+        setAvatar(picked);
+        showToast({ type: "success", title: "Fotoğraf güncellendi" });
+      } else {
+        await uploadIntroVideo(picked);
+        setVideo(picked);
+        showToast({ type: "success", title: "Video güncellendi" });
+      }
       await refresh();
-      showToast({ type: "success", title: "Fotoğraf güncellendi" });
     } catch (error) {
       showToast({
         type: "error",
         title: "Yüklenemedi",
-        description: getApiErrorMessage(error, "Fotoğraf yüklenemedi."),
+        description: getApiErrorMessage(
+          error,
+          kind === "avatar" ? "Fotoğraf yüklenemedi." : "Video yüklenemedi.",
+        ),
       });
     }
   };
@@ -116,23 +137,12 @@ export function ProfileEditScreen() {
         </View>
       ) : (
         <>
-          <Pressable onPress={pickAvatar} className="items-center gap-2">
-            <View className="h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-brand-primary/30 bg-brand-primary/15">
-              {profile.avatarUrl ? (
-                <Image
-                  source={{ uri: profile.avatarUrl }}
-                  className="h-24 w-24"
-                />
-              ) : (
-                <Text className="font-display text-2xl text-brand-primary">
-                  {profile.fullName.slice(0, 1)}
-                </Text>
-              )}
-            </View>
-            <Text className="font-body text-xs text-brand-primary">
-              Fotoğraf değiştir
-            </Text>
-          </Pressable>
+          <MediaFields
+            avatar={avatar}
+            video={video}
+            onPickAvatar={() => void chooseMedia("avatar")}
+            onPickVideo={() => void chooseMedia("video")}
+          />
 
           <Input label="Ad" value={firstName} onChangeText={setFirstName} />
           <Input label="Soyad" value={lastName} onChangeText={setLastName} />

@@ -84,10 +84,11 @@ export async function getMyOrganizedEvents(
 export async function getMyParticipatingEvents(
   page = 1,
   pageSize = 20,
+  scope?: "upcoming" | "past",
 ): Promise<EventListPage> {
   const response = await apiClient.get<PagedResult<ApiEventListItem>>(
     "/api/events/mine/participating",
-    { params: { page, pageSize } },
+    { params: { page, pageSize, scope } },
   );
   return toListPage(response.data);
 }

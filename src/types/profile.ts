@@ -75,7 +75,13 @@ export type UserProfile = {
 export type ProfileMenuItem = {
   key: string;
   label: string;
-  description: string;
+  description?: string;
   icon: IconName;
   danger?: boolean;
+};
+
+export type ProfileMenuGroup = {
+  key: string;
+  title: string;
+  items: ProfileMenuItem[];
 };

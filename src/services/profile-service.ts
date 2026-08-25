@@ -65,18 +65,32 @@ export async function updateVisibility(isProfilePublic: boolean) {
   await apiClient.put("/api/user-profiles/me/visibility", { isProfilePublic });
 }
 
-export async function uploadAvatar(file: {
-  uri: string;
-  name: string;
-  type: string;
-}) {
+function appendMedia(file: { uri: string; name: string; type: string }) {
   const form = new FormData();
   form.append("file", {
     uri: file.uri,
     name: file.name,
     type: file.type,
   } as unknown as Blob);
-  await apiClient.put("/api/user-profiles/me/avatar", form, {
+  return form;
+}
+
+export async function uploadAvatar(file: {
+  uri: string;
+  name: string;
+  type: string;
+}) {
+  await apiClient.put("/api/user-profiles/me/avatar", appendMedia(file), {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+}
+
+export async function uploadIntroVideo(file: {
+  uri: string;
+  name: string;
+  type: string;
+}) {
+  await apiClient.put("/api/user-profiles/me/intro-video", appendMedia(file), {
     headers: { "Content-Type": "multipart/form-data" },
   });
 }

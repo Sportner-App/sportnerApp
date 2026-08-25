@@ -21,6 +21,8 @@ type OrganizerPanelProps = {
   onComplete: () => void;
   onEdit: () => void;
   onOpenUser: (userId: string) => void;
+  onOpenReviews: () => void;
+  onRateUser: (userId: string) => void;
 };
 
 export function OrganizerPanel({
@@ -39,6 +41,8 @@ export function OrganizerPanel({
   onComplete,
   onEdit,
   onOpenUser,
+  onOpenReviews,
+  onRateUser,
 }: OrganizerPanelProps) {
   const pending = event.participants.filter(
     (item) => item.status === PARTICIPANT_STATUS.pending,
@@ -190,8 +194,24 @@ export function OrganizerPanel({
                   </Pressable>
                 </>
               ) : null}
+              {person.status === PARTICIPANT_STATUS.attended ? (
+                <Pressable
+                  onPress={() => onRateUser(person.id)}
+                  className="rounded-full bg-brand-primary px-3 py-1.5"
+                >
+                  <Text className="font-body text-xs font-semibold text-brand-secondary">
+                    Puanla
+                  </Text>
+                </Pressable>
+              ) : null}
             </View>
           ))}
+          <Button
+            label="Katılımcıları değerlendir"
+            variant="outline"
+            size="sm"
+            onPress={onOpenReviews}
+          />
         </View>
       ) : null}
     </Animated.View>

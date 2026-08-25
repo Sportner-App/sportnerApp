@@ -11,6 +11,7 @@ import {
   SportLoader,
 } from "@/components";
 import { useEventDetail } from "@/hooks/use-event-detail";
+import { EVENT_STATUS } from "@/types/events";
 import { canAccessEventChat } from "@/utils/events";
 
 import { AboutSection } from "./about-section";
@@ -94,7 +95,11 @@ export function EventDetailScreen() {
                 ? openChat
                 : undefined
             }
-            onOpenReviews={() => router.push(`/events/${detail.event?.id}/reviews`)}
+            onOpenReviews={
+              detail.event.status === EVENT_STATUS.completed
+                ? () => router.push(`/events/${detail.event?.id}/reviews`)
+                : undefined
+            }
           />
           {detail.isOrganizer ? (
             <OrganizerPanel
@@ -113,6 +118,18 @@ export function EventDetailScreen() {
               onComplete={detail.complete}
               onEdit={() => router.push(`/events/${detail.event?.id}/edit`)}
               onOpenUser={(userId) => router.push(`/users/${userId}`)}
+              onOpenReviews={() =>
+                router.push(`/events/${detail.event?.id}/reviews`)
+              }
+              onRateUser={(userId) => {
+                if (!detail.event) {
+                  return;
+                }
+                router.push({
+                  pathname: "/events/[id]/reviews",
+                  params: { id: detail.event.id, userId },
+                });
+              }}
             />
           ) : null}
           <AboutSection event={detail.event} />

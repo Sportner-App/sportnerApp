@@ -320,6 +320,52 @@ export function hasApprovedParticipation(
   );
 }
 
+export function hasEventEnded(
+  event: {
+    status: number;
+    eventDate: string;
+    durationMinutes: number;
+  },
+  now = Date.now(),
+): boolean {
+  if (
+    event.status === EVENT_STATUS.cancelled ||
+    event.status === EVENT_STATUS.completed
+  ) {
+    return true;
+  }
+
+  const start = new Date(event.eventDate).getTime();
+  if (Number.isNaN(start)) {
+    return false;
+  }
+
+  return start + event.durationMinutes * 60_000 <= now;
+}
+
+/** Activity "geçmiş": start time has passed, or the event was closed. */
+export function hasEventStartedOrClosed(
+  event: {
+    status: number;
+    eventDate: string;
+  },
+  now = Date.now(),
+): boolean {
+  if (
+    event.status === EVENT_STATUS.cancelled ||
+    event.status === EVENT_STATUS.completed
+  ) {
+    return true;
+  }
+
+  const start = new Date(event.eventDate).getTime();
+  if (Number.isNaN(start)) {
+    return false;
+  }
+
+  return start <= now;
+}
+
 export function canAccessEventChat(
   status: number | null | undefined,
   isOrganizer: boolean,

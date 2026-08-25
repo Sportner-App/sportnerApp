@@ -1,76 +1,42 @@
-import type { ProfileMenuItem, SkillLevelKey } from "@/types/profile";
+import type { ProfileMenuGroup, ProfileMenuItem, SkillLevelKey } from "@/types/profile";
 
-export const PROFILE_MENU_ITEMS: ProfileMenuItem[] = [
+export const PROFILE_SOCIAL_ACTIONS: ProfileMenuItem[] = [
+  { key: "friends", label: "Arkadaşlar", icon: "user-group" },
+  { key: "feed", label: "Akış", icon: "newspaper" },
+  { key: "badges", label: "Rozetler", icon: "trophy" },
+  { key: "albums", label: "Albümler", icon: "images" },
+];
+
+export const PROFILE_MENU_GROUPS: ProfileMenuGroup[] = [
   {
-    key: "edit",
-    label: "Profili Düzenle",
-    description: "İsim, bio ve fotoğraf",
-    icon: "user-pen",
-  },
-  {
-    key: "sports",
-    label: "Sporlarım",
-    description: "Seviye ve birincil spor",
-    icon: "medal",
-  },
-  {
-    key: "friends",
-    label: "Arkadaşlar",
-    description: "İstekler ve öneriler",
-    icon: "user-group",
-  },
-  {
-    key: "feed",
-    label: "Akış",
-    description: "Gönderiler ve yorumlar",
-    icon: "newspaper",
-  },
-  {
-    key: "badges",
-    label: "Rozetler ve görevler",
-    description: "Kazandıkların ve ilerleme",
-    icon: "trophy",
-  },
-  {
-    key: "albums",
-    label: "Albümler",
-    description: "Fotoğraf koleksiyonların",
-    icon: "images",
-  },
-  {
-    key: "notifications",
-    label: "Bildirimler",
-    description: "Gelen kutusu",
-    icon: "bell",
-  },
-  {
-    key: "notification-settings",
-    label: "Bildirim ayarları",
-    description: "Hangi uyarıları alacağını seç",
-    icon: "sliders",
-  },
-  {
-    key: "privacy",
-    label: "Gizlilik",
-    description: "Hesap görünürlüğü",
-    icon: "shield-halved",
-  },
-  {
-    key: "help",
-    label: "Yardım",
-    description: "SSS",
-    icon: "circle-question",
+    key: "account",
+    title: "Hesap",
+    items: [
+      { key: "notifications", label: "Bildirimler", icon: "bell" },
+      {
+        key: "notification-settings",
+        label: "Bildirim ayarları",
+        icon: "sliders",
+      },
+      { key: "privacy", label: "Gizlilik", icon: "shield-halved" },
+      { key: "help", label: "Yardım", icon: "circle-question" },
+    ],
   },
 ];
 
 export const PROFILE_COPY = {
   header: "PROFİL",
-  sportsTitle: "Sporlarım",
-  statsTitle: "İstatistikler",
+  sportsTitle: "Sporlar",
+  statsTitle: "Özet",
+  socialTitle: "Sosyal",
   menuTitle: "Hesap",
-  logout: "Çıkış Yap",
+  logout: "Çıkış yap",
+  edit: "Profili düzenle",
   guestName: "Sporcu",
-  emptySports: "Henüz spor eklenmemiş.",
+  emptySports: "Henüz spor eklemedin. Dokunarak ekle.",
+  emptySportsPublic: "Henüz spor eklenmemiş.",
+  reviewsTitle: "Değerlendirmeler",
+  emptyReviews: "Henüz değerlendirme yok. Etkinlik sonrası gelen yorumlar burada görünür.",
   notFound: "Profil bulunamadı. Kayıt sırasında profil oluşmamış olabilir.",
 } as const;
 

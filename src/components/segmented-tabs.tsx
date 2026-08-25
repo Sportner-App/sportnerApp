@@ -64,7 +64,9 @@ export function SegmentedTabs<T extends string>({
           onPress={() => onChange(option.key)}
         >
           <Text
-            className={`font-body text-sm font-semibold ${
+            className={`text-center font-body font-semibold ${
+              options.length >= 3 ? "text-[11px]" : "text-sm"
+            } ${
               option.key === value ? "text-brand-secondary" : "text-brand-neutral"
             }`}
           >

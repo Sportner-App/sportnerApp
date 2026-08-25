@@ -9,7 +9,7 @@ const FAQ = [
   },
   {
     q: "Neden ayrılabiliyorum?",
-    a: "Katıldığın veya bekleme listesindeki etkinlikten Ayrıl ile çıkabilirsin.",
+    a: "Yayındaki etkinlikten Ayrıl ile çıkabilirsin. Biten veya iptal edilen etkinlikten ayrılamazsın.",
   },
   {
     q: "Bildirimler gerçek telefona düşer mi?",

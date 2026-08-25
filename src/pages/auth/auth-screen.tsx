@@ -16,6 +16,7 @@ import Animated, {
 import { Button, Input, SegmentedTabs } from "@/components";
 import { AUTH_COPY, AUTH_MODE_OPTIONS } from "@/constants/auth";
 import { useAuthForm } from "@/hooks/use-auth-form";
+import { MediaFields } from "@/pages/onboarding/media-fields";
 
 import { AnimatedBackground } from "./animated-background";
 
@@ -74,6 +75,18 @@ export function AuthScreen() {
             <View className="mt-5 gap-3">
               {!form.isLogin && (
                 <>
+                  <Animated.View
+                    entering={FadeInDown.duration(280)}
+                    exiting={FadeOutUp.duration(200)}
+                  >
+                    <MediaFields
+                      avatar={form.avatar}
+                      onPickAvatar={form.chooseAvatar}
+                      onClearAvatar={form.clearAvatar}
+                      showVideo={false}
+                    />
+                  </Animated.View>
+
                   <Animated.View
                     entering={FadeInDown.duration(280)}
                     exiting={FadeOutUp.duration(200)}

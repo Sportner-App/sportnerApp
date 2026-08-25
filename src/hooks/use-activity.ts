@@ -5,9 +5,10 @@ import {
   getMyOrganizedEvents,
   getMyParticipatingEvents,
 } from "@/services/events-service";
-import type { EventSummary } from "@/types/events";
+import type { EventListPage, EventSummary } from "@/types/events";
+import { hasEventStartedOrClosed } from "@/utils/events";
 
-export type ActivityTab = "participating" | "organized";
+export type ActivityTab = "upcoming" | "past" | "organized";
 
 const PAGE_SIZE = 20;
 
@@ -25,9 +26,27 @@ const EMPTY: ListState = {
   totalCount: 0,
 };
 
+function applyActivityScope(
+  page: EventListPage,
+  tab: Exclude<ActivityTab, "organized">,
+): ListState {
+  const items = page.items.filter((event) => {
+    const past = hasEventStartedOrClosed(event);
+    return tab === "past" ? past : !past;
+  });
+
+  return {
+    items,
+    page: page.page,
+    hasNext: page.hasNext,
+    totalCount: items.length,
+  };
+}
+
 export function useActivity() {
-  const [tab, setTab] = useState<ActivityTab>("participating");
-  const [participating, setParticipating] = useState<ListState>(EMPTY);
+  const [tab, setTab] = useState<ActivityTab>("upcoming");
+  const [upcoming, setUpcoming] = useState<ListState>(EMPTY);
+  const [past, setPast] = useState<ListState>(EMPTY);
   const [organized, setOrganized] = useState<ListState>(EMPTY);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -43,11 +62,13 @@ export function useActivity() {
 
     try {
       setError(null);
-      const [joined, hosted] = await Promise.all([
-        getMyParticipatingEvents(1, PAGE_SIZE),
+      const [live, history, hosted] = await Promise.all([
+        getMyParticipatingEvents(1, PAGE_SIZE, "upcoming"),
+        getMyParticipatingEvents(1, PAGE_SIZE, "past"),
         getMyOrganizedEvents(1, PAGE_SIZE),
       ]);
-      setParticipating(joined);
+      setUpcoming(applyActivityScope(live, "upcoming"));
+      setPast(applyActivityScope(history, "past"));
       setOrganized(hosted);
     } catch (err) {
       setError(getApiErrorMessage(err, "Aktiviteler yüklenemedi."));
@@ -61,7 +82,8 @@ export function useActivity() {
     void load("initial");
   }, [load]);
 
-  const current = tab === "participating" ? participating : organized;
+  const current =
+    tab === "upcoming" ? upcoming : tab === "past" ? past : organized;
 
   const loadMore = useCallback(async () => {
     if (!current.hasNext || isLoadingMore) {
@@ -72,16 +94,31 @@ export function useActivity() {
     try {
       const nextPage = current.page + 1;
       const result =
-        tab === "participating"
-          ? await getMyParticipatingEvents(nextPage, PAGE_SIZE)
-          : await getMyOrganizedEvents(nextPage, PAGE_SIZE);
+        tab === "organized"
+          ? await getMyOrganizedEvents(nextPage, PAGE_SIZE)
+          : await getMyParticipatingEvents(
+              nextPage,
+              PAGE_SIZE,
+              tab === "upcoming" ? "upcoming" : "past",
+            );
 
-      const setter = tab === "participating" ? setParticipating : setOrganized;
+      const setter =
+        tab === "upcoming"
+          ? setUpcoming
+          : tab === "past"
+            ? setPast
+            : setOrganized;
+
+      const next =
+        tab === "organized"
+          ? result
+          : applyActivityScope(result, tab);
+
       setter((prev) => ({
-        items: [...prev.items, ...result.items],
-        page: result.page,
-        hasNext: result.hasNext,
-        totalCount: result.totalCount,
+        items: [...prev.items, ...next.items],
+        page: next.page,
+        hasNext: next.hasNext,
+        totalCount: prev.totalCount + next.items.length,
       }));
     } catch (err) {
       setError(getApiErrorMessage(err, "Daha fazla yüklenemedi."));

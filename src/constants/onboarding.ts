@@ -23,7 +23,8 @@ export const ONBOARDING_COPY = {
   },
   details: {
     title: "Seni\ntanıyalım.",
-    subtitle: "Şehir ve kısa bio opsiyonel; istediğin zaman güncelleyebilirsin.",
+    subtitle:
+      "Fotoğraf, tanıtım videosu, şehir ve bio opsiyonel; sonra da ekleyebilirsin.",
     submit: "Tamamla",
     skip: "Atla ve tamamla",
     stepLabel: "2 / 2",

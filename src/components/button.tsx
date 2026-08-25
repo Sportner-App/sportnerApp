@@ -19,7 +19,7 @@ const containerVariants: Record<ButtonVariant, string> = {
   secondary: "border border-white/10 bg-brand-raised",
   outline: "border border-brand-primary/60 bg-transparent",
   ghost: "bg-transparent",
-  danger: "bg-[#fda4af]",
+  danger: "bg-[#ef4444]",
 };
 
 const labelVariants: Record<ButtonVariant, string> = {
@@ -27,7 +27,7 @@ const labelVariants: Record<ButtonVariant, string> = {
   secondary: "text-white",
   outline: "text-brand-primary",
   ghost: "text-brand-neutral",
-  danger: "text-brand-secondary",
+  danger: "text-white",
 };
 
 const containerSizes: Record<ButtonSize, string> = {
@@ -47,7 +47,7 @@ const contentColors: Record<ButtonVariant, string> = {
   secondary: "#f8fafc",
   outline: "#ccff00",
   ghost: "#64748b",
-  danger: "#0f172a",
+  danger: "#ffffff",
 };
 
 export function Button({

@@ -14,7 +14,11 @@ import {
   rejectParticipant,
 } from "@/services/events-service";
 import { EVENT_STATUS, type EventDetail } from "@/types/events";
-import { hasActiveParticipation, hasPendingParticipation } from "@/utils/events";
+import {
+  hasActiveParticipation,
+  hasEventEnded,
+  hasPendingParticipation,
+} from "@/utils/events";
 
 export function useEventDetail(id: string | undefined) {
   const { user } = useSession();
@@ -165,6 +169,15 @@ export function useEventDetail(id: string | undefined) {
       return;
     }
 
+    if (hasEventEnded(event)) {
+      showToast({
+        type: "error",
+        title: "Ayrılamazsın",
+        description: "Biten etkinlikten ayrılamazsın.",
+      });
+      return;
+    }
+
     setIsLeaving(true);
     try {
       const pending = hasPendingParticipation(event.myParticipationStatus);
@@ -233,7 +246,7 @@ export function useEventDetail(id: string | undefined) {
       ? withUser(
           userId,
           () => confirmAttendance(event.id, userId),
-          "Katılım onaylandı",
+          "Geldi olarak işaretlendi. Şimdi puanlayabilirsin.",
         )
       : Promise.resolve();
 
@@ -267,7 +280,7 @@ export function useEventDetail(id: string | undefined) {
       await runAction(
         () => completeEvent(event.id),
         "Etkinlik tamamlandı",
-        "Şimdi yoklama alabilirsin.",
+        "Önce yoklama al, sonra gelenleri puanla. Yorumlar profillerinde görünür.",
       );
     } finally {
       setIsMutating(false);

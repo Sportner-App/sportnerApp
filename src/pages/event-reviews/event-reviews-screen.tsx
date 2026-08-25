@@ -12,13 +12,21 @@ import {
 } from "@/services/reviews-service";
 import type { ApiReview, ApiReviewablePeer } from "@/types/reviews";
 
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 export function EventReviewsScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<{ id: string; userId?: string }>();
+  const id = firstParam(params.id);
+  const presetUserId = firstParam(params.userId);
   const { showToast } = useToast();
   const [reviews, setReviews] = useState<ApiReview[]>([]);
   const [peers, setPeers] = useState<ApiReviewablePeer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(
+    presetUserId ?? null,
+  );
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [saving, setSaving] = useState(false);
@@ -34,6 +42,13 @@ export function EventReviewsScreen() {
       ]);
       setReviews(page?.items ?? []);
       setPeers(reviewable);
+      setSelectedUserId((current) => {
+        const preferred = current ?? presetUserId ?? null;
+        if (preferred && reviewable.some((peer) => peer.userId === preferred)) {
+          return preferred;
+        }
+        return preferred && reviewable.length === 0 ? preferred : current;
+      });
     } catch (error) {
       showToast({
         type: "error",
@@ -64,7 +79,11 @@ export function EventReviewsScreen() {
       });
       setComment("");
       setSelectedUserId(null);
-      showToast({ type: "success", title: "Değerlendirme gönderildi" });
+      showToast({
+        type: "success",
+        title: "Değerlendirme gönderildi",
+        description: "Puan ve yorum karşı tarafın profilinde görünür.",
+      });
       await load();
     } catch (error) {
       showToast({
@@ -93,6 +112,9 @@ export function EventReviewsScreen() {
             <View className="gap-3 rounded-3xl border border-white/10 bg-brand-surface/90 p-4">
               <Text className="font-display text-base text-white">
                 Kimi değerlendirmek istersin?
+              </Text>
+              <Text className="font-body text-xs text-brand-neutral">
+                1–5 puan ve isteğe bağlı yorum. Karşı tarafın profilinde görünür.
               </Text>
               {peers.map((peer) => (
                 <Pressable
@@ -144,7 +166,17 @@ export function EventReviewsScreen() {
                 onPress={submit}
               />
             </View>
-          ) : null}
+          ) : (
+            <View className="gap-2 rounded-3xl border border-white/10 bg-brand-surface/90 p-4">
+              <Text className="font-display text-base text-white">
+                Şu an puanlanacak kimse yok
+              </Text>
+              <Text className="font-body text-sm leading-5 text-brand-neutral">
+                Organizatör önce yoklamada “Geldi” işaretlemeli. Sonra gelen
+                katılımcılar ve organizatör birbirini 1–5 puanlayabilir.
+              </Text>
+            </View>
+          )}
 
           <Text className="font-display text-base text-white">
             Bu etkinlikteki yorumlar

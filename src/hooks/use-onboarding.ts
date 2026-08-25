@@ -15,9 +15,15 @@ import {
   markLocalOnboardingComplete,
   upsertOnboardingProfileDetails,
 } from "@/services/onboarding-service";
+import { uploadAvatar, uploadIntroVideo } from "@/services/profile-service";
 import { listSports } from "@/services/sports-service";
 import type { OnboardingSportDraft, OnboardingStep } from "@/types/onboarding";
 import type { Sport } from "@/types/sports";
+import {
+  pickIntroVideo,
+  pickProfileImage,
+  type PickedMedia,
+} from "@/utils/media-picker";
 
 export function useOnboarding() {
   const router = useRouter();
@@ -34,6 +40,8 @@ export function useOnboarding() {
   const [editingSportId, setEditingSportId] = useState<string | null>(null);
   const [city, setCity] = useState("");
   const [bio, setBio] = useState("");
+  const [avatar, setAvatar] = useState<PickedMedia | null>(null);
+  const [video, setVideo] = useState<PickedMedia | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const requestIdRef = useRef(0);
@@ -162,6 +170,38 @@ export function useOnboarding() {
     setStep("details");
   };
 
+  const chooseAvatar = async () => {
+    const picked = await pickProfileImage();
+    if (picked === "denied") {
+      showToast({
+        type: "error",
+        title: "İzin gerekli",
+        description: "Fotoğraf seçmek için galeri izni vermelisin.",
+      });
+      return;
+    }
+    if (picked === "cancelled") {
+      return;
+    }
+    setAvatar(picked);
+  };
+
+  const chooseVideo = async () => {
+    const picked = await pickIntroVideo();
+    if (picked === "denied") {
+      showToast({
+        type: "error",
+        title: "İzin gerekli",
+        description: "Video seçmek için galeri izni vermelisin.",
+      });
+      return;
+    }
+    if (picked === "cancelled") {
+      return;
+    }
+    setVideo(picked);
+  };
+
   const finish = async () => {
     if (!canContinueSports || isSubmitting) {
       return;
@@ -188,6 +228,14 @@ export function useOnboarding() {
         firstName: user?.firstName,
         lastName: user?.lastName,
       });
+
+      if (avatar) {
+        await uploadAvatar(avatar);
+      }
+
+      if (video) {
+        await uploadIntroVideo(video);
+      }
 
       const { error } = await completeOnboarding();
 
@@ -245,6 +293,12 @@ export function useOnboarding() {
     setCity,
     bio,
     setBio,
+    avatar,
+    video,
+    chooseAvatar,
+    chooseVideo,
+    clearAvatar: () => setAvatar(null),
+    clearVideo: () => setVideo(null),
     isSubmitting,
     canContinueSports,
     toggleSport,
