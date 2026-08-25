@@ -18,7 +18,7 @@ import {
   markNotificationRead,
 } from "@/services/notifications-service";
 import type { ApiNotification } from "@/types/notifications";
-import { NOTIFICATION_ENTITY } from "@/types/notifications";
+import { NOTIFICATION_ENTITY, NOTIFICATION_TYPE } from "@/types/notifications";
 
 export function NotificationsScreen() {
   const router = useRouter();
@@ -63,6 +63,16 @@ export function NotificationsScreen() {
           row.id === item.id ? { ...row, isRead: true } : row,
         ),
       );
+    }
+
+    const friendUserId = item.actorUserId || item.entityId;
+    if (
+      (item.notificationType === NOTIFICATION_TYPE.friendRequest ||
+        item.notificationType === NOTIFICATION_TYPE.friendAccepted) &&
+      friendUserId
+    ) {
+      router.push(`/users/${friendUserId}`);
+      return;
     }
 
     if (!item.entityId) {

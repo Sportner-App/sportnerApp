@@ -1,17 +1,71 @@
+import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { AUTH_BYPASS } from "@/constants/env";
-import { useAuth, useSession, useToast } from "@/contexts";
-import { uploadAvatar } from "@/services/profile-service";
+import { useAuth, useFirstLaunch, useSession, useToast } from "@/contexts";
 import type { AuthMode } from "@/types/auth";
-import { pickProfileImage, type PickedMedia } from "@/utils/media-picker";
 
 const USERNAME_PATTERN = /^[a-zA-Z0-9._]+$/;
+
+type AuthFieldErrors = {
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  password?: string;
+};
+
+const EMPTY_FIELD_ERRORS: AuthFieldErrors = {};
+
+function getAuthFieldErrors(
+  isLogin: boolean,
+  username: string,
+  password: string,
+  firstName: string,
+  lastName: string,
+): AuthFieldErrors {
+  const errors: AuthFieldErrors = {};
+  const trimmedUsername = username.trim();
+  const trimmedFirstName = firstName.trim();
+  const trimmedLastName = lastName.trim();
+
+  if (!trimmedUsername) {
+    errors.username = "Kullanıcı adı gerekli.";
+  } else if (trimmedUsername.length > 30) {
+    errors.username = "Kullanıcı adı en fazla 30 karakter olabilir.";
+  } else if (!isLogin && trimmedUsername.length < 3) {
+    errors.username = "Kullanıcı adı en az 3 karakter olmalı.";
+  } else if (!isLogin && !USERNAME_PATTERN.test(trimmedUsername)) {
+    errors.username = "Kullanıcı adı yalnızca harf, rakam, . ve _ içerebilir.";
+  }
+
+  if (!password) {
+    errors.password = "Şifre gerekli.";
+  } else if (password.length > 128) {
+    errors.password = "Şifre çok uzun.";
+  } else if (!isLogin && password.length < 8) {
+    errors.password = "Şifre en az 8 karakter olmalı.";
+  }
+
+  if (!isLogin) {
+    if (!trimmedFirstName) {
+      errors.firstName = "Ad gerekli.";
+    } else if (trimmedFirstName.length > 50) {
+      errors.firstName = "Ad en fazla 50 karakter olabilir.";
+    }
+
+    if (trimmedLastName.length > 50) {
+      errors.lastName = "Soyad en fazla 50 karakter olabilir.";
+    }
+  }
+
+  return errors;
+}
 
 export function useAuthForm() {
   const router = useRouter();
   const { login, register, isReady } = useAuth();
+  const { markOnboardingSeen } = useFirstLaunch();
   const { refreshSession } = useSession();
   const { showToast } = useToast();
 
@@ -20,10 +74,14 @@ export function useAuthForm() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [avatar, setAvatar] = useState<PickedMedia | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
   const isLogin = mode === "login";
+
+  useEffect(() => {
+    setHasAttemptedSubmit(false);
+  }, [mode]);
 
   const canSubmit = useMemo(() => {
     if (AUTH_BYPASS) {
@@ -51,6 +109,14 @@ export function useAuthForm() {
     );
   }, [username, password, firstName, lastName, isLogin]);
 
+  const fieldErrors = useMemo(
+    () =>
+      hasAttemptedSubmit
+        ? getAuthFieldErrors(isLogin, username, password, firstName, lastName)
+        : EMPTY_FIELD_ERRORS,
+    [firstName, hasAttemptedSubmit, isLogin, lastName, password, username],
+  );
+
   const toggleMode = () => setMode(isLogin ? "register" : "login");
 
   const submit = async () => {
@@ -59,7 +125,17 @@ export function useAuthForm() {
       return;
     }
 
-    if (!isReady || !canSubmit || isLoading) {
+    if (isLoading) {
+      return;
+    }
+
+    if (!canSubmit) {
+      setHasAttemptedSubmit(true);
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return;
+    }
+
+    if (!isReady) {
       return;
     }
 
@@ -79,6 +155,7 @@ export function useAuthForm() {
           });
 
       if (response.error) {
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         showToast({
           type: "error",
           title: isLogin ? "Giriş başarısız" : "Kayıt başarısız",
@@ -87,6 +164,7 @@ export function useAuthForm() {
         return;
       }
 
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       showToast({
         type: "success",
         title: isLogin ? "Giriş başarılı" : "Hesabın oluşturuldu",
@@ -95,18 +173,7 @@ export function useAuthForm() {
           : "Hadi profilini tamamlayalım.",
       });
 
-      if (!isLogin && avatar) {
-        try {
-          await uploadAvatar(avatar);
-        } catch {
-          showToast({
-            type: "error",
-            title: "Fotoğraf yüklenemedi",
-            description: "Hesabın açıldı; fotoğrafı profil kurulumunda ekleyebilirsin.",
-          });
-        }
-      }
-
+      await markOnboardingSeen();
       await refreshSession?.();
       router.replace(
         response.data.isOnboardingCompleted ? "/(tabs)" : "/(onboarding)",
@@ -129,25 +196,10 @@ export function useAuthForm() {
     setFirstName,
     lastName,
     setLastName,
-    avatar,
-    chooseAvatar: async () => {
-      const picked = await pickProfileImage();
-      if (picked === "denied") {
-        showToast({
-          type: "error",
-          title: "İzin gerekli",
-          description: "Fotoğraf seçmek için galeri izni vermelisin.",
-        });
-        return;
-      }
-      if (picked !== "cancelled") {
-        setAvatar(picked);
-      }
-    },
-    clearAvatar: () => setAvatar(null),
     isLoading,
     canSubmit,
     isReady,
+    fieldErrors,
     submit,
   };
 }

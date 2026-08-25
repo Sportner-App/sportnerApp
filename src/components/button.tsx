@@ -1,4 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import * as Haptics from "expo-haptics";
 import { ActivityIndicator, Pressable, Text } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -50,13 +51,31 @@ const contentColors: Record<ButtonVariant, string> = {
   danger: "#ffffff",
 };
 
+function triggerHaptic(haptic: NonNullable<ButtonProps["haptic"]>) {
+  if (haptic === "success") {
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    return;
+  }
+
+  void Haptics.impactAsync(
+    haptic === "medium"
+      ? Haptics.ImpactFeedbackStyle.Medium
+      : Haptics.ImpactFeedbackStyle.Light,
+  );
+}
+
 export function Button({
   label,
   variant = "primary",
   size = "md",
   icon,
+  glow = "default",
+  haptic,
+  pressScale = 0.97,
   isLoading = false,
+  loadingLabel,
   disabled = false,
+  onPress,
   onPressIn,
   onPressOut,
   ...pressableProps
@@ -68,46 +87,82 @@ export function Button({
   }));
 
   const isInactive = disabled || isLoading;
+  const isDisabledPrimary = variant === "primary" && disabled && !isLoading;
   const hasGlow = variant === "primary" && !isInactive;
+  const pressDuration = pressScale === 0.98 ? 100 : 90;
+  const disabledLabelClass = isDisabledPrimary
+    ? "text-brand-neutral"
+    : labelVariants[variant];
+  const disabledIconColor = isDisabledPrimary
+    ? "#64748b"
+    : contentColors[variant];
 
   return (
     <AnimatedPressable
       {...pressableProps}
+      accessibilityRole={pressableProps.accessibilityRole ?? "button"}
+      accessibilityLabel={pressableProps.accessibilityLabel ?? label}
       disabled={isInactive}
+      onPress={(event) => {
+        if (haptic) {
+          triggerHaptic(haptic);
+        }
+        onPress?.(event);
+      }}
       onPressIn={(event) => {
-        scale.value = withTiming(0.97, { duration: 90 });
+        scale.value = withTiming(pressScale, { duration: pressDuration });
         onPressIn?.(event);
       }}
       onPressOut={(event) => {
-        scale.value = withTiming(1, { duration: 140 });
+        scale.value = withTiming(1, {
+          duration: pressScale === 0.98 ? 100 : 140,
+        });
         onPressOut?.(event);
       }}
       style={[
         animatedStyle,
-        hasGlow && {
-          shadowColor: "#ccff00",
-          shadowOpacity: 0.4,
-          shadowRadius: 18,
-          shadowOffset: { width: 0, height: 6 },
-          elevation: 8,
-        },
+        hasGlow &&
+          (glow === "subtle"
+            ? {
+                shadowColor: "#ccff00",
+                shadowOpacity: 0.18,
+                shadowRadius: 8,
+                shadowOffset: { width: 0, height: 3 },
+                elevation: 3,
+              }
+            : {
+                shadowColor: "#ccff00",
+                shadowOpacity: 0.4,
+                shadowRadius: 18,
+                shadowOffset: { width: 0, height: 6 },
+                elevation: 8,
+              }),
       ]}
-      className={`flex-row items-center justify-center gap-2.5 rounded-2xl ${containerVariants[variant]} ${containerSizes[size]} ${
-        disabled && !isLoading ? "opacity-50" : ""
-      }`}
+      className={`flex-row items-center justify-center gap-2.5 rounded-2xl ${
+        isDisabledPrimary
+          ? "border border-white/10 bg-brand-raised"
+          : containerVariants[variant]
+      } ${containerSizes[size]}`}
     >
       {isLoading ? (
-        <ActivityIndicator color={contentColors[variant]} />
+        <>
+          <ActivityIndicator color={contentColors[variant]} />
+          {loadingLabel ? (
+            <Text className={`${labelSizes[size]} ${labelVariants[variant]}`}>
+              {loadingLabel}
+            </Text>
+          ) : null}
+        </>
       ) : (
         <>
           {icon && (
             <FontAwesome6
               name={icon}
               size={size === "sm" ? 14 : 16}
-              color={contentColors[variant]}
+              color={disabledIconColor}
             />
           )}
-          <Text className={`${labelSizes[size]} ${labelVariants[variant]}`}>
+          <Text className={`${labelSizes[size]} ${disabledLabelClass}`}>
             {label}
           </Text>
         </>

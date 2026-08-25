@@ -4,7 +4,6 @@ import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import type { EventDetail } from "@/types/events";
-import { eventStatusLabel } from "@/utils/events";
 
 type DetailHeroProps = {
   event: EventDetail;
@@ -12,6 +11,16 @@ type DetailHeroProps = {
 
 export function DetailHero({ event }: DetailHeroProps) {
   const router = useRouter();
+  const spotsLeft =
+    event.maxParticipants == null
+      ? null
+      : Math.max(event.maxParticipants - event.participantCount, 0);
+  const capacityLabel =
+    spotsLeft == null
+      ? "∞ yer kaldı"
+      : spotsLeft === 0
+        ? "Dolu"
+        : `${spotsLeft} yer kaldı`;
 
   return (
     <Animated.View
@@ -44,12 +53,12 @@ export function DetailHero({ event }: DetailHeroProps) {
 
         <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
           <Text className="font-body text-xs text-brand-neutral">
-            {event.durationLabel}
+            {event.dateLabel}
           </Text>
         </View>
         <View className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
           <Text className="font-body text-xs text-brand-neutral">
-            {eventStatusLabel(event.status)}
+            {capacityLabel}
           </Text>
         </View>
       </View>

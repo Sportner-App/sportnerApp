@@ -140,8 +140,16 @@ export function FriendsScreen() {
                   label="Kabul"
                   size="sm"
                   onPress={async () => {
-                    await acceptFriendRequest(item.id);
-                    await load("refresh");
+                    try {
+                      await acceptFriendRequest(item.id);
+                      await load("refresh");
+                    } catch (error) {
+                      showToast({
+                        type: "error",
+                        title: "Kabul edilemedi",
+                        description: getApiErrorMessage(error),
+                      });
+                    }
                   }}
                 />
                 <Button
@@ -149,8 +157,16 @@ export function FriendsScreen() {
                   variant="outline"
                   size="sm"
                   onPress={async () => {
-                    await rejectFriendRequest(item.id);
-                    await load("refresh");
+                    try {
+                      await rejectFriendRequest(item.id);
+                      await load("refresh");
+                    } catch (error) {
+                      showToast({
+                        type: "error",
+                        title: "Reddedilemedi",
+                        description: getApiErrorMessage(error),
+                      });
+                    }
                   }}
                 />
               </View>

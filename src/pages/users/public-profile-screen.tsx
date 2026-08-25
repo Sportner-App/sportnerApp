@@ -9,16 +9,27 @@ import {
   SportLoader,
 } from "@/components";
 import { useSession, useToast } from "@/contexts";
-import { getApiErrorMessage } from "@/lib/api/errors";
+import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { ProfileHero } from "@/pages/profile/profile-hero";
 import { ReviewsSection } from "@/pages/profile/reviews-section";
 import { SportsSection } from "@/pages/profile/sports-section";
 import { StatsSection } from "@/pages/profile/stats-section";
 import { getPublicProfile } from "@/services/profile-service";
 import { listUserReviews } from "@/services/reviews-service";
-import { sendFriendRequest } from "@/services/social-service";
-import type { UserProfile } from "@/types/profile";
+import {
+  acceptFriendRequest,
+  rejectFriendRequest,
+  resolveFriendshipWith,
+  sameUserId,
+  sendFriendRequest,
+  toProfileFriendship,
+} from "@/services/social-service";
+import type { ApiProfileFriendship, UserProfile } from "@/types/profile";
 import type { ApiReview } from "@/types/reviews";
+import { FRIENDSHIP_STATUS } from "@/types/social";
+import { errorNotification, successNotification } from "@/utils/haptics";
+
+type FriendAction = "send" | "accept" | "reject" | null;
 
 export function PublicProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -29,14 +40,17 @@ export function PublicProfileScreen() {
   const [reviews, setReviews] = useState<ApiReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [friendAction, setFriendAction] = useState<FriendAction>(null);
 
   useEffect(() => {
     if (!id) {
       return;
     }
     void getPublicProfile(id)
-      .then((next) => {
-        setProfile(next);
+      .then(async (next) => {
+        const friendship =
+          next.friendship ?? (await resolveFriendshipWith(next.userId).catch(() => null));
+        setProfile({ ...next, friendship });
         setReviewsLoading(true);
         return listUserReviews(next.userId)
           .then((page) => setReviews(page?.items ?? []))
@@ -53,7 +67,115 @@ export function PublicProfileScreen() {
       .finally(() => setIsLoading(false));
   }, [id, showToast]);
 
-  const isMe = user?.id === id;
+  const isMe = Boolean(user?.id && profile && sameUserId(user.id, profile.userId));
+  const friendship = profile?.friendship ?? null;
+  const status = friendship?.status ?? null;
+  const isIncomingPending =
+    status === FRIENDSHIP_STATUS.pending &&
+    sameUserId(friendship?.addresseeUserId, user?.id);
+  const isOutgoingPending =
+    status === FRIENDSHIP_STATUS.pending &&
+    sameUserId(friendship?.requesterUserId, user?.id);
+  const isAccepted = status === FRIENDSHIP_STATUS.accepted;
+  const isBlocked = status === FRIENDSHIP_STATUS.blocked;
+
+  const setFriendship = (next: ApiProfileFriendship | null) => {
+    setProfile((current) =>
+      current ? { ...current, friendship: next } : current,
+    );
+  };
+
+  const handleSend = async () => {
+    if (!profile) {
+      return;
+    }
+
+    setFriendAction("send");
+    try {
+      const created = await sendFriendRequest(profile.userId);
+      setFriendship(
+        toProfileFriendship(created) ?? {
+          friendshipId: created?.id ?? "",
+          status: FRIENDSHIP_STATUS.pending,
+          requesterUserId: user?.id ?? "",
+          addresseeUserId: profile.userId,
+        },
+      );
+      successNotification();
+      showToast({ type: "success", title: "İstek gönderildi" });
+    } catch (error) {
+      const existing =
+        isApiError(error) && error.status === 409
+          ? await resolveFriendshipWith(profile.userId, {
+              includeAccepted: true,
+            }).catch(() => null)
+          : null;
+
+      if (existing) {
+        setFriendship(existing);
+        return;
+      }
+
+      errorNotification();
+      showToast({
+        type: "error",
+        title: "Gönderilemedi",
+        description: getApiErrorMessage(error),
+      });
+    } finally {
+      setFriendAction(null);
+    }
+  };
+
+  const handleAccept = async () => {
+    if (!friendship) {
+      return;
+    }
+
+    setFriendAction("accept");
+    try {
+      const accepted = await acceptFriendRequest(friendship.friendshipId);
+      setFriendship(
+        toProfileFriendship(accepted) ?? {
+          ...friendship,
+          status: FRIENDSHIP_STATUS.accepted,
+        },
+      );
+      successNotification();
+      showToast({ type: "success", title: "Arkadaş eklendi" });
+    } catch (error) {
+      errorNotification();
+      showToast({
+        type: "error",
+        title: "Kabul edilemedi",
+        description: getApiErrorMessage(error),
+      });
+    } finally {
+      setFriendAction(null);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!friendship) {
+      return;
+    }
+
+    setFriendAction("reject");
+    try {
+      await rejectFriendRequest(friendship.friendshipId);
+      setFriendship(null);
+      showToast({ type: "success", title: "İstek reddedildi" });
+    } catch (error) {
+      errorNotification();
+      showToast({
+        type: "error",
+        title: "Reddedilemedi",
+        description: getApiErrorMessage(error),
+      });
+    } finally {
+      setFriendAction(null);
+    }
+  };
 
   return (
     <AppScreen
@@ -74,39 +196,72 @@ export function PublicProfileScreen() {
           <StatsSection statistics={profile.statistics} />
           <SportsSection profile={profile} />
           <ReviewsSection reviews={reviews} isLoading={reviewsLoading} />
-          <View className="flex-row gap-2">
-            {!isMe ? (
-              <View className="flex-1">
-                <Button
-                  label="Arkadaş ekle"
-                  size="sm"
-                  onPress={async () => {
-                    try {
-                      await sendFriendRequest(profile.userId);
-                      showToast({ type: "success", title: "İstek gönderildi" });
-                    } catch (error) {
-                      showToast({
-                        type: "error",
-                        title: "Gönderilemedi",
-                        description: getApiErrorMessage(error),
-                      });
-                    }
-                  }}
-                />
+
+          <View className="gap-2">
+            {isIncomingPending ? (
+              <View className="flex-row gap-2">
+                <View className="flex-1">
+                  <Button
+                    label="Kabul et"
+                    size="sm"
+                    isLoading={friendAction === "accept"}
+                    disabled={friendAction === "reject"}
+                    onPress={() => void handleAccept()}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Button
+                    label="Reddet"
+                    variant="outline"
+                    size="sm"
+                    isLoading={friendAction === "reject"}
+                    disabled={friendAction === "accept"}
+                    onPress={() => void handleReject()}
+                  />
+                </View>
               </View>
             ) : null}
-            <View className="flex-1">
-              <Button
-                label="Şikayet et"
-                variant="outline"
-                size="sm"
-                onPress={() =>
-                  router.push({
-                    pathname: "/report",
-                    params: { entityType: "0", entityId: profile.userId },
-                  })
-                }
-              />
+
+            <View className="flex-row gap-2">
+              {!isMe && !isIncomingPending && !isBlocked ? (
+                <View className="flex-1">
+                  {isAccepted ? (
+                    <Button
+                      label="Arkadaşsınız"
+                      variant="secondary"
+                      size="sm"
+                      disabled
+                    />
+                  ) : isOutgoingPending ? (
+                    <Button
+                      label="İstek gönderildi"
+                      variant="secondary"
+                      size="sm"
+                      disabled
+                    />
+                  ) : (
+                    <Button
+                      label="Arkadaş ekle"
+                      size="sm"
+                      isLoading={friendAction === "send"}
+                      onPress={() => void handleSend()}
+                    />
+                  )}
+                </View>
+              ) : null}
+              <View className="flex-1">
+                <Button
+                  label="Şikayet et"
+                  variant="outline"
+                  size="sm"
+                  onPress={() =>
+                    router.push({
+                      pathname: "/report",
+                      params: { entityType: "0", entityId: profile.userId },
+                    })
+                  }
+                />
+              </View>
             </View>
           </View>
         </>

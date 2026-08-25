@@ -25,7 +25,11 @@ export type ButtonProps = Omit<PressableProps, "children" | "style"> & {
   variant?: ButtonVariant;
   size?: ButtonSize;
   icon?: IconName;
+  glow?: "default" | "subtle";
+  haptic?: "light" | "medium" | "success";
+  pressScale?: number;
   isLoading?: boolean;
+  loadingLabel?: string;
   disabled?: boolean;
 };
 
@@ -50,6 +54,7 @@ export type SegmentedTabsProps<T extends string> = {
   value: T;
   onChange: (key: T) => void;
   disabled?: boolean;
+  indicatorMotion?: "spring" | "timing";
 };
 
 // BottomSheet
@@ -134,6 +139,11 @@ export type SportLoaderProps = {
   size?: number;
   /** Alt etiket; boş string verilirse gizlenir */
   label?: string;
+};
+
+// BrandMark
+export type BrandMarkProps = {
+  className?: string;
 };
 
 // ScreenHeader

@@ -1,5 +1,6 @@
 export { AppScreen } from "./app-screen";
 export { BottomSheet } from "./bottom-sheet";
+export { BrandMark } from "./brand-mark";
 export { Button } from "./button";
 export { DateField } from "./date-field";
 export { DatePickerSheet } from "./date-picker-sheet";

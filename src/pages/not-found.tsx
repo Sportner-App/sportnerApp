@@ -24,7 +24,7 @@ export function NotFoundScreen() {
           Aradığın ekran taşınmış veya hiç var olmamış olabilir.
         </Text>
         <Button
-          label="Ana Sayfaya Dön"
+          label="Etkinlikler Sayfasına Dön"
           size="md"
           onPress={() => router.replace("/(tabs)")}
         />

@@ -59,6 +59,30 @@ export async function pickProfileImage(): Promise<MediaPickResult> {
   };
 }
 
+export async function pickPostImages(): Promise<PickedMedia[] | "denied" | "cancelled"> {
+  const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (!permission.granted) {
+    return "denied";
+  }
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ["images"],
+    allowsMultipleSelection: true,
+    selectionLimit: 10,
+    quality: 0.85,
+  });
+
+  if (result.canceled || result.assets.length === 0) {
+    return "cancelled";
+  }
+
+  return result.assets.map((asset, index) => ({
+    uri: asset.uri,
+    name: fileName(asset, `post-${index + 1}.jpg`),
+    type: guessImageType(asset),
+  }));
+}
+
 export async function pickIntroVideo(): Promise<MediaPickResult> {
   const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (!permission.granted) {

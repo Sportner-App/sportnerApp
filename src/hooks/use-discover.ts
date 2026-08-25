@@ -1,86 +1,91 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import { SPORT_FILTERS } from "@/constants/events";
 import { getApiErrorMessage } from "@/lib/api/errors";
-import { exploreEvents, explorePeople } from "@/services/events-service";
-import { listSports } from "@/services/sports-service";
-import type { ExploreEventItem, ExplorePerson } from "@/types/events";
-import type { Sport } from "@/types/sports";
-
-export type DiscoverTab = "events" | "people";
+import {
+  createComment,
+  explorePosts,
+  likePost,
+  unlikePost,
+} from "@/services/social-service";
+import type { ApiComment, ApiPost } from "@/types/social";
 
 export function useDiscover() {
-  const [tab, setTab] = useState<DiscoverTab>("events");
-  const [city, setCity] = useState("");
-  const [sportSlug, setSportSlug] = useState("all");
-  const [events, setEvents] = useState<ExploreEventItem[]>([]);
-  const [people, setPeople] = useState<ExplorePerson[]>([]);
+  const [posts, setPosts] = useState<ApiPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const sportsRef = useRef<Sport[]>([]);
 
-  const load = useCallback(
-    async (mode: "initial" | "refresh") => {
-      if (mode === "initial") {
-        setIsLoading(true);
-      } else {
-        setIsRefreshing(true);
-      }
+  const load = useCallback(async (mode: "initial" | "refresh") => {
+    if (mode === "initial") {
+      setIsLoading(true);
+    } else {
+      setIsRefreshing(true);
+    }
 
-      try {
-        setError(null);
-        if (sportsRef.current.length === 0) {
-          sportsRef.current = await listSports();
-        }
-
-        const resolvedSportId =
-          sportSlug === "all"
-            ? undefined
-            : sportsRef.current.find((sport) => sport.slug === sportSlug)?.id;
-
-        const cityParam = city.trim() || undefined;
-        const [nextEvents, nextPeople] = await Promise.all([
-          exploreEvents({
-            sportId: resolvedSportId,
-            city: cityParam,
-            limit: 30,
-          }),
-          explorePeople({
-            sportId: resolvedSportId,
-            city: cityParam,
-            limit: 30,
-          }),
-        ]);
-        setEvents(nextEvents);
-        setPeople(nextPeople);
-      } catch (err) {
-        setError(getApiErrorMessage(err, "Keşfet yüklenemedi."));
-      } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
-      }
-    },
-    [city, sportSlug],
-  );
+    try {
+      setError(null);
+      setPosts(await explorePosts(36));
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Keşfet yüklenemedi."));
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  }, []);
 
   useEffect(() => {
     void load("initial");
   }, [load]);
 
+  const patchPost = useCallback((postId: string, next: Partial<ApiPost>) => {
+    setPosts((current) =>
+      current.map((post) =>
+        post.id === postId ? { ...post, ...next } : post,
+      ),
+    );
+  }, []);
+
+  const toggleLike = useCallback(async (post: ApiPost) => {
+    const liked = post.likedByMe;
+    patchPost(post.id, {
+      likedByMe: !liked,
+      likeCount: Math.max(post.likeCount + (liked ? -1 : 1), 0),
+    });
+
+    try {
+      if (liked) {
+        await unlikePost(post.id);
+      } else {
+        await likePost(post.id);
+      }
+    } catch (err) {
+      patchPost(post.id, {
+        likedByMe: liked,
+        likeCount: post.likeCount,
+      });
+      throw err;
+    }
+  }, [patchPost]);
+
+  const addComment = useCallback(
+    async (post: ApiPost, content: string): Promise<ApiComment> => {
+      const comment = await createComment(post.id, content);
+      if (!comment) {
+        throw new Error("Yorum gönderilemedi.");
+      }
+      patchPost(post.id, { commentCount: post.commentCount + 1 });
+      return comment;
+    },
+    [patchPost],
+  );
+
   return {
-    tab,
-    setTab,
-    city,
-    setCity,
-    sportSlug,
-    setSportSlug,
-    sportFilters: SPORT_FILTERS,
-    events,
-    people,
+    posts,
     isLoading,
     isRefreshing,
     error,
     refresh: () => load("refresh"),
+    toggleLike,
+    addComment,
   };
 }

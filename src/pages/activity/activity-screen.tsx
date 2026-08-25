@@ -62,7 +62,7 @@ export function ActivityScreen() {
   return (
     <AppScreen
       withTabBar
-      header={<ScreenHeader title="AKTİVİTELERİM" />}
+      header={<ScreenHeader title="ETKİNLİKLERİM" />}
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="gap-5 px-6 pt-3"
       refreshControl={
@@ -70,7 +70,7 @@ export function ActivityScreen() {
       }
     >
       <View className="gap-2">
-        <Text className="font-display text-3xl text-white">Aktivitelerim</Text>
+        <Text className="font-display text-3xl text-white">Etkinliklerim</Text>
         <Text className="font-body text-sm text-brand-neutral">
           Devam edenler, geçmiştekiler ve düzenlediklerin.
         </Text>
@@ -80,7 +80,7 @@ export function ActivityScreen() {
 
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={148} label="Aktiviteler yükleniyor" />
+          <SportLoader size={148} label="Etkinlikler yükleniyor" />
         </View>
       ) : error && events.length === 0 ? (
         <View className="items-center gap-3 rounded-3xl border border-white/10 bg-brand-surface/60 px-6 py-12">
@@ -88,7 +88,12 @@ export function ActivityScreen() {
           <Text className="text-center font-body text-sm text-brand-neutral">
             {error}
           </Text>
-          <Button label="Tekrar Dene" variant="outline" size="sm" onPress={refresh} />
+          <Button
+            label="Tekrar Dene"
+            variant="outline"
+            size="sm"
+            onPress={refresh}
+          />
         </View>
       ) : events.length === 0 ? (
         <View className="items-center gap-2 rounded-3xl border border-white/10 bg-brand-surface/60 px-6 py-12">

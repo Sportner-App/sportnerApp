@@ -29,6 +29,7 @@ type LocationPickerProps = {
   latitude: number | null;
   longitude: number | null;
   onSelect: (location: SelectedLocation) => void;
+  compact?: boolean;
 };
 
 export function LocationPicker({
@@ -36,6 +37,7 @@ export function LocationPicker({
   latitude,
   longitude,
   onSelect,
+  compact = false,
 }: LocationPickerProps) {
   const mapRef = useRef<MapView>(null);
   const {
@@ -172,7 +174,7 @@ export function LocationPicker({
         </View>
 
         {/* Harita */}
-        <View className="relative h-56">
+        <View className={`relative ${compact ? "h-40" : "h-56"}`}>
           <MapView
             ref={mapRef}
             style={{ flex: 1 }}

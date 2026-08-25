@@ -5,6 +5,8 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { PROFILE_COPY } from "@/constants/profile";
 import type { UserProfile } from "@/types/profile";
 
+import { ProfileIntroVideo } from "./profile-intro-video";
+
 type ProfileHeroProps = {
   profile: UserProfile;
   onEdit?: () => void;
@@ -73,6 +75,10 @@ export function ProfileHero({ profile, onEdit }: ProfileHeroProps) {
           </View>
         </View>
       </View>
+
+      {profile.introVideoUrl?.trim() ? (
+        <ProfileIntroVideo uri={profile.introVideoUrl} />
+      ) : null}
 
       {profile.bio ? (
         <Text

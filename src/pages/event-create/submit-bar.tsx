@@ -9,6 +9,12 @@ type SubmitBarProps = {
   isLoading: boolean;
   onSubmit: () => void;
   label?: string;
+  onBack?: () => void;
+  backLabel?: string;
+  showIcon?: boolean;
+  pressScale?: number;
+  haptic?: "light";
+  loadingLabel?: string;
 };
 
 export function SubmitBar({
@@ -16,22 +22,52 @@ export function SubmitBar({
   isLoading,
   onSubmit,
   label = CREATE_EVENT_COPY.submit,
+  onBack,
+  backLabel = CREATE_EVENT_COPY.back,
+  showIcon = true,
+  pressScale,
+  haptic,
+  loadingLabel,
 }: SubmitBarProps) {
   const insets = useSafeAreaInsets();
+
+  const primary = (
+    <Button
+      label={label}
+      size="lg"
+      icon={showIcon ? "paper-plane" : undefined}
+      disabled={disabled}
+      isLoading={isLoading}
+      loadingLabel={loadingLabel}
+      pressScale={pressScale}
+      haptic={haptic}
+      onPress={onSubmit}
+    />
+  );
 
   return (
     <View
       className="border-t border-white/10 bg-brand-secondary px-6 pt-4"
       style={{ paddingBottom: insets.bottom + 12 }}
     >
-      <Button
-        label={label}
-        size="lg"
-        icon="paper-plane"
-        disabled={disabled}
-        isLoading={isLoading}
-        onPress={onSubmit}
-      />
+      {onBack ? (
+        <View className="flex-row gap-3">
+          <View className="flex-1">
+            <Button
+              label={backLabel}
+              size="lg"
+              variant="secondary"
+              disabled={isLoading}
+              pressScale={pressScale}
+              haptic={haptic}
+              onPress={onBack}
+            />
+          </View>
+          <View className="flex-1">{primary}</View>
+        </View>
+      ) : (
+        primary
+      )}
     </View>
   );
 }

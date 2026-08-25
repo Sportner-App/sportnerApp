@@ -33,6 +33,14 @@ export type ProfileStatistics = {
   badgesCount: number;
 };
 
+/** API: ProfileFriendshipResponse — viewer-relative row, public profile only */
+export type ApiProfileFriendship = {
+  friendshipId: string;
+  status: number;
+  requesterUserId: string;
+  addresseeUserId: string;
+};
+
 /** API: MyProfileResponse — GET /api/user-profiles/me */
 export type ApiMyProfile = {
   userId: string;
@@ -54,6 +62,23 @@ export type ApiMyProfile = {
   statistics: ProfileStatistics | null;
 };
 
+/** API: PublicProfileResponse — GET /api/user-profiles/{userId} */
+export type ApiPublicProfile = {
+  userId: string;
+  username: string;
+  firstName: string;
+  lastName: string | null;
+  bio: string | null;
+  city: string | null;
+  profileImageUrl: string | null;
+  introVideoUrl: string | null;
+  averageRating: number;
+  reviewCount: number;
+  sports: ProfileSport[];
+  statistics: ProfileStatistics | null;
+  friendship?: ApiProfileFriendship | null;
+};
+
 /** UI model mapped from API */
 export type UserProfile = {
   userId: string;
@@ -70,6 +95,7 @@ export type UserProfile = {
   isProfilePublic: boolean;
   sports: ProfileSport[];
   statistics: ProfileStatistics | null;
+  friendship: ApiProfileFriendship | null;
 };
 
 export type ProfileMenuItem = {

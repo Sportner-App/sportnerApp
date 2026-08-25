@@ -1,5 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useState } from "react";
 import { Text, View } from "react-native";
 
 import {
@@ -11,21 +12,42 @@ import {
   SportLoader,
 } from "@/components";
 import { useEventDetail } from "@/hooks/use-event-detail";
-import { EVENT_STATUS } from "@/types/events";
-import { canAccessEventChat } from "@/utils/events";
+import { EVENT_STATUS, PARTICIPANT_STATUS } from "@/types/events";
+import { hasApprovedParticipation, hasEventEnded } from "@/utils/events";
 
 import { AboutSection } from "./about-section";
 import { DetailHero } from "./detail-hero";
-import { InfoGrid } from "./info-grid";
 import { JoinBar } from "./join-bar";
+import { LeaveEventAction } from "./leave-event-action";
 import { LocationMap } from "./location-map";
 import { OrganizerPanel } from "./organizer-panel";
 import { ParticipantsCard } from "./participants-card";
+import {
+  PendingRequestsBanner,
+  PendingRequestsHeaderAction,
+} from "./pending-requests-entry";
+import { PendingRequestsSheet } from "./pending-requests-sheet";
 
 export function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const detail = useEventDetail(id);
+
+  const [pendingSheetOpen, setPendingSheetOpen] = useState(false);
+
+  const pendingCount = detail.isOrganizer
+    ? (detail.event?.participants.filter(
+        (item) => item.status === PARTICIPANT_STATUS.pending,
+      ).length ?? 0)
+    : 0;
+  const showPendingEntry = pendingCount > 0;
+
+  const handleOpenPendingRequests = () => {
+    if (!detail.isOrganizer) {
+      return;
+    }
+    setPendingSheetOpen(true);
+  };
 
   const openChat = () => {
     if (detail.event?.conversationId) {
@@ -35,7 +57,20 @@ export function EventDetailScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="ETKİNLİK" showBack />}
+      header={
+        <ScreenHeader
+          title="ETKİNLİK"
+          showBack
+          right={
+            showPendingEntry ? (
+              <PendingRequestsHeaderAction
+                count={pendingCount}
+                onPress={handleOpenPendingRequests}
+              />
+            ) : undefined
+          }
+        />
+      }
       belowHeader={<LinearRefreshBar visible={detail.isRefreshing} />}
       contentClassName="flex-grow gap-4 px-6 pt-3"
       refreshControl={
@@ -80,21 +115,16 @@ export function EventDetailScreen() {
       ) : (
         <>
           <DetailHero event={detail.event} />
-          <InfoGrid event={detail.event} />
+          {showPendingEntry ? (
+            <PendingRequestsBanner
+              count={pendingCount}
+              onPress={handleOpenPendingRequests}
+            />
+          ) : null}
           <LocationMap event={detail.event} />
           <ParticipantsCard
             event={detail.event}
             onOpenUser={(userId) => router.push(`/users/${userId}`)}
-            onOpenChat={
-              canAccessEventChat(
-                detail.event.myParticipationStatus,
-                detail.isOrganizer,
-                detail.event.conversationId,
-                detail.event.status,
-              )
-                ? openChat
-                : undefined
-            }
             onOpenReviews={
               detail.event.status === EVENT_STATUS.completed
                 ? () => router.push(`/events/${detail.event?.id}/reviews`)
@@ -105,7 +135,6 @@ export function EventDetailScreen() {
             <OrganizerPanel
               event={detail.event}
               canManage={detail.canManage}
-              canComplete={detail.canComplete}
               canTakeAttendance={detail.canTakeAttendance}
               busyUserId={detail.busyUserId}
               isMutating={detail.isMutating}
@@ -115,7 +144,6 @@ export function EventDetailScreen() {
               onAttended={detail.markAttended}
               onAbsent={detail.markAbsent}
               onCancel={detail.cancel}
-              onComplete={detail.complete}
               onEdit={() => router.push(`/events/${detail.event?.id}/edit`)}
               onOpenUser={(userId) => router.push(`/users/${userId}`)}
               onOpenReviews={() =>
@@ -133,6 +161,14 @@ export function EventDetailScreen() {
             />
           ) : null}
           <AboutSection event={detail.event} />
+          {!detail.isOrganizer &&
+          hasApprovedParticipation(detail.event.myParticipationStatus) &&
+          !hasEventEnded(detail.event) ? (
+            <LeaveEventAction
+              isLeaving={detail.isLeaving}
+              onLeave={detail.leave}
+            />
+          ) : null}
           {!detail.isOrganizer ? (
             <Button
               label="Şikayet et"
@@ -151,6 +187,20 @@ export function EventDetailScreen() {
           ) : null}
         </>
       )}
+      {detail.event && detail.isOrganizer ? (
+        <PendingRequestsSheet
+          visible={pendingSheetOpen}
+          event={detail.event}
+          busyUserId={detail.busyUserId}
+          onClose={() => setPendingSheetOpen(false)}
+          onApprove={detail.approve}
+          onReject={detail.reject}
+          onOpenUser={(userId) => {
+            setPendingSheetOpen(false);
+            router.push(`/users/${userId}`);
+          }}
+        />
+      ) : null}
     </AppScreen>
   );
 }

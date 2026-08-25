@@ -19,6 +19,7 @@ import {
   hasEventEnded,
   hasPendingParticipation,
 } from "@/utils/events";
+import { errorNotification, successNotification } from "@/utils/haptics";
 
 export function useEventDetail(id: string | undefined) {
   const { user } = useSession();
@@ -133,6 +134,7 @@ export function useEventDetail(id: string | undefined) {
       const { error: joinError, data } = await joinEvent(event.id);
 
       if (joinError) {
+        errorNotification();
         showToast({
           type: "error",
           title: "Katılım başarısız",
@@ -158,6 +160,7 @@ export function useEventDetail(id: string | undefined) {
             ? "Organizatör onaylayınca katılacaksın."
             : "Etkinlik detayları güncellendi. İyi eğlenceler!",
       });
+      successNotification();
       await refresh();
     } finally {
       setIsJoining(false);
@@ -183,7 +186,7 @@ export function useEventDetail(id: string | undefined) {
       const pending = hasPendingParticipation(event.myParticipationStatus);
       const waitlisted = event.isOnWaitlist;
 
-      await runAction(
+      const ok = await runAction(
         () => cancelParticipation(event.id),
         waitlisted
           ? "Listeden çıktın"
@@ -196,6 +199,11 @@ export function useEventDetail(id: string | undefined) {
             ? "Organizatör artık başvurunu görmeyecek."
             : "Katılımın iptal edildi.",
       );
+      if (ok) {
+        successNotification();
+      } else {
+        errorNotification();
+      }
     } finally {
       setIsLeaving(false);
     }
@@ -208,7 +216,7 @@ export function useEventDetail(id: string | undefined) {
   ) => {
     setBusyUserId(userId);
     try {
-      await runAction(action, title);
+      return await runAction(action, title);
     } finally {
       setBusyUserId(null);
     }
@@ -221,7 +229,7 @@ export function useEventDetail(id: string | undefined) {
           () => approveParticipant(event.id, userId),
           "Katılımcı onaylandı",
         )
-      : Promise.resolve();
+      : Promise.resolve(false);
 
   const reject = (userId: string) =>
     event
@@ -230,7 +238,7 @@ export function useEventDetail(id: string | undefined) {
           () => rejectParticipant(event.id, userId),
           "Başvuru reddedildi",
         )
-      : Promise.resolve();
+      : Promise.resolve(false);
 
   const promote = (userId: string) =>
     event

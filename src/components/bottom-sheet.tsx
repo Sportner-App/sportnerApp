@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Modal, Pressable, Text, View } from "react-native";
+import { Dimensions, Modal, Pressable, Text, View } from "react-native";
 import Animated, {
   Easing,
   runOnJS,
@@ -19,8 +19,7 @@ const OPEN_SPRING = {
   overshootClamping: false,
 };
 
-const CLOSE_DURATION_MS = 260;
-const SHEET_SLIDE_DISTANCE = 320;
+const CLOSE_DURATION_MS = 280;
 
 /**
  * Uygulama genelinde select / date picker / aksiyon listeleri için
@@ -37,6 +36,7 @@ export function BottomSheet({
   const insets = useSafeAreaInsets();
   const [mounted, setMounted] = useState(visible);
   const progress = useSharedValue(visible ? 1 : 0);
+  const slideDistance = useSharedValue(Dimensions.get("window").height);
 
   useEffect(() => {
     if (visible) {
@@ -53,7 +53,7 @@ export function BottomSheet({
       0,
       {
         duration: CLOSE_DURATION_MS,
-        easing: Easing.out(Easing.cubic),
+        easing: Easing.in(Easing.cubic),
       },
       (finished) => {
         if (finished) {
@@ -68,13 +68,9 @@ export function BottomSheet({
   }));
 
   const sheetStyle = useAnimatedStyle(() => ({
-    opacity: 0.35 + progress.value * 0.65,
     transform: [
       {
-        translateY: (1 - progress.value) * SHEET_SLIDE_DISTANCE,
-      },
-      {
-        scale: 0.985 + progress.value * 0.015,
+        translateY: (1 - progress.value) * slideDistance.value,
       },
     ],
   }));
@@ -102,6 +98,12 @@ export function BottomSheet({
 
         <Animated.View
           style={sheetStyle}
+          onLayout={(event) => {
+            const height = event.nativeEvent.layout.height;
+            if (height > 0) {
+              slideDistance.value = height;
+            }
+          }}
           className="rounded-t-[28px] border border-white/10 bg-brand-surface px-5 pt-4"
         >
           <Pressable onPress={(event) => event.stopPropagation()}>

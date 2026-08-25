@@ -1,3 +1,4 @@
+import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 
@@ -114,13 +115,19 @@ export function useCreateEvent() {
 
   const maxPlayersNumber = Number(values.maxPlayers);
 
-  const canSubmit = useMemo(() => {
+  const isStep1Valid = useMemo(() => {
     const title = values.title.trim();
 
     return (
+      Boolean(values.sportSlug) &&
       title.length > 0 &&
       title.length <= CREATE_EVENT_LIMITS.titleMax &&
-      Boolean(values.sportSlug) &&
+      !isSportsLoading
+    );
+  }, [isSportsLoading, values.sportSlug, values.title]);
+
+  const isStep2Valid = useMemo(() => {
+    return (
       values.durationMinutes > 0 &&
       Boolean(values.addressText.trim()) &&
       values.latitude != null &&
@@ -129,13 +136,25 @@ export function useCreateEvent() {
       values.latitude <= 90 &&
       values.longitude >= -180 &&
       values.longitude <= 180 &&
+      values.eventDate.getTime() > Date.now()
+    );
+  }, [
+    values.addressText,
+    values.durationMinutes,
+    values.eventDate,
+    values.latitude,
+    values.longitude,
+  ]);
+
+  const isStep3Valid = useMemo(() => {
+    return (
       Number.isFinite(maxPlayersNumber) &&
       maxPlayersNumber >= CREATE_EVENT_LIMITS.maxParticipantsMin &&
-      maxPlayersNumber <= CREATE_EVENT_LIMITS.maxParticipantsMax &&
-      values.eventDate.getTime() > Date.now() &&
-      !isSportsLoading
+      maxPlayersNumber <= CREATE_EVENT_LIMITS.maxParticipantsMax
     );
-  }, [values, maxPlayersNumber, isSportsLoading]);
+  }, [maxPlayersNumber]);
+
+  const canSubmit = isStep1Valid && isStep2Valid && isStep3Valid;
 
   const submit = async () => {
     if (
@@ -174,15 +193,17 @@ export function useCreateEvent() {
       });
 
       if (!data) {
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         showToast({
           type: "error",
-          title: "Oluşturulamadı",
-          description: error?.message ?? "Bir şeyler ters gitti.",
+          title: "Etkinlik yayınlanamadı",
+          description: error?.message ?? "Tekrar dene.",
         });
         return;
       }
 
       if (!data.published) {
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         showToast({
           type: "error",
           title: "Yayınlanamadı",
@@ -194,6 +215,7 @@ export function useCreateEvent() {
         return;
       }
 
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       showToast({
         type: "success",
         title: "Etkinlik yayınlandı",
@@ -210,6 +232,9 @@ export function useCreateEvent() {
     values,
     update,
     setLocation,
+    isStep1Valid,
+    isStep2Valid,
+    isStep3Valid,
     canSubmit,
     isSubmitting,
     isSportsLoading,

@@ -1,14 +1,21 @@
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { Button } from "@/components";
-import { PARTICIPANT_STATUS, type EventDetail } from "@/types/events";
-import { participantStatusLabel } from "@/utils/events";
+import type { EventDetail } from "@/types/events";
+import type { IconName } from "@/types/components";
+import { lightImpact } from "@/utils/haptics";
+
+import {
+  OrganizerManageSheet,
+  type OrganizerManageTab,
+} from "./organizer-manage-sheet";
 
 type OrganizerPanelProps = {
   event: EventDetail;
   canManage: boolean;
-  canComplete: boolean;
   canTakeAttendance: boolean;
   busyUserId: string | null;
   isMutating: boolean;
@@ -18,17 +25,24 @@ type OrganizerPanelProps = {
   onAttended: (userId: string) => void;
   onAbsent: (userId: string) => void;
   onCancel: () => void;
-  onComplete: () => void;
   onEdit: () => void;
   onOpenUser: (userId: string) => void;
   onOpenReviews: () => void;
   onRateUser: (userId: string) => void;
 };
 
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
 export function OrganizerPanel({
   event,
   canManage,
-  canComplete,
   canTakeAttendance,
   busyUserId,
   isMutating,
@@ -38,182 +52,175 @@ export function OrganizerPanel({
   onAttended,
   onAbsent,
   onCancel,
-  onComplete,
   onEdit,
   onOpenUser,
   onOpenReviews,
   onRateUser,
 }: OrganizerPanelProps) {
-  const pending = event.participants.filter(
-    (item) => item.status === PARTICIPANT_STATUS.pending,
-  );
-  const approved = event.participants.filter(
-    (item) =>
-      item.status === PARTICIPANT_STATUS.approved ||
-      item.status === PARTICIPANT_STATUS.attended ||
-      item.status === PARTICIPANT_STATUS.noShow,
-  );
+  const [sheetTab, setSheetTab] = useState<OrganizerManageTab | null>(null);
+  const hasWaitlist = event.waitlist.length > 0;
+
+  const openSheet = (tab: OrganizerManageTab) => {
+    lightImpact();
+    setSheetTab(tab);
+  };
 
   return (
     <Animated.View
       entering={FadeInDown.duration(420).delay(80)}
       className="gap-4 rounded-3xl border border-brand-primary/25 bg-brand-surface/90 p-5"
     >
-      <Text className="font-display text-base text-white">Organizatör</Text>
+      <Text className="font-display text-base text-white">Etkinlik Yönetimi</Text>
 
       {canManage ? (
-        <View className="flex-row gap-2">
-          <View className="flex-1">
-            <Button label="Düzenle" variant="outline" size="sm" onPress={onEdit} />
-          </View>
-          <View className="flex-1">
-            <Button
-              label="İptal et"
-              variant="danger"
-              size="sm"
-              isLoading={isMutating}
-              onPress={onCancel}
-            />
-          </View>
+        <View className="gap-2">
+          <Button
+            label="Düzenle"
+            variant="outline"
+            size="sm"
+            pressScale={0.98}
+            haptic="light"
+            onPress={onEdit}
+          />
+          <Pressable
+            onPress={() => {
+              if (isMutating) {
+                return;
+              }
+              lightImpact();
+              onCancel();
+            }}
+            disabled={isMutating}
+            className="items-center py-2 active:opacity-70"
+          >
+            <Text className="font-body text-sm text-[#ef4444]">
+              {isMutating ? "İptal ediliyor..." : "Etkinliği iptal et"}
+            </Text>
+          </Pressable>
         </View>
       ) : null}
 
-      {canComplete ? (
-        <Button
-          label="Etkinliği tamamla"
-          size="sm"
-          isLoading={isMutating}
-          onPress={onComplete}
+      {hasWaitlist ? (
+        <InboxRow
+          icon="clock"
+          title="Bekleme listesi"
+          subtitle={
+            event.waitlist.length === 1
+              ? "1 kişi yer bekliyor"
+              : `${event.waitlist.length} kişi yer bekliyor`
+          }
+          badge={event.waitlist.length}
+          onPress={() => openSheet("waitlist")}
         />
       ) : null}
 
-      {pending.length > 0 ? (
-        <View className="gap-2">
-          <Text className="font-body text-xs text-brand-neutral">
-            Onay bekleyenler
-          </Text>
-          {pending.map((person) => (
-            <View
-              key={person.id}
-              className="flex-row items-center gap-2 rounded-2xl border border-white/10 bg-brand-secondary/70 px-3 py-2.5"
-            >
-              <Pressable className="flex-1" onPress={() => onOpenUser(person.id)}>
-                <Text className="font-body text-sm font-semibold text-white">
-                  {person.name}
-                </Text>
-                <Text className="font-body text-xs text-brand-neutral">
-                  {participantStatusLabel(person.status)}
-                </Text>
-              </Pressable>
-              <Pressable
-                disabled={busyUserId === person.id}
-                onPress={() => onApprove(person.id)}
-                className="rounded-full bg-brand-primary px-3 py-1.5"
-              >
-                <Text className="font-body text-xs font-semibold text-brand-secondary">
-                  Onayla
-                </Text>
-              </Pressable>
-              <Pressable
-                disabled={busyUserId === person.id}
-                onPress={() => onReject(person.id)}
-                className="rounded-full border border-white/15 px-3 py-1.5"
-              >
-                <Text className="font-body text-xs text-brand-neutral">Reddet</Text>
-              </Pressable>
-            </View>
-          ))}
-        </View>
-      ) : null}
-
-      {event.waitlist.length > 0 ? (
-        <View className="gap-2">
-          <Text className="font-body text-xs text-brand-neutral">
-            Bekleme listesi
-          </Text>
-          {event.waitlist.map((entry) => (
-            <View
-              key={entry.userId}
-              className="flex-row items-center gap-2 rounded-2xl border border-white/10 bg-brand-secondary/70 px-3 py-2.5"
-            >
-              <Pressable
-                className="flex-1"
-                onPress={() => onOpenUser(entry.userId)}
-              >
-                <Text className="font-body text-sm font-semibold text-white">
-                  #{entry.position} {entry.name}
-                </Text>
-              </Pressable>
-              <Pressable
-                disabled={busyUserId === entry.userId}
-                onPress={() => onPromote(entry.userId)}
-                className="rounded-full bg-brand-primary px-3 py-1.5"
-              >
-                <Text className="font-body text-xs font-semibold text-brand-secondary">
-                  Al
-                </Text>
-              </Pressable>
-            </View>
-          ))}
-        </View>
+      {canTakeAttendance ? (
+        <InboxRow
+          icon="clipboard-check"
+          title="Yoklama"
+          subtitle="Kim geldi, kim gelmedi"
+          onPress={() => openSheet("attendance")}
+        />
       ) : null}
 
       {canTakeAttendance ? (
-        <View className="gap-2">
-          <Text className="font-body text-xs text-brand-neutral">Yoklama</Text>
-          {approved.map((person) => (
+        <Button
+          label="Katılımcıları değerlendir"
+          variant="outline"
+          size="sm"
+          onPress={onOpenReviews}
+        />
+      ) : null}
+
+      <OrganizerManageSheet
+        visible={sheetTab != null}
+        initialTab={sheetTab ?? "requests"}
+        event={event}
+        canTakeAttendance={canTakeAttendance}
+        busyUserId={busyUserId}
+        onClose={() => setSheetTab(null)}
+        onApprove={onApprove}
+        onReject={onReject}
+        onPromote={onPromote}
+        onAttended={onAttended}
+        onAbsent={onAbsent}
+        onOpenUser={(userId) => {
+          setSheetTab(null);
+          onOpenUser(userId);
+        }}
+        onRateUser={(userId) => {
+          setSheetTab(null);
+          onRateUser(userId);
+        }}
+      />
+    </Animated.View>
+  );
+}
+
+function InboxRow({
+  title,
+  subtitle,
+  icon,
+  badge,
+  names,
+  accent = false,
+  onPress,
+}: {
+  title: string;
+  subtitle: string;
+  icon: IconName;
+  badge?: number;
+  names?: string[];
+  accent?: boolean;
+  onPress: () => void;
+}) {
+  const preview = names?.slice(0, 3) ?? [];
+
+  return (
+    <Pressable
+      onPress={onPress}
+      className={`flex-row items-center gap-3 rounded-2xl border px-3.5 py-3 active:opacity-80 ${
+        accent
+          ? "border-brand-primary/40 bg-brand-primary/10"
+          : "border-white/10 bg-brand-secondary/70"
+      }`}
+    >
+      {preview.length > 0 ? (
+        <View className="flex-row">
+          {preview.map((name, index) => (
             <View
-              key={person.id}
-              className="flex-row items-center gap-2 rounded-2xl border border-white/10 bg-brand-secondary/70 px-3 py-2.5"
+              key={`${name}-${index}`}
+              className="h-10 w-10 items-center justify-center rounded-full border-2 border-brand-surface bg-brand-primary/20"
+              style={{ marginLeft: index === 0 ? 0 : -8 }}
             >
-              <View className="flex-1">
-                <Text className="font-body text-sm font-semibold text-white">
-                  {person.name}
-                </Text>
-                <Text className="font-body text-xs text-brand-neutral">
-                  {participantStatusLabel(person.status)}
-                </Text>
-              </View>
-              {person.status === PARTICIPANT_STATUS.approved ? (
-                <>
-                  <Pressable
-                    onPress={() => onAttended(person.id)}
-                    className="rounded-full bg-brand-primary px-3 py-1.5"
-                  >
-                    <Text className="font-body text-xs font-semibold text-brand-secondary">
-                      Geldi
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => onAbsent(person.id)}
-                    className="rounded-full border border-white/15 px-3 py-1.5"
-                  >
-                    <Text className="font-body text-xs text-brand-neutral">
-                      Gelmedi
-                    </Text>
-                  </Pressable>
-                </>
-              ) : null}
-              {person.status === PARTICIPANT_STATUS.attended ? (
-                <Pressable
-                  onPress={() => onRateUser(person.id)}
-                  className="rounded-full bg-brand-primary px-3 py-1.5"
-                >
-                  <Text className="font-body text-xs font-semibold text-brand-secondary">
-                    Puanla
-                  </Text>
-                </Pressable>
-              ) : null}
+              <Text className="font-body text-[10px] font-semibold text-brand-primary">
+                {getInitials(name)}
+              </Text>
             </View>
           ))}
-          <Button
-            label="Katılımcıları değerlendir"
-            variant="outline"
-            size="sm"
-            onPress={onOpenReviews}
-          />
+        </View>
+      ) : (
+        <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-primary/15">
+          <FontAwesome6 name={icon} size={14} color="#ccff00" />
+        </View>
+      )}
+
+      <View className="flex-1">
+        <Text className="font-body text-sm font-semibold text-white">
+          {title}
+        </Text>
+        <Text className="font-body text-xs text-brand-neutral">{subtitle}</Text>
+      </View>
+
+      {badge != null ? (
+        <View className="min-w-[22px] items-center rounded-full bg-brand-primary px-1.5 py-0.5">
+          <Text className="font-mono text-[11px] font-semibold text-brand-secondary">
+            {badge}
+          </Text>
         </View>
       ) : null}
-    </Animated.View>
+
+      <FontAwesome6 name="chevron-right" size={12} color="#64748b" />
+    </Pressable>
   );
 }

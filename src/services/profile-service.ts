@@ -1,6 +1,6 @@
 import { apiClient } from "@/lib/api/client";
 import { ApiError, getApiErrorMessage } from "@/lib/api/errors";
-import type { ApiMyProfile, UserProfile } from "@/types/profile";
+import type { ApiMyProfile, ApiPublicProfile, UserProfile } from "@/types/profile";
 import { mapMyProfile, mapPublicProfile } from "@/utils/profile";
 
 export class ProfileNotFoundError extends Error {
@@ -34,7 +34,7 @@ export async function getMyProfile(): Promise<UserProfile> {
 }
 
 export async function getPublicProfile(userId: string): Promise<UserProfile> {
-  const response = await apiClient.get<ApiMyProfile>(
+  const response = await apiClient.get<ApiPublicProfile>(
     `/api/user-profiles/${userId}`,
   );
   if (!response.data) {

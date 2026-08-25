@@ -1,4 +1,8 @@
-import type { ApiMyProfile, UserProfile } from "@/types/profile";
+import type {
+  ApiMyProfile,
+  ApiPublicProfile,
+  UserProfile,
+} from "@/types/profile";
 
 export function mapMyProfile(api: ApiMyProfile): UserProfile {
   const firstName = api.firstName?.trim() || "";
@@ -21,26 +25,20 @@ export function mapMyProfile(api: ApiMyProfile): UserProfile {
     isProfilePublic: api.isProfilePublic,
     sports: api.sports ?? [],
     statistics: api.statistics,
+    friendship: null,
   };
 }
 
-export function mapPublicProfile(
-  api: Omit<
-    ApiMyProfile,
-    | "isProfilePublic"
-    | "usernameChangedAt"
-    | "usernameChangeAvailableAt"
-    | "gender"
-    | "birthDate"
-  > &
-    Partial<ApiMyProfile>,
-): UserProfile {
-  return mapMyProfile({
-    gender: null,
-    birthDate: null,
-    isProfilePublic: true,
-    usernameChangedAt: "",
-    usernameChangeAvailableAt: "",
-    ...api,
-  });
+export function mapPublicProfile(api: ApiPublicProfile): UserProfile {
+  return {
+    ...mapMyProfile({
+      gender: null,
+      birthDate: null,
+      isProfilePublic: true,
+      usernameChangedAt: "",
+      usernameChangeAvailableAt: "",
+      ...api,
+    }),
+    friendship: api.friendship ?? null,
+  };
 }

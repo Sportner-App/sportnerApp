@@ -71,7 +71,7 @@ export function useActivity() {
       setPast(applyActivityScope(history, "past"));
       setOrganized(hosted);
     } catch (err) {
-      setError(getApiErrorMessage(err, "Aktiviteler yüklenemedi."));
+      setError(getApiErrorMessage(err, "Etkinlikler yüklenemedi."));
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -110,9 +110,7 @@ export function useActivity() {
             : setOrganized;
 
       const next =
-        tab === "organized"
-          ? result
-          : applyActivityScope(result, tab);
+        tab === "organized" ? result : applyActivityScope(result, tab);
 
       setter((prev) => ({
         items: [...prev.items, ...next.items],

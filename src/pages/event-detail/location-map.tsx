@@ -2,21 +2,47 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, {
+  FadeInDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 import { DirectionsSheet, MapPin } from "@/components";
 import { DARK_MAP_STYLE } from "@/constants/map";
 import { isGooglePlacesEnabled } from "@/services/location-service";
 import type { EventDetail } from "@/types/events";
 import type { DirectionsTarget } from "@/utils/open-directions";
+import { lightImpact } from "@/utils/haptics";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 type LocationMapProps = {
   event: EventDetail;
 };
 
+function locationPresentation(address: string) {
+  const parts = address
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length === 0) {
+    return { title: "Konum yok", detail: undefined };
+  }
+
+  return {
+    title: parts[0],
+    detail: parts.length > 1 ? parts.slice(1).join(", ") : undefined,
+  };
+}
+
 export function LocationMap({ event }: LocationMapProps) {
   const useGoogleMaps = isGooglePlacesEnabled();
   const [sheetVisible, setSheetVisible] = useState(false);
+  const { title: primaryLocation, detail: secondaryAddress } =
+    locationPresentation(event.address);
 
   const target: DirectionsTarget = {
     latitude: event.latitude,
@@ -25,6 +51,10 @@ export function LocationMap({ event }: LocationMapProps) {
   };
 
   const openSheet = () => setSheetVisible(true);
+  const directionsScale = useSharedValue(1);
+  const directionsStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: directionsScale.value }],
+  }));
 
   return (
     <>
@@ -34,10 +64,20 @@ export function LocationMap({ event }: LocationMapProps) {
       >
         <View className="flex-row items-center justify-between">
           <Text className="font-display text-base text-white">Konum</Text>
-          <Pressable
+          <AnimatedPressable
             hitSlop={8}
-            onPress={openSheet}
-            className="flex-row items-center gap-1.5 active:opacity-70"
+            onPress={() => {
+              lightImpact();
+              openSheet();
+            }}
+            onPressIn={() => {
+              directionsScale.value = withTiming(0.97, { duration: 90 });
+            }}
+            onPressOut={() => {
+              directionsScale.value = withTiming(1, { duration: 90 });
+            }}
+            style={directionsStyle}
+            className="flex-row items-center gap-1.5"
           >
             <Text className="font-body text-xs text-brand-primary">
               Yol tarifi
@@ -47,7 +87,7 @@ export function LocationMap({ event }: LocationMapProps) {
               size={11}
               color="#ccff00"
             />
-          </Pressable>
+          </AnimatedPressable>
         </View>
 
         <View className="overflow-hidden rounded-[28px] border border-white/10 bg-brand-surface/90">
@@ -91,15 +131,20 @@ export function LocationMap({ event }: LocationMapProps) {
               <FontAwesome6 name="location-dot" size={12} color="#ccff00" />
             </View>
             <View className="flex-1">
-              <Text className="font-body text-sm font-semibold text-white">
-                {event.location}
-              </Text>
               <Text
-                className="mt-0.5 font-body text-xs leading-4 text-brand-neutral"
-                numberOfLines={2}
+                className="font-body text-sm font-semibold text-white"
+                numberOfLines={1}
               >
-                {event.address}
+                {primaryLocation}
               </Text>
+              {secondaryAddress ? (
+                <Text
+                  className="mt-0.5 font-body text-xs leading-4 text-brand-neutral"
+                  numberOfLines={2}
+                >
+                  {secondaryAddress}
+                </Text>
+              ) : null}
             </View>
           </View>
         </View>

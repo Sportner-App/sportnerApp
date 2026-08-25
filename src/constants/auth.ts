@@ -11,16 +11,11 @@ export const AUTH_COPY = {
     title: "Tekrar\nhoş geldin.",
     subtitle: "Kullanıcı adın ve şifrenle devam et.",
     submit: "Giriş Yap",
-    footer: "Hesabın yok mu?",
-    footerAction: "Kayıt ol",
-    helper: "Demo: ahmet / Demo123!",
   },
   register: {
     title: "Aramıza\nkatıl.",
-    subtitle: "Adın, kullanıcı adın ve istersen bir profil fotoğrafı.",
+    subtitle: "Adın, kullanıcı adın ve şifrenle başla.",
     submit: "Hesap Oluştur",
-    footer: "Zaten hesabın var mı?",
-    footerAction: "Giriş yap",
     helper: "Kullanıcı adı: harf, rakam, . ve _",
   },
-} satisfies Record<AuthMode, Record<string, string>>;
+} as const;

@@ -4,6 +4,7 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   withSpring,
+  withTiming,
 } from "react-native-reanimated";
 
 import type { SegmentedTabsProps } from "@/types/components";
@@ -16,6 +17,7 @@ export function SegmentedTabs<T extends string>({
   value,
   onChange,
   disabled = false,
+  indicatorMotion = "spring",
 }: SegmentedTabsProps<T>) {
   const [segmentWidth, setSegmentWidth] = useState(0);
 
@@ -24,15 +26,15 @@ export function SegmentedTabs<T extends string>({
     options.findIndex((option) => option.key === value),
   );
 
-  const progress = useDerivedValue(
-    () =>
-      withSpring(activeIndex, {
-        damping: 26,
-        stiffness: 260,
-        overshootClamping: true,
-      }),
-    [activeIndex],
-  );
+  const progress = useDerivedValue(() => {
+    return indicatorMotion === "timing"
+      ? withTiming(activeIndex, { duration: 220 })
+      : withSpring(activeIndex, {
+          damping: 26,
+          stiffness: 260,
+          overshootClamping: true,
+        });
+  }, [activeIndex, indicatorMotion]);
 
   const indicatorStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: progress.value * segmentWidth }],

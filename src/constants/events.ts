@@ -15,12 +15,29 @@ export const CREATE_SPORT_OPTIONS: SportCategory[] = SPORT_FILTERS.filter(
   (sport) => sport.key !== "all",
 );
 
+export const CREATE_EVENT_STEPS = {
+  1: {
+    title: "Etkinliğini oluştur",
+    subtitle: "Sporunu seç ve etkinliğini anlat.",
+  },
+  2: {
+    title: "Planını yap",
+    subtitle: "Nerede, ne zaman ve ne kadar süreceğini belirle.",
+  },
+  3: {
+    title: "Takımını kur",
+    subtitle: "Kaç kişinin katılabileceğini belirle.",
+  },
+} as const;
+
 export const CREATE_EVENT_COPY = {
   header: "YENİ ETKİNLİK",
-  title: "Etkinliğini oluştur",
-  subtitle:
-    "Spor, süre, zaman ve konum bilgilerini doldur; yayınlanınca listede görünsün.",
+  title: CREATE_EVENT_STEPS[1].title,
+  subtitle: CREATE_EVENT_STEPS[1].subtitle,
   submit: "Etkinliği Yayınla",
+  publishing: "Yayınlanıyor...",
+  continue: "Devam Et",
+  back: "Geri",
 } as const;
 
 export const DEFAULT_EVENT_DURATION_MINUTES = 90;

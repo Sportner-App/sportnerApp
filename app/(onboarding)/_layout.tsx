@@ -1,21 +1,28 @@
 import { Redirect, Stack } from "expo-router";
 
 import { AUTH_BYPASS } from "@/constants/env";
-import { useAuth } from "@/contexts";
+import { useAuth, useFirstLaunch } from "@/contexts";
+import { getStartupDestination, STARTUP_HREF } from "@/utils/startup";
 
 export default function OnboardingLayout() {
   const { isReady, isAuthenticated, isOnboarded } = useAuth();
+  const { isReady: isFirstLaunchReady, hasSeenOnboarding, isEnteringAuth } =
+    useFirstLaunch();
 
-  if (!isReady) {
+  if (!isReady || !isFirstLaunchReady) {
     return null;
   }
 
-  if (!AUTH_BYPASS && !isAuthenticated) {
-    return <Redirect href="/(auth)/login" />;
-  }
+  const destination = getStartupDestination({
+    authBypass: AUTH_BYPASS,
+    isAuthenticated,
+    isOnboarded,
+    hasSeenOnboarding,
+    isEnteringAuth,
+  });
 
-  if (!AUTH_BYPASS && isOnboarded) {
-    return <Redirect href="/(tabs)" />;
+  if (destination !== "profile-setup") {
+    return <Redirect href={STARTUP_HREF[destination]} />;
   }
 
   return (

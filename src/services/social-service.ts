@@ -1,6 +1,7 @@
 import { apiClient } from "@/lib/api/client";
 import type { CursorPagedResult } from "@/types/api";
 import type { PagedResult } from "@/types/events";
+import type { ApiProfileFriendship } from "@/types/profile";
 import type {
   ApiComment,
   ApiFriend,
@@ -8,6 +9,72 @@ import type {
   ApiFriendSuggestion,
   ApiPost,
 } from "@/types/social";
+import type { PickedMedia } from "@/utils/media-picker";
+import { FRIENDSHIP_STATUS } from "@/types/social";
+
+export function sameUserId(left?: string | null, right?: string | null) {
+  return Boolean(left && right && left.toLowerCase() === right.toLowerCase());
+}
+
+function asFriendshipList(data: ApiFriendship[] | null | undefined) {
+  return Array.isArray(data) ? data : [];
+}
+
+export function toProfileFriendship(
+  row: ApiFriendship | null | undefined,
+): ApiProfileFriendship | null {
+  if (!row?.id) {
+    return null;
+  }
+
+  return {
+    friendshipId: row.id,
+    status: row.status,
+    requesterUserId: row.requesterUserId,
+    addresseeUserId: row.addresseeUserId,
+  };
+}
+
+export async function resolveFriendshipWith(
+  userId: string,
+  { includeAccepted = false }: { includeAccepted?: boolean } = {},
+): Promise<ApiProfileFriendship | null> {
+  const [incoming, outgoing] = await Promise.all([
+    listPendingRequests(false),
+    listPendingRequests(true),
+  ]);
+
+  const incomingHit = incoming.find((row) =>
+    sameUserId(row.requesterUserId, userId),
+  );
+  if (incomingHit) {
+    return toProfileFriendship(incomingHit);
+  }
+
+  const outgoingHit = outgoing.find((row) =>
+    sameUserId(row.addresseeUserId, userId),
+  );
+  if (outgoingHit) {
+    return toProfileFriendship(outgoingHit);
+  }
+
+  if (!includeAccepted) {
+    return null;
+  }
+
+  const friends = await listFriends();
+  const friend = friends?.items?.find((row) => sameUserId(row.userId, userId));
+  if (!friend) {
+    return null;
+  }
+
+  return {
+    friendshipId: friend.friendshipId,
+    status: FRIENDSHIP_STATUS.accepted,
+    requesterUserId: friend.userId,
+    addresseeUserId: userId,
+  };
+}
 
 export async function listFriends(page = 1) {
   const response = await apiClient.get<PagedResult<ApiFriend>>(
@@ -22,7 +89,7 @@ export async function listPendingRequests(outgoing = false) {
     "/api/friendships/pending",
     { params: { outgoing } },
   );
-  return response.data ?? [];
+  return asFriendshipList(response.data);
 }
 
 export async function listFriendSuggestions() {
@@ -34,11 +101,17 @@ export async function listFriendSuggestions() {
 }
 
 export async function sendFriendRequest(userId: string) {
-  await apiClient.post("/api/friendships", { userId });
+  const response = await apiClient.post<ApiFriendship>("/api/friendships", {
+    userId,
+  });
+  return response.data;
 }
 
 export async function acceptFriendRequest(friendshipId: string) {
-  await apiClient.post(`/api/friendships/${friendshipId}/accept`);
+  const response = await apiClient.post<ApiFriendship>(
+    `/api/friendships/${friendshipId}/accept`,
+  );
+  return response.data;
 }
 
 export async function rejectFriendRequest(friendshipId: string) {
@@ -54,7 +127,7 @@ export async function getHomeFeed(before?: string) {
     params: { before, limit: 20 },
   });
   return {
-    items: response.data?.items ?? [],
+    items: (response.data?.items ?? []).map(normalizePost),
     nextCursor: response.data?.nextCursor ?? null,
   };
 }
@@ -65,23 +138,54 @@ export async function getExploreFeed(before?: string) {
     { params: { before, limit: 20 } },
   );
   return {
-    items: response.data?.items ?? [],
+    items: (response.data?.items ?? []).map(normalizePost),
     nextCursor: response.data?.nextCursor ?? null,
+  };
+}
+
+export async function explorePosts(limit = 36) {
+  const response = await apiClient.get<ApiPost[]>("/api/explore/posts", {
+    params: { limit },
+  });
+  return (response.data ?? []).map(normalizePost);
+}
+
+function normalizePost(post: ApiPost): ApiPost {
+  const media = [...(post.media ?? [])].sort(
+    (left, right) => left.displayOrder - right.displayOrder,
+  );
+
+  return {
+    ...post,
+    media,
+    mediaCount: post.mediaCount ?? media.length,
   };
 }
 
 export async function getPost(postId: string) {
   const response = await apiClient.get<ApiPost>(`/api/posts/${postId}`);
-  return response.data;
+  return response.data ? normalizePost(response.data) : response.data;
 }
 
-export async function createPost(content: string) {
+export async function createPost(content: string, files: PickedMedia[] = []) {
   const form = new FormData();
-  form.append("content", content);
+  const caption = content.trim();
+  if (caption) {
+    form.append("content", caption);
+  }
+
+  for (const file of files) {
+    form.append("files", {
+      uri: file.uri,
+      name: file.name,
+      type: file.type,
+    } as unknown as Blob);
+  }
+
   const response = await apiClient.post<ApiPost>("/api/posts", form, {
     headers: { "Content-Type": "multipart/form-data" },
   });
-  return response.data;
+  return response.data ? normalizePost(response.data) : response.data;
 }
 
 export async function likePost(postId: string) {

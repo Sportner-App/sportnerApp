@@ -29,6 +29,11 @@ export const NOTIFICATION_ENTITY = {
   quest: 6,
 } as const;
 
+export const NOTIFICATION_TYPE = {
+  friendRequest: 0,
+  friendAccepted: 1,
+} as const;
+
 export const NOTIFICATION_SETTING_LABELS: Record<number, string> = {
   0: "Arkadaşlık isteği",
   1: "Arkadaşlık kabul",

@@ -4,6 +4,8 @@ import { Pressable, Text, View } from "react-native";
 
 import type { ScreenHeaderProps } from "@/types/components";
 
+import { BrandMark } from "./brand-mark";
+
 function HeaderSpacer() {
   return <View className="h-10 w-10" />;
 }
@@ -38,12 +40,7 @@ export function ScreenHeader({
         <FontAwesome6 name="arrow-left" size={14} color="#f8fafc" />
       </Pressable>
     ) : brand ? (
-      <View className="flex-row items-center gap-2.5">
-        <View className="h-2.5 w-2.5 rounded-full bg-brand-primary" />
-        <Text className="font-mono text-xl tracking-[4px] text-brand-primary">
-          SPORTNER
-        </Text>
-      </View>
+      <BrandMark />
     ) : (
       <HeaderSpacer />
     ));

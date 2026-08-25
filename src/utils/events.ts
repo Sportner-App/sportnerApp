@@ -54,6 +54,48 @@ export function sportIconForSlug(slug: string): IconName {
   return SPORT_ICON_BY_SLUG[slug.toLowerCase()] ?? "shapes";
 }
 
+export function formatEventTime(isoDate: string): string {
+  const date = new Date(isoDate);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toLocaleTimeString("tr-TR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+/** BUGÜN / YARIN / N GÜN SONRA — uzak tarihlerde null. */
+export function relativeEventBadge(isoDate: string): string | null {
+  const date = new Date(isoDate);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  const today = startOfDay(new Date());
+  const target = startOfDay(date);
+  const dayDiff = Math.round(
+    (target.getTime() - today.getTime()) / (24 * 60 * 60 * 1000),
+  );
+
+  if (dayDiff === 0) {
+    return "BUGÜN";
+  }
+
+  if (dayDiff === 1) {
+    return "YARIN";
+  }
+
+  if (dayDiff >= 2 && dayDiff <= 6) {
+    return `${dayDiff} GÜN SONRA`;
+  }
+
+  return null;
+}
+
 export function formatEventDateLabel(isoDate: string): string {
   const date = new Date(isoDate);
 
@@ -128,18 +170,76 @@ export function formatPersonName(parts: {
   return "Sporcu";
 }
 
+function isPostcode(value: string) {
+  return /^\d{4,6}$/.test(value);
+}
+
+function isCountryOrRegion(value: string) {
+  const normalized = value.toLocaleLowerCase("tr-TR");
+  return (
+    normalized === "türkiye" ||
+    normalized === "turkey" ||
+    normalized.endsWith(" bölgesi")
+  );
+}
+
+function isMajorCity(value: string) {
+  const normalized = value.toLocaleLowerCase("tr-TR");
+  return (
+    normalized === "istanbul" ||
+    normalized === "ankara" ||
+    normalized === "izmir" ||
+    normalized === "bursa" ||
+    normalized === "antalya"
+  );
+}
+
+function isStreet(value: string) {
+  return /(bulvarı|bulvar|caddesi|cadde|cad\.?|cd\.?|sokak|sokağı|sk\.?)$/i.test(
+    value,
+  );
+}
+
+function stripMahalle(value: string) {
+  return value.replace(/\s+(mahallesi|mah\.?)$/i, "").trim();
+}
+
+function shortenPlaceName(value: string) {
+  const cleaned = stripMahalle(value);
+  if (cleaned.length <= 28) {
+    return cleaned;
+  }
+
+  return `${cleaned.slice(0, 25)}…`;
+}
+
 function shortLocation(address: string): string {
   const trimmed = address.trim();
   if (!trimmed) {
     return "Konum yok";
   }
 
-  const parts = trimmed.split(",").map((part) => part.trim()).filter(Boolean);
-  if (parts.length >= 2) {
-    return `${parts[parts.length - 2]}, ${parts[parts.length - 1]}`;
+  const parts = trimmed
+    .split(/[,/]/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const useful = parts.filter(
+    (part) => !isPostcode(part) && !isCountryOrRegion(part),
+  );
+
+  if (useful.length === 0) {
+    return "Konum yok";
   }
 
-  return trimmed.length > 40 ? `${trimmed.slice(0, 37)}…` : trimmed;
+  const districts = useful.filter(
+    (part) => !isMajorCity(part) && !isStreet(part),
+  );
+  const raw =
+    (districts.length > 1 ? districts[districts.length - 1] : districts[0]) ??
+    useful.find((part) => !isStreet(part)) ??
+    useful[0];
+
+  return shortenPlaceName(raw) || "Konum yok";
 }
 
 export function mapListItemToSummary(item: ApiEventListItem): EventSummary {
@@ -279,10 +379,9 @@ export function participantStatusLabel(status: number): string {
   }
 }
 
-/** Current roster: pending, approved, attended, no-show. */
+/** Confirmed roster: approved, attended, no-show. Pending applicants are not members yet. */
 export function isCurrentParticipant(status: number): boolean {
   return (
-    status === PARTICIPANT_STATUS.pending ||
     status === PARTICIPANT_STATUS.approved ||
     status === PARTICIPANT_STATUS.attended ||
     status === PARTICIPANT_STATUS.noShow

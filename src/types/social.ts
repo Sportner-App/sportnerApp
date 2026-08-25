@@ -19,6 +19,13 @@ export type ApiFriendship = {
   createdAt: string;
 };
 
+export const FRIENDSHIP_STATUS = {
+  pending: 0,
+  accepted: 1,
+  rejected: 2,
+  blocked: 3,
+} as const;
+
 export type ApiFriendSuggestion = {
   userId: string;
   username: string | null;
@@ -30,6 +37,24 @@ export type ApiFriendSuggestion = {
   sharedSportNames: string[];
 };
 
+export const POST_MEDIA_TYPE = {
+  image: 0,
+  video: 1,
+} as const;
+
+export type ApiPostMedia = {
+  id: string;
+  mediaType: number;
+  storagePath: string;
+  fileName: string;
+  mimeType: string;
+  fileSize: number;
+  width: number | null;
+  height: number | null;
+  durationSeconds: number | null;
+  displayOrder: number;
+};
+
 export type ApiPost = {
   id: string;
   userId: string;
@@ -39,8 +64,10 @@ export type ApiPost = {
   content: string | null;
   likeCount: number;
   commentCount: number;
+  mediaCount: number;
   likedByMe: boolean;
   createdAt: string;
+  media: ApiPostMedia[];
 };
 
 export type ApiComment = {
