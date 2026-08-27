@@ -4,8 +4,9 @@ import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { Button } from "@/components";
-import type { EventDetail } from "@/types/events";
+import { themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
+import type { EventDetail } from "@/types/events";
 import { lightImpact } from "@/utils/haptics";
 
 import {
@@ -30,15 +31,6 @@ type OrganizerPanelProps = {
   onOpenReviews: () => void;
   onRateUser: (userId: string) => void;
 };
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-}
 
 export function OrganizerPanel({
   event,
@@ -67,21 +59,32 @@ export function OrganizerPanel({
 
   return (
     <Animated.View
-      entering={FadeInDown.duration(420).delay(80)}
-      className="gap-4 rounded-3xl border border-brand-primary/25 bg-brand-surface/90 p-5"
+      entering={FadeInDown.duration(400).delay(140)}
+      className="gap-md"
     >
-      <Text className="font-display text-base text-white">Etkinlik Yönetimi</Text>
-
       {canManage ? (
-        <View className="gap-2">
-          <Button
-            label="Düzenle"
-            variant="outline"
-            size="sm"
-            pressScale={0.98}
-            haptic="light"
-            onPress={onEdit}
-          />
+        <View className="gap-sm">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Etkinliği düzenle"
+            onPress={() => {
+              lightImpact();
+              onEdit();
+            }}
+            className="min-h-[48px] flex-row items-center justify-center gap-2 rounded-large border border-border-strong bg-surface-primary px-4 active:bg-surface-secondary"
+          >
+            <FontAwesome6
+              name="pen"
+              size={12}
+              color={themeColors.text.primary}
+            />
+            <Text
+              className="font-body-bold text-sm"
+              style={{ color: themeColors.text.primary }}
+            >
+              Düzenle
+            </Text>
+          </Pressable>
           <Pressable
             onPress={() => {
               if (isMutating) {
@@ -93,7 +96,10 @@ export function OrganizerPanel({
             disabled={isMutating}
             className="items-center py-2 active:opacity-70"
           >
-            <Text className="font-body text-sm text-[#ef4444]">
+            <Text
+              className="font-body text-sm"
+              style={{ color: themeColors.destructive }}
+            >
               {isMutating ? "İptal ediliyor..." : "Etkinliği iptal et"}
             </Text>
           </Pressable>
@@ -162,65 +168,64 @@ function InboxRow({
   subtitle,
   icon,
   badge,
-  names,
-  accent = false,
   onPress,
 }: {
   title: string;
   subtitle: string;
   icon: IconName;
   badge?: number;
-  names?: string[];
-  accent?: boolean;
   onPress: () => void;
 }) {
-  const preview = names?.slice(0, 3) ?? [];
-
   return (
     <Pressable
       onPress={onPress}
-      className={`flex-row items-center gap-3 rounded-2xl border px-3.5 py-3 active:opacity-80 ${
-        accent
-          ? "border-brand-primary/40 bg-brand-primary/10"
-          : "border-white/10 bg-brand-secondary/70"
-      }`}
+      className="flex-row items-center gap-3 rounded-large py-2.5 active:opacity-80"
     >
-      {preview.length > 0 ? (
-        <View className="flex-row">
-          {preview.map((name, index) => (
-            <View
-              key={`${name}-${index}`}
-              className="h-10 w-10 items-center justify-center rounded-full border-2 border-brand-surface bg-brand-primary/20"
-              style={{ marginLeft: index === 0 ? 0 : -8 }}
-            >
-              <Text className="font-body text-[10px] font-semibold text-brand-primary">
-                {getInitials(name)}
-              </Text>
-            </View>
-          ))}
-        </View>
-      ) : (
-        <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-primary/15">
-          <FontAwesome6 name={icon} size={14} color="#ccff00" />
-        </View>
-      )}
+      <View
+        className="h-10 w-10 items-center justify-center rounded-full"
+        style={{ backgroundColor: themeColors.surface.secondary }}
+      >
+        <FontAwesome6
+          name={icon}
+          size={14}
+          color={themeColors.text.secondary}
+        />
+      </View>
 
       <View className="flex-1">
-        <Text className="font-body text-sm font-semibold text-white">
+        <Text
+          className="font-body-bold text-sm"
+          style={{ color: themeColors.text.primary }}
+        >
           {title}
         </Text>
-        <Text className="font-body text-xs text-brand-neutral">{subtitle}</Text>
+        <Text
+          className="font-body text-caption"
+          style={{ color: themeColors.text.secondary }}
+        >
+          {subtitle}
+        </Text>
       </View>
 
       {badge != null ? (
-        <View className="min-w-[22px] items-center rounded-full bg-brand-primary px-1.5 py-0.5">
-          <Text className="font-mono text-[11px] font-semibold text-brand-secondary">
+        <View
+          className="min-w-[22px] items-center rounded-full px-1.5 py-0.5"
+          style={{ backgroundColor: themeColors.brand.primary }}
+        >
+          <Text
+            className="font-body-bold text-[11px]"
+            style={{ color: themeColors.text.onPrimary }}
+          >
             {badge}
           </Text>
         </View>
       ) : null}
 
-      <FontAwesome6 name="chevron-right" size={12} color="#64748b" />
+      <FontAwesome6
+        name="chevron-right"
+        size={12}
+        color={themeColors.text.tertiary}
+      />
     </Pressable>
   );
 }

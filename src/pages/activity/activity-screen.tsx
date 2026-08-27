@@ -2,15 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { Text, View } from "react-native";
 
-import {
-  AppScreen,
-  BrandRefreshControl,
-  Button,
-  LinearRefreshBar,
-  ScreenHeader,
-  SegmentedTabs,
-  SportLoader,
-} from "@/components";
+import { Button, SegmentedTabs, SportLoader, TabPage } from "@/components";
 import { type ActivityTab, useActivity } from "@/hooks/use-activity";
 import { EventCard } from "@/pages/home/event-card";
 
@@ -60,15 +52,7 @@ export function ActivityScreen() {
   const empty = EMPTY_COPY[tab];
 
   return (
-    <AppScreen
-      withTabBar
-      header={<ScreenHeader title="ETKİNLİKLERİM" />}
-      belowHeader={<LinearRefreshBar visible={isRefreshing} />}
-      contentClassName="gap-5 px-6 pt-3"
-      refreshControl={
-        <BrandRefreshControl refreshing={isRefreshing} onRefresh={refresh} />
-      }
-    >
+    <TabPage refreshing={isRefreshing} onRefresh={refresh}>
       <View className="gap-2">
         <Text className="font-display text-3xl text-white">Etkinliklerim</Text>
         <Text className="font-body text-sm text-brand-neutral">
@@ -132,6 +116,6 @@ export function ActivityScreen() {
           ) : null}
         </View>
       )}
-    </AppScreen>
+    </TabPage>
   );
 }

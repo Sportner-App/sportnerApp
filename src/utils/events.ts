@@ -300,9 +300,20 @@ export function mapDetailToEvent(
 }
 
 export function mapParticipant(participant: ApiParticipant): EventParticipant {
+  const isGuest = participant.isGuest || participant.kind === 1;
+  const guestName = [participant.firstName, participant.lastName]
+    .map((part) => part?.trim())
+    .filter(Boolean)
+    .join(" ");
+
   return {
-    id: participant.userId,
-    name: formatPersonName(participant),
+    id: participant.id,
+    userId: participant.userId,
+    kind: participant.kind,
+    isGuest,
+    name: isGuest
+      ? guestName || "İsimsiz misafir"
+      : formatPersonName(participant),
     username: participant.username,
     avatarUrl: participant.profileImageUrl,
     status: participant.status,
@@ -315,6 +326,7 @@ export function mapWaitlistEntry(entry: ApiWaitlistEntry): EventWaitlistEntry {
     userId: entry.userId,
     name: formatPersonName(entry),
     username: entry.username,
+    avatarUrl: entry.profileImageUrl,
     position: entry.position,
   };
 }

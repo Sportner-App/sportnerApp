@@ -76,10 +76,10 @@ export async function resolveFriendshipWith(
   };
 }
 
-export async function listFriends(page = 1) {
+export async function listFriends(page = 1, pageSize = 30) {
   const response = await apiClient.get<PagedResult<ApiFriend>>(
     "/api/friendships",
-    { params: { page, pageSize: 30 } },
+    { params: { page, pageSize } },
   );
   return response.data;
 }
@@ -123,9 +123,12 @@ export async function removeFriendship(friendshipId: string) {
 }
 
 export async function getHomeFeed(before?: string) {
-  const response = await apiClient.get<CursorPagedResult<ApiPost>>("/api/feed", {
-    params: { before, limit: 20 },
-  });
+  const response = await apiClient.get<CursorPagedResult<ApiPost>>(
+    "/api/feed",
+    {
+      params: { before, limit: 20 },
+    },
+  );
   return {
     items: (response.data?.items ?? []).map(normalizePost),
     nextCursor: response.data?.nextCursor ?? null,
@@ -183,7 +186,7 @@ export async function createPost(content: string, files: PickedMedia[] = []) {
   }
 
   const response = await apiClient.post<ApiPost>("/api/posts", form, {
-    headers: { "Content-Type": "multipart/form-data" },
+    timeout: 60_000,
   });
   return response.data ? normalizePost(response.data) : response.data;
 }

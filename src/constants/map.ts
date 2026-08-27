@@ -11,9 +11,9 @@ export const MAP_INITIAL_REGION = {
 
 /** Google Maps (Android) için markaya yakın koyu stil */
 export const DARK_MAP_STYLE: MapStyleElement[] = [
-  { elementType: "geometry", stylers: [{ color: "#0f172a" }] },
+  { elementType: "geometry", stylers: [{ color: "#06111a" }] },
   { elementType: "labels.text.fill", stylers: [{ color: "#94a3b8" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#0f172a" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#06111a" }] },
   {
     featureType: "administrative",
     elementType: "geometry",
@@ -42,7 +42,7 @@ export const DARK_MAP_STYLE: MapStyleElement[] = [
   {
     featureType: "road",
     elementType: "geometry.stroke",
-    stylers: [{ color: "#0f172a" }],
+    stylers: [{ color: "#06111a" }],
   },
   {
     featureType: "road",

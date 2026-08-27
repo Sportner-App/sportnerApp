@@ -28,6 +28,10 @@ export const CREATE_EVENT_STEPS = {
     title: "Takımını kur",
     subtitle: "Kaç kişinin katılabileceğini belirle.",
   },
+  4: {
+    title: "Yanına kim geliyor?",
+    subtitle: "Misafir veya arkadaş ekleyebilirsin. Bu adımı atlayabilirsin.",
+  },
 } as const;
 
 export const CREATE_EVENT_COPY = {
@@ -43,20 +47,23 @@ export const CREATE_EVENT_COPY = {
 export const DEFAULT_EVENT_DURATION_MINUTES = 90;
 
 /** Backend: DurationMinutes > 0 */
-export const DURATION_OPTIONS: { key: string; label: string; minutes: number }[] =
-  [
-    { key: "30", label: "30 dakika", minutes: 30 },
-    { key: "45", label: "45 dakika", minutes: 45 },
-    { key: "60", label: "1 saat", minutes: 60 },
-    { key: "90", label: "1.5 saat", minutes: 90 },
-    { key: "120", label: "2 saat", minutes: 120 },
-    { key: "180", label: "3 saat", minutes: 180 },
-  ];
+export const DURATION_OPTIONS: {
+  key: string;
+  label: string;
+  minutes: number;
+}[] = [
+  { key: "30", label: "30 dakika", minutes: 30 },
+  { key: "45", label: "45 dakika", minutes: 45 },
+  { key: "60", label: "1 saat", minutes: 60 },
+  { key: "90", label: "1.5 saat", minutes: 90 },
+  { key: "120", label: "2 saat", minutes: 120 },
+  { key: "180", label: "3 saat", minutes: 180 },
+];
 
 export const CREATE_EVENT_LIMITS = {
   titleMax: 150,
   maxParticipantsMin: 2,
-  maxParticipantsMax: 100,
+  maxParticipantsMax: 1000,
 } as const;
 
 export const DEFAULT_EVENT_LOCATION = {

@@ -1,5 +1,10 @@
 import type FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import type { ComponentProps, PropsWithChildren, ReactElement, ReactNode } from "react";
+import type {
+  ComponentProps,
+  PropsWithChildren,
+  ReactElement,
+  ReactNode,
+} from "react";
 import type {
   PressableProps,
   RefreshControlProps,
@@ -10,13 +15,11 @@ import type {
 
 export type IconName = ComponentProps<typeof FontAwesome6>["name"];
 
+export type UiTone = "dark" | "light";
+
 // Button
 export type ButtonVariant =
-  | "primary"
-  | "secondary"
-  | "outline"
-  | "ghost"
-  | "danger";
+  "primary" | "secondary" | "outline" | "ghost" | "danger";
 
 export type ButtonSize = "sm" | "md" | "lg";
 
@@ -65,6 +68,8 @@ export type BottomSheetProps = PropsWithChildren<{
   subtitle?: string;
   /** true ise altta Vazgeç butonu gösterilir (varsayılan: true) */
   showCancel?: boolean;
+  /** Açık ekranlarda warm-white sheet yüzeyi kullanır. */
+  tone?: UiTone;
 }>;
 
 // SelectField / SelectSheet
@@ -144,6 +149,8 @@ export type SportLoaderProps = {
 // BrandMark
 export type BrandMarkProps = {
   className?: string;
+  /** `light` = cream canvas (Home). Default stays dark for auth / first-launch. */
+  tone?: UiTone;
 };
 
 // ScreenHeader
@@ -156,6 +163,8 @@ export type ScreenHeaderProps = {
   onBack?: () => void;
   left?: ReactNode;
   right?: ReactNode;
+  /** `light` adapts brand/back chrome for the cream canvas. Default: dark. */
+  tone?: UiTone;
 };
 
 // AppScreen
@@ -171,4 +180,10 @@ export type AppScreenProps = PropsWithChildren<{
   refreshControl?: ReactElement<RefreshControlProps>;
   contentClassName?: string;
   contentContainerStyle?: StyleProp<ViewStyle>;
+  /** Hero/media ekranlarında içeriği status bar arkasına uzatır. */
+  edgeToEdgeTop?: boolean;
+  /** Light ekran için opsiyonel premium zeytin gradient zemini. */
+  backdrop?: "default" | "olive";
+  /** `light` uses background.primary. Default stays legacy navy. */
+  tone?: UiTone;
 }>;

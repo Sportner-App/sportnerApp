@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
-import { BottomSheet, Button, SegmentedTabs } from "@/components";
+import { Avatar, BottomSheet, Button, SegmentedTabs } from "@/components";
 import {
   PARTICIPANT_STATUS,
   type EventDetail,
@@ -27,15 +27,6 @@ type OrganizerManageSheetProps = {
   onOpenUser: (userId: string) => void;
   onRateUser: (userId: string) => void;
 };
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-}
 
 function tabCopy(tab: OrganizerManageTab, count: number) {
   switch (tab) {
@@ -81,13 +72,18 @@ export function OrganizerManageSheet({
   const [tab, setTab] = useState<OrganizerManageTab>(initialTab);
 
   const pending = event.participants.filter(
-    (item) => item.status === PARTICIPANT_STATUS.pending,
+    (item) =>
+      !item.isGuest &&
+      item.userId != null &&
+      item.status === PARTICIPANT_STATUS.pending,
   );
   const approved = event.participants.filter(
     (item) =>
-      item.status === PARTICIPANT_STATUS.approved ||
-      item.status === PARTICIPANT_STATUS.attended ||
-      item.status === PARTICIPANT_STATUS.noShow,
+      !item.isGuest &&
+      item.userId != null &&
+      (item.status === PARTICIPANT_STATUS.approved ||
+        item.status === PARTICIPANT_STATUS.attended ||
+        item.status === PARTICIPANT_STATUS.noShow),
   );
 
   const options = useMemo(() => {
@@ -96,8 +92,7 @@ export function OrganizerManageSheet({
     if (pending.length > 0 || tab === "requests") {
       items.push({
         key: "requests",
-        label:
-          pending.length > 0 ? `İstekler (${pending.length})` : "İstekler",
+        label: pending.length > 0 ? `İstekler (${pending.length})` : "İstekler",
       });
     }
 
@@ -192,10 +187,12 @@ export function OrganizerManageSheet({
 function PersonHeader({
   name,
   detail,
+  profileImageUrl,
   onPress,
 }: {
   name: string;
   detail: string;
+  profileImageUrl?: string | null;
   onPress: () => void;
 }) {
   return (
@@ -203,16 +200,12 @@ function PersonHeader({
       onPress={onPress}
       className="flex-row items-center gap-3 active:opacity-80"
     >
-      <View className="h-11 w-11 items-center justify-center rounded-full bg-brand-primary/15">
-        <Text className="font-body text-xs font-semibold text-brand-primary">
-          {getInitials(name)}
-        </Text>
-      </View>
+      <Avatar uri={profileImageUrl} name={name} size={44} />
       <View className="flex-1">
-        <Text className="font-body text-sm font-semibold text-white">
+        <Text className="font-body text-sm font-semibold text-text-primary">
           {name}
         </Text>
-        <Text className="font-body text-xs text-brand-neutral">{detail}</Text>
+        <Text className="font-body text-xs text-text-secondary">{detail}</Text>
       </View>
     </Pressable>
   );
@@ -238,20 +231,18 @@ function RequestList({
   return (
     <View className="gap-2">
       {people.map((person) => {
-        const busy = busyUserId === person.id;
+        const userId = person.userId!;
+        const busy = busyUserId === userId;
         return (
           <View
             key={person.id}
-            className="gap-3 rounded-2xl border border-white/10 bg-brand-secondary/70 p-3.5"
+            className="gap-3 rounded-2xl border border-border-default bg-surface-primary p-3.5"
           >
             <PersonHeader
-              name={person.name}
-              detail={
-                person.username
-                  ? `@${person.username}`
-                  : participantStatusLabel(person.status)
-              }
-              onPress={() => onOpenUser(person.id)}
+              name={`@${person.username || "sporcu"}`}
+              profileImageUrl={person.avatarUrl}
+              detail={participantStatusLabel(person.status)}
+              onPress={() => onOpenUser(userId)}
             />
             <View className="flex-row gap-2">
               <View className="flex-1">
@@ -261,18 +252,18 @@ function RequestList({
                   haptic="success"
                   isLoading={busy}
                   disabled={busyUserId != null}
-                  onPress={() => onApprove(person.id)}
+                  onPress={() => onApprove(userId)}
                 />
               </View>
               <View className="flex-1">
-                  <Button
-                    label="Reddet"
-                    variant="secondary"
-                    size="sm"
-                    haptic="light"
-                    disabled={busyUserId != null}
-                    onPress={() => onReject(person.id)}
-                  />
+                <Button
+                  label="Reddet"
+                  variant="secondary"
+                  size="sm"
+                  haptic="light"
+                  disabled={busyUserId != null}
+                  onPress={() => onReject(userId)}
+                />
               </View>
             </View>
           </View>
@@ -304,10 +295,11 @@ function WaitlistList({
         return (
           <View
             key={entry.userId}
-            className="gap-3 rounded-2xl border border-white/10 bg-brand-secondary/70 p-3.5"
+            className="gap-3 rounded-2xl border border-border-default bg-surface-primary p-3.5"
           >
             <PersonHeader
-              name={entry.name}
+              name={`@${entry.username || "sporcu"}`}
+              profileImageUrl={entry.avatarUrl}
               detail={
                 entry.username
                   ? `#${entry.position} · @${entry.username}`
@@ -352,16 +344,18 @@ function AttendanceList({
   return (
     <View className="gap-2">
       {people.map((person) => {
-        const busy = busyUserId === person.id;
+        const userId = person.userId!;
+        const busy = busyUserId === userId;
         return (
           <View
             key={person.id}
-            className="gap-3 rounded-2xl border border-white/10 bg-brand-secondary/70 p-3.5"
+            className="gap-3 rounded-2xl border border-border-default bg-surface-primary p-3.5"
           >
             <PersonHeader
-              name={person.name}
+              name={`@${person.username || "sporcu"}`}
+              profileImageUrl={person.avatarUrl}
               detail={participantStatusLabel(person.status)}
-              onPress={() => onOpenUser(person.id)}
+              onPress={() => onOpenUser(userId)}
             />
             {person.status === PARTICIPANT_STATUS.approved ? (
               <View className="flex-row gap-2">
@@ -372,17 +366,17 @@ function AttendanceList({
                     haptic="success"
                     isLoading={busy}
                     disabled={busyUserId != null}
-                    onPress={() => onAttended(person.id)}
+                    onPress={() => onAttended(userId)}
                   />
                 </View>
                 <View className="flex-1">
-                    <Button
+                  <Button
                     label="Gelmedi"
                     variant="secondary"
                     size="sm"
                     haptic="light"
                     disabled={busyUserId != null}
-                    onPress={() => onAbsent(person.id)}
+                    onPress={() => onAbsent(userId)}
                   />
                 </View>
               </View>
@@ -392,7 +386,7 @@ function AttendanceList({
                 label="Puanla"
                 size="sm"
                 haptic="light"
-                onPress={() => onRateUser(person.id)}
+                onPress={() => onRateUser(userId)}
               />
             ) : null}
           </View>
@@ -405,7 +399,7 @@ function AttendanceList({
 function EmptyState({ text }: { text: string }) {
   return (
     <View className="items-center px-4 py-10">
-      <Text className="text-center font-body text-sm text-brand-neutral">
+      <Text className="text-center font-body text-sm text-text-secondary">
         {text}
       </Text>
     </View>

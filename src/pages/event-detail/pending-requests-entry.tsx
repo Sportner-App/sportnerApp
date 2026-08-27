@@ -7,6 +7,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { themeColors } from "@/constants/theme";
 import { lightImpact } from "@/utils/haptics";
 
 type PendingRequestsEntryProps = {
@@ -58,12 +59,29 @@ export function PendingRequestsHeaderAction({
       onPressOut={() => {
         pressScale.value = withTiming(1, { duration: 90 });
       }}
-      style={pressStyle}
-      className="h-10 w-10 flex-row items-center justify-center gap-0.5 rounded-full border border-white/10 bg-brand-surface/90"
+      style={[pressStyle, { backgroundColor: themeColors.overlay.dark }]}
+      className="h-11 w-11 items-center justify-center rounded-full"
     >
-      <FontAwesome6 name="user-group" size={11} color="#ccff00" />
-      <Animated.View style={countStyle}>
-        <Text className="font-mono text-[11px] text-brand-primary">{count}</Text>
+      <FontAwesome6
+        name="user-group"
+        size={13}
+        color={themeColors.text.inverse}
+      />
+      <Animated.View
+        style={countStyle}
+        className="absolute -right-0.5 -top-0.5 min-h-[16px] min-w-[16px] items-center justify-center rounded-pill px-1"
+      >
+        <View
+          className="min-h-[16px] min-w-[16px] items-center justify-center rounded-pill px-1"
+          style={{ backgroundColor: themeColors.brand.primary }}
+        >
+          <Text
+            className="font-body-bold text-[10px]"
+            style={{ color: themeColors.text.onPrimary }}
+          >
+            {count}
+          </Text>
+        </View>
       </Animated.View>
     </AnimatedPressable>
   );

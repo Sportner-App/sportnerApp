@@ -12,7 +12,12 @@ export type TabItem = {
 export const TAB_ITEMS: TabItem[] = [
   { key: "index", label: "Etkinlikler", icon: "house" },
   { key: "discover", label: "Keşfet", icon: "compass" },
-  { key: "create", label: "Oluştur", icon: "plus", isAction: true },
+  {
+    key: "create",
+    label: "Etkinlik oluştur",
+    icon: "calendar-plus",
+    isAction: true,
+  },
   { key: "activity", label: "Etkinliklerim", icon: "calendar-check" },
   { key: "profile", label: "Profil", icon: "user" },
 ];

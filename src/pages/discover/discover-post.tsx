@@ -10,7 +10,9 @@ import {
   View,
 } from "react-native";
 
+import { Avatar, UserIdentity } from "@/components";
 import { useToast } from "@/contexts";
+import { themeColors } from "@/constants/theme";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { listComments } from "@/services/social-service";
 import type { ApiComment, ApiPost } from "@/types/social";
@@ -44,6 +46,7 @@ export function DiscoverPost({
   onAuthorPress,
 }: DiscoverPostProps) {
   const { width } = useWindowDimensions();
+  const cardWidth = width - 64;
   const { showToast } = useToast();
   const lastTap = useRef(0);
   const [page, setPage] = useState(0);
@@ -55,7 +58,7 @@ export function DiscoverPost({
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [heartBurst, setHeartBurst] = useState(false);
 
-  const author = post.firstName || post.username || "Sporcu";
+  const author = post.username || post.firstName || "Sporcu";
   const images = post.media.filter(
     (item) => item.mediaType === POST_MEDIA_TYPE.image,
   );
@@ -76,8 +79,7 @@ export function DiscoverPost({
         if (!cancelled) {
           setComments((current) => {
             const extras = current.filter(
-              (comment) =>
-                !page.items.some((item) => item.id === comment.id),
+              (comment) => !page.items.some((item) => item.id === comment.id),
             );
             return [...page.items, ...extras];
           });
@@ -161,65 +163,72 @@ export function DiscoverPost({
   };
 
   return (
-    <View className="border-b border-white/10 pb-4">
+    <View className="rounded-[28px] border border-border-default bg-surface-primary p-3">
       <Pressable
         onPress={onAuthorPress}
-        className="flex-row items-center gap-3 px-4 py-3"
+        className="mb-3 flex-row items-center gap-3 px-1"
       >
-        <View className="h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-brand-primary/15">
-          {post.profileImageUrl ? (
-            <Image
-              source={{ uri: resolveMediaUrl(post.profileImageUrl) }}
-              className="h-full w-full"
-            />
-          ) : (
-            <Text className="font-display text-xs text-brand-primary">
-              {author.slice(0, 1).toUpperCase()}
-            </Text>
-          )}
-        </View>
+        <Avatar uri={post.profileImageUrl} name={author} size={40} />
         <View className="flex-1">
-          <Text className="font-body text-sm font-semibold text-white">
-            {author}
+          <Text className="font-body-bold text-sm text-text-primary">
+            @{post.username || "sporcu"}
           </Text>
-          <Text className="font-mono text-[10px] text-brand-neutral">
-            {relativeTime(post.createdAt)}
+          <Text className="mt-0.5 font-mono text-[9px] text-text-tertiary">
+            @{post.username || "sporcu"} · {relativeTime(post.createdAt)}
           </Text>
+        </View>
+        <View className="h-8 w-8 items-center justify-center rounded-full bg-background-secondary">
+          <FontAwesome6
+            name="ellipsis"
+            size={12}
+            color={themeColors.text.tertiary}
+          />
         </View>
       </Pressable>
 
-      <Pressable onPress={handleMediaPress}>
+      <Pressable
+        onPress={handleMediaPress}
+        className="overflow-hidden rounded-[22px] bg-background-secondary"
+      >
         {images.length > 0 ? (
           <ScrollView
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             onMomentumScrollEnd={(event) => {
-              setPage(Math.round(event.nativeEvent.contentOffset.x / width));
+              setPage(
+                Math.round(event.nativeEvent.contentOffset.x / cardWidth),
+              );
             }}
           >
             {images.map((item) => (
               <Image
                 key={item.id}
                 source={{ uri: resolveMediaUrl(item.storagePath) }}
-                style={{ width, height: width }}
+                style={{ width: cardWidth, height: cardWidth * 1.03 }}
               />
             ))}
           </ScrollView>
         ) : (
           <View
-            className="justify-center bg-brand-surface px-6"
-            style={{ width, height: width }}
+            className="justify-center bg-background-secondary px-6"
+            style={{ width: cardWidth, height: cardWidth * 0.9 }}
           >
             {videos.length > 0 ? (
               <View className="items-center gap-3">
-                <FontAwesome6 name="play" size={28} color="#ccff00" />
-                <Text className="text-center font-body text-sm text-brand-neutral">
+                <View className="h-16 w-16 items-center justify-center rounded-full border border-brand-primary/40 bg-brand-primary/10">
+                  <FontAwesome6
+                    name="play"
+                    size={22}
+                    color={themeColors.brand.primary}
+                  />
+                </View>
+                <Text className="text-center font-body text-sm text-text-secondary">
                   Video paylaşımı
                 </Text>
               </View>
             ) : (
-              <Text className="font-display text-2xl text-white">
+              <Text className="font-display text-2xl text-text-primary">
                 {caption || "Gönderi"}
               </Text>
             )}
@@ -228,7 +237,11 @@ export function DiscoverPost({
 
         {heartBurst ? (
           <View className="absolute inset-0 items-center justify-center">
-            <FontAwesome6 name="heart" size={72} color="#ccff00" />
+            <FontAwesome6
+              name="heart"
+              size={72}
+              color={themeColors.brand.primary}
+            />
           </View>
         ) : null}
       </Pressable>
@@ -239,43 +252,64 @@ export function DiscoverPost({
             <View
               key={item.id}
               className={`h-1.5 w-1.5 rounded-full ${
-                index === page ? "bg-brand-primary" : "bg-white/25"
+                index === page ? "bg-brand-primary" : "bg-border-strong"
               }`}
             />
           ))}
         </View>
       ) : null}
 
-      <View className="gap-3 px-4 pt-3">
-        <View className="flex-row items-center gap-5">
-          <Pressable
-            hitSlop={8}
-            onPress={() => void like()}
-            className="flex-row items-center gap-2"
-          >
+      <View className="gap-3 px-1 pt-3">
+        <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center gap-2">
+            <Pressable
+              hitSlop={8}
+              onPress={() => void like()}
+              className={`min-h-9 flex-row items-center gap-2 rounded-full border px-3 ${
+                post.likedByMe
+                  ? "border-brand-primary/30 bg-brand-primary/10"
+                  : "border-border-default bg-background-secondary"
+              }`}
+            >
+              <FontAwesome6
+                name="heart"
+                size={20}
+                color={
+                  post.likedByMe
+                    ? themeColors.brand.primary
+                    : themeColors.text.primary
+                }
+              />
+              <Text className="font-mono text-xs text-text-primary">
+                {post.likeCount}
+              </Text>
+            </Pressable>
+            <Pressable
+              hitSlop={8}
+              onPress={() => setCommentsOpen((open) => !open)}
+              className="min-h-9 flex-row items-center gap-2 rounded-full border border-border-default bg-background-secondary px-3"
+            >
+              <FontAwesome6
+                name="comment"
+                size={17}
+                color={themeColors.text.primary}
+              />
+              <Text className="font-mono text-xs text-text-primary">
+                {post.commentCount}
+              </Text>
+            </Pressable>
+          </View>
+          <View className="h-9 w-9 items-center justify-center rounded-full border border-border-default bg-background-secondary">
             <FontAwesome6
-              name="heart"
-              size={20}
-              color={post.likedByMe ? "#ccff00" : "#f8fafc"}
+              name="bookmark"
+              size={14}
+              color={themeColors.text.secondary}
             />
-            <Text className="font-mono text-xs text-white">
-              {post.likeCount}
-            </Text>
-          </Pressable>
-          <Pressable
-            hitSlop={8}
-            onPress={() => setCommentsOpen((open) => !open)}
-            className="flex-row items-center gap-2"
-          >
-            <FontAwesome6 name="comment" size={19} color="#f8fafc" />
-            <Text className="font-mono text-xs text-white">
-              {post.commentCount}
-            </Text>
-          </Pressable>
+          </View>
         </View>
 
         {caption && images.length > 0 ? (
-          <Text className="font-body text-sm text-white">
+          <Text className="font-body text-sm leading-5 text-text-primary">
             <Text className="font-semibold">{author} </Text>
             {caption}
           </Text>
@@ -283,7 +317,7 @@ export function DiscoverPost({
 
         {post.commentCount > 0 && !commentsOpen ? (
           <Pressable onPress={() => setCommentsOpen(true)}>
-            <Text className="font-body text-sm text-brand-neutral">
+            <Text className="font-body text-sm text-text-secondary">
               {post.commentCount} yorumu gör
             </Text>
           </Pressable>
@@ -292,34 +326,39 @@ export function DiscoverPost({
         {commentsOpen ? (
           <View className="gap-2">
             {isLoadingComments ? (
-              <Text className="font-body text-xs text-brand-neutral">
+              <Text className="font-body text-xs text-text-secondary">
                 Yorumlar yükleniyor…
               </Text>
             ) : comments.length === 0 ? (
-              <Text className="font-body text-xs text-brand-neutral">
+              <Text className="font-body text-xs text-text-secondary">
                 İlk yorumu sen yaz.
               </Text>
             ) : (
               comments.map((comment) => (
-                <Text key={comment.id} className="font-body text-sm text-white">
-                  <Text className="font-semibold">
-                    {comment.firstName || comment.username}{" "}
+                <View key={comment.id} className="gap-1.5 py-1">
+                  <UserIdentity
+                    username={comment.username}
+                    avatarUrl={comment.profileImageUrl}
+                    fallbackName={comment.firstName}
+                    avatarSize={30}
+                  />
+                  <Text className="pl-[42px] font-body text-sm text-text-primary">
+                    {comment.content}
                   </Text>
-                  {comment.content}
-                </Text>
+                </View>
               ))
             )}
           </View>
         ) : null}
 
-        <View className="flex-row items-center gap-2 rounded-full border border-white/10 bg-brand-surface/80 px-4">
+        <View className="flex-row items-center gap-2 rounded-full border border-border-default bg-background-secondary px-4">
           <TextInput
             value={draft}
             onChangeText={setDraft}
             onFocus={() => setCommentsOpen(true)}
             placeholder="Yorum yaz…"
-            placeholderTextColor="#64748b"
-            className="min-h-[44px] flex-1 font-body text-sm text-white"
+            placeholderTextColor={themeColors.text.tertiary}
+            className="min-h-[44px] flex-1 font-body text-sm text-text-primary"
           />
           <Pressable
             hitSlop={8}
@@ -328,7 +367,7 @@ export function DiscoverPost({
           >
             <Text
               className={`font-body text-sm font-semibold ${
-                draft.trim() ? "text-brand-primary" : "text-brand-neutral"
+                draft.trim() ? "text-brand-primary" : "text-text-tertiary"
               }`}
             >
               Paylaş

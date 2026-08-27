@@ -42,7 +42,7 @@ export function SegmentedTabs<T extends string>({
 
   return (
     <View
-      className={`relative flex-row rounded-2xl border border-white/10 bg-brand-secondary/70 p-1 ${
+      className={`relative flex-row rounded-2xl border border-white/10 bg-background-primary/70 p-1 ${
         disabled ? "opacity-50" : ""
       }`}
       onLayout={(event) =>
@@ -69,7 +69,9 @@ export function SegmentedTabs<T extends string>({
             className={`text-center font-body font-semibold ${
               options.length >= 3 ? "text-[11px]" : "text-sm"
             } ${
-              option.key === value ? "text-brand-secondary" : "text-brand-neutral"
+              option.key === value
+                ? "text-brand-secondary"
+                : "text-brand-neutral"
             }`}
           >
             {option.label}

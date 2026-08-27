@@ -1,7 +1,13 @@
 import { useIsFocused } from "@react-navigation/native";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
-import { Pressable, Text, View } from "react-native";
+import {
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import Animated, {
   FadeInDown,
   useAnimatedStyle,
@@ -11,7 +17,6 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BrandMark, Button } from "@/components";
-import { AnimatedBackground } from "@/pages/auth/animated-background";
 import type { IconName } from "@/types/components";
 
 import { OnboardingProgress } from "./onboarding-progress";
@@ -59,7 +64,7 @@ export function FirstLaunchScaffold({
   onSecondary,
   primaryLoading,
   secondaryLoading,
-  visual,
+  visual: _visual,
   progressStep,
   primaryIcon,
   primaryGlow = "subtle",
@@ -80,7 +85,20 @@ export function FirstLaunchScaffold({
   }));
 
   return (
-    <Animated.View className="flex-1 bg-brand-secondary" style={transitionStyle}>
+    <Animated.View
+      className="flex-1 bg-background-primary"
+      style={transitionStyle}
+    >
+      <ImageBackground
+        source={require("../../../assets/images/sports/basketball.png")}
+        resizeMode="cover"
+        style={StyleSheet.absoluteFill}
+      />
+      <View pointerEvents="none" className="absolute inset-0 bg-black/20" />
+      <View
+        pointerEvents="none"
+        className="absolute inset-x-0 bottom-0 h-[58%] bg-background-primary/90"
+      />
       <View
         className={`flex-1 ${LAYOUT.pageX}`}
         style={{
@@ -88,71 +106,65 @@ export function FirstLaunchScaffold({
           paddingBottom: insets.bottom + LAYOUT.bottomExtra,
         }}
       >
-      <AnimatedBackground />
+        <BrandMark />
 
-      <BrandMark />
-
-      {visual ? (
-        <View style={{ marginTop: LAYOUT.brandToVisual }}>{visual}</View>
-      ) : (
         <View className="flex-1" />
-      )}
 
-      <Animated.View
-        entering={FadeInDown.duration(420).delay(80)}
-        className="gap-2.5"
-        style={{ marginTop: LAYOUT.visualToText }}
-      >
-        <Text className="font-display text-[40px] leading-[40px] text-white">
-          {title}
-        </Text>
-        <Text className="font-body text-base leading-6 text-white/60">
-          {subtitle}
-        </Text>
-      </Animated.View>
+        <Animated.View
+          entering={FadeInDown.duration(420).delay(80)}
+          className="gap-2.5"
+          style={{ marginTop: 24 }}
+        >
+          <Text className="font-display text-[40px] leading-[40px] text-white">
+            {title}
+          </Text>
+          <Text className="font-body text-base leading-6 text-white/60">
+            {subtitle}
+          </Text>
+        </Animated.View>
 
-      <View className="flex-1" />
+        <View className="flex-1" />
 
-      <View style={{ marginTop: LAYOUT.textToActions }}>
-        {progressStep ? (
-          <View style={{ marginBottom: LAYOUT.progressToCta }}>
-            <OnboardingProgress step={progressStep} />
-          </View>
-        ) : null}
-        <View className="gap-1">
-          <Button
-            label={primaryLabel}
-            size="lg"
-            icon={primaryIcon}
-            glow={primaryGlow}
-            haptic={primaryHaptic}
-            pressScale={0.98}
-            onPress={onPrimary}
-            isLoading={primaryLoading}
-          />
-          {secondaryLabel && onSecondary ? (
-            <Pressable
-              onPress={onSecondary}
-              disabled={secondaryLoading}
-              accessibilityRole="button"
-              accessibilityLabel={
-                secondaryHint
-                  ? `${secondaryHint} ${secondaryLabel}`
-                  : secondaryLabel
-              }
-              className="min-h-[44px] items-center justify-center"
-            >
-              <Text className="text-center font-body text-sm text-brand-neutral">
-                {secondaryHint ? `${secondaryHint} ` : ""}
-                <Text className="font-semibold text-white">
-                  {secondaryLabel}
-                </Text>
-              </Text>
-            </Pressable>
+        <View style={{ marginTop: LAYOUT.textToActions }}>
+          {progressStep ? (
+            <View style={{ marginBottom: LAYOUT.progressToCta }}>
+              <OnboardingProgress step={progressStep} />
+            </View>
           ) : null}
+          <View className="gap-1">
+            <Button
+              label={primaryLabel}
+              size="lg"
+              icon={primaryIcon}
+              glow={primaryGlow}
+              haptic={primaryHaptic}
+              pressScale={0.98}
+              onPress={onPrimary}
+              isLoading={primaryLoading}
+            />
+            {secondaryLabel && onSecondary ? (
+              <Pressable
+                onPress={onSecondary}
+                disabled={secondaryLoading}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  secondaryHint
+                    ? `${secondaryHint} ${secondaryLabel}`
+                    : secondaryLabel
+                }
+                className="min-h-[44px] items-center justify-center"
+              >
+                <Text className="text-center font-body text-sm text-brand-neutral">
+                  {secondaryHint ? `${secondaryHint} ` : ""}
+                  <Text className="font-semibold text-white">
+                    {secondaryLabel}
+                  </Text>
+                </Text>
+              </Pressable>
+            ) : null}
+          </View>
         </View>
       </View>
-    </View>
     </Animated.View>
   );
 }

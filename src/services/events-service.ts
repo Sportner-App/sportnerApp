@@ -14,6 +14,7 @@ import type {
   EventActionResult,
   EventDetail,
   EventListPage,
+  EventParticipantAssignment,
   EventWaitlistEntry,
   ExploreEventItem,
   ExplorePerson,
@@ -45,7 +46,10 @@ async function eventAction(
     await run();
     return { error: null, data: null };
   } catch (error) {
-    return { error: { message: getApiErrorMessage(error, fallback) }, data: null };
+    return {
+      error: { message: getApiErrorMessage(error, fallback) },
+      data: null,
+    };
   }
 }
 
@@ -139,6 +143,28 @@ export async function joinEvent(id: string): Promise<EventActionResult> {
   }
 }
 
+export async function assignEventParticipants(
+  eventId: string,
+  assignment: EventParticipantAssignment,
+) {
+  const response = await apiClient.post<ApiEventDetail>(
+    `/api/events/${eventId}/participants/assign`,
+    assignment,
+  );
+  return response.data;
+}
+
+export async function removeEventParticipant(
+  eventId: string,
+  participantId: string,
+) {
+  return eventAction(
+    () =>
+      apiClient.delete(`/api/events/${eventId}/participants/${participantId}`),
+    "Katılımcı silinemedi",
+  );
+}
+
 export async function cancelParticipation(id: string) {
   return eventAction(
     () => apiClient.post(`/api/events/${id}/participants/me/cancel`),
@@ -162,14 +188,16 @@ export async function completeEvent(id: string) {
 
 export async function approveParticipant(eventId: string, userId: string) {
   return eventAction(
-    () => apiClient.post(`/api/events/${eventId}/participants/${userId}/approve`),
+    () =>
+      apiClient.post(`/api/events/${eventId}/participants/${userId}/approve`),
     "Onaylanamadı",
   );
 }
 
 export async function rejectParticipant(eventId: string, userId: string) {
   return eventAction(
-    () => apiClient.post(`/api/events/${eventId}/participants/${userId}/reject`),
+    () =>
+      apiClient.post(`/api/events/${eventId}/participants/${userId}/reject`),
     "Reddedilemedi",
   );
 }

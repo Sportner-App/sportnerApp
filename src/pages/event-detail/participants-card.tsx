@@ -1,4 +1,4 @@
-import { Image, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import Animated, {
   FadeInDown,
   useAnimatedStyle,
@@ -6,6 +6,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { Avatar } from "@/components";
 import type { EventDetail, EventParticipant } from "@/types/events";
 import { isCurrentParticipant } from "@/utils/events";
 import { lightImpact } from "@/utils/haptics";
@@ -17,16 +18,6 @@ type ParticipantsCardProps = {
 };
 
 const VISIBLE_AVATAR_COUNT = 4;
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-}
 
 function givenName(name: string) {
   return name.trim().split(/\s+/)[0] || name;
@@ -92,8 +83,8 @@ export function ParticipantsCard({
                 participant={participant}
                 index={index}
                 onPress={
-                  onOpenUser
-                    ? () => onOpenUser(participant.id)
+                  onOpenUser && participant.userId && !participant.isGuest
+                    ? () => onOpenUser(participant.userId!)
                     : undefined
                 }
               />
@@ -156,12 +147,14 @@ function ParticipantAvatar({
     transform: [{ scale: scale.value }],
   }));
 
-  const content = participant.avatarUrl ? (
-    <Image source={{ uri: participant.avatarUrl }} className="h-full w-full" />
-  ) : (
-    <Text className="font-body text-xs font-semibold text-brand-primary">
-      {getInitials(participant.name)}
-    </Text>
+  const content = (
+    <Avatar
+      uri={participant.avatarUrl}
+      name={participant.name}
+      isGuest={participant.isGuest}
+      size={36}
+      borderWidth={0}
+    />
   );
 
   if (!onPress) {

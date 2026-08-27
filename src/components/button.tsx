@@ -12,22 +12,23 @@ import type {
   ButtonSize,
   ButtonVariant,
 } from "@/types/components";
+import { themeColors } from "@/constants/theme";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const containerVariants: Record<ButtonVariant, string> = {
   primary: "bg-brand-primary",
-  secondary: "border border-white/10 bg-brand-raised",
-  outline: "border border-brand-primary/60 bg-transparent",
+  secondary: "border border-border-strong bg-surface-secondary",
+  outline: "border border-brand-primary/60 bg-brand-primary/[0.04]",
   ghost: "bg-transparent",
   danger: "bg-[#ef4444]",
 };
 
 const labelVariants: Record<ButtonVariant, string> = {
   primary: "text-brand-secondary",
-  secondary: "text-white",
+  secondary: "text-text-primary",
   outline: "text-brand-primary",
-  ghost: "text-brand-neutral",
+  ghost: "text-text-secondary",
   danger: "text-white",
 };
 
@@ -44,11 +45,11 @@ const labelSizes: Record<ButtonSize, string> = {
 };
 
 const contentColors: Record<ButtonVariant, string> = {
-  primary: "#0f172a",
-  secondary: "#f8fafc",
-  outline: "#ccff00",
-  ghost: "#64748b",
-  danger: "#ffffff",
+  primary: themeColors.background.primary,
+  secondary: themeColors.text.primary,
+  outline: themeColors.brand.primary,
+  ghost: themeColors.text.secondary,
+  danger: themeColors.text.inverse,
 };
 
 function triggerHaptic(haptic: NonNullable<ButtonProps["haptic"]>) {
@@ -94,7 +95,7 @@ export function Button({
     ? "text-brand-neutral"
     : labelVariants[variant];
   const disabledIconColor = isDisabledPrimary
-    ? "#64748b"
+    ? themeColors.text.tertiary
     : contentColors[variant];
 
   return (

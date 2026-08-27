@@ -1,4 +1,5 @@
 export { AppScreen } from "./app-screen";
+export { Avatar } from "./avatar";
 export { BottomSheet } from "./bottom-sheet";
 export { BrandMark } from "./brand-mark";
 export { Button } from "./button";
@@ -15,3 +16,6 @@ export { SegmentedTabs } from "./segmented-tabs";
 export { SelectField } from "./select-field";
 export { SelectSheet } from "./select-sheet";
 export { SportLoader } from "./sport-loader";
+export { TabScreenHeader } from "./tab-screen-header";
+export { TabPage } from "./tab-page";
+export { UserIdentity } from "./user-identity";

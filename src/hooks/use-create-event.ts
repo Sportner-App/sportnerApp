@@ -8,11 +8,16 @@ import {
   DEFAULT_EVENT_DURATION_MINUTES,
 } from "@/constants/events";
 import { useToast } from "@/contexts";
-import { createEvent } from "@/services/events-service";
+import {
+  assignEventParticipants,
+  createEvent,
+} from "@/services/events-service";
+import { listFriends } from "@/services/social-service";
 import { listSports } from "@/services/sports-service";
 import type { CreateEventFormValues } from "@/types/events";
 import type { SelectedLocation } from "@/types/location";
 import type { Sport, SportCategory } from "@/types/sports";
+import type { ApiFriend } from "@/types/social";
 import { sportIconForSlug } from "@/utils/events";
 
 function getDefaultEventDate() {
@@ -53,6 +58,12 @@ export function useCreateEvent() {
     longitude: null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [friends, setFriends] = useState<ApiFriend[]>([]);
+  const [isFriendsLoading, setIsFriendsLoading] = useState(true);
+  const [guests, setGuests] = useState<
+    { localId: string; firstName: string; lastName: string }[]
+  >([]);
+  const [selectedFriendIds, setSelectedFriendIds] = useState<string[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -90,6 +101,25 @@ export function useCreateEvent() {
       }
     })();
 
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void listFriends(1, 20)
+      .then((page) => {
+        if (!cancelled) {
+          setFriends(page?.items ?? []);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setFriends([]);
+      })
+      .finally(() => {
+        if (!cancelled) setIsFriendsLoading(false);
+      });
     return () => {
       cancelled = true;
     };
@@ -155,6 +185,66 @@ export function useCreateEvent() {
   }, [maxPlayersNumber]);
 
   const canSubmit = isStep1Valid && isStep2Valid && isStep3Valid;
+  const reservedCount = guests.length + selectedFriendIds.length;
+  const remainingCompanionSlots = Math.max(
+    maxPlayersNumber - 1 - reservedCount,
+    0,
+  );
+
+  useEffect(() => {
+    if (!isStep3Valid) return;
+
+    const allowed = Math.max(Math.floor(maxPlayersNumber) - 1, 0);
+    if (reservedCount <= allowed) return;
+
+    setSelectedFriendIds((current) => {
+      const friendAllowance = Math.max(allowed - guests.length, 0);
+      return current.slice(0, friendAllowance);
+    });
+    setGuests((current) => current.slice(0, allowed));
+  }, [guests.length, isStep3Valid, maxPlayersNumber, reservedCount]);
+
+  const addGuest = () => {
+    if (remainingCompanionSlots <= 0) return;
+    setGuests((current) => [
+      ...current,
+      {
+        localId: `${Date.now()}-${current.length}`,
+        firstName: "",
+        lastName: "",
+      },
+    ]);
+  };
+
+  const updateGuest = (
+    localId: string,
+    key: "firstName" | "lastName",
+    value: string,
+  ) => {
+    setGuests((current) =>
+      current.map((guest) =>
+        guest.localId === localId
+          ? { ...guest, [key]: value.slice(0, 50) }
+          : guest,
+      ),
+    );
+  };
+
+  const removeGuest = (localId: string) => {
+    setGuests((current) =>
+      current.filter((guest) => guest.localId !== localId),
+    );
+  };
+
+  const toggleFriend = (userId: string) => {
+    setSelectedFriendIds((current) => {
+      if (current.includes(userId)) {
+        return current.filter((id) => id !== userId);
+      }
+      if (remainingCompanionSlots <= 0) return current;
+      return [...current, userId];
+    });
+  };
 
   const submit = async () => {
     if (
@@ -211,20 +301,44 @@ export function useCreateEvent() {
             error?.message ??
             "Etkinlik taslak olarak kaydedildi. Detaydan tekrar dene.",
         });
+        await assignIfNeeded(data.id);
         router.replace(`/events/${data.id}`);
         return;
       }
 
+      const assigned = await assignIfNeeded(data.id);
+
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       showToast({
-        type: "success",
-        title: "Etkinlik yayınlandı",
-        description: "Oyuncular seni bekliyor.",
+        type: assigned ? "success" : "error",
+        title: assigned
+          ? "Etkinlik yayınlandı"
+          : "Etkinlik yayınlandı, kadro eklenemedi",
+        description: assigned
+          ? "Oyuncular seni bekliyor."
+          : "Yanındaki kişileri etkinlik detayından tekrar ekleyebilirsin.",
       });
 
       router.replace(`/events/${data.id}`);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const assignIfNeeded = async (eventId: string) => {
+    if (guests.length === 0 && selectedFriendIds.length === 0) return true;
+
+    try {
+      await assignEventParticipants(eventId, {
+        guests: guests.map((guest) => ({
+          firstName: guest.firstName.trim() || null,
+          lastName: guest.lastName.trim() || null,
+        })),
+        friendUserIds: selectedFriendIds,
+      });
+      return true;
+    } catch {
+      return false;
     }
   };
 
@@ -239,6 +353,15 @@ export function useCreateEvent() {
     isSubmitting,
     isSportsLoading,
     sportOptions,
+    friends,
+    isFriendsLoading,
+    guests,
+    selectedFriendIds,
+    remainingCompanionSlots,
+    addGuest,
+    updateGuest,
+    removeGuest,
+    toggleFriend,
     submit,
   };
 }

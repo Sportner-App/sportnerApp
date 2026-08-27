@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, ScrollView, Text } from "react-native";
 
 import { SPORT_FILTERS } from "@/constants/events";
+import { sportAccentForSlug, themeColors } from "@/constants/theme";
 
 type SportFilterProps = {
   value: string;
@@ -13,30 +14,41 @@ export function SportFilter({ value, onChange }: SportFilterProps) {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerClassName="gap-2 pr-6"
+      contentContainerClassName="gap-sm pr-xl"
     >
       {SPORT_FILTERS.map((sport) => {
         const isActive = sport.key === value;
+        const sportAccent =
+          sport.key === "all"
+            ? null
+            : sportAccentForSlug(sport.key, themeColors.text.secondary);
 
         return (
           <Pressable
             key={sport.key}
             onPress={() => onChange(sport.key)}
-            className={`flex-row items-center gap-2 rounded-full border px-4 py-2.5 ${
+            className={`flex-row items-center gap-2 rounded-pill border px-lg py-sm ${
               isActive
                 ? "border-brand-primary bg-brand-primary"
-                : "border-white/10 bg-brand-surface/90"
+                : "border-border-default bg-surface-primary"
             }`}
           >
             <FontAwesome6
               name={sport.icon}
               size={13}
-              color={isActive ? "#0f172a" : "#64748b"}
+              color={
+                isActive
+                  ? themeColors.text.onPrimary
+                  : (sportAccent ?? themeColors.text.secondary)
+              }
             />
             <Text
-              className={`font-body text-sm font-semibold ${
-                isActive ? "text-brand-secondary" : "text-brand-neutral"
-              }`}
+              className="font-body text-sm font-semibold"
+              style={{
+                color: isActive
+                  ? themeColors.text.onPrimary
+                  : themeColors.text.secondary,
+              }}
             >
               {sport.label}
             </Text>

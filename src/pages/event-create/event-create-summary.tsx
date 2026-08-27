@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
 
 import { DURATION_OPTIONS } from "@/constants/events";
+import { sportAccentToken, themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { CreateEventFormValues } from "@/types/events";
 import type { SportCategory } from "@/types/sports";
@@ -36,15 +37,17 @@ function compactLocation(address: string) {
 function SummaryRow({
   icon,
   children,
+  accent,
 }: {
   icon: IconName;
   children: string;
+  accent: string;
 }) {
   return (
     <View className="flex-row items-center gap-2.5">
-      <FontAwesome6 name={icon} size={12} color="#ccff00" />
+      <FontAwesome6 name={icon} size={12} color={accent} />
       <Text
-        className="flex-1 font-body text-sm text-brand-neutral"
+        className="flex-1 font-body text-sm text-text-secondary"
         numberOfLines={1}
       >
         {children}
@@ -58,6 +61,9 @@ export function EventCreateSummary({
   sportOptions,
 }: EventCreateSummaryProps) {
   const sport = sportOptions.find((option) => option.key === values.sportSlug);
+  const sportToken = sportAccentToken(values.sportSlug);
+  const accent = sportToken?.accent ?? themeColors.brand.primary;
+  const soft = sportToken?.soft ?? themeColors.surface.secondary;
   const title = values.title.trim();
   const location = compactLocation(values.addressText);
   const duration =
@@ -73,15 +79,23 @@ export function EventCreateSummary({
 
   return (
     <View>
-      <Text className="mb-2 font-body text-sm text-brand-neutral">
+      <Text className="mb-2 font-body-bold text-[13px] text-text-secondary">
         Etkinlik Özeti
       </Text>
 
-      <View className="rounded-2xl border border-white/10 bg-brand-surface/90 px-4 py-3.5">
+      <View className="rounded-[24px] border border-border-default bg-surface-primary px-4 py-4">
         {sport ? (
           <View className="flex-row items-center gap-2.5">
-            <FontAwesome6 name={sport.icon} size={14} color="#ccff00" />
-            <Text className="font-body text-sm text-white" numberOfLines={1}>
+            <View
+              className="h-9 w-9 items-center justify-center rounded-full"
+              style={{ backgroundColor: soft }}
+            >
+              <FontAwesome6 name={sport.icon} size={14} color={accent} />
+            </View>
+            <Text
+              className="font-body-bold text-sm text-text-primary"
+              numberOfLines={1}
+            >
               {sport.label}
             </Text>
           </View>
@@ -89,7 +103,7 @@ export function EventCreateSummary({
 
         {title ? (
           <Text
-            className={`font-display text-lg text-white ${sport ? "mt-1" : ""}`}
+            className={`font-display text-lg text-text-primary ${sport ? "mt-2" : ""}`}
             numberOfLines={1}
           >
             {title}
@@ -99,13 +113,19 @@ export function EventCreateSummary({
         {location || schedule || playersLabel ? (
           <View className={`gap-2 ${sport || title ? "mt-3" : ""}`}>
             {location ? (
-              <SummaryRow icon="location-dot">{location}</SummaryRow>
+              <SummaryRow icon="location-dot" accent={accent}>
+                {location}
+              </SummaryRow>
             ) : null}
             {schedule ? (
-              <SummaryRow icon="calendar-days">{schedule}</SummaryRow>
+              <SummaryRow icon="calendar-days" accent={accent}>
+                {schedule}
+              </SummaryRow>
             ) : null}
             {playersLabel ? (
-              <SummaryRow icon="users">{playersLabel}</SummaryRow>
+              <SummaryRow icon="users" accent={accent}>
+                {playersLabel}
+              </SummaryRow>
             ) : null}
           </View>
         ) : null}

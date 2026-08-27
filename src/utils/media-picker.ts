@@ -1,3 +1,4 @@
+import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 
 export type PickedMedia = {
@@ -7,17 +8,6 @@ export type PickedMedia = {
 };
 
 export type MediaPickResult = PickedMedia | "denied" | "cancelled";
-
-function guessImageType(asset: ImagePicker.ImagePickerAsset): string {
-  const mime = asset.mimeType?.toLowerCase();
-  if (mime === "image/jpg" || mime === "image/jpeg") {
-    return "image/jpeg";
-  }
-  if (mime === "image/png" || mime === "image/webp") {
-    return mime;
-  }
-  return "image/jpeg";
-}
 
 function guessVideoType(asset: ImagePicker.ImagePickerAsset): string {
   const mime = asset.mimeType?.toLowerCase();
@@ -32,6 +22,23 @@ function guessVideoType(asset: ImagePicker.ImagePickerAsset): string {
 
 function fileName(asset: ImagePicker.ImagePickerAsset, fallback: string) {
   return asset.fileName?.trim() || fallback;
+}
+
+function stem(name: string) {
+  return name.replace(/\.[^.]+$/, "") || "photo";
+}
+
+async function toJpegUpload(asset: ImagePicker.ImagePickerAsset, fallbackName: string): Promise<PickedMedia> {
+  const converted = await ImageManipulator.manipulateAsync(asset.uri, [], {
+    compress: 0.85,
+    format: ImageManipulator.SaveFormat.JPEG,
+  });
+
+  return {
+    uri: converted.uri,
+    name: `${stem(fileName(asset, fallbackName))}.jpg`,
+    type: "image/jpeg",
+  };
 }
 
 export async function pickProfileImage(): Promise<MediaPickResult> {
@@ -51,12 +58,7 @@ export async function pickProfileImage(): Promise<MediaPickResult> {
     return "cancelled";
   }
 
-  const asset = result.assets[0];
-  return {
-    uri: asset.uri,
-    name: fileName(asset, "avatar.jpg"),
-    type: guessImageType(asset),
-  };
+  return toJpegUpload(result.assets[0], "avatar.jpg");
 }
 
 export async function pickPostImages(): Promise<PickedMedia[] | "denied" | "cancelled"> {
@@ -76,11 +78,9 @@ export async function pickPostImages(): Promise<PickedMedia[] | "denied" | "canc
     return "cancelled";
   }
 
-  return result.assets.map((asset, index) => ({
-    uri: asset.uri,
-    name: fileName(asset, `post-${index + 1}.jpg`),
-    type: guessImageType(asset),
-  }));
+  return Promise.all(
+    result.assets.map((asset, index) => toJpegUpload(asset, `post-${index + 1}.jpg`)),
+  );
 }
 
 export async function pickIntroVideo(): Promise<MediaPickResult> {

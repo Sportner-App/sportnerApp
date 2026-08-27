@@ -2,6 +2,8 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
+import { colorPalette } from "@/constants/colors";
+import { themeColors } from "@/constants/theme";
 import type { ScreenHeaderProps } from "@/types/components";
 
 import { BrandMark } from "./brand-mark";
@@ -17,8 +19,10 @@ export function ScreenHeader({
   onBack,
   left,
   right,
+  tone = "dark",
 }: ScreenHeaderProps) {
   const router = useRouter();
+  const isLight = tone === "light";
 
   const handleBack = () => {
     if (onBack) {
@@ -35,12 +39,20 @@ export function ScreenHeader({
       <Pressable
         hitSlop={8}
         onPress={handleBack}
-        className="h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-brand-surface/90 active:opacity-80"
+        className={`h-10 w-10 items-center justify-center rounded-full border active:opacity-80 ${
+          isLight
+            ? "border-border-default bg-surface-primary"
+            : "border-white/10 bg-brand-surface/90"
+        }`}
       >
-        <FontAwesome6 name="arrow-left" size={14} color="#f8fafc" />
+        <FontAwesome6
+          name="arrow-left"
+          size={14}
+          color={isLight ? themeColors.text.primary : colorPalette.white}
+        />
       </Pressable>
     ) : brand ? (
-      <BrandMark />
+      <BrandMark tone={tone} />
     ) : (
       <HeaderSpacer />
     ));
@@ -51,7 +63,11 @@ export function ScreenHeader({
         {leftSlot}
 
         {!brand && title ? (
-          <Text className="font-mono text-xs tracking-[4px] text-brand-neutral">
+          <Text
+            className={`font-mono text-xs tracking-[4px] ${
+              isLight ? "text-text-secondary" : "text-brand-neutral"
+            }`}
+          >
             {title}
           </Text>
         ) : null}

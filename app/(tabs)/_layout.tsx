@@ -2,6 +2,7 @@ import { Redirect, Tabs } from "expo-router";
 
 import { GlassTabBar } from "@/components";
 import { AUTH_BYPASS } from "@/constants/env";
+import { themeColors } from "@/constants/theme";
 import { useAuth, useFirstLaunch } from "@/contexts";
 import { getStartupDestination, STARTUP_HREF } from "@/utils/startup";
 
@@ -34,10 +35,16 @@ export default function TabsLayout() {
       tabBar={(props) => <GlassTabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        sceneStyle: { backgroundColor: "#0f172a" },
+        sceneStyle: { backgroundColor: "#06111a" },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: "Etkinlikler" }} />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Etkinlikler",
+          sceneStyle: { backgroundColor: themeColors.background.primary },
+        }}
+      />
       <Tabs.Screen name="discover" options={{ title: "Keşfet" }} />
       <Tabs.Screen name="activity" options={{ title: "Etkinliklerim" }} />
       <Tabs.Screen name="profile" options={{ title: "Profil" }} />

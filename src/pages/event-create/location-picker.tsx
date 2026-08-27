@@ -17,12 +17,10 @@ import Animated, { FadeIn, FadeInDown, FadeOut } from "react-native-reanimated";
 
 import { MapPin } from "@/components";
 import { DARK_MAP_STYLE, MAP_INITIAL_REGION } from "@/constants/map";
+import { themeColors } from "@/constants/theme";
 import { useLocationSearch } from "@/hooks/use-location-search";
 import { isGooglePlacesEnabled } from "@/services/location-service";
-import type {
-  LocationSuggestion,
-  SelectedLocation,
-} from "@/types/location";
+import type { LocationSuggestion, SelectedLocation } from "@/types/location";
 
 type LocationPickerProps = {
   addressText: string;
@@ -99,24 +97,33 @@ export function LocationPicker({
       entering={FadeInDown.duration(420).delay(140)}
       className="z-10 gap-2"
     >
-      <Text className="font-body text-sm text-brand-neutral">Konum</Text>
+      <Text className="font-body-bold text-[13px] text-text-secondary">
+        Konum
+      </Text>
 
-      <View className="overflow-hidden rounded-[28px] border border-white/10 bg-brand-surface/90">
+      <View className="overflow-hidden rounded-[28px] border border-border-default bg-surface-primary">
         {/* Arama */}
-        <View className="z-20 border-b border-white/10 px-3 py-3">
-          <View className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-brand-secondary/80 px-3.5 py-3">
-            <FontAwesome6 name="magnifying-glass" size={14} color="#ccff00" />
+        <View className="z-20 border-b border-border-default px-3 py-3">
+          <View className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-secondary px-3.5 py-3">
+            <FontAwesome6
+              name="magnifying-glass"
+              size={14}
+              color={themeColors.brand.primary}
+            />
             <TextInput
               value={query}
               onChangeText={setQuery}
               placeholder="Konum ara veya haritadan seç"
-              placeholderTextColor="#64748b"
-              className="flex-1 font-body text-base text-white"
+              placeholderTextColor={themeColors.text.tertiary}
+              className="flex-1 font-body text-base text-text-primary"
               autoCorrect={false}
               returnKeyType="search"
             />
             {isSearching || isResolving ? (
-              <ActivityIndicator size="small" color="#ccff00" />
+              <ActivityIndicator
+                size="small"
+                color={themeColors.brand.primary}
+              />
             ) : query.length > 0 ? (
               <Pressable
                 hitSlop={8}
@@ -125,7 +132,11 @@ export function LocationPicker({
                   clearSuggestions();
                 }}
               >
-                <FontAwesome6 name="xmark" size={14} color="#64748b" />
+                <FontAwesome6
+                  name="xmark"
+                  size={14}
+                  color={themeColors.text.tertiary}
+                />
               </Pressable>
             ) : null}
           </View>
@@ -134,7 +145,7 @@ export function LocationPicker({
             <Animated.View
               entering={FadeIn.duration(160)}
               exiting={FadeOut.duration(120)}
-              className="mt-2 overflow-hidden rounded-2xl border border-white/10 bg-brand-raised"
+              className="mt-2 overflow-hidden rounded-2xl border border-border-default bg-surface-secondary"
             >
               {suggestions.map((item, index) => (
                 <Pressable
@@ -142,7 +153,7 @@ export function LocationPicker({
                   onPress={() => handleSuggestionPress(item)}
                   className={`flex-row items-start gap-3 px-3.5 py-3 active:bg-white/5 ${
                     index < suggestions.length - 1
-                      ? "border-b border-white/5"
+                      ? "border-b border-border-default"
                       : ""
                   }`}
                 >
@@ -150,18 +161,18 @@ export function LocationPicker({
                     <FontAwesome6
                       name="location-dot"
                       size={12}
-                      color="#ccff00"
+                      color={themeColors.brand.primary}
                     />
                   </View>
                   <View className="flex-1">
                     <Text
-                      className="font-body text-sm font-semibold text-white"
+                      className="font-body text-sm font-semibold text-text-primary"
                       numberOfLines={1}
                     >
                       {item.title}
                     </Text>
                     <Text
-                      className="mt-0.5 font-body text-xs text-brand-neutral"
+                      className="mt-0.5 font-body text-xs text-text-secondary"
                       numberOfLines={2}
                     >
                       {item.subtitle}
@@ -205,14 +216,14 @@ export function LocationPicker({
 
           {/* Alt bilgi şeridi */}
           <View className="absolute bottom-3 left-3 right-3">
-            <View className="flex-row items-center gap-2 rounded-2xl border border-white/10 bg-brand-secondary/90 px-3 py-2.5">
+            <View className="flex-row items-center gap-2 rounded-2xl border border-white/15 bg-background-primary/90 px-3 py-2.5">
               <FontAwesome6
                 name={hasSelection ? "check" : "hand-pointer"}
                 size={12}
-                color="#ccff00"
+                color={themeColors.brand.primary}
               />
               <Text
-                className="flex-1 font-body text-xs text-brand-neutral"
+                className="flex-1 font-body text-xs text-text-secondary"
                 numberOfLines={2}
               >
                 {hasSelection

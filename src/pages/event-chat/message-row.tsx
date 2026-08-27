@@ -1,7 +1,7 @@
-import { Image, Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
+import { Avatar } from "@/components";
 import type { ApiMessage } from "@/types/messaging";
-import { formatPersonName } from "@/utils/events";
 
 type MessageRowProps = {
   message: ApiMessage;
@@ -23,56 +23,26 @@ function formatMessageTime(iso: string) {
   });
 }
 
-function SenderAvatar({
-  name,
-  uri,
-  onPress,
-}: {
-  name: string;
-  uri: string | null;
-  onPress?: () => void;
-}) {
-  const initial = name.trim()[0]?.toUpperCase() || "?";
-  const body = uri ? (
-    <View className="h-9 w-9 overflow-hidden rounded-full">
-      <Image source={{ uri }} className="h-9 w-9" />
-    </View>
-  ) : (
-    <View className="h-9 w-9 items-center justify-center rounded-full bg-brand-primary/15">
-      <Text className="font-body text-xs font-semibold text-brand-primary">
-        {initial}
-      </Text>
-    </View>
-  );
-
-  if (!onPress) {
-    return body;
-  }
-
-  return <Pressable onPress={onPress}>{body}</Pressable>;
-}
-
 export function MessageRow({
   message,
   mine,
   showSender,
   onOpenSender,
 }: MessageRowProps) {
-  const senderName = formatPersonName({
-    firstName: message.senderFirstName,
-    lastName: message.senderLastName,
-    username: message.senderUsername,
-  });
-  const name = mine ? "Sen" : senderName;
+  const senderName =
+    message.senderUsername || message.senderFirstName || "Sporcu";
+  const name = mine ? "Sen" : `@${message.senderUsername || "sporcu"}`;
 
   const body = message.isRedacted
     ? "Mesaj silindi"
     : message.content || (message.mediaUrl ? "Medya" : "");
 
   const avatar = showSender ? (
-    <SenderAvatar
+    <Avatar
       name={senderName}
       uri={message.senderProfileImageUrl}
+      size={36}
+      borderWidth={0}
       onPress={
         mine || !onOpenSender
           ? undefined

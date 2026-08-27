@@ -1,5 +1,11 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -7,16 +13,14 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { BottomSheet, Button } from "@/components";
+import { Avatar, BottomSheet, Button } from "@/components";
+import { themeColors } from "@/constants/theme";
 import {
   PARTICIPANT_STATUS,
   type EventDetail,
   type EventParticipant,
 } from "@/types/events";
-import {
-  errorNotification,
-  successNotification,
-} from "@/utils/haptics";
+import { errorNotification, successNotification } from "@/utils/haptics";
 
 type PendingRequestsSheetProps = {
   visible: boolean;
@@ -27,16 +31,6 @@ type PendingRequestsSheetProps = {
   onReject: (userId: string) => Promise<boolean>;
   onOpenUser: (userId: string) => void;
 };
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-}
 
 export function PendingRequestsSheet({
   visible,
@@ -57,7 +51,10 @@ export function PendingRequestsSheet({
   }, [visible]);
 
   const pending = event.participants.filter(
-    (item) => item.status === PARTICIPANT_STATUS.pending,
+    (item) =>
+      !item.isGuest &&
+      item.userId != null &&
+      item.status === PARTICIPANT_STATUS.pending,
   );
   const pendingIds = new Set(pending.map((item) => item.id));
   const exitingGone = exiting.filter((item) => !pendingIds.has(item.id));
@@ -68,12 +65,12 @@ export function PendingRequestsSheet({
   };
 
   const approve = async (person: EventParticipant) => {
-    if (busyUserId) {
+    if (busyUserId || !person.userId) {
       return;
     }
     setBusyKind("approve");
     try {
-      const ok = await onApprove(person.id);
+      const ok = await onApprove(person.userId);
       if (!ok) {
         errorNotification();
         return;
@@ -86,12 +83,12 @@ export function PendingRequestsSheet({
   };
 
   const reject = async (person: EventParticipant) => {
-    if (busyUserId) {
+    if (busyUserId || !person.userId) {
       return;
     }
     setBusyKind("reject");
     try {
-      const ok = await onReject(person.id);
+      const ok = await onReject(person.userId);
       if (!ok) {
         errorNotification();
         return;
@@ -104,6 +101,7 @@ export function PendingRequestsSheet({
 
   return (
     <BottomSheet
+      tone="light"
       visible={visible}
       onClose={onClose}
       title="Katılım İstekleri"
@@ -123,8 +121,8 @@ export function PendingRequestsSheet({
               const row = (
                 <RequestRow
                   person={person}
-                  busy={busyUserId === person.id}
-                  busyKind={busyUserId === person.id ? busyKind : null}
+                  busy={busyUserId === person.userId}
+                  busyKind={busyUserId === person.userId ? busyKind : null}
                   onOpenUser={onOpenUser}
                   onApprove={() => approve(person)}
                   onReject={() => reject(person)}
@@ -190,49 +188,47 @@ function RequestRow({
   onReject: () => void;
 }) {
   return (
-    <View className="gap-3 rounded-2xl border border-white/10 bg-brand-secondary/70 p-3.5">
+    <View className="gap-3 rounded-2xl border border-border-default bg-surface-primary p-3.5">
       <Pressable
-        onPress={() => onOpenUser(person.id)}
+        onPress={() => person.userId && onOpenUser(person.userId)}
         className="flex-row items-center gap-3 active:opacity-80"
       >
-        <View className="h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-brand-primary/15">
-          {person.avatarUrl ? (
-            <Image source={{ uri: person.avatarUrl }} className="h-full w-full" />
-          ) : (
-            <Text className="font-body text-xs font-semibold text-brand-primary">
-              {getInitials(person.name)}
-            </Text>
-          )}
-        </View>
+        <Avatar
+          uri={person.avatarUrl}
+          name={person.name}
+          size={44}
+          borderWidth={0}
+        />
         <View className="flex-1">
-          <Text className="font-body text-sm font-semibold text-white">
-            {person.name}
+          <Text className="font-body text-sm font-semibold text-text-primary">
+            @{person.username || "sporcu"}
           </Text>
-          {person.username ? (
-            <Text className="font-body text-xs text-brand-neutral">
-              @{person.username}
-            </Text>
-          ) : null}
         </View>
       </Pressable>
 
       <View className="flex-row gap-2">
         <View className="flex-1">
-          <Button
-            label="Reddet"
-            variant="secondary"
-            size="sm"
-            pressScale={0.96}
-            haptic="light"
-            isLoading={busy && busyKind === "reject"}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Katılım isteğini reddet"
             disabled={busy}
             onPress={onReject}
-          />
+            className="min-h-[44px] items-center justify-center rounded-2xl border border-border-strong bg-surface-secondary px-4 active:opacity-75"
+          >
+            {busy && busyKind === "reject" ? (
+              <ActivityIndicator color={themeColors.text.secondary} />
+            ) : (
+              <Text className="font-body-bold text-sm text-text-primary">
+                Reddet
+              </Text>
+            )}
+          </Pressable>
         </View>
         <View className="flex-1">
           <Button
             label="Onayla"
             size="sm"
+            glow="subtle"
             pressScale={0.96}
             haptic="light"
             isLoading={busy && busyKind === "approve"}
@@ -259,10 +255,10 @@ function EmptyState() {
 
   return (
     <Animated.View style={style} className="items-center gap-2 px-4 py-10">
-      <Text className="text-center font-body text-sm font-semibold text-white">
+      <Text className="text-center font-body text-sm font-semibold text-text-primary">
         ✓ Tüm istekleri değerlendirdin
       </Text>
-      <Text className="text-center font-body text-xs text-brand-neutral">
+      <Text className="text-center font-body text-xs text-text-secondary">
         Şimdilik bekleyen başka katılım isteği yok.
       </Text>
     </Animated.View>

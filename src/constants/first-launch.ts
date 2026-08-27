@@ -2,9 +2,10 @@ export const HAS_SEEN_ONBOARDING_KEY = "hasSeenOnboarding";
 
 export const FIRST_LAUNCH_COPY = {
   welcome: {
-    title: "Sahaya\nçık.",
-    subtitle: "Aynı sporu sevenlerle buluş, maç kur, sahaya in.",
-    continue: "Başlayalım",
+    title: "HAREKETE\nGEÇ!",
+    subtitle:
+      "Spor yap, yeni arkadaşlıklar kur, birlikte daha aktif bir yaşam sür.",
+    continue: "Devam Et",
     loginHint: "Zaten hesabın var mı?",
     login: "Giriş Yap",
   },

@@ -126,7 +126,7 @@ export function CreatePostScreen() {
                     current.filter((item) => item.uri !== photo.uri),
                   )
                 }
-                className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-brand-secondary"
+                className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-background-primary"
               >
                 <FontAwesome6 name="xmark" size={9} color="#f8fafc" />
               </Pressable>

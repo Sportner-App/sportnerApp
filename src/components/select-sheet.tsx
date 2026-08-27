@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import { BottomSheet } from "@/components/bottom-sheet";
+import { sportAccentToken, themeColors } from "@/constants/theme";
 import type { SelectOption, SelectSheetProps } from "@/types/components";
 
 const GRID_COLUMNS = 3;
@@ -81,16 +82,20 @@ export function SelectSheet<T extends string>({
       subtitle={subtitle}
     >
       {searchable ? (
-        <View className="mb-3 flex-row items-center gap-3 rounded-2xl border border-white/10 bg-brand-secondary/80 px-4 py-3">
-          <FontAwesome6 name="magnifying-glass" size={14} color="#64748b" />
+        <View className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-secondary px-4 py-3">
+          <FontAwesome6
+            name="magnifying-glass"
+            size={14}
+            color={themeColors.text.tertiary}
+          />
           <TextInput
             value={query}
             onChangeText={setQuery}
             placeholder={searchPlaceholder}
-            placeholderTextColor="#64748b"
+            placeholderTextColor={themeColors.text.tertiary}
             autoCorrect={false}
             autoCapitalize="none"
-            className="flex-1 font-body text-base text-white"
+            className="flex-1 font-body text-base text-text-primary"
           />
           {query.length > 0 ? (
             <Pressable
@@ -98,7 +103,11 @@ export function SelectSheet<T extends string>({
               onPress={() => setQuery("")}
               className="active:opacity-70"
             >
-              <FontAwesome6 name="xmark" size={14} color="#94a3b8" />
+              <FontAwesome6
+                name="xmark"
+                size={14}
+                color={themeColors.text.secondary}
+              />
             </Pressable>
           ) : null}
         </View>
@@ -112,8 +121,12 @@ export function SelectSheet<T extends string>({
       >
         {filtered.length === 0 ? (
           <View className="items-center px-4 py-10">
-            <FontAwesome6 name="magnifying-glass" size={20} color="#64748b" />
-            <Text className="mt-3 text-center font-body text-sm text-brand-neutral">
+            <FontAwesome6
+              name="magnifying-glass"
+              size={20}
+              color={themeColors.text.tertiary}
+            />
+            <Text className="mt-3 text-center font-body text-sm text-text-secondary">
               Sonuca uygun seçenek yok.
             </Text>
           </View>
@@ -161,44 +174,55 @@ function ListRow<T extends string>({
   isActive: boolean;
   onPress: () => void;
 }) {
+  const sport = sportAccentToken(option.key);
+  const accent = sport?.accent ?? themeColors.brand.primary;
+  const soft = sport?.soft ?? themeColors.surface.secondary;
+
   return (
     <Pressable
       onPress={onPress}
       className={`flex-row items-center gap-3 rounded-2xl border px-4 py-3.5 active:opacity-80 ${
         isActive
           ? "border-brand-primary/50 bg-brand-primary/10"
-          : "border-white/10 bg-brand-secondary/70"
+          : "border-border-default bg-surface-primary"
       }`}
     >
       {option.icon ? (
         <View
-          className={`h-10 w-10 items-center justify-center rounded-full ${
-            isActive ? "bg-brand-primary/20" : "bg-brand-primary/15"
-          }`}
+          className="h-10 w-10 items-center justify-center rounded-full border"
+          style={{ backgroundColor: soft, borderColor: `${accent}55` }}
         >
-          <FontAwesome6 name={option.icon} size={16} color="#ccff00" />
+          <FontAwesome6 name={option.icon} size={16} color={accent} />
         </View>
       ) : null}
 
       <View className="flex-1">
         <Text
           className={`font-body text-sm font-semibold ${
-            isActive ? "text-brand-primary" : "text-white"
+            isActive ? "text-brand-primary" : "text-text-primary"
           }`}
         >
           {option.label}
         </Text>
         {option.description ? (
-          <Text className="mt-0.5 font-body text-xs text-brand-neutral">
+          <Text className="mt-0.5 font-body text-xs text-text-secondary">
             {option.description}
           </Text>
         ) : null}
       </View>
 
       {isActive ? (
-        <FontAwesome6 name="check" size={14} color="#ccff00" />
+        <FontAwesome6
+          name="check"
+          size={14}
+          color={themeColors.brand.primary}
+        />
       ) : (
-        <FontAwesome6 name="chevron-right" size={12} color="#64748b" />
+        <FontAwesome6
+          name="chevron-right"
+          size={12}
+          color={themeColors.text.tertiary}
+        />
       )}
     </Pressable>
   );
@@ -215,38 +239,64 @@ function GridTile<T extends string>({
   width: number;
   onPress: () => void;
 }) {
+  const sport = sportAccentToken(option.key);
+  const accent = sport?.accent ?? themeColors.brand.primary;
+  const soft = sport?.soft ?? themeColors.surface.secondary;
+
   return (
     <Pressable
       onPress={onPress}
-      style={{ width }}
-      className={`items-center rounded-2xl border px-2 py-3 active:opacity-85 ${
+      style={[
+        {
+          width,
+          backgroundColor: isActive ? soft : themeColors.surface.primary,
+          borderColor: isActive ? accent : themeColors.border.default,
+        },
         isActive
-          ? "border-brand-primary/55 bg-brand-primary/12"
-          : "border-white/10 bg-brand-secondary/70"
-      }`}
+          ? {
+              shadowColor: accent,
+              shadowOpacity: 0.2,
+              shadowRadius: 12,
+              shadowOffset: { width: 0, height: 4 },
+              elevation: 4,
+            }
+          : undefined,
+      ]}
+      className="relative min-h-[118px] items-center justify-center rounded-[22px] border px-2 py-3 active:opacity-85"
     >
+      {isActive ? (
+        <View
+          className="absolute right-2 top-2 h-5 w-5 items-center justify-center rounded-full"
+          style={{ backgroundColor: accent }}
+        >
+          <FontAwesome6
+            name="check"
+            size={9}
+            color={sport?.onAccent ?? themeColors.text.onPrimary}
+          />
+        </View>
+      ) : null}
       <View
-        className={`mb-2 h-11 w-11 items-center justify-center rounded-full ${
-          isActive ? "bg-brand-primary" : "bg-brand-primary/15"
-        }`}
+        className="mb-2 h-12 w-12 items-center justify-center rounded-full border"
+        style={{
+          backgroundColor: isActive ? accent : soft,
+          borderColor: `${accent}66`,
+        }}
       >
         <FontAwesome6
           name={option.icon ?? "circle"}
-          size={15}
-          color={isActive ? "#0f172a" : "#ccff00"}
+          size={17}
+          color={
+            isActive ? (sport?.onAccent ?? themeColors.text.onPrimary) : accent
+          }
         />
       </View>
       <Text
         numberOfLines={2}
-        className="min-h-[32px] text-center font-body text-[12px] font-semibold leading-4 text-white"
+        className="min-h-[32px] text-center font-body-bold text-[12px] leading-4 text-text-primary"
       >
         {option.label}
       </Text>
-      {isActive ? (
-        <View className="mt-1.5 h-1.5 w-1.5 rounded-full bg-brand-primary" />
-      ) : (
-        <View className="mt-1.5 h-1.5" />
-      )}
     </Pressable>
   );
 }

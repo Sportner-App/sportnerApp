@@ -4,9 +4,11 @@ export type ApiReview = {
   reviewerUserId: string;
   reviewerUsername: string | null;
   reviewerFirstName: string | null;
+  reviewerProfileImageUrl: string | null;
   reviewedUserId: string;
   reviewedUsername: string | null;
   reviewedFirstName: string | null;
+  reviewedProfileImageUrl: string | null;
   rating: number;
   comment: string | null;
   createdAt: string;

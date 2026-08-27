@@ -66,7 +66,7 @@ function SportTile({
         <FontAwesome6
           name={sportIconForSlug(sport.slug)}
           size={15}
-          color={isSelected ? "#0f172a" : "#ccff00"}
+          color={isSelected ? "#06111a" : "#ccff00"}
         />
       </View>
       <Text
@@ -239,7 +239,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
       </View>
 
       <View
-        className="border-t border-white/10 bg-brand-secondary/95 px-5 pt-3"
+        className="border-t border-white/10 bg-background-primary/95 px-5 pt-3"
         style={{ paddingBottom: Math.max(insets.bottom, 12) }}
       >
         <View className="mb-3 flex-row items-center justify-between">
@@ -375,7 +375,7 @@ function SportConfigSheet({ form }: { form: Form }) {
                     className={`rounded-full border px-3.5 py-2 active:opacity-80 ${
                       active
                         ? "border-brand-primary bg-brand-primary"
-                        : "border-white/10 bg-brand-secondary/80"
+                        : "border-white/10 bg-background-primary/80"
                     }`}
                   >
                     <Text
@@ -396,7 +396,7 @@ function SportConfigSheet({ form }: { form: Form }) {
             className={`flex-row items-center gap-3 rounded-2xl border px-4 py-3.5 active:opacity-85 ${
               isPrimary
                 ? "border-brand-primary/45 bg-brand-primary/12"
-                : "border-white/10 bg-brand-secondary/70"
+                : "border-white/10 bg-background-primary/70"
             }`}
           >
             <FontAwesome6

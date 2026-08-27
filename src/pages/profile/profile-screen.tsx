@@ -1,14 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
 
-import {
-  AppScreen,
-  BrandRefreshControl,
-  Button,
-  LinearRefreshBar,
-  ScreenHeader,
-  SportLoader,
-} from "@/components";
+import { Button, SportLoader, TabPage } from "@/components";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 
@@ -58,7 +51,6 @@ export function ProfileScreen() {
       friends: "/friends",
       feed: "/feed",
       badges: "/badges",
-      albums: "/albums",
       notifications: "/notifications",
       "notification-settings": "/profile/notification-settings",
       privacy: "/profile/privacy",
@@ -71,15 +63,7 @@ export function ProfileScreen() {
   };
 
   return (
-    <AppScreen
-      withTabBar
-      header={<ScreenHeader title={PROFILE_COPY.header} />}
-      belowHeader={<LinearRefreshBar visible={isRefreshing} />}
-      contentClassName="gap-5 px-6 pt-3"
-      refreshControl={
-        <BrandRefreshControl refreshing={isRefreshing} onRefresh={refresh} />
-      }
-    >
+    <TabPage refreshing={isRefreshing} onRefresh={refresh}>
       {isLoading ? (
         <View className="items-center py-16">
           <SportLoader size={148} label="Profil yükleniyor" />
@@ -120,6 +104,6 @@ export function ProfileScreen() {
           />
         </>
       )}
-    </AppScreen>
+    </TabPage>
   );
 }

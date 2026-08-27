@@ -10,10 +10,16 @@ import {
   ScreenHeader,
   SegmentedTabs,
   SportLoader,
+  UserIdentity,
 } from "@/components";
 import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
-import { getExploreFeed, getHomeFeed, likePost, unlikePost } from "@/services/social-service";
+import {
+  getExploreFeed,
+  getHomeFeed,
+  likePost,
+  unlikePost,
+} from "@/services/social-service";
 import type { ApiPost } from "@/types/social";
 
 type Tab = "home" | "explore";
@@ -33,8 +39,12 @@ export function FeedScreen() {
       if (mode === "refresh") setIsRefreshing(true);
       try {
         const fetch = nextTab === "home" ? getHomeFeed : getExploreFeed;
-        const page = await fetch(mode === "more" ? cursor ?? undefined : undefined);
-        setPosts((prev) => (mode === "more" ? [...prev, ...page.items] : page.items));
+        const page = await fetch(
+          mode === "more" ? (cursor ?? undefined) : undefined,
+        );
+        setPosts((prev) =>
+          mode === "more" ? [...prev, ...page.items] : page.items,
+        );
         setCursor(page.nextCursor);
       } catch (error) {
         showToast({
@@ -62,7 +72,10 @@ export function FeedScreen() {
           title="AKIŞ"
           showBack
           right={
-            <Pressable onPress={() => router.push("/posts/create")} className="px-1">
+            <Pressable
+              onPress={() => router.push("/posts/create")}
+              className="px-1"
+            >
               <Text className="font-body text-xs text-brand-primary">Yaz</Text>
             </Pressable>
           }
@@ -104,9 +117,13 @@ export function FeedScreen() {
             onPress={() => router.push(`/posts/${post.id}`)}
             className="gap-2 rounded-3xl border border-white/10 bg-brand-surface/90 p-4"
           >
-            <Text className="font-body text-xs text-brand-neutral">
-              {post.firstName || post.username}
-            </Text>
+            <UserIdentity
+              username={post.username}
+              avatarUrl={post.profileImageUrl}
+              fallbackName={post.firstName}
+              avatarSize={38}
+              onPress={() => router.push(`/users/${post.userId}`)}
+            />
             <Text className="font-body text-sm text-white">
               {post.content || "Gönderi"}
             </Text>

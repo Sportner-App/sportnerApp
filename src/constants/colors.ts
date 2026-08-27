@@ -1,55 +1,24 @@
-const palette = {
-  primary: "#ccff00",
-  secondary: "#0f172a",
-  tertiary: "#1e293b",
-  neutral: "#64748b",
-  white: "#f8fafc",
-  black: "#020617",
-  success: "#5eead4",
-  warning: "#fda4af",
-};
+import tokens from "./design-tokens";
+
+/**
+ * Legacy palette used by existing screens and NativeWind `brand-*` classes.
+ * New UI should prefer `themeColors` / `appTheme` from `@/constants/theme`.
+ */
+export const colorPalette = tokens.legacy.palette;
 
 export const colors = {
-  light: {
-    text: palette.white,
-    textMuted: "#cbd5e1",
-    textSoft: "#94a3b8",
-    background: palette.secondary,
-    backgroundCanvas: "#111827",
-    surface: "#152238",
-    surfaceRaised: "#1e2d46",
-    surfaceMuted: palette.tertiary,
-    border: "rgba(204,255,0,0.18)",
-    borderStrong: "rgba(204,255,0,0.42)",
-    tint: palette.primary,
-    tabIconDefault: "#aeb9cf",
-    tabIconSelected: palette.primary,
-    cardAccent: palette.primary,
-    cardHighlight: "#243652",
-    metric: "#d8dcb8",
-    searchBackground: "#1c2c44",
-    destructive: palette.warning,
-  },
-  dark: {
-    text: palette.white,
-    textMuted: "#cbd5e1",
-    textSoft: "#94a3b8",
-    background: palette.secondary,
-    backgroundCanvas: "#111827",
-    surface: "#152238",
-    surfaceRaised: "#1e2d46",
-    surfaceMuted: palette.tertiary,
-    border: "rgba(204,255,0,0.18)",
-    borderStrong: "rgba(204,255,0,0.42)",
-    tint: palette.primary,
-    tabIconDefault: "#aeb9cf",
-    tabIconSelected: palette.primary,
-    cardAccent: palette.primary,
-    cardHighlight: "#243652",
-    metric: "#d8dcb8",
-    searchBackground: "#1c2c44",
-    destructive: palette.warning,
-  },
+  light: { ...tokens.legacy.scheme },
+  dark: { ...tokens.legacy.scheme },
 };
 
-export const colorPalette = palette;
+export {
+  componentTokens,
+  media,
+  palette,
+  radius,
+  shadows,
+  spacing,
+  sportAccents,
+  themeColors,
+  typography,
+} from "./theme";

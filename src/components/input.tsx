@@ -11,12 +11,13 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { colorPalette } from "@/constants/colors";
+import { themeColors } from "@/constants/theme";
 import type { InputProps } from "@/types/components";
 
 const ERROR_COLOR = colorPalette.warning;
 const FOCUS_COLOR = colorPalette.primary;
-const IDLE_COLOR = colorPalette.neutral;
-const IDLE_BORDER = "rgba(148,163,184,0.22)";
+const IDLE_COLOR = themeColors.text.tertiary;
+const IDLE_BORDER = themeColors.border.default;
 const ACCENT_DURATION = 160;
 
 const errorEntering = new Keyframe({
@@ -72,14 +73,14 @@ export function Input({
   return (
     <View className={disabled ? "opacity-50" : undefined}>
       {label && (
-        <Text className="mb-2 font-body text-sm text-brand-neutral">
+        <Text className="mb-2 font-body-bold text-[13px] text-text-secondary">
           {label}
         </Text>
       )}
 
       <Animated.View
         style={containerStyle}
-        className="min-h-[58px] flex-row items-center gap-3 rounded-2xl border bg-brand-secondary/70 px-4"
+        className="min-h-[58px] flex-row items-center gap-3 rounded-2xl border bg-surface-primary px-4"
       >
         {icon && <FontAwesome6 name={icon} size={16} color={iconColor} />}
 
@@ -88,7 +89,7 @@ export function Input({
           editable={!disabled && inputProps.editable !== false}
           secureTextEntry={isPassword && isHidden}
           placeholderTextColor={IDLE_COLOR}
-          className="flex-1 font-body text-base text-white"
+          className="flex-1 font-body text-base text-text-primary"
           onFocus={(event) => {
             setIsFocused(true);
             focusProgress.value = withTiming(1, { duration: ACCENT_DURATION });
@@ -126,7 +127,7 @@ export function Input({
               {error}
             </Animated.Text>
           ) : (
-            <Text className="mt-2 font-body text-sm text-brand-neutral">
+            <Text className="mt-2 font-body text-sm text-text-secondary">
               {helperText}
             </Text>
           )}

@@ -12,9 +12,11 @@ export type ApiFriendship = {
   requesterUserId: string;
   requesterUsername: string | null;
   requesterFirstName: string | null;
+  requesterProfileImageUrl: string | null;
   addresseeUserId: string;
   addresseeUsername: string | null;
   addresseeFirstName: string | null;
+  addresseeProfileImageUrl: string | null;
   status: number;
   createdAt: string;
 };
@@ -76,6 +78,7 @@ export type ApiComment = {
   userId: string;
   username: string | null;
   firstName: string | null;
+  profileImageUrl: string | null;
   parentCommentId: string | null;
   content: string;
   likeCount: number;

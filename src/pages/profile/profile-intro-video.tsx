@@ -1,6 +1,8 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useIsFocused } from "@react-navigation/native";
+import { useEvent } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { resolveMediaUrl } from "@/utils/media-url";
@@ -10,26 +12,24 @@ type ProfileIntroVideoProps = {
 };
 
 export function ProfileIntroVideo({ uri }: ProfileIntroVideoProps) {
+  const isFocused = useIsFocused();
   const source = resolveMediaUrl(uri);
   const player = useVideoPlayer(source, (instance) => {
     instance.loop = true;
   });
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { isPlaying } = useEvent(player, "playingChange", {
+    isPlaying: player.playing,
+  });
 
   useEffect(() => {
-    const subscription = player.addListener("playingChange", (event) => {
-      setIsPlaying(event.isPlaying);
-    });
-
-    return () => {
-      subscription.remove();
+    if (!isFocused && player.playing) {
       player.pause();
-    };
-  }, [player]);
+    }
+  }, [isFocused, player]);
 
   return (
-    <View className="gap-2">
-      <Text className="font-body text-xs font-semibold tracking-wide text-brand-neutral">
+    <View className="gap-2.5">
+      <Text className="font-body text-[10px] font-semibold tracking-[1.5px] text-text-tertiary">
         TANITIM VİDEOSU
       </Text>
       <Pressable
@@ -44,7 +44,7 @@ export function ProfileIntroVideo({ uri }: ProfileIntroVideoProps) {
           }
           void player.play();
         }}
-        className="overflow-hidden rounded-3xl border border-white/10 bg-brand-raised"
+        className="overflow-hidden rounded-[24px] border border-border-default bg-surface-primary"
       >
         <VideoView
           player={player}
@@ -58,7 +58,7 @@ export function ProfileIntroVideo({ uri }: ProfileIntroVideoProps) {
             className="absolute inset-0 items-center justify-center bg-black/30"
           >
             <View className="h-14 w-14 items-center justify-center rounded-full bg-brand-primary">
-              <FontAwesome6 name="play" size={18} color="#0f172a" />
+              <FontAwesome6 name="play" size={18} color="#06111a" />
             </View>
           </View>
         )}

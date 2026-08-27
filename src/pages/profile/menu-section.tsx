@@ -23,53 +23,56 @@ export function MenuSection({
   return (
     <Animated.View
       entering={FadeInDown.duration(420).delay(140)}
-      className="gap-6"
+      className="gap-7"
     >
-      <View className="gap-2.5">
-        <Text className="font-display text-base text-white">
+      <View className="gap-3">
+        <Text className="font-display text-lg text-text-primary">
           {PROFILE_COPY.socialTitle}
         </Text>
-        <View className="gap-2">
-          {[0, 2].map((start) => (
-            <View key={start} className="flex-row gap-2">
-              {PROFILE_SOCIAL_ACTIONS.slice(start, start + 2).map((item) => (
-                <Pressable
-                  key={item.key}
-                  onPress={() => onItemPress(item.key)}
-                  className="flex-1 flex-row items-center gap-3 rounded-2xl border border-white/10 bg-brand-surface px-3.5 py-3.5 active:opacity-80"
-                >
-                  <View className="h-9 w-9 items-center justify-center rounded-full bg-brand-primary/15">
-                    <FontAwesome6 name={item.icon} size={13} color="#ccff00" />
-                  </View>
-                  <Text className="font-body text-sm font-semibold text-white">
-                    {item.label}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
+        <View className="flex-row rounded-[22px] border border-border-default bg-surface-primary px-1 py-3">
+          {PROFILE_SOCIAL_ACTIONS.map((item) => (
+            <Pressable
+              key={item.key}
+              onPress={() => onItemPress(item.key)}
+              className="flex-1 items-center gap-2 py-1 active:opacity-65"
+            >
+              <View className="h-9 w-9 items-center justify-center rounded-full bg-background-secondary">
+                <FontAwesome6 name={item.icon} size={12} color="#ccff00" />
+              </View>
+              <Text
+                numberOfLines={1}
+                className="font-body text-[9px] font-semibold text-text-secondary"
+              >
+                {item.label}
+              </Text>
+            </Pressable>
           ))}
         </View>
       </View>
 
       {PROFILE_MENU_GROUPS.map((group) => (
-        <View key={group.key} className="gap-2.5">
-          <Text className="font-display text-base text-white">{group.title}</Text>
-          <View className="overflow-hidden rounded-2xl border border-white/10 bg-brand-surface">
+        <View key={group.key} className="gap-3">
+          <Text className="font-display text-lg text-text-primary">
+            {group.title}
+          </Text>
+          <View className="overflow-hidden rounded-[22px] border border-border-default bg-surface-primary">
             {group.items.map((item, index) => (
               <Pressable
                 key={item.key}
                 onPress={() => onItemPress(item.key)}
-                className={`flex-row items-center gap-3 px-4 py-3.5 active:bg-white/5 ${
-                  index < group.items.length - 1 ? "border-b border-white/5" : ""
+                className={`flex-row items-center gap-3 px-4 py-3 active:bg-surface-secondary ${
+                  index < group.items.length - 1
+                    ? "border-b border-border-default"
+                    : ""
                 }`}
               >
-                <View className="h-8 w-8 items-center justify-center rounded-full bg-brand-primary/12">
-                  <FontAwesome6 name={item.icon} size={13} color="#ccff00" />
+                <View className="h-8 w-8 items-center justify-center rounded-full bg-background-secondary">
+                  <FontAwesome6 name={item.icon} size={12} color="#ccff00" />
                 </View>
-                <Text className="flex-1 font-body text-sm font-semibold text-white">
+                <Text className="flex-1 font-body text-sm font-semibold text-text-primary">
                   {item.label}
                 </Text>
-                <FontAwesome6 name="chevron-right" size={11} color="#64748b" />
+                <FontAwesome6 name="chevron-right" size={10} color="#6f7d86" />
               </Pressable>
             ))}
           </View>

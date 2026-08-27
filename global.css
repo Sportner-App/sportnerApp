@@ -3,12 +3,35 @@
 @tailwind utilities;
 
 :root {
+  /* Dark application chrome */
   --color-primary: #ccff00;
-  --color-secondary: #0f172a;
+  --color-secondary: #06111a;
   --color-tertiary: #1e293b;
   --color-neutral: #64748b;
   --color-surface: #152238;
   --color-surface-raised: #1e2d46;
   --color-text: #f8fafc;
   --color-text-muted: #cbd5e1;
+
+  /* Current dark-premium semantic tokens */
+  --color-background-primary: #06111a;
+  --color-background-secondary: #091722;
+  --color-surface-primary: #0d1b27;
+  --color-surface-secondary: #152635;
+  --color-surface-dark: #1c1917;
+  --color-text-primary: #f4f6f2;
+  --color-text-secondary: #a8b2b8;
+  --color-text-tertiary: #6f7d86;
+  --color-text-inverse: #f4f6f2;
+  --color-border-default: #203443;
+  --color-border-strong: #345064;
+  --color-overlay-dark: rgba(2, 8, 13, 0.58);
+  --color-success: #5eead4;
+  --color-warning: #fda4af;
+  --color-destructive: #ef4444;
+  --color-sport-basketball: #ff6b1a;
+  --color-sport-football: #22c55e;
+  --color-sport-running: #2f7cf6;
+  --color-sport-volleyball: #7c5cfa;
+  --color-sport-tennis: #d4a017;
 }

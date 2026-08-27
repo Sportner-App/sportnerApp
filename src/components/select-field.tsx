@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { SelectSheet } from "@/components/select-sheet";
+import { themeColors } from "@/constants/theme";
 import type { SelectFieldProps } from "@/types/components";
 
 export function SelectField<T extends string>({
@@ -25,24 +26,36 @@ export function SelectField<T extends string>({
 
   return (
     <View className="gap-2">
-      <Text className="font-body text-sm text-brand-neutral">{label}</Text>
+      <Text className="font-body-bold text-[13px] text-text-secondary">
+        {label}
+      </Text>
 
       <Pressable
         disabled={disabled}
         onPress={() => setOpen(true)}
-        className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-brand-surface/90 px-4 py-3.5 active:opacity-80 disabled:opacity-50"
+        className="min-h-[58px] flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-3.5 active:bg-surface-secondary disabled:opacity-50"
       >
         {displayIcon ? (
-          <FontAwesome6 name={displayIcon} size={15} color="#ccff00" />
+          <View className="h-8 w-8 items-center justify-center rounded-full bg-brand-primary/10">
+            <FontAwesome6
+              name={displayIcon}
+              size={14}
+              color={themeColors.brand.primary}
+            />
+          </View>
         ) : null}
         <Text
           className={`flex-1 font-body text-base ${
-            selected ? "text-white" : "text-brand-neutral"
+            selected ? "text-text-primary" : "text-text-secondary"
           }`}
         >
           {selected?.label ?? placeholder}
         </Text>
-        <FontAwesome6 name="chevron-down" size={12} color="#64748b" />
+        <FontAwesome6
+          name="chevron-down"
+          size={11}
+          color={themeColors.text.tertiary}
+        />
       </Pressable>
 
       <SelectSheet

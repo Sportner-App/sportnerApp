@@ -51,7 +51,10 @@ export type ApiEventDetail = {
 
 /** API: ParticipantResponse */
 export type ApiParticipant = {
-  userId: string;
+  id: string;
+  userId: string | null;
+  kind: 0 | 1;
+  isGuest: boolean;
   username: string | null;
   firstName: string | null;
   lastName: string | null;
@@ -68,6 +71,7 @@ export type ApiWaitlistEntry = {
   username: string | null;
   firstName: string | null;
   lastName: string | null;
+  profileImageUrl: string | null;
   position: number;
   createdAt: string;
 };
@@ -125,6 +129,9 @@ export type EventSummary = {
 
 export type EventParticipant = {
   id: string;
+  userId: string | null;
+  kind: 0 | 1;
+  isGuest: boolean;
   name: string;
   username: string | null;
   avatarUrl: string | null;
@@ -132,10 +139,21 @@ export type EventParticipant = {
   canReview: boolean;
 };
 
+export type EventGuestAssignment = {
+  firstName: string | null;
+  lastName: string | null;
+};
+
+export type EventParticipantAssignment = {
+  guests?: EventGuestAssignment[];
+  friendUserIds?: string[];
+};
+
 export type EventWaitlistEntry = {
   userId: string;
   name: string;
   username: string | null;
+  avatarUrl: string | null;
   position: number;
 };
 

@@ -2,7 +2,13 @@ import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
-import { AppScreen, Button, ScreenHeader, SportLoader } from "@/components";
+import {
+  Avatar,
+  AppScreen,
+  Button,
+  ScreenHeader,
+  SportLoader,
+} from "@/components";
 import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
@@ -114,20 +120,27 @@ export function EventReviewsScreen() {
                 Kimi değerlendirmek istersin?
               </Text>
               <Text className="font-body text-xs text-brand-neutral">
-                1–5 puan ve isteğe bağlı yorum. Karşı tarafın profilinde görünür.
+                1–5 puan ve isteğe bağlı yorum. Karşı tarafın profilinde
+                görünür.
               </Text>
               {peers.map((peer) => (
                 <Pressable
                   key={peer.userId}
                   onPress={() => setSelectedUserId(peer.userId)}
-                  className={`rounded-2xl border px-3 py-2.5 ${
+                  className={`flex-row items-center gap-3 rounded-2xl border px-3 py-2.5 ${
                     selectedUserId === peer.userId
                       ? "border-brand-primary bg-brand-primary/10"
                       : "border-white/10"
                   }`}
                 >
+                  <Avatar
+                    uri={peer.profileImageUrl}
+                    name={peer.username || peer.firstName}
+                    size={36}
+                    borderWidth={0}
+                  />
                   <Text className="font-body text-sm text-white">
-                    {peer.firstName || peer.username}
+                    @{peer.username || "sporcu"}
                   </Text>
                 </Pressable>
               ))}
@@ -142,9 +155,7 @@ export function EventReviewsScreen() {
                   >
                     <Text
                       className={`font-mono ${
-                        rating >= value
-                          ? "text-brand-secondary"
-                          : "text-white"
+                        rating >= value ? "text-brand-secondary" : "text-white"
                       }`}
                     >
                       {value}
@@ -191,10 +202,18 @@ export function EventReviewsScreen() {
                 key={review.id}
                 className="rounded-2xl border border-white/10 bg-brand-surface/90 p-4"
               >
-                <Text className="font-body text-sm font-semibold text-white">
-                  {review.reviewerFirstName || review.reviewerUsername} →{" "}
-                  {review.reviewedFirstName || review.reviewedUsername}
-                </Text>
+                <View className="flex-row items-center gap-3">
+                  <Avatar
+                    uri={review.reviewerProfileImageUrl}
+                    name={review.reviewerUsername || review.reviewerFirstName}
+                    size={36}
+                    borderWidth={0}
+                  />
+                  <Text className="flex-1 font-body text-sm font-semibold text-white">
+                    @{review.reviewerUsername || "sporcu"} → @
+                    {review.reviewedUsername || "sporcu"}
+                  </Text>
+                </View>
                 <Text className="mt-1 font-mono text-xs text-amber-300">
                   {review.rating}/5
                 </Text>

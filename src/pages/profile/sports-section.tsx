@@ -27,15 +27,15 @@ export function SportsSection({ profile, onPress }: SportsSectionProps) {
   return (
     <Animated.View
       entering={FadeInDown.duration(380).delay(90)}
-      className="gap-2.5"
+      className="gap-3"
     >
       <View className="flex-row items-center justify-between">
-        <Text className="font-display text-base text-white">
+        <Text className="font-display text-lg text-text-primary">
           {PROFILE_COPY.sportsTitle}
         </Text>
         {onPress ? (
           <Pressable onPress={onPress} hitSlop={8}>
-            <Text className="font-body text-xs font-semibold text-brand-primary">
+            <Text className="font-body text-[11px] font-semibold text-brand-primary">
               {sports.length === 0 ? "Ekle" : "Tümü"}
             </Text>
           </Pressable>
@@ -46,25 +46,28 @@ export function SportsSection({ profile, onPress }: SportsSectionProps) {
         <Pressable
           disabled={!onPress}
           onPress={onPress}
-          className="rounded-2xl border border-dashed border-white/15 bg-brand-surface/60 px-4 py-5"
+          className="rounded-[20px] border border-dashed border-border-strong bg-surface-primary/50 px-4 py-5"
         >
-          <Text className="text-center font-body text-sm text-brand-neutral">
-            {onPress ? PROFILE_COPY.emptySports : PROFILE_COPY.emptySportsPublic}
+          <Text className="text-center font-body text-sm text-text-secondary">
+            {onPress
+              ? PROFILE_COPY.emptySports
+              : PROFILE_COPY.emptySportsPublic}
           </Text>
         </Pressable>
       ) : (
         <View className="flex-row flex-wrap gap-2">
           {visible.map((sport) => {
-            const skill = SKILL_LEVEL_LABELS[skillKeyFromCode(sport.skillLevel)];
+            const skill =
+              SKILL_LEVEL_LABELS[skillKeyFromCode(sport.skillLevel)];
             return (
               <Pressable
                 key={sport.sportId}
                 disabled={!onPress}
                 onPress={onPress}
-                className={`flex-row items-center gap-2 rounded-full border px-3 py-2 ${
+                className={`flex-row items-center gap-2 rounded-full border px-3 py-2.5 ${
                   sport.isPrimary
-                    ? "border-brand-primary/35 bg-brand-primary/10"
-                    : "border-white/10 bg-brand-surface"
+                    ? "border-brand-primary/30 bg-brand-primary/10"
+                    : "border-border-default bg-surface-primary"
                 }`}
               >
                 <FontAwesome6
@@ -72,10 +75,10 @@ export function SportsSection({ profile, onPress }: SportsSectionProps) {
                   size={11}
                   color="#ccff00"
                 />
-                <Text className="font-body text-xs font-semibold text-white">
+                <Text className="font-body text-xs font-semibold text-text-primary">
                   {sport.sportName}
                 </Text>
-                <Text className="font-body text-[10px] text-brand-neutral">
+                <Text className="font-body text-[9px] text-text-tertiary">
                   {skill}
                 </Text>
               </Pressable>
@@ -85,9 +88,9 @@ export function SportsSection({ profile, onPress }: SportsSectionProps) {
             <Pressable
               disabled={!onPress}
               onPress={onPress}
-              className="rounded-full border border-white/10 bg-brand-surface px-3 py-2"
+              className="rounded-full border border-border-default bg-surface-primary px-3 py-2.5"
             >
-              <Text className="font-mono text-xs text-brand-neutral">
+              <Text className="font-mono text-xs text-text-secondary">
                 +{remaining}
               </Text>
             </Pressable>

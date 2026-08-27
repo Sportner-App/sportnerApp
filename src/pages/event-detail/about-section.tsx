@@ -1,40 +1,57 @@
-import { Text, View } from "react-native";
+import { useState } from "react";
+import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
+import { themeColors, typeStyles } from "@/constants/theme";
 import type { EventDetail } from "@/types/events";
 
 type AboutSectionProps = {
   event: EventDetail;
 };
 
+const EMPTY_DESCRIPTION = "Açıklama eklenmemiş.";
+const COLLAPSED_LINES = 4;
+
 export function AboutSection({ event }: AboutSectionProps) {
+  const [expanded, setExpanded] = useState(false);
+  const description = event.description.trim();
+  const isEmpty = description.length === 0 || description === EMPTY_DESCRIPTION;
+  const isLong = !isEmpty && description.length > 180;
+
   return (
-    <Animated.View
-      entering={FadeInDown.duration(500).delay(300)}
-      className="gap-3 rounded-3xl border border-white/10 bg-brand-surface/90 p-5"
-    >
-      <Text className="font-display text-base text-white">
+    <Animated.View entering={FadeInDown.duration(400).delay(160)} className="gap-md">
+      <Text style={[typeStyles.label, { color: themeColors.text.secondary }]}>
         Etkinlik Hakkında
       </Text>
-      <Text className="font-body text-sm leading-6 text-brand-neutral">
-        {event.description}
-      </Text>
 
-      <View className="mt-1 flex-row items-center gap-3 border-t border-white/5 pt-4">
-        <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-primary/15">
-          <Text className="font-body text-xs font-semibold text-brand-primary">
-            {event.hostName[0]?.toUpperCase()}
+      {isEmpty ? (
+        <Text
+          className="font-body text-[15px] leading-6"
+          style={{ color: themeColors.text.secondary }}
+        >
+          {EMPTY_DESCRIPTION}
+        </Text>
+      ) : (
+        <View className="gap-sm">
+          <Text
+            numberOfLines={expanded || !isLong ? undefined : COLLAPSED_LINES}
+            className="font-body text-[15px] leading-6"
+            style={{ color: themeColors.text.primary }}
+          >
+            {description}
           </Text>
+          {isLong ? (
+            <Pressable onPress={() => setExpanded((value) => !value)} hitSlop={8}>
+              <Text
+                className="font-body-bold text-[13px]"
+                style={{ color: themeColors.text.secondary }}
+              >
+                {expanded ? "Daha az göster" : "Daha fazla göster"}
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
-        <View>
-          <Text className="font-body text-sm font-semibold text-white">
-            {event.hostName}
-          </Text>
-          <Text className="font-body text-xs text-brand-neutral">
-            Düzenleyen
-          </Text>
-        </View>
-      </View>
+      )}
     </Animated.View>
   );
 }

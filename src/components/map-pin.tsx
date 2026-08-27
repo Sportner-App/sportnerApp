@@ -5,7 +5,7 @@ import { View } from "react-native";
 export function MapPin() {
   return (
     <View className="items-center">
-      <View className="h-11 w-11 items-center justify-center rounded-full border-2 border-brand-primary bg-brand-secondary shadow-lg shadow-brand-primary">
+      <View className="h-11 w-11 items-center justify-center rounded-full border-2 border-brand-primary bg-background-primary shadow-lg shadow-brand-primary">
         <FontAwesome6 name="location-dot" size={18} color="#ccff00" />
       </View>
       <View className="-mt-1 h-2 w-2 rotate-45 bg-brand-primary" />

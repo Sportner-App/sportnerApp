@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { DatePickerSheet } from "@/components/date-picker-sheet";
+import { themeColors } from "@/constants/theme";
 import type { DateFieldProps } from "@/types/components";
 
 function formatEventDate(date: Date) {
@@ -25,17 +26,29 @@ export function DateField({
 
   return (
     <View className="gap-2">
-      <Text className="font-body text-sm text-brand-neutral">{label}</Text>
+      <Text className="font-body-bold text-[13px] text-text-secondary">
+        {label}
+      </Text>
 
       <Pressable
         onPress={() => setOpen(true)}
-        className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-brand-surface/90 px-4 py-3.5 active:opacity-80"
+        className="min-h-[58px] flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-3.5 active:bg-surface-secondary"
       >
-        <FontAwesome6 name="calendar-days" size={15} color="#ccff00" />
-        <Text className="flex-1 font-body text-base text-white">
+        <View className="h-8 w-8 items-center justify-center rounded-full bg-brand-primary/10">
+          <FontAwesome6
+            name="calendar-days"
+            size={14}
+            color={themeColors.brand.primary}
+          />
+        </View>
+        <Text className="flex-1 font-body text-base text-text-primary">
           {formatEventDate(value)}
         </Text>
-        <FontAwesome6 name="chevron-down" size={12} color="#64748b" />
+        <FontAwesome6
+          name="chevron-down"
+          size={11}
+          color={themeColors.text.tertiary}
+        />
       </Pressable>
 
       <DatePickerSheet

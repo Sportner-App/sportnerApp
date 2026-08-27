@@ -110,7 +110,7 @@ function Row({
         value={value}
         onValueChange={onChange}
         trackColor={{ true: "#ccff00", false: "#334155" }}
-        thumbColor="#0f172a"
+        thumbColor="#06111a"
       />
     </Pressable>
   );

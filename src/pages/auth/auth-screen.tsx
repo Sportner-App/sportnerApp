@@ -93,7 +93,7 @@ export function AuthScreen() {
   };
 
   return (
-    <View className="flex-1 bg-brand-secondary">
+    <View className="flex-1 bg-background-primary">
       <AnimatedBackground />
 
       <KeyboardAvoidingView

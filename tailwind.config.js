@@ -1,3 +1,15 @@
+const {
+  colors,
+  sports,
+  fonts,
+  typography,
+  spacing,
+  radius,
+  shadows,
+  media,
+  palette,
+} = require("./src/constants/design-tokens");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
@@ -6,18 +18,147 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          primary: "#ccff00",
-          secondary: "#0f172a",
-          tertiary: "#1e293b",
-          neutral: "#64748b",
-          surface: "#152238",
-          raised: "#1e2d46",
+          primary: colors.brand.primary,
+          /** App canvas; retained alias for screens using brand-secondary. */
+          secondary: colors.background.primary,
+          tertiary: palette.navyMuted,
+          neutral: palette.slate500,
+          surface: palette.navySurface,
+          raised: palette.navyRaised,
+          charcoal: colors.surface.dark,
         },
+        background: {
+          primary: colors.background.primary,
+          secondary: colors.background.secondary,
+        },
+        surface: {
+          primary: colors.surface.primary,
+          secondary: colors.surface.secondary,
+          dark: colors.surface.dark,
+        },
+        text: {
+          primary: colors.text.primary,
+          secondary: colors.text.secondary,
+          tertiary: colors.text.tertiary,
+          inverse: colors.text.inverse,
+        },
+        border: {
+          default: colors.border.default,
+          strong: colors.border.strong,
+        },
+        overlay: {
+          dark: colors.overlay.dark,
+        },
+        sport: {
+          basketball: {
+            DEFAULT: sports.basketball.accent,
+            soft: sports.basketball.soft,
+          },
+          football: {
+            DEFAULT: sports.football.accent,
+            soft: sports.football.soft,
+          },
+          running: {
+            DEFAULT: sports.running.accent,
+            soft: sports.running.soft,
+          },
+          volleyball: {
+            DEFAULT: sports.volleyball.accent,
+            soft: sports.volleyball.soft,
+          },
+          tennis: {
+            DEFAULT: sports.tennis.accent,
+            soft: sports.tennis.soft,
+          },
+        },
+        success: colors.success,
+        warning: colors.warning,
+        destructive: colors.destructive,
       },
       fontFamily: {
-        display: ["Anybody_700Bold"],
-        body: ["HankenGrotesk_500Medium"],
-        mono: ["JetBrainsMono_500Medium"],
+        display: [fonts.display],
+        "display-semibold": [fonts.displaySemiBold],
+        body: [fonts.body],
+        "body-bold": [fonts.bodyBold],
+        mono: [fonts.mono],
+        "mono-bold": [fonts.monoBold],
+      },
+      fontSize: {
+        display: [
+          `${typography.display.fontSize}px`,
+          {
+            lineHeight: `${typography.display.lineHeight}px`,
+            letterSpacing: `${typography.display.letterSpacing}px`,
+          },
+        ],
+        "heading-lg": [
+          `${typography.headingLarge.fontSize}px`,
+          {
+            lineHeight: `${typography.headingLarge.lineHeight}px`,
+            letterSpacing: `${typography.headingLarge.letterSpacing}px`,
+          },
+        ],
+        "heading-md": [
+          `${typography.headingMedium.fontSize}px`,
+          {
+            lineHeight: `${typography.headingMedium.lineHeight}px`,
+            letterSpacing: `${typography.headingMedium.letterSpacing}px`,
+          },
+        ],
+        "heading-sm": [
+          `${typography.headingSmall.fontSize}px`,
+          {
+            lineHeight: `${typography.headingSmall.lineHeight}px`,
+            letterSpacing: `${typography.headingSmall.letterSpacing}px`,
+          },
+        ],
+        "body-lg": [
+          `${typography.bodyLarge.fontSize}px`,
+          { lineHeight: `${typography.bodyLarge.lineHeight}px` },
+        ],
+        "body-sm": [
+          `${typography.bodySmall.fontSize}px`,
+          { lineHeight: `${typography.bodySmall.lineHeight}px` },
+        ],
+        label: [
+          `${typography.label.fontSize}px`,
+          { lineHeight: `${typography.label.lineHeight}px` },
+        ],
+        caption: [
+          `${typography.caption.fontSize}px`,
+          { lineHeight: `${typography.caption.lineHeight}px` },
+        ],
+        overline: [
+          `${typography.overline.fontSize}px`,
+          {
+            lineHeight: `${typography.overline.lineHeight}px`,
+            letterSpacing: `${typography.overline.letterSpacing}px`,
+          },
+        ],
+      },
+      spacing: {
+        xs: `${spacing.xs}px`,
+        sm: `${spacing.sm}px`,
+        md: `${spacing.md}px`,
+        lg: `${spacing.lg}px`,
+        xl: `${spacing.xl}px`,
+        "2xl": `${spacing["2xl"]}px`,
+        "3xl": `${spacing["3xl"]}px`,
+      },
+      borderRadius: {
+        small: `${radius.small}px`,
+        medium: `${radius.medium}px`,
+        large: `${radius.large}px`,
+        xlarge: `${radius.xl}px`,
+        pill: `${radius.pill}px`,
+        media: `${media.cardRadius}px`,
+        hero: `${media.heroRadius}px`,
+      },
+      boxShadow: {
+        "elevation-sm": shadows.sm.css,
+        "elevation-md": shadows.md.css,
+        "elevation-lg": shadows.lg.css,
+        glow: shadows.glow.css,
       },
     },
   },

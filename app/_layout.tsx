@@ -1,4 +1,5 @@
 import { colors } from "@/constants/colors";
+import { FEATURE_FLAGS } from "@/constants/feature-flags";
 import { AppProviders } from "@/contexts";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
@@ -83,10 +84,11 @@ function RootLayoutNav() {
           <Stack.Screen name="notifications" />
           <Stack.Screen name="profile" />
           <Stack.Screen name="friends" />
+          <Stack.Screen name="people" />
           <Stack.Screen name="feed" />
           <Stack.Screen name="posts" />
           <Stack.Screen name="badges" />
-          <Stack.Screen name="albums" />
+          {FEATURE_FLAGS.albums ? <Stack.Screen name="albums" /> : null}
           <Stack.Screen name="report" />
           <Stack.Screen name="help" />
         </Stack>

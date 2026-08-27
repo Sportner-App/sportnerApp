@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components";
 import { CREATE_EVENT_COPY } from "@/constants/events";
+import { shadows } from "@/constants/theme";
 
 type SubmitBarProps = {
   disabled: boolean;
@@ -47,8 +48,8 @@ export function SubmitBar({
 
   return (
     <View
-      className="border-t border-white/10 bg-brand-secondary px-6 pt-4"
-      style={{ paddingBottom: insets.bottom + 12 }}
+      className="border-t border-border-default bg-background-primary/95 px-5 pt-3"
+      style={[shadows.lg, { paddingBottom: insets.bottom + 10 }]}
     >
       {onBack ? (
         <View className="flex-row gap-3">
@@ -56,7 +57,8 @@ export function SubmitBar({
             <Button
               label={backLabel}
               size="lg"
-              variant="secondary"
+              variant="outline"
+              icon="arrow-left"
               disabled={isLoading}
               pressScale={pressScale}
               haptic={haptic}

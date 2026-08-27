@@ -2,12 +2,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 
-import {
-  AppScreen,
-  Button,
-  ScreenHeader,
-  SportLoader,
-} from "@/components";
+import { AppScreen, Button, ScreenHeader, SportLoader } from "@/components";
 import { useSession, useToast } from "@/contexts";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { ProfileHero } from "@/pages/profile/profile-hero";
@@ -49,7 +44,8 @@ export function PublicProfileScreen() {
     void getPublicProfile(id)
       .then(async (next) => {
         const friendship =
-          next.friendship ?? (await resolveFriendshipWith(next.userId).catch(() => null));
+          next.friendship ??
+          (await resolveFriendshipWith(next.userId).catch(() => null));
         setProfile({ ...next, friendship });
         setReviewsLoading(true);
         return listUserReviews(next.userId)
@@ -67,7 +63,9 @@ export function PublicProfileScreen() {
       .finally(() => setIsLoading(false));
   }, [id, showToast]);
 
-  const isMe = Boolean(user?.id && profile && sameUserId(user.id, profile.userId));
+  const isMe = Boolean(
+    user?.id && profile && sameUserId(user.id, profile.userId),
+  );
   const friendship = profile?.friendship ?? null;
   const status = friendship?.status ?? null;
   const isIncomingPending =
@@ -180,7 +178,7 @@ export function PublicProfileScreen() {
   return (
     <AppScreen
       header={<ScreenHeader title="PROFİL" showBack />}
-      contentClassName="gap-5 px-6 pt-3"
+      contentClassName="gap-6 px-5 pt-3"
     >
       {isLoading ? (
         <View className="items-center py-16">

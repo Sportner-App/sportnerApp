@@ -17,6 +17,14 @@ const TOKEN_STORAGE_KEY = "api_token";
 const REFRESH_TOKEN_STORAGE_KEY = "api_refresh_token";
 const USER_STORAGE_KEY = "api_user";
 
+function isFormData(value: unknown): value is FormData {
+  return (
+    typeof FormData !== "undefined" &&
+    !!value &&
+    (value instanceof FormData || typeof (value as FormData).append === "function")
+  );
+}
+
 type RefreshResponse = {
   userId?: string;
   accessToken?: string;
@@ -56,6 +64,10 @@ class APIClient {
     });
 
     this.instance.interceptors.request.use(async (config) => {
+      if (isFormData(config.data)) {
+        config.headers?.delete("Content-Type");
+      }
+
       try {
         const token = await AsyncStorage.getItem(TOKEN_STORAGE_KEY);
         if (token) {

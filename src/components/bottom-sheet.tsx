@@ -1,5 +1,12 @@
-import { useEffect, useState } from "react";
-import { Dimensions, Modal, Pressable, Text, View } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Dimensions,
+  Modal,
+  PanResponder,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 import Animated, {
   Easing,
   runOnJS,
@@ -20,6 +27,8 @@ const OPEN_SPRING = {
 };
 
 const CLOSE_DURATION_MS = 280;
+const DISMISS_DISTANCE = 110;
+const DISMISS_VELOCITY = 0.85;
 
 /**
  * Uygulama genelinde select / date picker / aksiyon listeleri için
@@ -37,10 +46,12 @@ export function BottomSheet({
   const [mounted, setMounted] = useState(visible);
   const progress = useSharedValue(visible ? 1 : 0);
   const slideDistance = useSharedValue(Dimensions.get("window").height);
+  const dragY = useSharedValue(0);
 
   useEffect(() => {
     if (visible) {
       setMounted(true);
+      dragY.value = 0;
       progress.value = withSpring(1, OPEN_SPRING);
       return;
     }
@@ -61,16 +72,73 @@ export function BottomSheet({
         }
       },
     );
-  }, [mounted, progress, visible]);
+  }, [dragY, mounted, progress, visible]);
 
-  const backdropStyle = useAnimatedStyle(() => ({
-    opacity: progress.value,
-  }));
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onStartShouldSetPanResponderCapture: () => true,
+        onMoveShouldSetPanResponder: (_, gesture) =>
+          gesture.dy > 5 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+        onMoveShouldSetPanResponderCapture: (_, gesture) =>
+          gesture.dy > 3 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+        onPanResponderTerminationRequest: () => false,
+        onPanResponderMove: (_, gesture) => {
+          dragY.value = Math.max(gesture.dy, 0);
+        },
+        onPanResponderRelease: (_, gesture) => {
+          const shouldDismiss =
+            gesture.dy >= DISMISS_DISTANCE || gesture.vy >= DISMISS_VELOCITY;
+
+          if (shouldDismiss) {
+            dragY.value = withTiming(
+              slideDistance.value,
+              {
+                duration: 220,
+                easing: Easing.out(Easing.cubic),
+              },
+              (finished) => {
+                if (finished) {
+                  runOnJS(onClose)();
+                }
+              },
+            );
+            return;
+          }
+
+          dragY.value = withSpring(0, {
+            damping: 24,
+            stiffness: 260,
+            mass: 0.8,
+          });
+        },
+        onPanResponderTerminate: () => {
+          dragY.value = withSpring(0, {
+            damping: 24,
+            stiffness: 260,
+            mass: 0.8,
+          });
+        },
+      }),
+    [dragY, onClose, slideDistance],
+  );
+
+  const backdropStyle = useAnimatedStyle(() => {
+    const dragProgress = Math.min(
+      dragY.value / Math.max(slideDistance.value, 1),
+      1,
+    );
+
+    return {
+      opacity: progress.value * (1 - dragProgress),
+    };
+  });
 
   const sheetStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        translateY: (1 - progress.value) * slideDistance.value,
+        translateY: (1 - progress.value) * slideDistance.value + dragY.value,
       },
     ],
   }));
@@ -92,7 +160,7 @@ export function BottomSheet({
         <Pressable className="absolute inset-0" onPress={onClose}>
           <Animated.View
             style={backdropStyle}
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 bg-black/70"
           />
         </Pressable>
 
@@ -104,18 +172,23 @@ export function BottomSheet({
               slideDistance.value = height;
             }
           }}
-          className="rounded-t-[28px] border border-white/10 bg-brand-surface px-5 pt-4"
+          className="rounded-t-[32px] border border-border-default bg-background-primary px-5 pt-3"
         >
-          <Pressable onPress={(event) => event.stopPropagation()}>
+          <View>
             <View
               style={{ paddingBottom: insets.bottom + 16 }}
               className="pt-0"
             >
-              <View className="mb-4 items-center">
-                <View className="mb-4 h-1 w-10 rounded-full bg-white/15" />
-                <Text className="font-display text-lg text-white">{title}</Text>
+              <View
+                {...panResponder.panHandlers}
+                className="mb-4 items-center pb-1"
+              >
+                <View className="mb-4 h-1 w-10 rounded-full bg-brand-primary" />
+                <Text className="font-display text-lg text-text-primary">
+                  {title}
+                </Text>
                 {subtitle ? (
-                  <Text className="mt-1 text-center font-body text-xs text-brand-neutral">
+                  <Text className="mt-1 text-center font-body text-xs text-text-secondary">
                     {subtitle}
                   </Text>
                 ) : null}
@@ -126,15 +199,15 @@ export function BottomSheet({
               {showCancel ? (
                 <Pressable
                   onPress={onClose}
-                  className="mt-3 items-center rounded-2xl border border-white/10 py-3.5 active:opacity-80"
+                  className="mt-3 items-center rounded-2xl border border-border-default bg-surface-primary py-3.5 active:bg-surface-secondary"
                 >
-                  <Text className="font-body text-sm text-brand-neutral">
+                  <Text className="font-body text-sm text-text-secondary">
                     Vazgeç
                   </Text>
                 </Pressable>
               ) : null}
             </View>
-          </Pressable>
+          </View>
         </Animated.View>
       </View>
     </Modal>

@@ -69,7 +69,7 @@ export function DirectionsSheet({
           <Pressable
             key={option.key}
             onPress={() => void handleSelect(option.key)}
-            className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-brand-secondary/70 px-4 py-3.5 active:opacity-80"
+            className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-background-primary/70 px-4 py-3.5 active:opacity-80"
           >
             <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-primary/15">
               <FontAwesome6 name={option.icon} size={16} color="#ccff00" />

@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Image, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
+import { Avatar } from "@/components";
 import type { PickedMedia } from "@/utils/media-picker";
 
 type MediaFieldsProps = {
@@ -25,18 +26,15 @@ export function MediaFields({
   return (
     <View className="gap-4">
       <View className="items-center gap-2">
-        <Pressable
+        <Avatar
+          uri={avatar?.uri}
+          name="Profil"
+          size={96}
+          fallbackIcon="camera"
+          borderColor="rgba(204,255,0,0.3)"
           onPress={onPickAvatar}
-          accessibilityRole="button"
           accessibilityLabel="Profil fotoğrafı seç"
-          className="h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-brand-primary/30 bg-brand-primary/15"
-        >
-          {avatar ? (
-            <Image source={{ uri: avatar.uri }} className="h-24 w-24" />
-          ) : (
-            <FontAwesome6 name="camera" size={22} color="#ccff00" />
-          )}
-        </Pressable>
+        />
         <Pressable onPress={onPickAvatar} hitSlop={8}>
           <Text className="font-body text-xs text-brand-primary">
             {avatar ? "Fotoğrafı değiştir" : "Profil fotoğrafı ekle"}
@@ -52,7 +50,7 @@ export function MediaFields({
       {showVideo ? (
         <Pressable
           onPress={onPickVideo}
-          className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-brand-secondary/70 px-4 py-3.5 active:opacity-80"
+          className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-background-primary/70 px-4 py-3.5 active:opacity-80"
         >
           <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-primary/15">
             <FontAwesome6 name="video" size={14} color="#ccff00" />
@@ -70,7 +68,9 @@ export function MediaFields({
           </View>
           {video && onClearVideo ? (
             <Pressable onPress={onClearVideo} hitSlop={8}>
-              <Text className="font-body text-xs text-brand-neutral">Kaldır</Text>
+              <Text className="font-body text-xs text-brand-neutral">
+                Kaldır
+              </Text>
             </Pressable>
           ) : (
             <FontAwesome6 name="plus" size={12} color="#64748b" />

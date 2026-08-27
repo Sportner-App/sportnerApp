@@ -1,11 +1,20 @@
-import type { ProfileMenuGroup, ProfileMenuItem, SkillLevelKey } from "@/types/profile";
+import type {
+  ProfileMenuGroup,
+  ProfileMenuItem,
+  SkillLevelKey,
+} from "@/types/profile";
+import { FEATURE_FLAGS } from "./feature-flags";
 
-export const PROFILE_SOCIAL_ACTIONS: ProfileMenuItem[] = [
+const PROFILE_SOCIAL_ACTION_ITEMS: ProfileMenuItem[] = [
   { key: "friends", label: "Arkadaşlar", icon: "user-group" },
   { key: "feed", label: "Akış", icon: "newspaper" },
   { key: "badges", label: "Rozetler", icon: "trophy" },
   { key: "albums", label: "Albümler", icon: "images" },
 ];
+
+export const PROFILE_SOCIAL_ACTIONS = PROFILE_SOCIAL_ACTION_ITEMS.filter(
+  (item) => item.key !== "albums" || FEATURE_FLAGS.albums,
+);
 
 export const PROFILE_MENU_GROUPS: ProfileMenuGroup[] = [
   {
@@ -36,7 +45,8 @@ export const PROFILE_COPY = {
   emptySports: "Henüz spor eklemedin. Dokunarak ekle.",
   emptySportsPublic: "Henüz spor eklenmemiş.",
   reviewsTitle: "Değerlendirmeler",
-  emptyReviews: "Henüz değerlendirme yok. Etkinlik sonrası gelen yorumlar burada görünür.",
+  emptyReviews:
+    "Henüz değerlendirme yok. Etkinlik sonrası gelen yorumlar burada görünür.",
   notFound: "Profil bulunamadı. Kayıt sırasında profil oluşmamış olabilir.",
 } as const;
 

@@ -10,6 +10,7 @@ import {
   ScreenHeader,
   SegmentedTabs,
   SportLoader,
+  UserIdentity,
 } from "@/components";
 import { useSession, useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -105,7 +106,9 @@ export function FriendsScreen() {
           friends.map((item) => (
             <PersonRow
               key={item.friendshipId}
-              name={item.firstName || item.username || "Sporcu"}
+              username={item.username}
+              avatarUrl={item.profileImageUrl}
+              fallbackName={item.firstName}
               onPress={() => router.push(`/users/${item.userId}`)}
             />
           ))
@@ -121,21 +124,31 @@ export function FriendsScreen() {
               item.requesterUserId === user?.id
                 ? item.addresseeUserId
                 : item.requesterUserId;
-            const name =
+            const username =
               item.requesterUserId === user?.id
-                ? item.addresseeFirstName || item.addresseeUsername
-                : item.requesterFirstName || item.requesterUsername;
+                ? item.addresseeUsername
+                : item.requesterUsername;
+            const firstName =
+              item.requesterUserId === user?.id
+                ? item.addresseeFirstName
+                : item.requesterFirstName;
+            const avatarUrl =
+              item.requesterUserId === user?.id
+                ? item.addresseeProfileImageUrl
+                : item.requesterProfileImageUrl;
             return (
               <View
                 key={item.id}
                 className="flex-row items-center gap-2 rounded-2xl border border-white/10 p-3"
               >
-                <Pressable
-                  className="flex-1"
-                  onPress={() => router.push(`/users/${otherId}`)}
-                >
-                  <Text className="font-body text-sm text-white">{name}</Text>
-                </Pressable>
+                <View className="min-w-0 flex-1">
+                  <UserIdentity
+                    username={username}
+                    avatarUrl={avatarUrl}
+                    fallbackName={firstName}
+                    onPress={() => router.push(`/users/${otherId}`)}
+                  />
+                </View>
                 <Button
                   label="Kabul"
                   size="sm"
@@ -181,7 +194,9 @@ export function FriendsScreen() {
         suggestions.map((item) => (
           <PersonRow
             key={item.userId}
-            name={item.firstName || item.username || "Sporcu"}
+            username={item.username}
+            avatarUrl={item.profileImageUrl}
+            fallbackName={item.firstName}
             subtitle={`${item.sharedSportsCount} ortak spor`}
             onPress={() => router.push(`/users/${item.userId}`)}
           />
@@ -192,25 +207,27 @@ export function FriendsScreen() {
 }
 
 function PersonRow({
-  name,
+  username,
+  avatarUrl,
+  fallbackName,
   subtitle,
   onPress,
 }: {
-  name: string;
+  username?: string | null;
+  avatarUrl?: string | null;
+  fallbackName?: string | null;
   subtitle?: string;
   onPress: () => void;
 }) {
   return (
-    <Pressable
-      onPress={onPress}
-      className="rounded-2xl border border-white/10 bg-brand-surface/90 px-4 py-3.5"
-    >
-      <Text className="font-body text-sm font-semibold text-white">{name}</Text>
-      {subtitle ? (
-        <Text className="mt-0.5 font-body text-xs text-brand-neutral">
-          {subtitle}
-        </Text>
-      ) : null}
-    </Pressable>
+    <View className="rounded-2xl border border-border-default bg-surface-primary px-4 py-3">
+      <UserIdentity
+        username={username}
+        avatarUrl={avatarUrl}
+        fallbackName={fallbackName}
+        meta={subtitle}
+        onPress={onPress}
+      />
+    </View>
   );
 }

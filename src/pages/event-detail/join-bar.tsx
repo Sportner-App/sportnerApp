@@ -2,6 +2,7 @@ import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components";
+import { shadows } from "@/constants/theme";
 import type { ButtonVariant } from "@/types/components";
 import type { EventDetail } from "@/types/events";
 import {
@@ -152,21 +153,21 @@ export function JoinBar({
 
   return (
     <View
-      className="flex-row items-center gap-4 border-t border-white/10 bg-brand-secondary px-6 pt-4"
-      style={{ paddingBottom: insets.bottom + 12 }}
+      className="flex-row items-center gap-4 border-t border-border-default bg-surface-primary px-5 pt-3"
+      style={[shadows.md, { paddingBottom: insets.bottom + 10 }]}
     >
       <View className="shrink">
         <Text
           className={
             bar.statusSubtitle
-              ? "font-mono text-lg text-brand-primary"
-              : "max-w-[120px] font-body text-sm font-semibold text-white"
+              ? "font-mono-bold text-lg text-text-primary"
+              : "max-w-[120px] font-body-bold text-sm text-text-primary"
           }
         >
           {bar.statusTitle}
         </Text>
         {bar.statusSubtitle ? (
-          <Text className="font-body text-xs text-brand-neutral">
+          <Text className="font-body text-xs text-text-secondary">
             {bar.statusSubtitle}
           </Text>
         ) : null}
@@ -177,6 +178,7 @@ export function JoinBar({
           label={bar.actionLabel}
           size="lg"
           variant={bar.variant}
+          glow="subtle"
           isLoading={bar.loading}
           disabled={!bar.action}
           pressScale={0.98}

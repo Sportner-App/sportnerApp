@@ -1,112 +1,70 @@
-import { useEffect } from "react";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
-import Animated, {
-  Extrapolation,
-  interpolate,
-  interpolateColor,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-  type SharedValue,
-} from "react-native-reanimated";
+
+import { themeColors } from "@/constants/theme";
+import type { IconName } from "@/types/components";
 
 type EventCreateProgressProps = {
-  step: 1 | 2 | 3;
+  step: 1 | 2 | 3 | 4;
 };
 
-const STEPS = [1, 2, 3] as const;
-const LIME = "#ccff00";
-const MUTED = "#64748b";
-const NUMBER_MS = 220;
-const FILL_MS = 240;
-
-const AnimatedText = Animated.createAnimatedComponent(Text);
-
-function StepNumber({
-  item,
-  progress,
-}: {
-  item: 1 | 2 | 3;
-  progress: SharedValue<number>;
-}) {
-  const style = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      progress.value,
-      [item - 0.55, item, item + 0.55],
-      [MUTED, LIME, MUTED],
-    ),
-  }));
-
-  return (
-    <AnimatedText
-      style={style}
-      className="font-mono text-[11px] tracking-wide"
-    >
-      {String(item).padStart(2, "0")}
-    </AnimatedText>
-  );
-}
-
-function Connector({
-  fillsAt,
-  progress,
-}: {
-  fillsAt: 2 | 3;
-  progress: SharedValue<number>;
-}) {
-  const fillStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        scaleX: interpolate(
-          progress.value,
-          [fillsAt - 1, fillsAt],
-          [0, 1],
-          Extrapolation.CLAMP,
-        ),
-      },
-    ],
-  }));
-
-  return (
-    <View className="mx-1.5 h-px flex-1 overflow-hidden bg-brand-neutral/40">
-      <Animated.View
-        style={[
-          fillStyle,
-          {
-            height: 1,
-            backgroundColor: "rgba(204,255,0,0.7)",
-            transformOrigin: "left",
-          },
-        ]}
-        className="w-full"
-      />
-    </View>
-  );
-}
+const STEPS: { step: 1 | 2 | 3 | 4; label: string; icon: IconName }[] = [
+  { step: 1, label: "Detaylar", icon: "pen" },
+  { step: 2, label: "Plan", icon: "location-dot" },
+  { step: 3, label: "Kapasite", icon: "users" },
+  { step: 4, label: "Kadro", icon: "check" },
+];
 
 export function EventCreateProgress({ step }: EventCreateProgressProps) {
-  const progress = useSharedValue(step);
-
-  useEffect(() => {
-    progress.value = withTiming(step, { duration: NUMBER_MS });
-  }, [progress, step]);
-
   return (
-    <View className="w-full flex-row items-center">
-      {STEPS.map((item, index) => (
-        <View
-          key={item}
-          className={`flex-row items-center ${index > 0 ? "flex-1" : ""}`}
-        >
-          {index > 0 ? (
-            <Connector
-              fillsAt={item as 2 | 3}
-              progress={progress}
-            />
-          ) : null}
-          <StepNumber item={item} progress={progress} />
-        </View>
-      ))}
+    <View className="flex-row rounded-[22px] border border-border-default bg-surface-primary/90 p-1.5">
+      {STEPS.map((item) => {
+        const active = item.step === step;
+        const complete = item.step < step;
+
+        return (
+          <View
+            key={item.step}
+            className={`min-h-[46px] flex-1 flex-row items-center justify-center gap-2 rounded-[17px] ${
+              active ? "bg-brand-primary" : "bg-transparent"
+            }`}
+          >
+            <View
+              className={`h-6 w-6 items-center justify-center rounded-full border ${
+                active
+                  ? "border-black/10 bg-black/10"
+                  : complete
+                    ? "border-brand-primary/40 bg-brand-primary/15"
+                    : "border-border-default bg-surface-secondary"
+              }`}
+            >
+              <FontAwesome6
+                name={complete ? "check" : item.icon}
+                size={10}
+                color={
+                  active
+                    ? themeColors.text.onPrimary
+                    : complete
+                      ? themeColors.brand.primary
+                      : themeColors.text.tertiary
+                }
+              />
+            </View>
+            <Text
+              className="font-body-bold text-[11px]"
+              style={{
+                color: active
+                  ? themeColors.text.onPrimary
+                  : complete
+                    ? themeColors.text.primary
+                    : themeColors.text.secondary,
+              }}
+            >
+              {item.label}
+            </Text>
+          </View>
+        );
+      })}
     </View>
   );
 }

@@ -11,6 +11,7 @@ import Animated, {
 
 import { DirectionsSheet, MapPin } from "@/components";
 import { DARK_MAP_STYLE } from "@/constants/map";
+import { themeColors, typeStyles } from "@/constants/theme";
 import { isGooglePlacesEnabled } from "@/services/location-service";
 import type { EventDetail } from "@/types/events";
 import type { DirectionsTarget } from "@/utils/open-directions";
@@ -63,7 +64,11 @@ export function LocationMap({ event }: LocationMapProps) {
         className="gap-3"
       >
         <View className="flex-row items-center justify-between">
-          <Text className="font-display text-base text-white">Konum</Text>
+          <Text
+            style={[typeStyles.label, { color: themeColors.text.secondary }]}
+          >
+            Konum
+          </Text>
           <AnimatedPressable
             hitSlop={8}
             onPress={() => {
@@ -79,18 +84,28 @@ export function LocationMap({ event }: LocationMapProps) {
             style={directionsStyle}
             className="flex-row items-center gap-1.5"
           >
-            <Text className="font-body text-xs text-brand-primary">
+            <Text
+              className="font-body text-xs"
+              style={{ color: themeColors.text.primary }}
+            >
               Yol tarifi
             </Text>
             <FontAwesome6
               name="diamond-turn-right"
               size={11}
-              color="#ccff00"
+              color={themeColors.text.primary}
             />
           </AnimatedPressable>
         </View>
 
-        <View className="overflow-hidden rounded-[28px] border border-white/10 bg-brand-surface/90">
+        <View
+          className="overflow-hidden rounded-xlarge"
+          style={{
+            borderWidth: 1,
+            borderColor: themeColors.border.default,
+            backgroundColor: themeColors.surface.primary,
+          }}
+        >
           <View className="relative h-52">
             <MapView
               style={{ flex: 1 }}
@@ -126,20 +141,35 @@ export function LocationMap({ event }: LocationMapProps) {
             <Pressable onPress={openSheet} className="absolute inset-0" />
           </View>
 
-          <View className="flex-row items-start gap-3 border-t border-white/10 px-4 py-3.5">
-            <View className="mt-0.5 h-8 w-8 items-center justify-center rounded-full bg-brand-primary/15">
-              <FontAwesome6 name="location-dot" size={12} color="#ccff00" />
+          <View
+            className="flex-row items-start gap-3 px-4 py-3.5"
+            style={{
+              borderTopWidth: 1,
+              borderTopColor: themeColors.border.default,
+            }}
+          >
+            <View
+              className="mt-0.5 h-8 w-8 items-center justify-center rounded-full"
+              style={{ backgroundColor: themeColors.surface.secondary }}
+            >
+              <FontAwesome6
+                name="location-dot"
+                size={12}
+                color={themeColors.text.secondary}
+              />
             </View>
             <View className="flex-1">
               <Text
-                className="font-body text-sm font-semibold text-white"
+                className="font-body text-sm font-semibold"
+                style={{ color: themeColors.text.primary }}
                 numberOfLines={1}
               >
                 {primaryLocation}
               </Text>
               {secondaryAddress ? (
                 <Text
-                  className="mt-0.5 font-body text-xs leading-4 text-brand-neutral"
+                  className="mt-0.5 font-body text-xs leading-4"
+                  style={{ color: themeColors.text.secondary }}
                   numberOfLines={2}
                 >
                   {secondaryAddress}

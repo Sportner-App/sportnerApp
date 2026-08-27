@@ -7,8 +7,11 @@ import { getStartupDestination, STARTUP_HREF } from "@/utils/startup";
 
 export default function FirstLaunchLayout() {
   const { isReady, isAuthenticated, isOnboarded } = useAuth();
-  const { isReady: isFirstLaunchReady, hasSeenOnboarding, isEnteringAuth } =
-    useFirstLaunch();
+  const {
+    isReady: isFirstLaunchReady,
+    hasSeenOnboarding,
+    isEnteringAuth,
+  } = useFirstLaunch();
 
   if (!isReady || !isFirstLaunchReady) {
     return null;
@@ -32,7 +35,7 @@ export default function FirstLaunchLayout() {
         headerShown: false,
         animation: "fade",
         animationDuration: 220,
-        contentStyle: { backgroundColor: "#0f172a" },
+        contentStyle: { backgroundColor: "#06111a" },
       }}
     />
   );

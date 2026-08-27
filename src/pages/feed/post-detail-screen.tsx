@@ -11,7 +11,14 @@ import {
   View,
 } from "react-native";
 
-import { AppScreen, Button, ScreenHeader, SportLoader } from "@/components";
+import {
+  AppScreen,
+  Avatar,
+  Button,
+  ScreenHeader,
+  SportLoader,
+  UserIdentity,
+} from "@/components";
 import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
@@ -93,9 +100,10 @@ export function PostDetailScreen() {
     }
   };
 
-  const author = post?.firstName || post?.username || "Sporcu";
+  const author = post?.username || post?.firstName || "Sporcu";
   const images =
-    post?.media.filter((item) => item.mediaType === POST_MEDIA_TYPE.image) ?? [];
+    post?.media.filter((item) => item.mediaType === POST_MEDIA_TYPE.image) ??
+    [];
 
   return (
     <AppScreen
@@ -113,20 +121,9 @@ export function PostDetailScreen() {
             onPress={() => router.push(`/users/${post.userId}`)}
             className="flex-row items-center gap-3 px-6"
           >
-            <View className="h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-brand-primary/15">
-              {post.profileImageUrl ? (
-                <Image
-                  source={{ uri: resolveMediaUrl(post.profileImageUrl) }}
-                  className="h-full w-full"
-                />
-              ) : (
-                <Text className="font-display text-sm text-brand-primary">
-                  {author.slice(0, 1).toUpperCase()}
-                </Text>
-              )}
-            </View>
+            <Avatar uri={post.profileImageUrl} name={author} size={40} />
             <Text className="font-body text-sm font-semibold text-white">
-              {author}
+              @{post.username || "sporcu"}
             </Text>
           </Pressable>
 
@@ -184,11 +181,15 @@ export function PostDetailScreen() {
               comments.map((comment) => (
                 <View
                   key={comment.id}
-                  className="rounded-2xl border border-white/10 px-3 py-2.5"
+                  className="gap-2 rounded-2xl border border-white/10 px-3 py-2.5"
                 >
-                  <Text className="font-body text-xs text-brand-neutral">
-                    {comment.firstName || comment.username}
-                  </Text>
+                  <UserIdentity
+                    username={comment.username}
+                    avatarUrl={comment.profileImageUrl}
+                    fallbackName={comment.firstName}
+                    avatarSize={32}
+                    onPress={() => router.push(`/users/${comment.userId}`)}
+                  />
                   <Text className="font-body text-sm text-white">
                     {comment.content}
                   </Text>
