@@ -7,18 +7,19 @@ module.exports = {
   expo: {
     ...appJson.expo,
     ios: {
-      ...appJson.expo.ios,
+      ...appJson.expo?.ios,
+      bundleIdentifier:
+        appJson.expo?.ios?.bundleIdentifier || "com.yagizerdenler.sportner",
       config: {
-        ...(appJson.expo.ios?.config || {}),
-        ...(googleMapsApiKey
-          ? { googleMapsApiKey }
-          : {}),
+        ...(appJson.expo?.ios?.config || {}),
+        ...(googleMapsApiKey ? { googleMapsApiKey } : {}),
       },
     },
     android: {
-      ...appJson.expo.android,
+      ...appJson.expo?.android,
+      package: appJson.expo?.android?.package || "com.anonymous.sportner",
       config: {
-        ...(appJson.expo.android?.config || {}),
+        ...(appJson.expo?.android?.config || {}),
         ...(googleMapsApiKey
           ? {
               googleMaps: {

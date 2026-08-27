@@ -21,7 +21,8 @@ function isFormData(value: unknown): value is FormData {
   return (
     typeof FormData !== "undefined" &&
     !!value &&
-    (value instanceof FormData || typeof (value as FormData).append === "function")
+    (value instanceof FormData ||
+      typeof (value as FormData).append === "function")
   );
 }
 
@@ -153,11 +154,10 @@ class APIClient {
           return false;
         }
 
-        const response = await this.instance.post<RefreshResponse>(
-          "/api/auth/refresh",
-          { refreshToken },
-          { skipAuthRefresh: true },
-        );
+        const response = await this.post<
+          RefreshResponse,
+          { refreshToken: string }
+        >("/api/auth/refresh", { refreshToken }, { skipAuthRefresh: true });
 
         const body = response.data;
         if (!body?.accessToken || !body?.refreshToken) {
