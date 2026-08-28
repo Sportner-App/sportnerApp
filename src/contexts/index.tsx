@@ -2,6 +2,7 @@ import type { PropsWithChildren } from "react";
 
 import { AuthProvider } from "./auth-provider";
 import { FirstLaunchProvider } from "./first-launch-provider";
+import { PushNotificationsProvider } from "./push-notifications-provider";
 import { SessionProvider } from "./session-provider";
 import { ToastProvider } from "./toast-provider";
 
@@ -10,7 +11,9 @@ export function AppProviders({ children }: PropsWithChildren) {
     <ToastProvider>
       <FirstLaunchProvider>
         <SessionProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <PushNotificationsProvider>{children}</PushNotificationsProvider>
+          </AuthProvider>
         </SessionProvider>
       </FirstLaunchProvider>
     </ToastProvider>

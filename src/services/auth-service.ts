@@ -1,5 +1,6 @@
 import { apiClient } from "@/lib/api/client";
 import { getApiErrorMessage } from "@/lib/api/errors";
+import { clearCurrentDevicePushToken } from "@/services/push-notifications-service";
 import type {
   AuthActionResult,
   AuthCredentials,
@@ -36,7 +37,10 @@ function toAuthUser(
   };
 }
 
-function validateUsername(username: string, forRegister: boolean): string | null {
+function validateUsername(
+  username: string,
+  forRegister: boolean,
+): string | null {
   const normalized = normalizeUsername(username);
 
   if (!normalized) {
@@ -60,7 +64,10 @@ function validateUsername(username: string, forRegister: boolean): string | null
   return null;
 }
 
-function validatePassword(password: string, forRegister: boolean): string | null {
+function validatePassword(
+  password: string,
+  forRegister: boolean,
+): string | null {
   if (!password) {
     return "Şifre gerekli.";
   }
@@ -121,7 +128,9 @@ export async function login({
   if (usernameError || passwordError) {
     return {
       data: null,
-      error: { message: usernameError || passwordError || "Geçersiz bilgiler." },
+      error: {
+        message: usernameError || passwordError || "Geçersiz bilgiler.",
+      },
     };
   }
 
@@ -162,7 +171,9 @@ export async function register({
   if (usernameError || passwordError) {
     return {
       data: null,
-      error: { message: usernameError || passwordError || "Geçersiz bilgiler." },
+      error: {
+        message: usernameError || passwordError || "Geçersiz bilgiler.",
+      },
     };
   }
 
@@ -215,6 +226,10 @@ export async function register({
  */
 export async function signOut(): Promise<AuthActionResult> {
   try {
+    await clearCurrentDevicePushToken().catch((error) => {
+      console.warn("Push token kaldırılamadı:", error);
+    });
+
     const refreshToken = await apiClient.getRefreshToken();
 
     if (refreshToken) {

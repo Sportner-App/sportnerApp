@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import type { ComponentRef } from "react";
+import { useRef, useState } from "react";
 import { View, useWindowDimensions } from "react-native";
 import Animated, {
   Extrapolation,
@@ -28,6 +29,7 @@ const STEPS = [1, 2, 3] as const;
 export function IntroScreen({ step }: { step: IntroStep }) {
   const router = useRouter();
   const { width } = useWindowDimensions();
+  const scrollRef = useRef<ComponentRef<typeof Animated.ScrollView>>(null);
   const scrollX = useSharedValue((step - 1) * width);
   const { markOnboardingSeen } = useFirstLaunch();
   const [isFinishing, setIsFinishing] = useState(false);
@@ -54,6 +56,7 @@ export function IntroScreen({ step }: { step: IntroStep }) {
 
   return (
     <Animated.ScrollView
+      ref={scrollRef}
       horizontal
       pagingEnabled
       bounces={false}
@@ -73,6 +76,12 @@ export function IntroScreen({ step }: { step: IntroStep }) {
             width={width}
             scrollX={scrollX}
             isFinishing={isFinishing}
+            onNext={() => {
+              scrollRef.current?.scrollTo({
+                x: currentStep * width,
+                animated: true,
+              });
+            }}
             onFinish={onPrimary}
           />
         );
@@ -86,6 +95,7 @@ type IntroSlideProps = {
   width: number;
   scrollX: SharedValue<number>;
   isFinishing: boolean;
+  onNext: () => void;
   onFinish: () => void;
 };
 
@@ -94,6 +104,7 @@ function IntroSlide({
   width,
   scrollX,
   isFinishing,
+  onNext,
   onFinish,
 }: IntroSlideProps) {
   const copy = FIRST_LAUNCH_COPY[`intro${step}`];
@@ -132,10 +143,10 @@ function IntroSlide({
           subtitle={copy.subtitle}
           image={IMAGES[step]}
           progressStep={step}
-          primaryLabel={isLastStep ? copy.next : undefined}
-          onPrimary={isLastStep ? onFinish : undefined}
+          primaryLabel={copy.next}
+          onPrimary={isLastStep ? onFinish : onNext}
           primaryLoading={isLastStep ? isFinishing : undefined}
-          primaryHaptic="success"
+          primaryHaptic={isLastStep ? "success" : "light"}
         />
       </Animated.View>
     </View>

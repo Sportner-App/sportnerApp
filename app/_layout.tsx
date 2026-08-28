@@ -13,6 +13,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import "../global.css";
+import { configureForegroundNotifications } from "@/services/push-notifications-service";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -22,6 +23,7 @@ export const unstable_settings = {
 };
 
 SplashScreen.preventAutoHideAsync();
+configureForegroundNotifications();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({

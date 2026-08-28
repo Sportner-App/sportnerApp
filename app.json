@@ -10,7 +10,7 @@
     "projectId": "sportner-app",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.sportner",
+      "bundleIdentifier": "com.yagizerdenler.sportner",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -32,6 +32,7 @@
     "plugins": [
       "expo-router",
       "expo-video",
+      "expo-notifications",
       [
         "expo-splash-screen",
         {
@@ -48,9 +49,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "6fa3d7d9-7387-4a83-91e7-39fd56840102"
+        "projectId": "331d00e3-0b27-4c04-9543-a901f9e9fe29"
       }
     },
-    "owner": "yagizerdenler1s-team"
+    "owner": "erdenler.yagiz"
   }
 }
