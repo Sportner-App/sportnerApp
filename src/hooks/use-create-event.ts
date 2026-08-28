@@ -6,6 +6,8 @@ import {
   CREATE_EVENT_LIMITS,
   CREATE_SPORT_OPTIONS,
   DEFAULT_EVENT_DURATION_MINUTES,
+  DEFAULT_EVENT_MAX_AGE,
+  DEFAULT_EVENT_MIN_AGE,
 } from "@/constants/events";
 import { useToast } from "@/contexts";
 import {
@@ -53,6 +55,8 @@ export function useCreateEvent() {
     eventDate: getDefaultEventDate(),
     durationMinutes: DEFAULT_EVENT_DURATION_MINUTES,
     maxPlayers: "10",
+    minParticipantAge: String(DEFAULT_EVENT_MIN_AGE),
+    maxParticipantAge: String(DEFAULT_EVENT_MAX_AGE),
     addressText: "",
     latitude: null,
     longitude: null,
@@ -144,6 +148,8 @@ export function useCreateEvent() {
   };
 
   const maxPlayersNumber = Number(values.maxPlayers);
+  const minParticipantAgeNumber = Number(values.minParticipantAge);
+  const maxParticipantAgeNumber = Number(values.maxParticipantAge);
 
   const isStep1Valid = useMemo(() => {
     const title = values.title.trim();
@@ -180,9 +186,14 @@ export function useCreateEvent() {
     return (
       Number.isFinite(maxPlayersNumber) &&
       maxPlayersNumber >= CREATE_EVENT_LIMITS.maxParticipantsMin &&
-      maxPlayersNumber <= CREATE_EVENT_LIMITS.maxParticipantsMax
+      maxPlayersNumber <= CREATE_EVENT_LIMITS.maxParticipantsMax &&
+      Number.isInteger(minParticipantAgeNumber) &&
+      Number.isInteger(maxParticipantAgeNumber) &&
+      minParticipantAgeNumber >= CREATE_EVENT_LIMITS.participantAgeMin &&
+      maxParticipantAgeNumber <= CREATE_EVENT_LIMITS.participantAgeMax &&
+      minParticipantAgeNumber <= maxParticipantAgeNumber
     );
-  }, [maxPlayersNumber]);
+  }, [maxParticipantAgeNumber, maxPlayersNumber, minParticipantAgeNumber]);
 
   const areGuestsValid = guests.every(
     (guest) =>
@@ -282,6 +293,8 @@ export function useCreateEvent() {
         eventDate: values.eventDate.toISOString(),
         durationMinutes: values.durationMinutes,
         maxParticipants: maxPlayersNumber,
+        minParticipantAge: minParticipantAgeNumber,
+        maxParticipantAge: maxParticipantAgeNumber,
         address: values.addressText.trim(),
         latitude: values.latitude,
         longitude: values.longitude,

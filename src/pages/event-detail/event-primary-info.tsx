@@ -53,6 +53,11 @@ export function EventPrimaryInfo({
         {time ? <MetaPiece icon="clock" label={time} /> : null}
         {(showPlace || time) && duration ? <MetaDot /> : null}
         {duration ? <MetaPiece icon="clock" label={duration} /> : null}
+        {showPlace || time || duration ? <MetaDot /> : null}
+        <MetaPiece
+          icon="id-card"
+          label={`${event.minParticipantAge}–${event.maxParticipantAge} yaş`}
+        />
       </View>
 
       <EventCapacitySummary

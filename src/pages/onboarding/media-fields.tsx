@@ -37,7 +37,7 @@ export function MediaFields({
         />
         <Pressable onPress={onPickAvatar} hitSlop={8}>
           <Text className="font-body text-xs text-brand-primary">
-            {avatar ? "Fotoğrafı değiştir" : "Profil fotoğrafı ekle"}
+            {avatar ? "Fotoğrafı değiştir" : "Profil fotoğrafı ekle (zorunlu)"}
           </Text>
         </Pressable>
         {avatar && onClearAvatar ? (

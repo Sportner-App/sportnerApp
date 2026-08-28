@@ -40,6 +40,8 @@ export type AuthCredentials = {
 export type RegisterPayload = AuthCredentials & {
   firstName: string;
   lastName?: string;
+  gender: number;
+  birthDate: string;
 };
 
 export type AuthSession = {
@@ -53,8 +55,7 @@ export type AuthSession = {
 };
 
 export type AuthResult =
-  | { data: AuthSession; error: null }
-  | { data: null; error: AuthError };
+  { data: AuthSession; error: null } | { data: null; error: AuthError };
 
 export type StoredSession = {
   access_token: string;

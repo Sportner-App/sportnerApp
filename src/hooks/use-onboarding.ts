@@ -207,6 +207,15 @@ export function useOnboarding() {
       return;
     }
 
+    if (!avatar) {
+      showToast({
+        type: "error",
+        title: "Profil fotoğrafı gerekli",
+        description: "Devam etmek için bir profil fotoğrafı seçmelisin.",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -229,9 +238,7 @@ export function useOnboarding() {
         lastName: user?.lastName,
       });
 
-      if (avatar) {
-        await uploadAvatar(avatar);
-      }
+      await uploadAvatar(avatar);
 
       if (video) {
         await uploadIntroVideo(video);
@@ -301,6 +308,7 @@ export function useOnboarding() {
     clearVideo: () => setVideo(null),
     isSubmitting,
     canContinueSports,
+    canFinish: canContinueSports && Boolean(avatar),
     toggleSport,
     setSportSkill,
     goToDetails,

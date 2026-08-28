@@ -67,6 +67,9 @@ export async function getEvents(
         lat: params.lat,
         lng: params.lng,
         radiusKm: params.radiusKm,
+        minAge: params.minAge,
+        maxAge: params.maxAge,
+        gender: params.gender,
         page: params.page ?? 1,
         pageSize: params.pageSize ?? 20,
       },
@@ -182,11 +185,15 @@ export async function assignEventParticipants(
 export async function removeEventParticipant(
   eventId: string,
   participantId: string,
+  payload: { reportReasonId: string; note?: string },
 ) {
   return eventAction(
     () =>
-      apiClient.delete(`/api/events/${eventId}/participants/${participantId}`),
-    "Katılımcı silinemedi",
+      apiClient.post(
+        `/api/events/${eventId}/participants/${participantId}/remove`,
+        payload,
+      ),
+    "Katılımcı çıkarılamadı",
   );
 }
 
@@ -371,6 +378,21 @@ export async function createEvent(
     };
   }
 
+  if (
+    !Number.isInteger(payload.minParticipantAge) ||
+    !Number.isInteger(payload.maxParticipantAge) ||
+    payload.minParticipantAge < 13 ||
+    payload.maxParticipantAge > 120 ||
+    payload.minParticipantAge > payload.maxParticipantAge
+  ) {
+    return {
+      data: null,
+      error: {
+        message: "Katılım yaş aralığı 13–120 arasında ve sıralı olmalı.",
+      },
+    };
+  }
+
   let eventId: string | undefined;
 
   try {
@@ -384,6 +406,8 @@ export async function createEvent(
       longitude: Number(payload.longitude.toFixed(6)),
       address,
       maxParticipants: payload.maxParticipants,
+      minParticipantAge: payload.minParticipantAge,
+      maxParticipantAge: payload.maxParticipantAge,
     });
 
     eventId = created.data?.id;

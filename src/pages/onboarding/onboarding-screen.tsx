@@ -108,7 +108,7 @@ export function OnboardingScreen() {
               label={detailsCopy.submit}
               size="lg"
               isLoading={form.isSubmitting}
-              disabled={form.isSubmitting}
+              disabled={form.isSubmitting || !form.canFinish}
               onPress={form.finish}
             />
           </Animated.View>

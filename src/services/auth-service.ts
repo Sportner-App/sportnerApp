@@ -160,6 +160,8 @@ export async function register({
   password,
   firstName,
   lastName,
+  gender,
+  birthDate,
 }: RegisterPayload): Promise<AuthResult> {
   const normalized = normalizeUsername(username);
   const trimmedFirstName = firstName.trim();
@@ -198,6 +200,20 @@ export async function register({
     };
   }
 
+  if (!Number.isInteger(gender) || gender < 0 || gender > 2) {
+    return {
+      data: null,
+      error: { message: "Geçerli bir cinsiyet seçmelisin." },
+    };
+  }
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
+    return {
+      data: null,
+      error: { message: "Geçerli bir doğum tarihi girmelisin." },
+    };
+  }
+
   try {
     const response = await apiClient.post<AuthenticationResponse>(
       "/api/auth/register",
@@ -206,6 +222,8 @@ export async function register({
         password,
         firstName: trimmedFirstName,
         lastName: trimmedLastName ?? null,
+        gender,
+        birthDate,
       },
     );
 

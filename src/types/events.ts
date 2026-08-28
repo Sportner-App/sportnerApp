@@ -13,6 +13,8 @@ export type ApiEventListItem = {
   durationMinutes: number;
   address: string;
   maxParticipants: number | null;
+  minParticipantAge: number;
+  maxParticipantAge: number;
   status: number;
   occupiedParticipantCount: number;
 };
@@ -41,6 +43,8 @@ export type ApiEventDetail = {
   longitude: number;
   address: string;
   maxParticipants: number | null;
+  minParticipantAge: number;
+  maxParticipantAge: number;
   status: number;
   occupiedParticipantCount: number;
   waitlistCount: number;
@@ -123,6 +127,8 @@ export type EventSummary = {
   location: string;
   participantCount: number;
   maxParticipants: number | null;
+  minParticipantAge: number;
+  maxParticipantAge: number;
   hostName: string;
   status: number;
   durationMinutes: number;
@@ -194,6 +200,8 @@ export type CreateEventPayload = {
   eventDate: string;
   durationMinutes: number;
   maxParticipants: number;
+  minParticipantAge: number;
+  maxParticipantAge: number;
   address: string;
   latitude: number;
   longitude: number;
@@ -211,6 +219,8 @@ export type CreateEventFormValues = {
   eventDate: Date;
   durationMinutes: number;
   maxPlayers: string;
+  minParticipantAge: string;
+  maxParticipantAge: string;
   addressText: string;
   latitude: number | null;
   longitude: number | null;
@@ -222,6 +232,9 @@ export type DiscoverEventsParams = {
   lat?: number;
   lng?: number;
   radiusKm?: number;
+  minAge?: number;
+  maxAge?: number;
+  gender?: number;
   page?: number;
   pageSize?: number;
 };

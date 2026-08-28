@@ -255,6 +255,8 @@ export function mapListItemToSummary(item: ApiEventListItem): EventSummary {
     location: shortLocation(item.address),
     participantCount: item.occupiedParticipantCount,
     maxParticipants: item.maxParticipants,
+    minParticipantAge: item.minParticipantAge,
+    maxParticipantAge: item.maxParticipantAge,
     hostName: item.organizerUsername
       ? `@${item.organizerUsername}`
       : "Organizatör",
@@ -281,6 +283,8 @@ export function mapDetailToEvent(
     location: shortLocation(detail.address),
     participantCount: detail.occupiedParticipantCount,
     maxParticipants: detail.maxParticipants,
+    minParticipantAge: detail.minParticipantAge,
+    maxParticipantAge: detail.maxParticipantAge,
     hostName: formatPersonName(organizer),
     status: detail.status,
     durationMinutes: detail.durationMinutes,

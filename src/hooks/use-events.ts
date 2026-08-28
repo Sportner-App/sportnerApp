@@ -7,6 +7,13 @@ import type { EventSummary } from "@/types/events";
 import type { Sport } from "@/types/sports";
 
 const PAGE_SIZE = 30;
+const DEFAULT_FILTERS = { minAge: 13, maxAge: 120, gender: null } as const;
+
+export type EventListFilters = {
+  minAge: number;
+  maxAge: number;
+  gender: number | null;
+};
 
 export function useEvents() {
   const [events, setEvents] = useState<EventSummary[]>([]);
@@ -18,6 +25,7 @@ export function useEvents() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [sportFilter, setSportFilter] = useState("all");
+  const [filters, setFilters] = useState<EventListFilters>(DEFAULT_FILTERS);
   const [error, setError] = useState<string | null>(null);
 
   const resolveSportId = useCallback(
@@ -34,6 +42,7 @@ export function useEvents() {
       filterSlug: string,
       catalog: Sport[],
       nextPage: number,
+      activeFilters: EventListFilters,
     ) => {
       if (mode === "initial") {
         setIsLoading(true);
@@ -49,6 +58,15 @@ export function useEvents() {
           sportId: resolveSportId(filterSlug, catalog),
           page: nextPage,
           pageSize: PAGE_SIZE,
+          minAge:
+            activeFilters.minAge === DEFAULT_FILTERS.minAge
+              ? undefined
+              : activeFilters.minAge,
+          maxAge:
+            activeFilters.maxAge === DEFAULT_FILTERS.maxAge
+              ? undefined
+              : activeFilters.maxAge,
+          gender: activeFilters.gender ?? undefined,
         });
 
         setEvents((prev) =>
@@ -86,7 +104,7 @@ export function useEvents() {
         }
 
         setSports(catalog);
-        await fetchPage("initial", "all", catalog, 1);
+        await fetchPage("initial", "all", catalog, 1, DEFAULT_FILTERS);
       } catch (err) {
         if (cancelled) {
           return;
@@ -103,22 +121,30 @@ export function useEvents() {
   }, [fetchPage]);
 
   const refresh = useCallback(() => {
-    void fetchPage("refresh", sportFilter, sports, 1);
-  }, [fetchPage, sportFilter, sports]);
+    void fetchPage("refresh", sportFilter, sports, 1, filters);
+  }, [fetchPage, filters, sportFilter, sports]);
 
   const loadMore = useCallback(() => {
     if (!hasNext || isLoadingMore) {
       return;
     }
-    void fetchPage("more", sportFilter, sports, page + 1);
-  }, [fetchPage, hasNext, isLoadingMore, page, sportFilter, sports]);
+    void fetchPage("more", sportFilter, sports, page + 1, filters);
+  }, [fetchPage, filters, hasNext, isLoadingMore, page, sportFilter, sports]);
 
   const changeSportFilter = useCallback(
     (slug: string) => {
       setSportFilter(slug);
-      void fetchPage("initial", slug, sports, 1);
+      void fetchPage("initial", slug, sports, 1, filters);
     },
-    [fetchPage, sports],
+    [fetchPage, filters, sports],
+  );
+
+  const applyFilters = useCallback(
+    (nextFilters: EventListFilters) => {
+      setFilters(nextFilters);
+      void fetchPage("initial", sportFilter, sports, 1, nextFilters);
+    },
+    [fetchPage, sportFilter, sports],
   );
 
   return {
@@ -130,6 +156,8 @@ export function useEvents() {
     isLoadingMore,
     sportFilter,
     setSportFilter: changeSportFilter,
+    filters,
+    applyFilters,
     refresh,
     loadMore,
     error,

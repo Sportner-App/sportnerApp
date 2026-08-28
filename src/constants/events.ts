@@ -45,6 +45,8 @@ export const CREATE_EVENT_COPY = {
 } as const;
 
 export const DEFAULT_EVENT_DURATION_MINUTES = 90;
+export const DEFAULT_EVENT_MIN_AGE = 18;
+export const DEFAULT_EVENT_MAX_AGE = 60;
 
 /** Backend: DurationMinutes > 0 */
 export const DURATION_OPTIONS: {
@@ -64,6 +66,8 @@ export const CREATE_EVENT_LIMITS = {
   titleMax: 150,
   maxParticipantsMin: 2,
   maxParticipantsMax: 1000,
+  participantAgeMin: 13,
+  participantAgeMax: 120,
 } as const;
 
 export const DEFAULT_EVENT_LOCATION = {

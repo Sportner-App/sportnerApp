@@ -1,5 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -8,11 +9,13 @@ import { themeColors } from "@/constants/theme";
 import { useEvents } from "@/hooks/use-events";
 
 import { EventCard } from "./event-card";
+import { EventFilterSheet } from "./event-filter-sheet";
 import { Hero } from "./hero";
 import { SportFilter } from "./sport-filter";
 
 export function HomeScreen() {
   const router = useRouter();
+  const [filterOpen, setFilterOpen] = useState(false);
   const {
     events,
     totalCount,
@@ -22,6 +25,8 @@ export function HomeScreen() {
     isLoadingMore,
     sportFilter,
     setSportFilter,
+    filters,
+    applyFilters,
     refresh,
     loadMore,
   } = useEvents();
@@ -42,6 +47,7 @@ export function HomeScreen() {
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Filtreler"
+              onPress={() => setFilterOpen(true)}
               className="h-11 w-11 items-center justify-center rounded-full active:opacity-70"
             >
               <FontAwesome6
@@ -49,6 +55,11 @@ export function HomeScreen() {
                 size={17}
                 color={themeColors.text.inverse}
               />
+              {filters.minAge !== 13 ||
+              filters.maxAge !== 120 ||
+              filters.gender != null ? (
+                <View className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full border-2 border-background-primary bg-brand-primary" />
+              ) : null}
             </Pressable>
             <Pressable
               hitSlop={8}
@@ -99,7 +110,7 @@ export function HomeScreen() {
             color={themeColors.text.secondary}
           />
           <Text className="text-center font-body text-body-sm text-text-secondary">
-            Bu spor için yaklaşan etkinlik yok.
+            Bu filtrelere uygun yaklaşan etkinlik yok.
           </Text>
         </View>
       ) : (
@@ -123,6 +134,13 @@ export function HomeScreen() {
           ) : null}
         </View>
       )}
+
+      <EventFilterSheet
+        visible={filterOpen}
+        filters={filters}
+        onClose={() => setFilterOpen(false)}
+        onApply={applyFilters}
+      />
     </TabPage>
   );
 }

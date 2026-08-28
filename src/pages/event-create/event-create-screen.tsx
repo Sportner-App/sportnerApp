@@ -23,6 +23,7 @@ import {
 import { useCreateEvent } from "@/hooks/use-create-event";
 
 import { EventCreateProgress } from "./event-create-progress";
+import { AgeRangeSlider } from "./age-range-slider";
 import { EventCompanionsStep } from "./event-companions-step";
 import { EventCreateSummary } from "./event-create-summary";
 import { DurationPickerField } from "./duration-picker-field";
@@ -298,6 +299,18 @@ export function EventCreateScreen() {
               value={values.maxPlayers}
               onChange={(maxPlayers) => update("maxPlayers", maxPlayers)}
             />
+
+            <View className="mt-6">
+              <AgeRangeSlider
+                minValue={Number(values.minParticipantAge)}
+                maxValue={Number(values.maxParticipantAge)}
+                disabled={isSubmitting}
+                onChange={(minAge, maxAge) => {
+                  update("minParticipantAge", String(minAge));
+                  update("maxParticipantAge", String(maxAge));
+                }}
+              />
+            </View>
 
             <View className="mt-8">
               <EventCreateSummary values={values} sportOptions={sportOptions} />

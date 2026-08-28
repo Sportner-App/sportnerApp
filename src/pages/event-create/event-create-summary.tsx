@@ -127,6 +127,9 @@ export function EventCreateSummary({
                 {playersLabel}
               </SummaryRow>
             ) : null}
+            <SummaryRow icon="id-card" accent={accent}>
+              {`${values.minParticipantAge}–${values.maxParticipantAge} yaş`}
+            </SummaryRow>
           </View>
         ) : null}
       </View>

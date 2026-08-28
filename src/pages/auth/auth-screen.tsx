@@ -16,8 +16,14 @@ import Animated, {
   type ExitAnimationsValues,
 } from "react-native-reanimated";
 
-import { BrandMark, Button, Input, SegmentedTabs } from "@/components";
-import { AUTH_COPY, AUTH_MODE_OPTIONS } from "@/constants/auth";
+import {
+  BrandMark,
+  Button,
+  Input,
+  SegmentedTabs,
+  SelectField,
+} from "@/components";
+import { AUTH_COPY, AUTH_MODE_OPTIONS, GENDER_OPTIONS } from "@/constants/auth";
 import { useAuthForm } from "@/hooks/use-auth-form";
 import type { AuthMode } from "@/types/auth";
 
@@ -166,6 +172,31 @@ export function AuthScreen() {
                       textContentType="familyName"
                       error={form.fieldErrors.lastName}
                     />
+                    <Input
+                      icon="calendar-days"
+                      label="Doğum tarihi"
+                      placeholder="GG.AA.YYYY"
+                      value={form.birthDate}
+                      onChangeText={form.setBirthDate}
+                      keyboardType="number-pad"
+                      maxLength={10}
+                      error={form.fieldErrors.birthDate}
+                    />
+                    <View>
+                      <SelectField
+                        label="Cinsiyet"
+                        placeholder="Cinsiyet seç"
+                        icon="venus-mars"
+                        options={GENDER_OPTIONS}
+                        value={form.gender}
+                        onChange={form.setGender}
+                      />
+                      {form.fieldErrors.gender ? (
+                        <Text className="mt-1.5 font-body text-xs text-status-error">
+                          {form.fieldErrors.gender}
+                        </Text>
+                      ) : null}
+                    </View>
                   </>
                 )}
 
