@@ -4,8 +4,8 @@ import type { BrandRefreshControlProps } from "@/types/components";
 
 /**
  * Sadece pull-to-refresh jestini sağlar.
- * `refreshing` her zaman false: native spinner hiç çizilmez.
- * Görsel feedback LinearRefreshBar'dadır.
+ * Native spinner şeffaftır; görsel feedback LinearRefreshBar'dadır.
+ * Gerçek `refreshing` değeri native yaşam döngüsünü açık tutar.
  */
 export function BrandRefreshControl({
   refreshing,
@@ -13,9 +13,8 @@ export function BrandRefreshControl({
 }: BrandRefreshControlProps) {
   return (
     <RefreshControl
-      refreshing={false}
+      refreshing={refreshing}
       onRefresh={onRefresh}
-      enabled={!refreshing}
       tintColor="transparent"
       colors={["transparent"]}
       progressBackgroundColor="transparent"

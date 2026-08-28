@@ -86,6 +86,9 @@ export function EventDetailScreen() {
             onJoin={detail.join}
             onLeave={detail.leave}
             onChat={openChat}
+            isRespondingInvitation={detail.isRespondingInvitation}
+            onAcceptInvitation={detail.acceptInvitation}
+            onDeclineInvitation={detail.declineInvitation}
           />
         ) : null
       }
@@ -136,7 +139,9 @@ export function EventDetailScreen() {
           >
             <EventPrimaryInfo
               event={detail.event}
-              onOpenUser={(userId) => router.push(`/users/${userId}`)}
+              onOpenParticipants={() =>
+                router.push(`/events/${detail.event?.id}/participants`)
+              }
               onOpenReviews={
                 detail.event.status === EVENT_STATUS.completed
                   ? () => router.push(`/events/${detail.event?.id}/reviews`)

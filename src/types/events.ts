@@ -91,6 +91,7 @@ export const PARTICIPANT_STATUS = {
   cancelled: 3,
   attended: 4,
   noShow: 5,
+  invited: 6,
 } as const;
 
 /** API: ApplyToEventResponse */
@@ -140,8 +141,8 @@ export type EventParticipant = {
 };
 
 export type EventGuestAssignment = {
-  firstName: string | null;
-  lastName: string | null;
+  firstName: string;
+  lastName: string;
 };
 
 export type EventParticipantAssignment = {

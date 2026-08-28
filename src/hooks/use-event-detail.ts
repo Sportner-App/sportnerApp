@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { useSession, useToast } from "@/contexts";
 import {
+  acceptEventInvitation,
   approveParticipant,
   cancelEvent,
   cancelParticipation,
@@ -12,6 +13,7 @@ import {
   markNoShow,
   promoteFromWaitlist,
   rejectParticipant,
+  declineEventInvitation,
 } from "@/services/events-service";
 import { EVENT_STATUS, type EventDetail } from "@/types/events";
 import {
@@ -30,6 +32,7 @@ export function useEventDetail(id: string | undefined) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
+  const [isRespondingInvitation, setIsRespondingInvitation] = useState(false);
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
   const [isMutating, setIsMutating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -209,6 +212,25 @@ export function useEventDetail(id: string | undefined) {
     }
   };
 
+  const respondToInvitation = async (accept: boolean) => {
+    if (!event || isRespondingInvitation) return;
+
+    setIsRespondingInvitation(true);
+    try {
+      const ok = await runAction(
+        () =>
+          accept
+            ? acceptEventInvitation(event.id)
+            : declineEventInvitation(event.id),
+        accept ? "Davet kabul edildi" : "Davet reddedildi",
+        accept ? "Etkinliğin katılımcıları arasındasın." : undefined,
+      );
+      ok ? successNotification() : errorNotification();
+    } finally {
+      setIsRespondingInvitation(false);
+    }
+  };
+
   const withUser = async (
     userId: string,
     action: () => Promise<{ error: { message: string } | null }>,
@@ -260,7 +282,11 @@ export function useEventDetail(id: string | undefined) {
 
   const markAbsent = (userId: string) =>
     event
-      ? withUser(userId, () => markNoShow(event.id, userId), "Gelmedi işaretlendi")
+      ? withUser(
+          userId,
+          () => markNoShow(event.id, userId),
+          "Gelmedi işaretlendi",
+        )
       : Promise.resolve();
 
   const cancel = async () => {
@@ -301,6 +327,7 @@ export function useEventDetail(id: string | undefined) {
     isRefreshing,
     isJoining,
     isLeaving,
+    isRespondingInvitation,
     isMutating,
     busyUserId,
     hasJoined,
@@ -311,6 +338,8 @@ export function useEventDetail(id: string | undefined) {
     canTakeAttendance,
     join,
     leave,
+    acceptInvitation: () => respondToInvitation(true),
+    declineInvitation: () => respondToInvitation(false),
     approve,
     reject,
     promote,

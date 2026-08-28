@@ -14,6 +14,7 @@ import type {
   EventActionResult,
   EventDetail,
   EventListPage,
+  EventParticipant,
   EventParticipantAssignment,
   EventWaitlistEntry,
   ExploreEventItem,
@@ -25,6 +26,7 @@ import {
   mapExploreEvent,
   mapExplorePerson,
   mapListItemToSummary,
+  mapParticipant,
   mapWaitlistEntry,
 } from "@/utils/events";
 
@@ -129,6 +131,15 @@ export async function getEventById(id: string): Promise<EventDetail | null> {
   }
 }
 
+export async function getEventParticipants(
+  eventId: string,
+): Promise<EventParticipant[]> {
+  const response = await apiClient.get<ApiParticipant[]>(
+    `/api/events/${eventId}/participants`,
+  );
+  return (response.data ?? []).map(mapParticipant);
+}
+
 export async function joinEvent(id: string): Promise<EventActionResult> {
   try {
     const response = await apiClient.post<ApiApplyToEventResponse>(
@@ -141,6 +152,20 @@ export async function joinEvent(id: string): Promise<EventActionResult> {
       data: null,
     };
   }
+}
+
+export async function acceptEventInvitation(eventId: string) {
+  return eventAction(
+    () => apiClient.post(`/api/events/${eventId}/invitations/me/accept`),
+    "Davet kabul edilemedi",
+  );
+}
+
+export async function declineEventInvitation(eventId: string) {
+  return eventAction(
+    () => apiClient.post(`/api/events/${eventId}/invitations/me/decline`),
+    "Davet reddedilemedi",
+  );
 }
 
 export async function assignEventParticipants(

@@ -10,6 +10,7 @@ import {
   hasApprovedParticipation,
   hasEventEnded,
   hasPendingParticipation,
+  hasEventInvitation,
 } from "@/utils/events";
 
 type JoinBarProps = {
@@ -22,6 +23,9 @@ type JoinBarProps = {
   onJoin: () => void;
   onLeave: () => void;
   onChat: () => void;
+  isRespondingInvitation: boolean;
+  onAcceptInvitation: () => void;
+  onDeclineInvitation: () => void;
 };
 
 type BarContent = {
@@ -31,6 +35,8 @@ type BarContent = {
   action?: () => void;
   variant: ButtonVariant;
   loading?: boolean;
+  secondaryActionLabel?: string;
+  secondaryAction?: () => void;
 };
 
 function occupancyLabel(event: EventDetail) {
@@ -48,6 +54,9 @@ function resolveBar({
   isOrganizer,
   onJoin,
   onChat,
+  isRespondingInvitation,
+  onAcceptInvitation,
+  onDeclineInvitation,
 }: {
   event: EventDetail;
   isJoining: boolean;
@@ -55,6 +64,9 @@ function resolveBar({
   isOrganizer: boolean;
   onJoin: () => void;
   onChat: () => void;
+  isRespondingInvitation: boolean;
+  onAcceptInvitation: () => void;
+  onDeclineInvitation: () => void;
 }): BarContent {
   const canChat = canAccessEventChat(
     event.myParticipationStatus,
@@ -83,6 +95,18 @@ function resolveBar({
       actionLabel: "Sohbete Git",
       action: canChat ? onChat : undefined,
       variant: "primary",
+    };
+  }
+
+  if (hasEventInvitation(event.myParticipationStatus)) {
+    return {
+      statusTitle: `${event.hostName} seni davet etti`,
+      actionLabel: "Kabul Et",
+      action: onAcceptInvitation,
+      secondaryActionLabel: "Reddet",
+      secondaryAction: onDeclineInvitation,
+      variant: "primary",
+      loading: isRespondingInvitation,
     };
   }
 
@@ -140,6 +164,9 @@ export function JoinBar({
   isOrganizer,
   onJoin,
   onChat,
+  isRespondingInvitation,
+  onAcceptInvitation,
+  onDeclineInvitation,
 }: JoinBarProps) {
   const insets = useSafeAreaInsets();
   const bar = resolveBar({
@@ -149,6 +176,9 @@ export function JoinBar({
     isOrganizer,
     onJoin,
     onChat,
+    isRespondingInvitation,
+    onAcceptInvitation,
+    onDeclineInvitation,
   });
 
   return (
@@ -173,18 +203,31 @@ export function JoinBar({
         ) : null}
       </View>
 
-      <View className="flex-1">
-        <Button
-          label={bar.actionLabel}
-          size="lg"
-          variant={bar.variant}
-          glow="subtle"
-          isLoading={bar.loading}
-          disabled={!bar.action}
-          pressScale={0.98}
-          haptic={bar.action ? "light" : undefined}
-          onPress={bar.action}
-        />
+      <View className="flex-1 flex-row gap-2">
+        {bar.secondaryActionLabel ? (
+          <View className="flex-1">
+            <Button
+              label={bar.secondaryActionLabel}
+              size="lg"
+              variant="outline"
+              disabled={bar.loading}
+              onPress={bar.secondaryAction}
+            />
+          </View>
+        ) : null}
+        <View className="flex-1">
+          <Button
+            label={bar.actionLabel}
+            size="lg"
+            variant={bar.variant}
+            glow="subtle"
+            isLoading={bar.loading}
+            disabled={!bar.action}
+            pressScale={0.98}
+            haptic={bar.action ? "light" : undefined}
+            onPress={bar.action}
+          />
+        </View>
       </View>
     </View>
   );

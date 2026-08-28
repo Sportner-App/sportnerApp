@@ -63,7 +63,7 @@ export function EventCompanionsStep({
               Anonim misafirler
             </Text>
             <Text className="mt-0.5 font-body text-xs text-text-tertiary">
-              Hesabı olmayan kişiler; isim girmek zorunlu değil.
+              Hesabı olmayan kişiler; ad ve soyad zorunludur.
             </Text>
           </View>
           <Pressable
@@ -110,20 +110,27 @@ export function EventCompanionsStep({
             </View>
             <View className="flex-row gap-2">
               <GuestInput
-                placeholder="Ad (opsiyonel)"
+                placeholder="Ad"
                 value={guest.firstName}
+                hasError={!guest.firstName.trim()}
                 onChangeText={(value) =>
                   onUpdateGuest(guest.localId, "firstName", value)
                 }
               />
               <GuestInput
-                placeholder="Soyad (opsiyonel)"
+                placeholder="Soyad"
                 value={guest.lastName}
+                hasError={!guest.lastName.trim()}
                 onChangeText={(value) =>
                   onUpdateGuest(guest.localId, "lastName", value)
                 }
               />
             </View>
+            {!guest.firstName.trim() || !guest.lastName.trim() ? (
+              <Text className="font-body text-[11px] text-destructive">
+                Misafirin adı ve soyadı zorunludur.
+              </Text>
+            ) : null}
           </View>
         ))}
       </View>
@@ -131,10 +138,10 @@ export function EventCompanionsStep({
       <View className="gap-3">
         <View>
           <Text className="font-body-bold text-sm text-text-primary">
-            Arkadaşlarından ekle
+            Arkadaşlarına davet gönder
           </Text>
           <Text className="mt-0.5 font-body text-xs text-text-tertiary">
-            Birden fazla arkadaş seçebilirsin.
+            Seçtiğin kişiler kabul ettikten sonra katılımcı olur.
           </Text>
         </View>
 
@@ -208,10 +215,12 @@ function GuestInput({
   placeholder,
   value,
   onChangeText,
+  hasError,
 }: {
   placeholder: string;
   value: string;
   onChangeText: (value: string) => void;
+  hasError?: boolean;
 }) {
   return (
     <TextInput
@@ -220,7 +229,9 @@ function GuestInput({
       maxLength={50}
       placeholder={placeholder}
       placeholderTextColor={themeColors.text.tertiary}
-      className="min-h-[46px] flex-1 rounded-xl border border-border-default bg-surface-secondary px-3 font-body text-sm text-text-primary"
+      className={`min-h-[46px] flex-1 rounded-xl border bg-surface-secondary px-3 font-body text-sm text-text-primary ${
+        hasError ? "border-destructive" : "border-border-default"
+      }`}
     />
   );
 }

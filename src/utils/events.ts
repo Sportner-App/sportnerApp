@@ -386,6 +386,8 @@ export function participantStatusLabel(status: number): string {
       return "Katıldı";
     case 5:
       return "Gelmedi";
+    case 6:
+      return "Davet gönderildi";
     default:
       return "";
   }
@@ -411,9 +413,14 @@ export function hasActiveParticipation(
 
   return (
     status === PARTICIPANT_STATUS.pending ||
+    status === PARTICIPANT_STATUS.invited ||
     status === PARTICIPANT_STATUS.approved ||
     status === PARTICIPANT_STATUS.attended
   );
+}
+
+export function hasEventInvitation(status: number | null | undefined): boolean {
+  return status === PARTICIPANT_STATUS.invited;
 }
 
 export function hasPendingParticipation(

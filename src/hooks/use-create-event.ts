@@ -184,7 +184,12 @@ export function useCreateEvent() {
     );
   }, [maxPlayersNumber]);
 
-  const canSubmit = isStep1Valid && isStep2Valid && isStep3Valid;
+  const areGuestsValid = guests.every(
+    (guest) =>
+      guest.firstName.trim().length > 0 && guest.lastName.trim().length > 0,
+  );
+  const canSubmit =
+    isStep1Valid && isStep2Valid && isStep3Valid && areGuestsValid;
   const reservedCount = guests.length + selectedFriendIds.length;
   const remainingCompanionSlots = Math.max(
     maxPlayersNumber - 1 - reservedCount,
@@ -313,10 +318,12 @@ export function useCreateEvent() {
         type: assigned ? "success" : "error",
         title: assigned
           ? "Etkinlik yayınlandı"
-          : "Etkinlik yayınlandı, kadro eklenemedi",
+          : "Etkinlik yayınlandı, davetler gönderilemedi",
         description: assigned
-          ? "Oyuncular seni bekliyor."
-          : "Yanındaki kişileri etkinlik detayından tekrar ekleyebilirsin.",
+          ? selectedFriendIds.length > 0
+            ? "Arkadaşlarına etkinlik daveti gönderildi."
+            : "Oyuncular seni bekliyor."
+          : "Davetleri etkinlik detayından tekrar gönderebilirsin.",
       });
 
       router.replace(`/events/${data.id}`);
@@ -331,8 +338,8 @@ export function useCreateEvent() {
     try {
       await assignEventParticipants(eventId, {
         guests: guests.map((guest) => ({
-          firstName: guest.firstName.trim() || null,
-          lastName: guest.lastName.trim() || null,
+          firstName: guest.firstName.trim(),
+          lastName: guest.lastName.trim(),
         })),
         friendUserIds: selectedFriendIds,
       });
@@ -349,6 +356,7 @@ export function useCreateEvent() {
     isStep1Valid,
     isStep2Valid,
     isStep3Valid,
+    areGuestsValid,
     canSubmit,
     isSubmitting,
     isSportsLoading,

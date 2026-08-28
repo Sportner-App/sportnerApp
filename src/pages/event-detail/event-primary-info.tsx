@@ -1,11 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, Text, View } from "react-native";
-import Animated, {
-  FadeInDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { Avatar } from "@/components";
 import { sportAccentToken, themeColors, typeStyles } from "@/constants/theme";
@@ -20,7 +15,7 @@ import { lightImpact } from "@/utils/haptics";
 
 type EventPrimaryInfoProps = {
   event: EventDetail;
-  onOpenUser?: (userId: string) => void;
+  onOpenParticipants?: () => void;
   onOpenReviews?: () => void;
 };
 
@@ -28,7 +23,7 @@ const VISIBLE_AVATARS = 3;
 
 export function EventPrimaryInfo({
   event,
-  onOpenUser,
+  onOpenParticipants,
   onOpenReviews,
 }: EventPrimaryInfoProps) {
   const title = event.title.trim() || "Etkinlik";
@@ -62,7 +57,7 @@ export function EventPrimaryInfo({
 
       <EventCapacitySummary
         event={event}
-        onOpenUser={onOpenUser}
+        onOpenParticipants={onOpenParticipants}
         onOpenReviews={onOpenReviews}
       />
     </Animated.View>
@@ -99,7 +94,7 @@ function MetaPiece({ icon, label }: { icon: IconName; label: string }) {
 
 export function EventCapacitySummary({
   event,
-  onOpenUser,
+  onOpenParticipants,
   onOpenReviews,
 }: EventPrimaryInfoProps) {
   const max = event.maxParticipants;
@@ -131,7 +126,14 @@ export function EventCapacitySummary({
 
   return (
     <View className="mt-sm gap-sm">
-      <View className="flex-row items-end justify-between gap-3">
+      <Pressable
+        disabled={!onOpenParticipants}
+        onPress={() => {
+          lightImpact();
+          onOpenParticipants?.();
+        }}
+        className="flex-row items-end justify-between gap-3 active:opacity-70"
+      >
         <View className="min-h-10 flex-1 flex-row items-center">
           {visible.length > 0 ? (
             <>
@@ -142,11 +144,6 @@ export function EventCapacitySummary({
                   index={index}
                   soft={sportSoft}
                   accent={sportColor}
-                  onPress={
-                    onOpenUser && person.userId && !person.isGuest
-                      ? () => onOpenUser(person.userId!)
-                      : undefined
-                  }
                 />
               ))}
               {extra > 0 ? (
@@ -179,9 +176,18 @@ export function EventCapacitySummary({
         </View>
 
         <View className="items-end">
-          <Text className="font-body-bold text-[18px] leading-6 text-text-primary">
-            {countLabel}
-          </Text>
+          <View className="flex-row items-center gap-2">
+            <Text className="font-body-bold text-[18px] leading-6 text-text-primary">
+              {countLabel}
+            </Text>
+            {onOpenParticipants ? (
+              <FontAwesome6
+                name="chevron-right"
+                size={10}
+                color={themeColors.text.tertiary}
+              />
+            ) : null}
+          </View>
           <Text
             className="mt-0.5 font-body text-caption"
             style={{
@@ -191,7 +197,7 @@ export function EventCapacitySummary({
             {remainingLabel}
           </Text>
         </View>
-      </View>
+      </Pressable>
 
       {fillRatio != null ? (
         <View
@@ -237,26 +243,17 @@ export function EventCapacitySummary({
   );
 }
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
 function CapacityAvatar({
   person,
   index,
   soft,
   accent,
-  onPress,
 }: {
   person: EventParticipant;
   index: number;
   soft: string;
   accent: string;
-  onPress?: () => void;
 }) {
-  const scale = useSharedValue(1);
-  const pressStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
   const face = (
     <Avatar
       uri={person.avatarUrl}
@@ -276,33 +273,12 @@ function CapacityAvatar({
     zIndex: VISIBLE_AVATARS - index,
   };
 
-  if (!onPress) {
-    return (
-      <View
-        className="h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2"
-        style={shellStyle}
-      >
-        {face}
-      </View>
-    );
-  }
-
   return (
-    <AnimatedPressable
-      onPress={() => {
-        lightImpact();
-        onPress();
-      }}
-      onPressIn={() => {
-        scale.value = withTiming(0.94, { duration: 90 });
-      }}
-      onPressOut={() => {
-        scale.value = withTiming(1, { duration: 90 });
-      }}
-      style={[pressStyle, shellStyle]}
+    <View
+      style={shellStyle}
       className="h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2"
     >
       {face}
-    </AnimatedPressable>
+    </View>
   );
 }

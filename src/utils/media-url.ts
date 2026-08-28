@@ -6,7 +6,9 @@ export function resolveMediaUrl(path: string | null | undefined) {
     return "";
   }
 
-  if (/^https?:\/\//i.test(trimmed)) {
+  // ImagePicker / ImageManipulator local URIs (file:, content:, ph:) and
+  // already absolute remote/data URIs must not be prefixed with the API URL.
+  if (/^[a-z][a-z\d+.-]*:/i.test(trimmed)) {
     return trimmed;
   }
 
