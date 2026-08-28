@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { AUTH_BYPASS } from "@/constants/env";
 import { useAuth, useFirstLaunch, useSession, useToast } from "@/contexts";
@@ -69,7 +69,7 @@ export function useAuthForm() {
   const { refreshSession } = useSession();
   const { showToast } = useToast();
 
-  const [mode, setMode] = useState<AuthMode>("login");
+  const [mode, setModeState] = useState<AuthMode>("login");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -79,9 +79,14 @@ export function useAuthForm() {
 
   const isLogin = mode === "login";
 
-  useEffect(() => {
+  const setMode = useCallback((nextMode: AuthMode) => {
+    setModeState(nextMode);
+    setUsername("");
+    setPassword("");
+    setFirstName("");
+    setLastName("");
     setHasAttemptedSubmit(false);
-  }, [mode]);
+  }, []);
 
   const canSubmit = useMemo(() => {
     if (AUTH_BYPASS) {

@@ -86,6 +86,7 @@ function RootLayoutNav() {
           <Stack.Screen name="notifications" />
           <Stack.Screen name="profile" />
           <Stack.Screen name="friends" />
+          <Stack.Screen name="conversations" />
           <Stack.Screen name="people" />
           <Stack.Screen name="feed" />
           <Stack.Screen name="posts" />

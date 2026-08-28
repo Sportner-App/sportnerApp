@@ -37,7 +37,14 @@ export function AppScreen({
         contentContainerStyle,
       ]}
       showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps={keyboardAvoiding ? "handled" : undefined}
+      keyboardShouldPersistTaps={keyboardAvoiding ? "always" : undefined}
+      keyboardDismissMode={
+        keyboardAvoiding
+          ? Platform.OS === "ios"
+            ? "interactive"
+            : "on-drag"
+          : undefined
+      }
       refreshControl={refreshControl}
     >
       {children}
@@ -72,7 +79,7 @@ export function AppScreen({
       {keyboardAvoiding ? (
         <KeyboardAvoidingView
           className="flex-1"
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           {content}
         </KeyboardAvoidingView>

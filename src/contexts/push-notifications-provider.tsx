@@ -56,7 +56,7 @@ export function PushNotificationsProvider({ children }: PropsWithChildren) {
       } else if (entityType === NOTIFICATION_ENTITY.post) {
         router.push(`/posts/${entityId}`);
       } else if (entityType === NOTIFICATION_ENTITY.conversation) {
-        router.push("/friends");
+        router.push(`/conversations/${entityId}`);
       } else if (entityType === NOTIFICATION_ENTITY.badge) {
         router.push("/badges");
       } else {

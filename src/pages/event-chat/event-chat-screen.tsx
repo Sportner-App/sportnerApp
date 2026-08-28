@@ -15,7 +15,13 @@ import type { ApiMessage } from "@/types/messaging";
 
 import { MessageRow } from "./message-row";
 
-export function EventChatScreen() {
+type EventChatScreenProps = {
+  conversationId?: string;
+};
+
+export function EventChatScreen({
+  conversationId: directConversationId,
+}: EventChatScreenProps = {}) {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { user } = useSession();
@@ -26,7 +32,7 @@ export function EventChatScreen() {
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    if (!id) {
+    if (!id && !directConversationId) {
       return;
     }
 
@@ -35,18 +41,19 @@ export function EventChatScreen() {
 
     void (async () => {
       try {
-        const conversation = await getEventConversation(id);
-        if (!conversation?.id || disposed) {
+        const resolvedConversationId =
+          directConversationId ?? (await getEventConversation(id)).id;
+        if (!resolvedConversationId || disposed) {
           return;
         }
-        setConversationId(conversation.id);
-        const page = await listMessages(conversation.id);
+        setConversationId(resolvedConversationId);
+        const page = await listMessages(resolvedConversationId);
         if (disposed) {
           return;
         }
         setMessages([...page.items].reverse());
 
-        connection = await connectEventChat(conversation.id, (payload) => {
+        connection = await connectEventChat(resolvedConversationId, (payload) => {
           const incoming = payload as ApiMessage;
           if (!incoming?.id) {
             return;
@@ -70,7 +77,7 @@ export function EventChatScreen() {
       disposed = true;
       void connection?.stop();
     };
-  }, [id, showToast]);
+  }, [directConversationId, id, showToast]);
 
   const sorted = useMemo(
     () =>
@@ -116,12 +123,23 @@ export function EventChatScreen() {
             onChangeText={setDraft}
             placeholder="Mesaj yaz…"
             placeholderTextColor="#64748b"
-            className="flex-1 rounded-2xl border border-white/10 bg-brand-surface/90 px-4 py-3 font-body text-white"
+            textAlignVertical="center"
+            hitSlop={8}
+            returnKeyType="send"
+            blurOnSubmit={false}
+            onSubmitEditing={send}
+            style={{
+              height: 48,
+              lineHeight: 20,
+              paddingTop: 0,
+              paddingBottom: 0,
+            }}
+            className="flex-1 rounded-2xl border border-white/10 bg-brand-surface/90 px-4 font-body text-base text-white"
           />
           <Pressable
             onPress={send}
             disabled={sending}
-            className="rounded-2xl bg-brand-primary px-4 py-3"
+            className="h-12 items-center justify-center rounded-2xl bg-brand-primary px-5"
           >
             <Text className="font-body font-semibold text-brand-secondary">
               Gönder

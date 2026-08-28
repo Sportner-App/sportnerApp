@@ -86,7 +86,7 @@ export function NotificationsScreen() {
     } else if (item.entityType === NOTIFICATION_ENTITY.post) {
       router.push(`/posts/${item.entityId}`);
     } else if (item.entityType === NOTIFICATION_ENTITY.conversation) {
-      router.push("/friends");
+      router.push(`/conversations/${item.entityId}`);
     } else if (item.entityType === NOTIFICATION_ENTITY.badge) {
       router.push("/badges");
     }
