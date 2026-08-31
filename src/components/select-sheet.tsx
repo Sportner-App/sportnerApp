@@ -1,6 +1,8 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect, useMemo, useState } from "react";
 import {
+  Keyboard,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -47,14 +49,44 @@ export function SelectSheet<T extends string>({
   searchable = false,
   searchPlaceholder = "Ara…",
 }: SelectSheetProps<T>) {
-  const { width: windowWidth } = useWindowDimensions();
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const [query, setQuery] = useState("");
+  const [keyboardInset, setKeyboardInset] = useState(0);
 
   useEffect(() => {
     if (!visible) {
       setQuery("");
+      setKeyboardInset(0);
+      return;
     }
+
+    const showEvent =
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent =
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+
+    const showSub = Keyboard.addListener(showEvent, (event) => {
+      setKeyboardInset(event.endCoordinates.height);
+    });
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKeyboardInset(0);
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
   }, [visible]);
+
+  const listMaxHeight = useMemo(() => {
+    const base = variant === "grid" ? 420 : 320;
+    if (!searchable || keyboardInset <= 0) {
+      return base;
+    }
+
+    const reserved = keyboardInset + 220;
+    return Math.max(140, Math.min(base, windowHeight - reserved));
+  }, [keyboardInset, searchable, variant, windowHeight]);
 
   const filtered = useMemo(
     () => filterOptions(options, query),
@@ -114,7 +146,7 @@ export function SelectSheet<T extends string>({
       ) : null}
 
       <ScrollView
-        className={variant === "grid" ? "max-h-[420px]" : "max-h-80"}
+        style={{ maxHeight: listMaxHeight }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         bounces={false}

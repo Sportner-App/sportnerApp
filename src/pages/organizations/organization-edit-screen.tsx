@@ -8,11 +8,13 @@ import { useCities } from "@/hooks/use-cities";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { getOrganization, updateOrganization } from "@/services/organizations-service";
 import type { SelectOption } from "@/types/components";
+import { resolveRouteParam } from "@/utils/route-params";
 
 export function OrganizationEditScreen() {
   const router = useRouter();
   const { showToast } = useToast();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id: rawId } = useLocalSearchParams<{ id: string }>();
+  const organizationId = useMemo(() => resolveRouteParam(rawId), [rawId]);
   const { cities, isLoading: citiesLoading } = useCities();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -31,8 +33,8 @@ export function OrganizationEditScreen() {
   );
 
   useEffect(() => {
-    if (!id) return;
-    void getOrganization(id)
+    if (!organizationId) return;
+    void getOrganization(organizationId)
       .then((detail) => {
         setName(detail.name);
         setDescription(detail.description ?? "");
@@ -46,10 +48,10 @@ export function OrganizationEditScreen() {
         });
       })
       .finally(() => setIsLoading(false));
-  }, [id, showToast]);
+  }, [organizationId, showToast]);
 
   const submit = async () => {
-    if (!id) return;
+    if (!organizationId) return;
     const trimmed = name.trim();
     if (!trimmed) {
       showToast({ type: "error", title: "İsim gerekli" });
@@ -58,7 +60,7 @@ export function OrganizationEditScreen() {
 
     setIsSubmitting(true);
     try {
-      await updateOrganization(id, {
+      await updateOrganization(organizationId, {
         name: trimmed,
         description: description.trim() || null,
         cityId: cityId || null,

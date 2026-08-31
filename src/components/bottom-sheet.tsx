@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Dimensions,
+  Keyboard,
+  KeyboardAvoidingView,
   Modal,
   PanResponder,
+  Platform,
   Pressable,
   Text,
   View,
@@ -156,7 +159,10 @@ export function BottomSheet({
       statusBarTranslucent
       onRequestClose={onClose}
     >
-      <View className="flex-1 justify-end">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1 justify-end"
+      >
         <Pressable className="absolute inset-0" onPress={onClose}>
           <Animated.View
             style={backdropStyle}
@@ -209,7 +215,7 @@ export function BottomSheet({
             </View>
           </View>
         </Animated.View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

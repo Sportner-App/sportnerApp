@@ -1,6 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Alert, Pressable, Share, Text, View } from "react-native";
 
 import {
@@ -39,12 +39,14 @@ import {
   type ApiOrganizationMember,
 } from "@/types/organizations";
 import { mapListItemToSummary } from "@/utils/events";
+import { resolveRouteParam } from "@/utils/route-params";
 
 export function OrganizationDetailScreen() {
   const router = useRouter();
   const { user } = useSession();
   const { showToast } = useToast();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id: rawId } = useLocalSearchParams<{ id: string }>();
+  const organizationId = useMemo(() => resolveRouteParam(rawId), [rawId]);
   const [organization, setOrganization] = useState<ApiOrganizationDetail | null>(
     null,
   );
@@ -59,23 +61,57 @@ export function OrganizationDetailScreen() {
 
   const load = useCallback(
     async (mode: "initial" | "refresh") => {
-      if (!id) return;
+      if (!organizationId) return;
       if (mode === "initial") setIsLoading(true);
       else setIsRefreshing(true);
       try {
-        const detail = await getOrganization(id);
+        const detail = await getOrganization(organizationId);
         setOrganization(detail);
+
         if (detail.myStatus === ORGANIZATION_STATUS.approved) {
-          const [eventItems, memberItems, blockedItems] = await Promise.all([
-            listOrganizationEvents(id),
-            listOrganizationMembers(id),
-            detail.canManageMembers
-              ? listBlockedOrganizationMembers(id)
-              : Promise.resolve([]),
-          ]);
-          setEvents(eventItems.map(mapListItemToSummary));
-          setMembers(memberItems);
-          setBlockedMembers(blockedItems);
+          const [eventsResult, membersResult, blockedResult] =
+            await Promise.allSettled([
+              listOrganizationEvents(organizationId),
+              listOrganizationMembers(organizationId),
+              detail.canManageMembers
+                ? listBlockedOrganizationMembers(organizationId)
+                : Promise.resolve([]),
+            ]);
+
+          if (eventsResult.status === "fulfilled") {
+            setEvents(eventsResult.value.map(mapListItemToSummary));
+          } else {
+            setEvents([]);
+            showToast({
+              type: "error",
+              title: "Etkinlikler yüklenemedi",
+              description: getApiErrorMessage(eventsResult.reason),
+            });
+          }
+
+          if (membersResult.status === "fulfilled") {
+            setMembers(membersResult.value);
+          } else {
+            setMembers([]);
+            showToast({
+              type: "error",
+              title: "Üyeler yüklenemedi",
+              description: getApiErrorMessage(membersResult.reason),
+            });
+          }
+
+          if (blockedResult.status === "fulfilled") {
+            setBlockedMembers(blockedResult.value);
+          } else {
+            setBlockedMembers([]);
+            if (detail.canManageMembers) {
+              showToast({
+                type: "error",
+                title: "Engellenenler yüklenemedi",
+                description: getApiErrorMessage(blockedResult.reason),
+              });
+            }
+          }
         } else {
           setEvents([]);
           setMembers([]);
@@ -93,7 +129,7 @@ export function OrganizationDetailScreen() {
         setIsRefreshing(false);
       }
     },
-    [id, showToast],
+    [organizationId, showToast],
   );
 
   useFocusEffect(
