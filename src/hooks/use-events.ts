@@ -8,6 +8,7 @@ import type { Sport } from "@/types/sports";
 
 const PAGE_SIZE = 30;
 const DEFAULT_FILTERS = {
+  city: null,
   minAge: 13,
   maxAge: 120,
   gender: null,
@@ -16,6 +17,7 @@ const DEFAULT_FILTERS = {
 } as const;
 
 export type EventListFilters = {
+  city: string | null;
   minAge: number;
   maxAge: number;
   gender: number | null;
@@ -68,6 +70,7 @@ export function useEvents() {
         setError(null);
         const result = await getEvents({
           sportId: resolveSportId(filterSlug, catalog),
+          city: activeFilters.city ?? undefined,
           page: nextPage,
           pageSize: PAGE_SIZE,
           minAge:
@@ -144,7 +147,16 @@ export function useEvents() {
       return;
     }
     void fetchPage("more", sportFilter, sports, page + 1, filters, scope);
-  }, [fetchPage, filters, hasNext, isLoadingMore, page, scope, sportFilter, sports]);
+  }, [
+    fetchPage,
+    filters,
+    hasNext,
+    isLoadingMore,
+    page,
+    scope,
+    sportFilter,
+    sports,
+  ]);
 
   const changeSportFilter = useCallback(
     (slug: string) => {

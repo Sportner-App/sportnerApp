@@ -6,12 +6,14 @@ import {
   AppScreen,
   Button,
   Input,
+  SelectField,
   ScreenHeader,
   SportLoader,
 } from "@/components";
 import { useToast } from "@/contexts";
 import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
 import { useProfile } from "@/hooks/use-profile";
+import { useCities } from "@/hooks/use-cities";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { MediaFields } from "@/pages/onboarding/media-fields";
 import {
@@ -40,6 +42,8 @@ export function ProfileEditScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [avatar, setAvatar] = useState<PickedMedia | null>(null);
   const [video, setVideo] = useState<PickedMedia | null>(null);
+  const { options: cityOptions, isLoading: isCitiesLoading, error: citiesError } =
+    useCities();
 
   useEffect(() => {
     if (!profile) {
@@ -116,6 +120,15 @@ export function ProfileEditScreen() {
       return;
     }
 
+    if (city && !cityOptions.some((option) => option.key === city)) {
+      showToast({
+        type: "error",
+        title: "Şehir seçimi gerekli",
+        description: "Lütfen şehir listesinden geçerli bir şehir seç.",
+      });
+      return;
+    }
+
     setIsSaving(true);
     try {
       await updateDisplayName(firstName.trim(), lastName.trim() || null);
@@ -157,7 +170,19 @@ export function ProfileEditScreen() {
 
           <Input label="Ad" value={firstName} onChangeText={setFirstName} />
           <Input label="Soyad" value={lastName} onChangeText={setLastName} />
-          <Input label="Şehir" value={city} onChangeText={setCity} />
+          <SelectField
+            label="Şehir"
+            placeholder={isCitiesLoading ? "Şehirler yükleniyor..." : "Şehir seç"}
+            icon="location-dot"
+            options={cityOptions}
+            value={city}
+            onChange={setCity}
+            disabled={isCitiesLoading || Boolean(citiesError)}
+            searchable
+            searchPlaceholder="Şehir ara"
+            sheetTitle="Şehir seç"
+            sheetSubtitle="Türkiye'deki 81 ilden birini seç"
+          />
           <Input
             label="Kısa bio"
             value={bio}

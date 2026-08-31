@@ -8,6 +8,7 @@ import {
   ONBOARDING_SPORT_GROUPS,
 } from "@/constants/onboarding";
 import { useSession, useToast } from "@/contexts";
+import { useCities } from "@/hooks/use-cities";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
   addMySportSafe,
@@ -45,6 +46,11 @@ export function useOnboarding() {
   const [avatar, setAvatar] = useState<PickedMedia | null>(null);
   const [video, setVideo] = useState<PickedMedia | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    options: cityOptions,
+    isLoading: isCitiesLoading,
+    error: citiesError,
+  } = useCities();
 
   const requestIdRef = useRef(0);
 
@@ -300,6 +306,9 @@ export function useOnboarding() {
     editingDraft,
     city,
     setCity,
+    cityOptions,
+    isCitiesLoading,
+    citiesError,
     bio,
     setBio,
     avatar,

@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Button, Input } from "@/components";
+import { Button, Input, SelectField } from "@/components";
 import { ONBOARDING_COPY } from "@/constants/onboarding";
 import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
 import { useOnboarding } from "@/hooks/use-onboarding";
@@ -87,13 +87,18 @@ export function OnboardingScreen() {
               onClearAvatar={form.clearAvatar}
               onClearVideo={form.clearVideo}
             />
-            <Input
+            <SelectField
               label="Şehir"
-              placeholder="Örn. İstanbul"
+              placeholder={form.isCitiesLoading ? "Şehirler yükleniyor..." : "Şehir seç"}
               icon="location-dot"
+              options={form.cityOptions}
               value={form.city}
-              onChangeText={form.setCity}
-              autoCapitalize="words"
+              onChange={form.setCity}
+              disabled={form.isCitiesLoading || Boolean(form.citiesError)}
+              searchable
+              searchPlaceholder="Şehir ara"
+              sheetTitle="Şehir seç"
+              sheetSubtitle="Türkiye'deki 81 ilden birini seç"
             />
             <Input
               label="Bio"

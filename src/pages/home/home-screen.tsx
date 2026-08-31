@@ -66,7 +66,8 @@ export function HomeScreen() {
                 size={17}
                 color={themeColors.text.primary}
               />
-              {filters.minAge !== 13 ||
+              {filters.city != null ||
+              filters.minAge !== 13 ||
               filters.maxAge !== 120 ||
               filters.gender != null ||
               filters.skillLevel != null ||
@@ -104,8 +105,12 @@ export function HomeScreen() {
           />
           <Text className="font-body-bold text-[15px] text-text-primary">
             {isFriends
-              ? "Arkadaşlarının düzenlediği etkinlikler"
-              : "Yakınındaki etkinlikler"}
+              ? filters.city
+                ? `${filters.city} · Arkadaşlarının etkinlikleri`
+                : "Arkadaşlarının düzenlediği etkinlikler"
+              : filters.city
+                ? `${filters.city} etkinlikleri`
+                : "Tüm şehirlerdeki etkinlikler"}
           </Text>
         </View>
 

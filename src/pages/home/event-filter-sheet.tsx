@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { BottomSheet, Button } from "@/components";
+import { BottomSheet, Button, SelectField } from "@/components";
 import { GENDER_OPTIONS } from "@/constants/auth";
 import { ONBOARDING_SKILL_OPTIONS } from "@/constants/onboarding";
 import type { EventListFilters } from "@/hooks/use-events";
+import { useCities } from "@/hooks/use-cities";
 import { AgeRangeSlider } from "@/pages/event-create/age-range-slider";
 
 type EventFilterSheetProps = {
@@ -15,6 +16,7 @@ type EventFilterSheetProps = {
 };
 
 const DEFAULT_FILTERS: EventListFilters = {
+  city: null,
   minAge: 13,
   maxAge: 120,
   gender: null,
@@ -29,6 +31,19 @@ export function EventFilterSheet({
   onApply,
 }: EventFilterSheetProps) {
   const [draft, setDraft] = useState(filters);
+  const {
+    options: cityOptions,
+    isLoading: isCitiesLoading,
+    error: citiesError,
+  } = useCities();
+  const locationOptions = [
+    {
+      key: "",
+      label: "Tüm şehirler",
+      description: "Konuma göre filtreleme yapma",
+    },
+    ...cityOptions,
+  ];
 
   useEffect(() => {
     if (visible) setDraft(filters);
@@ -39,10 +54,26 @@ export function EventFilterSheet({
       visible={visible}
       onClose={onClose}
       title="Etkinlik filtreleri"
-      subtitle="Yaş, ücret, seviye ve organizatör cinsiyetine göre daralt."
+      subtitle="Konum, yaş, ücret, seviye ve organizatör cinsiyetine göre daralt."
       showCancel={false}
     >
       <View className="gap-5">
+        <SelectField
+          label="Konum"
+          placeholder={isCitiesLoading ? "Şehirler yükleniyor..." : "Şehir seç"}
+          icon="location-dot"
+          options={locationOptions}
+          value={draft.city ?? ""}
+          onChange={(city) =>
+            setDraft((current) => ({ ...current, city: city || null }))
+          }
+          disabled={isCitiesLoading || Boolean(citiesError)}
+          searchable
+          searchPlaceholder="Şehir ara"
+          sheetTitle="Konum seç"
+          sheetSubtitle="Etkinliğin bulunduğu şehri seç"
+        />
+
         <AgeRangeSlider
           minValue={draft.minAge}
           maxValue={draft.maxAge}
