@@ -1,17 +1,31 @@
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import { Text, View } from "react-native";
 
 import { AppScreen, Button, Input, ScreenHeader } from "@/components";
 import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { joinOrganization } from "@/services/organizations-service";
+import { resolveRouteParam } from "@/utils/route-params";
 
 export function OrganizationJoinScreen() {
   const router = useRouter();
   const { showToast } = useToast();
-  const [inviteCode, setInviteCode] = useState("");
+  const { inviteCode: inviteCodeParam } = useLocalSearchParams<{
+    inviteCode?: string;
+  }>();
+  const prefilledCode = useMemo(
+    () => resolveRouteParam(inviteCodeParam)?.toUpperCase() ?? "",
+    [inviteCodeParam],
+  );
+  const [inviteCode, setInviteCode] = useState(prefilledCode);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (prefilledCode) {
+      setInviteCode(prefilledCode);
+    }
+  }, [prefilledCode]);
 
   const submit = async () => {
     const code = inviteCode.trim().toUpperCase();

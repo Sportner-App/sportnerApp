@@ -1,7 +1,10 @@
 import { useFocusEffect } from "@react-navigation/native";
+import * as Clipboard from "expo-clipboard";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { Alert, Pressable, Share, Text, View } from "react-native";
+import { Alert, Pressable, Text, View } from "react-native";
 
 import {
   AppScreen,
@@ -10,40 +13,39 @@ import {
   LinearRefreshBar,
   ScreenHeader,
   SportLoader,
-  UserIdentity,
 } from "@/components";
-import { useSession, useToast } from "@/contexts";
+import { themeColors } from "@/constants/theme";
+import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { EventCard } from "@/pages/home/event-card";
 import {
-  approveOrganizationMember,
-  blockOrganizationMember,
   getOrganization,
   leaveOrganization,
-  listBlockedOrganizationMembers,
   listOrganizationEvents,
   listOrganizationMembers,
-  rejectOrganizationMember,
-  removeOrganizationMember,
   rotateInviteCode,
-  unblockOrganizationMember,
-  updateOrganizationMemberRole,
 } from "@/services/organizations-service";
 import type { EventSummary } from "@/types/events";
 import {
-  canModerateOrganizationMember,
-  ORGANIZATION_ROLE,
   ORGANIZATION_STATUS,
-  organizationRoleLabel,
   type ApiOrganizationDetail,
   type ApiOrganizationMember,
 } from "@/types/organizations";
 import { mapListItemToSummary } from "@/utils/events";
+import {
+  shareOrganizationInvite,
+  shareOrganizationInviteViaWhatsApp,
+} from "@/utils/organization-invite";
 import { resolveRouteParam } from "@/utils/route-params";
+
+import {
+  MEMBER_PREVIEW_LIMIT,
+  OrganizationMemberRow,
+  buildMemberPreview,
+} from "./organization-member-row";
 
 export function OrganizationDetailScreen() {
   const router = useRouter();
-  const { user } = useSession();
   const { showToast } = useToast();
   const { id: rawId } = useLocalSearchParams<{ id: string }>();
   const organizationId = useMemo(() => resolveRouteParam(rawId), [rawId]);
@@ -52,12 +54,8 @@ export function OrganizationDetailScreen() {
   );
   const [events, setEvents] = useState<EventSummary[]>([]);
   const [members, setMembers] = useState<ApiOrganizationMember[]>([]);
-  const [blockedMembers, setBlockedMembers] = useState<ApiOrganizationMember[]>(
-    [],
-  );
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [busyUserId, setBusyUserId] = useState<string | null>(null);
 
   const load = useCallback(
     async (mode: "initial" | "refresh") => {
@@ -69,14 +67,10 @@ export function OrganizationDetailScreen() {
         setOrganization(detail);
 
         if (detail.myStatus === ORGANIZATION_STATUS.approved) {
-          const [eventsResult, membersResult, blockedResult] =
-            await Promise.allSettled([
-              listOrganizationEvents(organizationId),
-              listOrganizationMembers(organizationId),
-              detail.canManageMembers
-                ? listBlockedOrganizationMembers(organizationId)
-                : Promise.resolve([]),
-            ]);
+          const [eventsResult, membersResult] = await Promise.allSettled([
+            listOrganizationEvents(organizationId),
+            listOrganizationMembers(organizationId),
+          ]);
 
           if (eventsResult.status === "fulfilled") {
             setEvents(eventsResult.value.map(mapListItemToSummary));
@@ -99,23 +93,9 @@ export function OrganizationDetailScreen() {
               description: getApiErrorMessage(membersResult.reason),
             });
           }
-
-          if (blockedResult.status === "fulfilled") {
-            setBlockedMembers(blockedResult.value);
-          } else {
-            setBlockedMembers([]);
-            if (detail.canManageMembers) {
-              showToast({
-                type: "error",
-                title: "Engellenenler yüklenemedi",
-                description: getApiErrorMessage(blockedResult.reason),
-              });
-            }
-          }
         } else {
           setEvents([]);
           setMembers([]);
-          setBlockedMembers([]);
         }
       } catch (error) {
         showToast({
@@ -138,11 +118,44 @@ export function OrganizationDetailScreen() {
     }, [load]),
   );
 
+  const copyCode = async () => {
+    if (!organization?.inviteCode) return;
+    await Clipboard.setStringAsync(organization.inviteCode);
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    showToast({
+      type: "success",
+      title: "Kod kopyalandı",
+      description: organization.inviteCode,
+    });
+  };
+
   const shareCode = async () => {
     if (!organization?.inviteCode) return;
-    await Share.share({
-      message: `${organization.name} davet kodu: ${organization.inviteCode}`,
-    });
+    try {
+      await shareOrganizationInvite(organization.name, organization.inviteCode);
+    } catch (error) {
+      showToast({
+        type: "error",
+        title: "Paylaşılamadı",
+        description: getApiErrorMessage(error),
+      });
+    }
+  };
+
+  const shareCodeViaWhatsApp = async () => {
+    if (!organization?.inviteCode) return;
+    try {
+      await shareOrganizationInviteViaWhatsApp(
+        organization.name,
+        organization.inviteCode,
+      );
+    } catch (error) {
+      showToast({
+        type: "error",
+        title: "WhatsApp açılamadı",
+        description: getApiErrorMessage(error),
+      });
+    }
   };
 
   const rotateCode = async () => {
@@ -185,24 +198,30 @@ export function OrganizationDetailScreen() {
     ]);
   };
 
-  const runMemberAction = async (
-    userId: string,
-    action: () => Promise<void>,
-  ) => {
-    setBusyUserId(userId);
-    try {
-      await action();
-      await load("refresh");
-    } catch (error) {
-      showToast({
-        type: "error",
-        title: "İşlem yapılamadı",
-        description: getApiErrorMessage(error),
-      });
-    } finally {
-      setBusyUserId(null);
-    }
-  };
+  const memberPreview = useMemo(
+    () =>
+      organization
+        ? buildMemberPreview(members, organization.canManageMembers)
+        : [],
+    [members, organization],
+  );
+
+  const approvedCount = useMemo(
+    () =>
+      members.filter((member) => member.status === ORGANIZATION_STATUS.approved)
+        .length,
+    [members],
+  );
+
+  const pendingCount = useMemo(
+    () =>
+      members.filter((member) => member.status === ORGANIZATION_STATUS.pending)
+        .length,
+    [members],
+  );
+
+  const showAllMembersLink =
+    members.length > MEMBER_PREVIEW_LIMIT || organization?.canManageMembers;
 
   return (
     <AppScreen
@@ -265,12 +284,46 @@ export function OrganizationDetailScreen() {
                   <Text className="font-body text-xs text-text-tertiary">
                     Davet kodu
                   </Text>
-                  <Text className="mt-1 font-mono text-2xl text-text-primary">
-                    {organization.inviteCode}
+                  <View className="mt-2 flex-row items-center gap-2">
+                    <Pressable
+                      onPress={() => void copyCode()}
+                      className="min-w-0 flex-1 rounded-2xl border border-border-default bg-surface-secondary px-4 py-3 active:opacity-80"
+                    >
+                      <Text
+                        selectable
+                        className="font-mono text-2xl tracking-[0.2em] text-text-primary"
+                      >
+                        {organization.inviteCode}
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel="Davet kodunu kopyala"
+                      onPress={() => void copyCode()}
+                      hitSlop={8}
+                      className="h-12 w-12 items-center justify-center rounded-2xl border border-border-default bg-surface-secondary active:bg-surface-primary"
+                    >
+                      <FontAwesome6
+                        name="copy"
+                        size={16}
+                        color={themeColors.brand.primary}
+                      />
+                    </Pressable>
+                  </View>
+                  <Text className="mt-2 font-body text-xs text-text-tertiary">
+                    Koda dokunarak da kopyalayabilirsin.
                   </Text>
                   <View className="mt-3 flex-row gap-2">
                     <View className="flex-1">
                       <Button label="Paylaş" size="sm" onPress={shareCode} />
+                    </View>
+                    <View className="flex-1">
+                      <Button
+                        label="WhatsApp"
+                        variant="outline"
+                        size="sm"
+                        onPress={shareCodeViaWhatsApp}
+                      />
                     </View>
                     {organization.canRotateInviteCode ? (
                       <View className="flex-1">
@@ -322,200 +375,71 @@ export function OrganizationDetailScreen() {
                 ))
               )}
 
-              <Text className="font-display text-lg text-text-primary">
-                Üyeler
-              </Text>
-              {members.map((member) => (
-                <View
-                  key={member.userId}
-                  className="rounded-2xl border border-border-default bg-surface-primary p-3"
-                >
-                  <UserIdentity
-                    username={member.username}
-                    avatarUrl={member.profileImageUrl}
-                    fallbackName={member.firstName}
-                    onPress={() => router.push(`/users/${member.userId}`)}
-                  />
-                  <Text className="mt-2 font-body text-xs text-text-tertiary">
-                    {member.status === ORGANIZATION_STATUS.pending
-                      ? "Onay bekliyor"
-                      : organizationRoleLabel(member.role)}
-                  </Text>
-                  {organization.canManageMembers
-                  && member.status === ORGANIZATION_STATUS.pending ? (
-                    <View className="mt-3 flex-row gap-2">
-                      <View className="flex-1">
-                        <Button
-                          label="Onayla"
-                          size="sm"
-                          disabled={busyUserId === member.userId}
-                          isLoading={busyUserId === member.userId}
-                          onPress={() =>
-                            void runMemberAction(member.userId, async () => {
-                              await approveOrganizationMember(
-                                organization.id,
-                                member.userId,
-                              );
-                            })
-                          }
-                        />
-                      </View>
-                      <View className="flex-1">
-                        <Button
-                          label="Reddet"
-                          variant="outline"
-                          size="sm"
-                          disabled={busyUserId === member.userId}
-                          onPress={() =>
-                            void runMemberAction(member.userId, async () => {
-                              await rejectOrganizationMember(
-                                organization.id,
-                                member.userId,
-                              );
-                            })
-                          }
-                        />
-                      </View>
-                    </View>
-                  ) : null}
-                  {organization.canRotateInviteCode
-                  && member.role !== ORGANIZATION_ROLE.founder
-                  && member.status === ORGANIZATION_STATUS.approved ? (
-                    <View className="mt-3">
-                      <Button
-                        label={
-                          member.role === ORGANIZATION_ROLE.admin
-                            ? "Yöneticiliği kaldır"
-                            : "Yönetici yap"
-                        }
-                        variant="ghost"
-                        size="sm"
-                        disabled={busyUserId === member.userId}
-                        onPress={() =>
-                          void runMemberAction(member.userId, async () => {
-                            await updateOrganizationMemberRole(
-                              organization.id,
-                              member.userId,
-                              member.role === ORGANIZATION_ROLE.admin
-                                ? ORGANIZATION_ROLE.member
-                                : ORGANIZATION_ROLE.admin,
-                            );
-                          })
-                        }
-                      />
-                    </View>
-                  ) : null}
-                  {organization.canManageMembers
-                  && member.status === ORGANIZATION_STATUS.approved
-                  && canModerateOrganizationMember(
-                    organization.myRole,
-                    user?.id,
-                    member,
-                  ) ? (
-                    <View className="mt-3 flex-row gap-2">
-                      <View className="flex-1">
-                        <Button
-                          label="Çıkar"
-                          variant="outline"
-                          size="sm"
-                          disabled={busyUserId === member.userId}
-                          onPress={() =>
-                            Alert.alert(
-                              "Üyeyi çıkar",
-                              "Kişi organizasyondan çıkarılır. İsterse davet koduyla tekrar başvurabilir.",
-                              [
-                                { text: "Vazgeç", style: "cancel" },
-                                {
-                                  text: "Çıkar",
-                                  style: "destructive",
-                                  onPress: () =>
-                                    void runMemberAction(member.userId, async () => {
-                                      await removeOrganizationMember(
-                                        organization.id,
-                                        member.userId,
-                                      );
-                                    }),
-                                },
-                              ],
-                            )
-                          }
-                        />
-                      </View>
-                      <View className="flex-1">
-                        <Button
-                          label="Engelle"
-                          variant="danger"
-                          size="sm"
-                          disabled={busyUserId === member.userId}
-                          onPress={() =>
-                            Alert.alert(
-                              "Üyeyi engelle",
-                              "Engellenen kişi davet koduyla tekrar katılamaz. İstersen sonra engeli kaldırırsın.",
-                              [
-                                { text: "Vazgeç", style: "cancel" },
-                                {
-                                  text: "Engelle",
-                                  style: "destructive",
-                                  onPress: () =>
-                                    void runMemberAction(member.userId, async () => {
-                                      await blockOrganizationMember(
-                                        organization.id,
-                                        member.userId,
-                                      );
-                                    }),
-                                },
-                              ],
-                            )
-                          }
-                        />
-                      </View>
-                    </View>
-                  ) : null}
-                </View>
-              ))}
-
-              {organization.canManageMembers ? (
-                <>
+              <View className="flex-row items-center justify-between">
+                <View>
                   <Text className="font-display text-lg text-text-primary">
-                    Engellenenler
+                    Üyeler
                   </Text>
-                  {blockedMembers.length === 0 ? (
-                    <Text className="font-body text-sm text-text-tertiary">
-                      Engellenen kimse yok.
+                  <Text className="font-body text-xs text-text-tertiary">
+                    {approvedCount} üye
+                    {organization.canManageMembers && pendingCount > 0
+                      ? ` · ${pendingCount} onay bekliyor`
+                      : ""}
+                  </Text>
+                </View>
+                {showAllMembersLink ? (
+                  <Pressable
+                    hitSlop={8}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/organizations/[id]/members",
+                        params: {
+                          id: organization.id,
+                          tab:
+                            organization.canManageMembers && pendingCount > 0
+                              ? "pending"
+                              : "members",
+                        },
+                      })
+                    }
+                  >
+                    <Text className="font-body text-[11px] font-semibold text-brand-primary">
+                      Tümünü gör
                     </Text>
-                  ) : (
-                    blockedMembers.map((member) => (
-                      <View
-                        key={member.userId}
-                        className="rounded-2xl border border-border-default bg-surface-primary p-3"
-                      >
-                        <UserIdentity
-                          username={member.username}
-                          avatarUrl={member.profileImageUrl}
-                          fallbackName={member.firstName}
-                          onPress={() => router.push(`/users/${member.userId}`)}
-                        />
-                        <View className="mt-3">
-                          <Button
-                            label="Engeli kaldır"
-                            variant="outline"
-                            size="sm"
-                            disabled={busyUserId === member.userId}
-                            isLoading={busyUserId === member.userId}
-                            onPress={() =>
-                              void runMemberAction(member.userId, async () => {
-                                await unblockOrganizationMember(
-                                  organization.id,
-                                  member.userId,
-                                );
-                              })
-                            }
-                          />
-                        </View>
-                      </View>
-                    ))
-                  )}
-                </>
+                  </Pressable>
+                ) : null}
+              </View>
+
+              {memberPreview.length === 0 ? (
+                <Text className="font-body text-sm text-text-tertiary">
+                  Henüz üye yok.
+                </Text>
+              ) : (
+                memberPreview.map((member) => (
+                  <OrganizationMemberRow
+                    key={member.userId}
+                    member={member}
+                    organization={organization}
+                    showActions={false}
+                    onPressProfile={() => router.push(`/users/${member.userId}`)}
+                  />
+                ))
+              )}
+
+              {members.length > memberPreview.length ? (
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: "/organizations/[id]/members",
+                      params: { id: organization.id },
+                    })
+                  }
+                  className="items-center rounded-2xl border border-border-default bg-surface-primary py-3 active:bg-surface-secondary"
+                >
+                  <Text className="font-body text-sm font-semibold text-brand-primary">
+                    +{members.length - memberPreview.length} üye daha
+                  </Text>
+                </Pressable>
               ) : null}
 
               {organization.canLeave ? (

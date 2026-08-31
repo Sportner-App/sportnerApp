@@ -14,6 +14,7 @@
       "infoPlist": {
         "CFBundleDisplayName": "Sportner",
         "ITSAppUsesNonExemptEncryption": false,
+        "LSApplicationQueriesSchemes": ["whatsapp"],
         "NSCameraUsageDescription": "Yeni fotoğraf çekmek için kamera erişimi gerekir.",
         "NSPhotoLibraryUsageDescription": "Profil fotoğrafı ve gönderi eklemek için galeri erişimi gerekir."
       }
