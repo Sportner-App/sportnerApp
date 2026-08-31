@@ -30,6 +30,7 @@ import {
   ORGANIZATION_STATUS,
   type ApiOrganizationDetail,
   type ApiOrganizationMember,
+  organizationRoleLabel,
 } from "@/types/organizations";
 import { mapListItemToSummary } from "@/utils/events";
 import {
@@ -49,9 +50,8 @@ export function OrganizationDetailScreen() {
   const { showToast } = useToast();
   const { id: rawId } = useLocalSearchParams<{ id: string }>();
   const organizationId = useMemo(() => resolveRouteParam(rawId), [rawId]);
-  const [organization, setOrganization] = useState<ApiOrganizationDetail | null>(
-    null,
-  );
+  const [organization, setOrganization] =
+    useState<ApiOrganizationDetail | null>(null);
   const [events, setEvents] = useState<EventSummary[]>([]);
   const [members, setMembers] = useState<ApiOrganizationMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -245,27 +245,15 @@ export function OrganizationDetailScreen() {
         </Text>
       ) : (
         <>
-          <Text className="font-display text-3xl text-text-primary">
-            {organization.name}
-          </Text>
-          {organization.cityName ? (
-            <Text className="font-body text-sm text-text-secondary">
-              {organization.cityName}
-            </Text>
-          ) : null}
-          {organization.description ? (
-            <Text className="font-body text-sm text-text-secondary">
-              {organization.description}
-            </Text>
-          ) : null}
-          {organization.canUpdateDetails ? (
-            <Button
-              label="Bilgileri düzenle"
-              variant="outline"
-              size="sm"
-              onPress={() => router.push(`/organizations/${organization.id}/edit`)}
-            />
-          ) : null}
+          <OrganizationHero
+            organization={organization}
+            eventCount={events.length}
+            onEdit={
+              organization.canUpdateDetails
+                ? () => router.push(`/organizations/${organization.id}/edit`)
+                : undefined
+            }
+          />
 
           {organization.myStatus === ORGANIZATION_STATUS.pending ? (
             <View className="rounded-3xl border border-amber-300/30 bg-amber-400/10 p-4">
@@ -421,7 +409,9 @@ export function OrganizationDetailScreen() {
                     member={member}
                     organization={organization}
                     showActions={false}
-                    onPressProfile={() => router.push(`/users/${member.userId}`)}
+                    onPressProfile={() =>
+                      router.push(`/users/${member.userId}`)
+                    }
                   />
                 ))
               )}
@@ -454,5 +444,131 @@ export function OrganizationDetailScreen() {
         </>
       )}
     </AppScreen>
+  );
+}
+
+function OrganizationHero({
+  organization,
+  eventCount,
+  onEdit,
+}: {
+  organization: ApiOrganizationDetail;
+  eventCount: number;
+  onEdit?: () => void;
+}) {
+  const initial = organization.name.trim().charAt(0).toLocaleUpperCase("tr-TR");
+
+  return (
+    <View className="relative overflow-hidden rounded-[30px] border border-border-default bg-surface-primary p-5">
+      <View className="absolute -right-14 -top-20 h-48 w-48 rounded-full border-[34px] border-brand-primary/10" />
+      <View className="absolute right-20 top-7 h-3 w-3 rounded-full bg-brand-primary/30" />
+
+      <View className="flex-row items-start gap-4">
+        <View className="h-[68px] w-[68px] items-center justify-center rounded-[22px] border border-brand-primary/30 bg-brand-primary/10">
+          <Text className="font-display text-[30px] text-brand-primary">
+            {initial || "O"}
+          </Text>
+        </View>
+
+        <View className="min-w-0 flex-1 pt-0.5">
+          <Text
+            numberOfLines={2}
+            className="font-display text-[26px] leading-8 text-text-primary"
+          >
+            {organization.name}
+          </Text>
+
+          <View className="mt-2 flex-row flex-wrap gap-2">
+            <InfoPill
+              icon="shield-halved"
+              label={organizationRoleLabel(organization.myRole)}
+            />
+            {organization.cityName ? (
+              <InfoPill icon="location-dot" label={organization.cityName} />
+            ) : null}
+          </View>
+        </View>
+
+        {onEdit ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Organizasyon bilgilerini düzenle"
+            hitSlop={8}
+            onPress={onEdit}
+            className="h-10 w-10 items-center justify-center rounded-full border border-border-strong bg-background-secondary/80 active:opacity-70"
+          >
+            <FontAwesome6
+              name="pen"
+              size={11}
+              color={themeColors.brand.primary}
+            />
+          </Pressable>
+        ) : null}
+      </View>
+
+      {organization.description ? (
+        <Text className="mt-5 font-body text-sm leading-5 text-text-secondary">
+          {organization.description}
+        </Text>
+      ) : (
+        <Text className="mt-5 font-body text-sm leading-5 text-text-tertiary">
+          Spor topluluğunu büyüt, üyelerini bir araya getir ve etkinliklerini
+          birlikte yönet.
+        </Text>
+      )}
+
+      <View className="mt-5 flex-row border-t border-border-default pt-4">
+        <OrganizationStat
+          value={organization.approvedMemberCount}
+          label="Üye"
+          icon="user-group"
+        />
+        <View className="mx-4 h-9 w-px bg-border-default" />
+        <OrganizationStat
+          value={eventCount}
+          label="Etkinlik"
+          icon="calendar-day"
+        />
+      </View>
+    </View>
+  );
+}
+
+function InfoPill({
+  icon,
+  label,
+}: {
+  icon: "shield-halved" | "location-dot";
+  label: string;
+}) {
+  return (
+    <View className="flex-row items-center gap-1.5 rounded-full border border-border-default bg-background-secondary/70 px-2.5 py-1.5">
+      <FontAwesome6 name={icon} size={9} color={themeColors.brand.primary} />
+      <Text className="font-body-bold text-[10px] text-text-secondary">
+        {label}
+      </Text>
+    </View>
+  );
+}
+
+function OrganizationStat({
+  value,
+  label,
+  icon,
+}: {
+  value: number;
+  label: string;
+  icon: "user-group" | "calendar-day";
+}) {
+  return (
+    <View className="flex-1">
+      <Text className="font-mono-bold text-lg text-text-primary">{value}</Text>
+      <View className="mt-0.5 flex-row items-center gap-1.5">
+        <FontAwesome6 name={icon} size={9} color={themeColors.brand.primary} />
+        <Text className="font-body text-[10px] text-text-tertiary">
+          {label}
+        </Text>
+      </View>
+    </View>
   );
 }

@@ -21,8 +21,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TAB_ITEMS } from "@/constants/tabs";
 import { themeColors } from "@/constants/theme";
 import { useAppTour, useSession } from "@/contexts";
-import { getMyProfile } from "@/services/profile-service";
 import { useRequireAuth } from "@/hooks/use-require-auth";
+import { getMyProfile } from "@/services/profile-service";
 import type { UserProfile } from "@/types/profile";
 import { Avatar } from "./avatar";
 
@@ -47,6 +47,7 @@ function TabButton({
   onPress: () => void;
   tourTargetRef?: (node: ViewType | null) => void;
 }) {
+  const isProfile = label === "Profil";
   const scale = useSharedValue(1);
   const glow = useSharedValue(0);
   const animatedStyle = useAnimatedStyle(() => ({
@@ -131,18 +132,20 @@ function TabButton({
         className="h-full items-center justify-center px-0.5"
       >
         <View
-          className={`min-h-[48px] min-w-[52px] items-center justify-center gap-1 rounded-[20px] border px-2 ${
+          className={`min-h-[48px] min-w-[52px] items-center justify-center rounded-[20px] border px-2 ${
             focused
               ? "border-white/20 bg-white/10"
               : "border-transparent bg-transparent"
           }`}
         >
-          <View className="h-6 items-center justify-center">
-            {label === "Profil" ? (
+          <View
+            className={`${isProfile ? "h-9" : "h-6"} items-center justify-center`}
+          >
+            {isProfile ? (
               <Avatar
                 uri={avatarUrl}
                 name={avatarName}
-                size={22}
+                size={34}
                 borderWidth={focused ? 2 : 1}
                 borderColor={
                   focused
@@ -163,14 +166,16 @@ function TabButton({
               />
             )}
           </View>
-          <Text
-            numberOfLines={1}
-            className={`text-center font-body-bold text-[10px] leading-3 tracking-[-0.1px] ${
-              focused ? "text-white" : "text-white/55"
-            }`}
-          >
-            {label}
-          </Text>
+          {!isProfile ? (
+            <Text
+              numberOfLines={1}
+              className={`mt-1 text-center font-body-bold text-[10px] leading-3 tracking-[-0.1px] ${
+                focused ? "text-white" : "text-white/55"
+              }`}
+            >
+              {label}
+            </Text>
+          ) : null}
         </View>
       </AnimatedPressable>
     </View>
@@ -211,19 +216,19 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
       style={{ paddingBottom: Math.max(insets.bottom, 9) }}
     >
       <View
-        className="overflow-hidden rounded-[30px] border border-white/25"
+        className="overflow-hidden rounded-[30px] border border-white/30"
         style={{
-          backgroundColor: "rgba(6, 17, 26, 0.24)",
+          backgroundColor: "rgba(6, 17, 26, 0)",
           shadowColor: "#000000",
-          shadowOpacity: 0.38,
+          shadowOpacity: 0.3,
           shadowRadius: 24,
           shadowOffset: { width: 0, height: 10 },
           elevation: 12,
         }}
       >
         <BlurView
-          intensity={Platform.OS === "ios" ? 78 : 52}
-          tint="dark"
+          intensity={Platform.OS === "ios" ? 68 : 46}
+          tint={Platform.OS === "ios" ? "systemUltraThinMaterialDark" : "dark"}
           experimentalBlurMethod={
             Platform.OS === "android" ? "dimezisBlurView" : undefined
           }
@@ -231,11 +236,11 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
         >
           <View
             pointerEvents="none"
-            className="absolute inset-0 bg-background-primary/20"
+            className="absolute inset-0 bg-background-primary/10"
           />
           <View
             pointerEvents="none"
-            className="absolute inset-x-5 top-0 h-px bg-white/40"
+            className="absolute inset-x-5 top-0 h-px bg-white/50"
           />
           <View
             pointerEvents="none"
