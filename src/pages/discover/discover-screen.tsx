@@ -19,6 +19,7 @@ export function DiscoverScreen() {
     refresh,
     toggleLike,
     addComment,
+    addReply,
   } = useDiscover();
 
   return (
@@ -133,6 +134,7 @@ export function DiscoverScreen() {
             post={post}
             onLike={() => toggleLike(post)}
             onComment={(content) => addComment(post, content)}
+            onReply={(parent, content) => addReply(post, parent.id, content)}
             onAuthorPress={() => router.push(`/users/${post.userId}`)}
           />
         ))

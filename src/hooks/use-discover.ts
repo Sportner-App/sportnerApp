@@ -4,6 +4,7 @@ import { getApiErrorMessage } from "@/lib/api/errors";
 import { explorePeople } from "@/services/events-service";
 import {
   createComment,
+  createReply,
   explorePosts,
   likePost,
   unlikePost,
@@ -92,6 +93,22 @@ export function useDiscover() {
     [patchPost],
   );
 
+  const addReply = useCallback(
+    async (
+      post: ApiPost,
+      parentCommentId: string,
+      content: string,
+    ): Promise<ApiComment> => {
+      const reply = await createReply(post.id, parentCommentId, content);
+      if (!reply) {
+        throw new Error("Yanıt gönderilemedi.");
+      }
+      patchPost(post.id, { commentCount: post.commentCount + 1 });
+      return reply;
+    },
+    [patchPost],
+  );
+
   return {
     posts,
     people,
@@ -101,5 +118,6 @@ export function useDiscover() {
     refresh: () => load("refresh"),
     toggleLike,
     addComment,
+    addReply,
   };
 }

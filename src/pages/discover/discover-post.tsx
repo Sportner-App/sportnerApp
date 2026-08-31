@@ -1,4 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Image,
@@ -10,7 +11,7 @@ import {
   View,
 } from "react-native";
 
-import { Avatar, UserIdentity } from "@/components";
+import { Avatar, CommentThread } from "@/components";
 import { useToast } from "@/contexts";
 import { themeColors } from "@/constants/theme";
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -24,6 +25,7 @@ type DiscoverPostProps = {
   post: ApiPost;
   onLike: () => Promise<void>;
   onComment: (content: string) => Promise<ApiComment>;
+  onReply: (parent: ApiComment, content: string) => Promise<ApiComment>;
   onAuthorPress: () => void;
 };
 
@@ -43,16 +45,20 @@ export function DiscoverPost({
   post,
   onLike,
   onComment,
+  onReply,
   onAuthorPress,
 }: DiscoverPostProps) {
   const { width } = useWindowDimensions();
   const cardWidth = width - 64;
+  const router = useRouter();
   const { showToast } = useToast();
   const lastTap = useRef(0);
   const [page, setPage] = useState(0);
   const [draft, setDraft] = useState("");
   const [comments, setComments] = useState<ApiComment[]>([]);
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<ApiComment | null>(null);
+  const [incomingReply, setIncomingReply] = useState<ApiComment | null>(null);
   const [isLiking, setIsLiking] = useState(false);
   const [isCommenting, setIsCommenting] = useState(false);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
@@ -147,14 +153,29 @@ export function DiscoverPost({
 
     setIsCommenting(true);
     try {
-      const comment = await onComment(text);
-      setDraft("");
-      setCommentsOpen(true);
-      setComments((current) => [...current, comment]);
+      if (replyingTo) {
+        const reply = await onReply(replyingTo, text);
+        setDraft("");
+        setCommentsOpen(true);
+        setReplyingTo(null);
+        setIncomingReply(reply);
+        setComments((current) =>
+          current.map((item) =>
+            item.id === (reply.parentCommentId ?? replyingTo.id)
+              ? { ...item, replyCount: item.replyCount + 1 }
+              : item,
+          ),
+        );
+      } else {
+        const comment = await onComment(text);
+        setDraft("");
+        setCommentsOpen(true);
+        setComments((current) => [...current, comment]);
+      }
     } catch (error) {
       showToast({
         type: "error",
-        title: "Yorum gönderilemedi",
+        title: replyingTo ? "Yanıt gönderilemedi" : "Yorum gönderilemedi",
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -334,20 +355,30 @@ export function DiscoverPost({
                 İlk yorumu sen yaz.
               </Text>
             ) : (
-              comments.map((comment) => (
-                <View key={comment.id} className="gap-1.5 py-1">
-                  <UserIdentity
-                    username={comment.username}
-                    avatarUrl={comment.profileImageUrl}
-                    fallbackName={comment.firstName}
-                    avatarSize={30}
-                  />
-                  <Text className="pl-[42px] font-body text-sm text-text-primary">
-                    {comment.content}
-                  </Text>
-                </View>
-              ))
+              <CommentThread
+                postId={post.id}
+                comments={comments}
+                incomingReply={incomingReply}
+                onReply={(comment) => {
+                  setReplyingTo(comment);
+                  setCommentsOpen(true);
+                }}
+                onAuthorPress={(userId) => router.push(`/users/${userId}`)}
+              />
             )}
+          </View>
+        ) : null}
+
+        {replyingTo ? (
+          <View className="flex-row items-center justify-between px-1">
+            <Text className="flex-1 font-body text-xs text-text-secondary">
+              {replyingTo.username || "kullanıcı"} kullanıcısına yanıt
+            </Text>
+            <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>
+              <Text className="font-body text-xs font-semibold text-brand-primary">
+                İptal
+              </Text>
+            </Pressable>
           </View>
         ) : null}
 
@@ -356,7 +387,11 @@ export function DiscoverPost({
             value={draft}
             onChangeText={setDraft}
             onFocus={() => setCommentsOpen(true)}
-            placeholder="Yorum yaz…"
+            placeholder={
+              replyingTo
+                ? `${replyingTo.username || "kullanıcı"} kullanıcısına yanıt ver…`
+                : "Yorum yaz…"
+            }
             placeholderTextColor={themeColors.text.tertiary}
             className="min-h-[44px] flex-1 font-body text-sm text-text-primary"
           />

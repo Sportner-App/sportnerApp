@@ -92,6 +92,8 @@ export type ApiComment = {
   likeCount: number;
   replyCount: number;
   createdAt: string;
+  replyToUserId?: string | null;
+  replyToUsername?: string | null;
 };
 
 export type ApiBadge = {

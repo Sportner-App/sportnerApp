@@ -237,3 +237,30 @@ export async function createComment(postId: string, content: string) {
   );
   return response.data;
 }
+
+export async function listReplies(
+  postId: string,
+  commentId: string,
+  before?: string,
+) {
+  const response = await apiClient.get<CursorPagedResult<ApiComment>>(
+    `/api/posts/${postId}/comments/${commentId}/replies`,
+    { params: { before, limit: 30 } },
+  );
+  return {
+    items: response.data?.items ?? [],
+    nextCursor: response.data?.nextCursor ?? null,
+  };
+}
+
+export async function createReply(
+  postId: string,
+  parentCommentId: string,
+  content: string,
+) {
+  const response = await apiClient.post<ApiComment>(
+    `/api/posts/${postId}/comments/${parentCommentId}/replies`,
+    { content },
+  );
+  return response.data;
+}

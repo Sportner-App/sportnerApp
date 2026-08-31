@@ -15,14 +15,15 @@ import {
   AppScreen,
   Avatar,
   Button,
+  CommentThread,
   ScreenHeader,
   SportLoader,
-  UserIdentity,
 } from "@/components";
 import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
   createComment,
+  createReply,
   getPost,
   likePost,
   listComments,
@@ -43,6 +44,8 @@ export function PostDetailScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLiking, setIsLiking] = useState(false);
   const [isCommenting, setIsCommenting] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<ApiComment | null>(null);
+  const [incomingReply, setIncomingReply] = useState<ApiComment | null>(null);
 
   const load = async () => {
     if (!id) return;
@@ -178,47 +181,96 @@ export function PostDetailScreen() {
                 İlk yorumu sen yaz.
               </Text>
             ) : (
-              comments.map((comment) => (
-                <View
-                  key={comment.id}
-                  className="gap-2 rounded-2xl border border-white/10 px-3 py-2.5"
-                >
-                  <UserIdentity
-                    username={comment.username}
-                    avatarUrl={comment.profileImageUrl}
-                    fallbackName={comment.firstName}
-                    avatarSize={32}
-                    onPress={() => router.push(`/users/${comment.userId}`)}
-                  />
-                  <Text className="font-body text-sm text-white">
-                    {comment.content}
-                  </Text>
-                </View>
-              ))
+              <CommentThread
+                postId={post.id}
+                comments={comments}
+                incomingReply={incomingReply}
+                variant="detail"
+                onReply={setReplyingTo}
+                onAuthorPress={(userId) => router.push(`/users/${userId}`)}
+              />
             )}
+
+            {replyingTo ? (
+              <View className="flex-row items-center justify-between">
+                <Text className="flex-1 font-body text-xs text-brand-neutral">
+                  {replyingTo.username || "kullanıcı"} kullanıcısına yanıt
+                </Text>
+                <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>
+                  <Text className="font-body text-xs font-semibold text-brand-primary">
+                    İptal
+                  </Text>
+                </Pressable>
+              </View>
+            ) : null}
 
             <TextInput
               value={draft}
               onChangeText={setDraft}
-              placeholder="Yorum yaz…"
+              placeholder={
+                replyingTo
+                  ? `${replyingTo.username || "kullanıcı"} kullanıcısına yanıt ver…`
+                  : "Yorum yaz…"
+              }
               placeholderTextColor="#64748b"
               className="rounded-2xl border border-white/10 px-4 py-3 font-body text-white"
             />
             <Button
-              label="Yorum gönder"
+              label={replyingTo ? "Yanıt gönder" : "Yorum gönder"}
               disabled={!draft.trim()}
               isLoading={isCommenting}
               onPress={async () => {
                 if (!id || !draft.trim()) return;
                 setIsCommenting(true);
                 try {
-                  await createComment(id, draft.trim());
-                  setDraft("");
-                  await load();
+                  if (replyingTo) {
+                    const reply = await createReply(
+                      id,
+                      replyingTo.id,
+                      draft.trim(),
+                    );
+                    if (!reply) {
+                      throw new Error("Yanıt gönderilemedi.");
+                    }
+                    setDraft("");
+                    setReplyingTo(null);
+                    setIncomingReply(reply);
+                    setComments((current) =>
+                      current.map((item) =>
+                        item.id === (reply.parentCommentId ?? replyingTo.id)
+                          ? { ...item, replyCount: item.replyCount + 1 }
+                          : item,
+                      ),
+                    );
+                    setPost((current) =>
+                      current
+                        ? {
+                            ...current,
+                            commentCount: current.commentCount + 1,
+                          }
+                        : current,
+                    );
+                  } else {
+                    const comment = await createComment(id, draft.trim());
+                    if (comment) {
+                      setComments((current) => [...current, comment]);
+                      setPost((current) =>
+                        current
+                          ? {
+                              ...current,
+                              commentCount: current.commentCount + 1,
+                            }
+                          : current,
+                      );
+                    }
+                    setDraft("");
+                  }
                 } catch (error) {
                   showToast({
                     type: "error",
-                    title: "Yorum gönderilemedi",
+                    title: replyingTo
+                      ? "Yanıt gönderilemedi"
+                      : "Yorum gönderilemedi",
                     description: getApiErrorMessage(error),
                   });
                 } finally {
