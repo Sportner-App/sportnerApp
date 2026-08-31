@@ -12,6 +12,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.yagizerdenler.sportner",
       "infoPlist": {
+        "CFBundleDisplayName": "Sportner",
         "ITSAppUsesNonExemptEncryption": false
       }
     },
