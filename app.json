@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "sportner",
+    "name": "Sportner",
     "slug": "sportner",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -37,9 +37,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "resizeMode": "contain",
-          "backgroundColor": "#0f172a"
+          "backgroundColor": "#06111a"
         }
       ],
       "@react-native-community/datetimepicker"

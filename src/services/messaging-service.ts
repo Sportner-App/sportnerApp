@@ -1,6 +1,30 @@
 import { apiClient } from "@/lib/api/client";
 import type { CursorPagedResult } from "@/types/api";
-import type { ApiConversation, ApiMessage } from "@/types/messaging";
+import type {
+  ApiConversation,
+  ApiConversationListItem,
+  ApiMessage,
+} from "@/types/messaging";
+
+type ConversationPage = {
+  items: ApiConversationListItem[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+};
+
+export async function listMyConversations(): Promise<ConversationPage> {
+  const response = await apiClient.get<ConversationPage>("/api/conversations", {
+    params: { page: 1, pageSize: 50 },
+  });
+  return {
+    ...response.data,
+    items: response.data?.items ?? [],
+  };
+}
 
 export async function getEventConversation(eventId: string) {
   const response = await apiClient.get<ApiConversation>(

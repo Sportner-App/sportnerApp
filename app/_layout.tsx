@@ -1,5 +1,6 @@
 import { colors } from "@/constants/colors";
 import { FEATURE_FLAGS } from "@/constants/feature-flags";
+import { AnimatedSplashScreen } from "@/components/animated-splash-screen";
 import { AppProviders } from "@/contexts";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
@@ -10,7 +11,7 @@ import {
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import "../global.css";
@@ -27,6 +28,7 @@ SplashScreen.preventAutoHideAsync();
 configureForegroundNotifications();
 
 export default function RootLayout() {
+  const [splashDone, setSplashDone] = useState(false);
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     Anybody_600SemiBold: require("@expo-google-fonts/anybody/600SemiBold/Anybody_600SemiBold.ttf"),
@@ -37,6 +39,10 @@ export default function RootLayout() {
     JetBrainsMono_700Bold: require("@expo-google-fonts/jetbrains-mono/700Bold/JetBrainsMono_700Bold.ttf"),
   });
 
+  const handleSplashFinish = useCallback(() => {
+    setSplashDone(true);
+  }, []);
+
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
@@ -44,12 +50,16 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      void SplashScreen.hideAsync();
     }
   }, [loaded]);
 
   if (!loaded) {
     return null;
+  }
+
+  if (!splashDone) {
+    return <AnimatedSplashScreen onFinish={handleSplashFinish} />;
   }
 
   return <RootLayoutNav />;

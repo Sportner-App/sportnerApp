@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import Animated, {
   Easing,
@@ -13,6 +14,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TAB_ITEMS } from "@/constants/tabs";
 import { themeColors } from "@/constants/theme";
+import { useSession } from "@/contexts";
+import { getMyProfile } from "@/services/profile-service";
+import type { UserProfile } from "@/types/profile";
+import { Avatar } from "./avatar";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -21,12 +26,16 @@ function TabButton({
   icon,
   focused,
   isAction,
+  avatarUrl,
+  avatarName,
   onPress,
 }: {
   label: string;
   icon: (typeof TAB_ITEMS)[number]["icon"];
   focused: boolean;
   isAction?: boolean;
+  avatarUrl?: string | null;
+  avatarName?: string | null;
   onPress: () => void;
 }) {
   const scale = useSharedValue(1);
@@ -54,7 +63,7 @@ function TabButton({
 
   if (isAction) {
     return (
-      <View className="flex-1 items-center justify-center">
+      <View className="h-full flex-1 items-center justify-center">
         <AnimatedPressable
           accessibilityRole="button"
           accessibilityLabel={label}
@@ -62,10 +71,10 @@ function TabButton({
           onPressIn={pressIn}
           onPressOut={pressOut}
           style={animatedStyle}
-          className="-mt-5 h-[62px] w-[62px] items-center justify-center rounded-full border border-white/25 bg-white/10"
+          className="h-[60px] w-[60px] items-center justify-center rounded-full border border-white/25 bg-white/10"
         >
           <View
-            className="h-[52px] w-[52px] items-center justify-center gap-0.5 overflow-hidden rounded-full bg-brand-primary"
+            className="h-[50px] w-[50px] items-center justify-center gap-0.5 overflow-hidden rounded-full bg-brand-primary"
             style={{
               shadowColor: themeColors.brand.primary,
               shadowOpacity: 0.32,
@@ -77,7 +86,7 @@ function TabButton({
             <Animated.View
               pointerEvents="none"
               style={glowStyle}
-              className="absolute h-12 w-12 rounded-full bg-white"
+              className="absolute h-11 w-11 rounded-full bg-white"
             />
             <FontAwesome6
               name={icon}
@@ -114,14 +123,31 @@ function TabButton({
             : "border-transparent bg-transparent"
         }`}
       >
-        <View className="h-5 items-center justify-center">
-          <FontAwesome6
-            name={icon}
-            size={16}
-            color={
-              focused ? themeColors.brand.primary : themeColors.text.secondary
-            }
-          />
+        <View className="h-6 items-center justify-center">
+          {label === "Profil" ? (
+            <Avatar
+              uri={avatarUrl}
+              name={avatarName}
+              size={22}
+              borderWidth={focused ? 2 : 1}
+              borderColor={
+                focused
+                  ? themeColors.brand.primary
+                  : themeColors.text.secondary
+              }
+              previewable={false}
+            />
+          ) : (
+            <FontAwesome6
+              name={icon}
+              size={16}
+              color={
+                focused
+                  ? themeColors.brand.primary
+                  : themeColors.text.secondary
+              }
+            />
+          )}
         </View>
         <Text
           numberOfLines={1}
@@ -139,6 +165,23 @@ function TabButton({
 export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { user } = useSession();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void getMyProfile()
+      .then((next) => {
+        if (active) setProfile(next);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [state.index]);
+
+  const avatarUrl = profile?.avatarUrl ?? user?.avatarUrl;
+  const avatarName = profile?.fullName ?? user?.fullName ?? user?.username;
 
   return (
     <View
@@ -192,6 +235,8 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
                   icon={item.icon}
                   focused={focused}
                   isAction={item.isAction}
+                  avatarUrl={item.key === "profile" ? avatarUrl : undefined}
+                  avatarName={item.key === "profile" ? avatarName : undefined}
                   onPress={() => {
                     if (item.isAction) {
                       router.push("/events/create");

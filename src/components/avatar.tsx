@@ -13,6 +13,8 @@ import { themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import { resolveMediaUrl } from "@/utils/media-url";
 
+import { AvatarPhotoPreview } from "./avatar-photo-preview";
+
 type AvatarProps = {
   uri?: string | null;
   name?: string | null;
@@ -20,6 +22,7 @@ type AvatarProps = {
   isGuest?: boolean;
   fallbackIcon?: IconName;
   onPress?: () => void;
+  previewable?: boolean;
   borderColor?: string;
   borderWidth?: number;
   backgroundColor?: string;
@@ -35,6 +38,7 @@ export function Avatar({
   isGuest = false,
   fallbackIcon,
   onPress,
+  previewable = true,
   borderColor = `${themeColors.brand.primary}66`,
   borderWidth = 1,
   backgroundColor = themeColors.surface.secondary,
@@ -43,11 +47,16 @@ export function Avatar({
   accessibilityLabel,
 }: AvatarProps) {
   const [imageFailed, setImageFailed] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const resolvedUri = uri ? resolveMediaUrl(uri) : null;
 
   useEffect(() => {
     setImageFailed(false);
   }, [resolvedUri]);
+
+  const hasPhoto = Boolean(resolvedUri && !imageFailed);
+  const canPreview = previewable && hasPhoto;
+  const isInteractive = canPreview || Boolean(onPress);
 
   const containerStyle: StyleProp<ViewStyle> = [
     {
@@ -86,20 +95,46 @@ export function Avatar({
       </Text>
     );
 
-  if (!onPress) return <View style={containerStyle}>{content}</View>;
+  const handlePress = () => {
+    if (canPreview) {
+      setPreviewOpen(true);
+      return;
+    }
+
+    onPress?.();
+  };
+
+  const resolvedAccessibilityLabel =
+    accessibilityLabel ??
+    (canPreview
+      ? `${name || "Kullanıcı"} profil fotoğrafını büyüt`
+      : `${name || "Kullanıcı"} profili`);
+
+  if (!isInteractive) {
+    return <View style={containerStyle}>{content}</View>;
+  }
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={
-        accessibilityLabel ?? `${name || "Kullanıcı"} profili`
-      }
-      onPress={onPress}
-      style={containerStyle}
-      className="active:opacity-75"
-    >
-      {content}
-    </Pressable>
+    <>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={resolvedAccessibilityLabel}
+        onPress={handlePress}
+        style={containerStyle}
+        className="active:opacity-75"
+      >
+        {content}
+      </Pressable>
+
+      {canPreview && resolvedUri ? (
+        <AvatarPhotoPreview
+          visible={previewOpen}
+          uri={resolvedUri}
+          name={name}
+          onClose={() => setPreviewOpen(false)}
+        />
+      ) : null}
+    </>
   );
 }
 
