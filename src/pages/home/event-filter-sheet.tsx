@@ -19,6 +19,7 @@ const DEFAULT_FILTERS: EventListFilters = {
   maxAge: 120,
   gender: null,
   skillLevel: null,
+  isPaid: null,
 };
 
 export function EventFilterSheet({
@@ -38,7 +39,7 @@ export function EventFilterSheet({
       visible={visible}
       onClose={onClose}
       title="Etkinlik filtreleri"
-      subtitle="Yaş, seviye ve organizatör cinsiyetine göre daralt."
+      subtitle="Yaş, ücret, seviye ve organizatör cinsiyetine göre daralt."
       showCancel={false}
     >
       <View className="gap-5">
@@ -49,6 +50,35 @@ export function EventFilterSheet({
             setDraft((current) => ({ ...current, minAge, maxAge }))
           }
         />
+
+        <View className="gap-2">
+          <Text className="font-body-bold text-[13px] text-text-secondary">
+            Ücret
+          </Text>
+          <View className="flex-row flex-wrap gap-2">
+            <GenderOption
+              label="Tümü"
+              selected={draft.isPaid == null}
+              onPress={() =>
+                setDraft((current) => ({ ...current, isPaid: null }))
+              }
+            />
+            <GenderOption
+              label="Ücretsiz"
+              selected={draft.isPaid === false}
+              onPress={() =>
+                setDraft((current) => ({ ...current, isPaid: false }))
+              }
+            />
+            <GenderOption
+              label="Ücretli"
+              selected={draft.isPaid === true}
+              onPress={() =>
+                setDraft((current) => ({ ...current, isPaid: true }))
+              }
+            />
+          </View>
+        </View>
 
         <View className="gap-2">
           <Text className="font-body-bold text-[13px] text-text-secondary">

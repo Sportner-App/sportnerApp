@@ -12,6 +12,7 @@ const DEFAULT_FILTERS = {
   maxAge: 120,
   gender: null,
   skillLevel: null,
+  isPaid: null,
 } as const;
 
 export type EventListFilters = {
@@ -19,6 +20,7 @@ export type EventListFilters = {
   maxAge: number;
   gender: number | null;
   skillLevel: number | null;
+  isPaid: boolean | null;
 };
 
 export function useEvents() {
@@ -74,6 +76,7 @@ export function useEvents() {
               : activeFilters.maxAge,
           gender: activeFilters.gender ?? undefined,
           skillLevel: activeFilters.skillLevel ?? undefined,
+          isPaid: activeFilters.isPaid ?? undefined,
         });
 
         setEvents((prev) =>

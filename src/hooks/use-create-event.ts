@@ -20,7 +20,7 @@ import type { CreateEventFormValues } from "@/types/events";
 import type { SelectedLocation } from "@/types/location";
 import type { Sport, SportCategory } from "@/types/sports";
 import type { ApiFriend } from "@/types/social";
-import { sportIconForSlug } from "@/utils/events";
+import { parseFeeAmount, sportIconForSlug } from "@/utils/events";
 
 function getDefaultEventDate() {
   const date = new Date();
@@ -58,6 +58,8 @@ export function useCreateEvent() {
     minParticipantAge: String(DEFAULT_EVENT_MIN_AGE),
     maxParticipantAge: String(DEFAULT_EVENT_MAX_AGE),
     skillLevel: null,
+    isPaid: false,
+    feeAmountText: "",
     addressText: "",
     latitude: null,
     longitude: null,
@@ -184,6 +186,13 @@ export function useCreateEvent() {
   ]);
 
   const isStep3Valid = useMemo(() => {
+    const feeAmount = parseFeeAmount(values.feeAmountText);
+    const feeOk = values.isPaid
+      ? feeAmount != null &&
+        feeAmount > 0 &&
+        feeAmount <= CREATE_EVENT_LIMITS.feeAmountMax
+      : true;
+
     return (
       Number.isFinite(maxPlayersNumber) &&
       maxPlayersNumber >= CREATE_EVENT_LIMITS.maxParticipantsMin &&
@@ -192,9 +201,16 @@ export function useCreateEvent() {
       Number.isInteger(maxParticipantAgeNumber) &&
       minParticipantAgeNumber >= CREATE_EVENT_LIMITS.participantAgeMin &&
       maxParticipantAgeNumber <= CREATE_EVENT_LIMITS.participantAgeMax &&
-      minParticipantAgeNumber <= maxParticipantAgeNumber
+      minParticipantAgeNumber <= maxParticipantAgeNumber &&
+      feeOk
     );
-  }, [maxParticipantAgeNumber, maxPlayersNumber, minParticipantAgeNumber]);
+  }, [
+    maxParticipantAgeNumber,
+    maxPlayersNumber,
+    minParticipantAgeNumber,
+    values.feeAmountText,
+    values.isPaid,
+  ]);
 
   const areGuestsValid = guests.every(
     (guest) =>
@@ -297,6 +313,8 @@ export function useCreateEvent() {
         minParticipantAge: minParticipantAgeNumber,
         maxParticipantAge: maxParticipantAgeNumber,
         skillLevel: values.skillLevel,
+        isPaid: values.isPaid,
+        feeAmount: values.isPaid ? parseFeeAmount(values.feeAmountText) : null,
         address: values.addressText.trim(),
         latitude: values.latitude,
         longitude: values.longitude,

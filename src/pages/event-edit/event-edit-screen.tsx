@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import {
   AppScreen,
@@ -17,9 +17,11 @@ import { SubmitBar } from "@/pages/event-create/submit-bar";
 import {
   updateEventCapacity,
   updateEventDetails,
+  updateEventFee,
   updateEventLocation,
   updateEventSchedule,
 } from "@/services/events-service";
+import { parseFeeAmount } from "@/utils/events";
 
 export function EventEditScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -35,6 +37,8 @@ export function EventEditScreen() {
   const [addressText, setAddressText] = useState("");
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
+  const [isPaid, setIsPaid] = useState(false);
+  const [feeAmountText, setFeeAmountText] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -51,11 +55,27 @@ export function EventEditScreen() {
     setAddressText(event.address);
     setLatitude(event.latitude);
     setLongitude(event.longitude);
+    setIsPaid(event.isPaid);
+    setFeeAmountText(
+      event.isPaid && event.feeAmount != null ? String(event.feeAmount) : "",
+    );
   }, [event]);
 
   const save = async () => {
     if (!event || isSaving || latitude == null || longitude == null) {
       return;
+    }
+
+    if (isPaid) {
+      const fee = parseFeeAmount(feeAmountText);
+      if (fee == null || fee <= 0 || fee > CREATE_EVENT_LIMITS.feeAmountMax) {
+        showToast({
+          type: "error",
+          title: "Fiyat gerekli",
+          description: "Ücretli etkinlik için 0'dan büyük bir fiyat gir.",
+        });
+        return;
+      }
     }
 
     setIsSaving(true);
@@ -75,6 +95,10 @@ export function EventEditScreen() {
           address: addressText.trim(),
         }),
         updateEventCapacity(event.id, Number(maxPlayers) || null),
+        updateEventFee(event.id, {
+          isPaid,
+          feeAmount: isPaid ? parseFeeAmount(feeAmountText) : null,
+        }),
       ]);
 
       const failed = results.find((item) => item.error);
@@ -115,7 +139,7 @@ export function EventEditScreen() {
       <View className="gap-1.5">
         <Text className="font-display text-3xl text-white">Etkinliği düzenle</Text>
         <Text className="font-body text-sm text-brand-neutral">
-          Başlık, zaman, konum ve kapasiteyi güncelle.
+          Başlık, zaman, konum, kapasite ve ücreti güncelle.
         </Text>
       </View>
 
@@ -155,6 +179,62 @@ export function EventEditScreen() {
         onChangeText={setMaxPlayers}
         keyboardType="number-pad"
       />
+      <View className="gap-2">
+        <Text className="font-body-bold text-[13px] text-text-secondary">
+          Ücret
+        </Text>
+        <Text className="font-body text-xs text-text-tertiary">
+          Uygulama üzerinden ödeme alınmaz.
+        </Text>
+        <View className="flex-row flex-wrap gap-2">
+          <Pressable
+            onPress={() => {
+              setIsPaid(false);
+              setFeeAmountText("");
+            }}
+            className={`rounded-full border px-3.5 py-2 active:opacity-80 ${
+              !isPaid
+                ? "border-brand-primary bg-brand-primary"
+                : "border-border-default bg-surface-primary"
+            }`}
+          >
+            <Text
+              className={`font-body-bold text-sm ${
+                !isPaid ? "text-background-primary" : "text-text-secondary"
+              }`}
+            >
+              Ücretsiz
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setIsPaid(true)}
+            className={`rounded-full border px-3.5 py-2 active:opacity-80 ${
+              isPaid
+                ? "border-brand-primary bg-brand-primary"
+                : "border-border-default bg-surface-primary"
+            }`}
+          >
+            <Text
+              className={`font-body-bold text-sm ${
+                isPaid ? "text-background-primary" : "text-text-secondary"
+              }`}
+            >
+              Ücretli
+            </Text>
+          </Pressable>
+        </View>
+        {isPaid ? (
+          <Input
+            label="Fiyat"
+            placeholder="Örn. 150"
+            icon="coins"
+            value={feeAmountText}
+            onChangeText={setFeeAmountText}
+            keyboardType="decimal-pad"
+            helperText="Türk lirası. Katılımcı etkinlikte öder."
+          />
+        ) : null}
+      </View>
       <LocationPicker
         addressText={addressText}
         latitude={latitude}

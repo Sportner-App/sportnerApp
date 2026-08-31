@@ -16,6 +16,8 @@ export type ApiEventListItem = {
   minParticipantAge: number;
   maxParticipantAge: number;
   skillLevel: number | null;
+  isPaid: boolean;
+  feeAmount: number | null;
   status: number;
   occupiedParticipantCount: number;
 };
@@ -47,6 +49,8 @@ export type ApiEventDetail = {
   minParticipantAge: number;
   maxParticipantAge: number;
   skillLevel: number | null;
+  isPaid: boolean;
+  feeAmount: number | null;
   status: number;
   occupiedParticipantCount: number;
   waitlistCount: number;
@@ -132,6 +136,8 @@ export type EventSummary = {
   minParticipantAge: number;
   maxParticipantAge: number;
   skillLevel: number | null;
+  isPaid: boolean;
+  feeAmount: number | null;
   hostName: string;
   status: number;
   durationMinutes: number;
@@ -206,6 +212,8 @@ export type CreateEventPayload = {
   minParticipantAge: number;
   maxParticipantAge: number;
   skillLevel: number | null;
+  isPaid: boolean;
+  feeAmount: number | null;
   address: string;
   latitude: number;
   longitude: number;
@@ -226,6 +234,8 @@ export type CreateEventFormValues = {
   minParticipantAge: string;
   maxParticipantAge: string;
   skillLevel: number | null;
+  isPaid: boolean;
+  feeAmountText: string;
   addressText: string;
   latitude: number | null;
   longitude: number | null;
@@ -241,6 +251,7 @@ export type DiscoverEventsParams = {
   maxAge?: number;
   gender?: number;
   skillLevel?: number;
+  isPaid?: boolean;
   page?: number;
   pageSize?: number;
 };

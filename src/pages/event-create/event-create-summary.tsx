@@ -3,6 +3,7 @@ import { Text, View } from "react-native";
 
 import { DURATION_OPTIONS } from "@/constants/events";
 import { SKILL_LEVEL_LABELS, skillKeyFromCode } from "@/constants/profile";
+import { formatEventFee, parseFeeAmount } from "@/utils/events";
 import { sportAccentToken, themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { CreateEventFormValues } from "@/types/events";
@@ -136,6 +137,12 @@ export function EventCreateSummary({
                 {SKILL_LEVEL_LABELS[skillKeyFromCode(values.skillLevel)]}
               </SummaryRow>
             ) : null}
+            <SummaryRow icon="coins" accent={accent}>
+              {formatEventFee(
+                values.isPaid,
+                values.isPaid ? parseFeeAmount(values.feeAmountText) : null,
+              )}
+            </SummaryRow>
           </View>
         ) : null}
       </View>

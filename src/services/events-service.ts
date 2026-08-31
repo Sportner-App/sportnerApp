@@ -71,6 +71,7 @@ export async function getEvents(
         maxAge: params.maxAge,
         gender: params.gender,
         skillLevel: params.skillLevel,
+        isPaid: params.isPaid,
         page: params.page ?? 1,
         pageSize: params.pageSize ?? 20,
       },
@@ -307,6 +308,16 @@ export async function updateEventCapacity(
   );
 }
 
+export async function updateEventFee(
+  eventId: string,
+  payload: { isPaid: boolean; feeAmount: number | null },
+) {
+  return eventAction(
+    () => apiClient.put(`/api/events/${eventId}/fee`, payload),
+    "Ücret bilgisi güncellenemedi",
+  );
+}
+
 export async function exploreEvents(params: {
   sportId?: string;
   city?: string;
@@ -395,6 +406,18 @@ export async function createEvent(
     };
   }
 
+  if (payload.isPaid) {
+    const fee = payload.feeAmount;
+    if (fee == null || fee <= 0 || fee > 99_999.99) {
+      return {
+        data: null,
+        error: {
+          message: "Ücretli etkinlik için 0'dan büyük bir fiyat gir.",
+        },
+      };
+    }
+  }
+
   let eventId: string | undefined;
 
   try {
@@ -411,6 +434,8 @@ export async function createEvent(
       minParticipantAge: payload.minParticipantAge,
       maxParticipantAge: payload.maxParticipantAge,
       skillLevel: payload.skillLevel,
+      isPaid: payload.isPaid,
+      feeAmount: payload.isPaid ? payload.feeAmount : null,
     });
 
     eventId = created.data?.id;

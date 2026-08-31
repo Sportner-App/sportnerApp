@@ -242,6 +242,38 @@ function shortLocation(address: string): string {
   return shortenPlaceName(raw) || "Konum yok";
 }
 
+export function parseFeeAmount(raw: string): number | null {
+  const normalized = raw.trim().replace(/\s/g, "").replace(",", ".");
+  if (!normalized) {
+    return null;
+  }
+
+  const value = Number(normalized);
+  if (!Number.isFinite(value)) {
+    return null;
+  }
+
+  return Math.round(value * 100) / 100;
+}
+
+export function formatTryAmount(amount: number): string {
+  return `${new Intl.NumberFormat("tr-TR", {
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(amount)} ₺`;
+}
+
+export function formatEventFee(
+  isPaid: boolean,
+  feeAmount: number | null | undefined,
+): string {
+  if (!isPaid || feeAmount == null) {
+    return "Ücretsiz";
+  }
+
+  return formatTryAmount(feeAmount);
+}
+
 export function mapListItemToSummary(item: ApiEventListItem): EventSummary {
   return {
     id: item.id,
@@ -258,6 +290,8 @@ export function mapListItemToSummary(item: ApiEventListItem): EventSummary {
     minParticipantAge: item.minParticipantAge,
     maxParticipantAge: item.maxParticipantAge,
     skillLevel: item.skillLevel ?? null,
+    isPaid: item.isPaid === true,
+    feeAmount: item.feeAmount ?? null,
     hostName: item.organizerUsername
       ? `@${item.organizerUsername}`
       : "Organizatör",
@@ -287,6 +321,8 @@ export function mapDetailToEvent(
     minParticipantAge: detail.minParticipantAge,
     maxParticipantAge: detail.maxParticipantAge,
     skillLevel: detail.skillLevel ?? null,
+    isPaid: detail.isPaid === true,
+    feeAmount: detail.feeAmount ?? null,
     hostName: formatPersonName(organizer),
     status: detail.status,
     durationMinutes: detail.durationMinutes,

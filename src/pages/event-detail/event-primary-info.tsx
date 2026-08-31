@@ -9,6 +9,7 @@ import type { IconName } from "@/types/components";
 import type { EventDetail, EventParticipant } from "@/types/events";
 import {
   formatDurationLabel,
+  formatEventFee,
   formatEventTime,
   isCurrentParticipant,
 } from "@/utils/events";
@@ -68,7 +69,21 @@ export function EventPrimaryInfo({
             />
           </>
         ) : null}
+        <MetaDot />
+        <MetaPiece
+          icon="coins"
+          label={formatEventFee(event.isPaid, event.feeAmount)}
+        />
       </View>
+
+      {event.isPaid ? (
+        <Text
+          className="font-body text-[12px] leading-5"
+          style={{ color: themeColors.text.tertiary }}
+        >
+          Uygulama üzerinden ödeme alınmaz. Ücret etkinlikte ödenir.
+        </Text>
+      ) : null}
 
       <EventCapacitySummary
         event={event}

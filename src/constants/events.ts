@@ -68,6 +68,7 @@ export const CREATE_EVENT_LIMITS = {
   maxParticipantsMax: 1000,
   participantAgeMin: 13,
   participantAgeMax: 120,
+  feeAmountMax: 99_999.99,
 } as const;
 
 export const DEFAULT_EVENT_LOCATION = {

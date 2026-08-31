@@ -315,6 +315,71 @@ export function EventCreateScreen() {
 
             <View className="mt-6 gap-2">
               <Text className="font-body-bold text-[13px] text-text-secondary">
+                Ücret
+              </Text>
+              <Text className="font-body text-xs text-text-tertiary">
+                Uygulama üzerinden ödeme alınmaz. Ücret varsa katılımcı
+                etkinlikte öder.
+              </Text>
+              <View className="flex-row flex-wrap gap-2">
+                <Pressable
+                  onPress={() => {
+                    update("isPaid", false);
+                    update("feeAmountText", "");
+                  }}
+                  className={`rounded-full border px-3.5 py-2 active:opacity-80 ${
+                    !values.isPaid
+                      ? "border-brand-primary bg-brand-primary"
+                      : "border-border-default bg-surface-primary"
+                  }`}
+                >
+                  <Text
+                    className={`font-body-bold text-sm ${
+                      !values.isPaid
+                        ? "text-background-primary"
+                        : "text-text-secondary"
+                    }`}
+                  >
+                    Ücretsiz
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => update("isPaid", true)}
+                  className={`rounded-full border px-3.5 py-2 active:opacity-80 ${
+                    values.isPaid
+                      ? "border-brand-primary bg-brand-primary"
+                      : "border-border-default bg-surface-primary"
+                  }`}
+                >
+                  <Text
+                    className={`font-body-bold text-sm ${
+                      values.isPaid
+                        ? "text-background-primary"
+                        : "text-text-secondary"
+                    }`}
+                  >
+                    Ücretli
+                  </Text>
+                </Pressable>
+              </View>
+              {values.isPaid ? (
+                <Input
+                  label="Fiyat"
+                  placeholder="Örn. 150"
+                  icon="coins"
+                  value={values.feeAmountText}
+                  onChangeText={(feeAmountText) =>
+                    update("feeAmountText", feeAmountText)
+                  }
+                  keyboardType="decimal-pad"
+                  editable={!isSubmitting}
+                  helperText="Türk lirası. Uygulama tahsilat yapmaz."
+                />
+              ) : null}
+            </View>
+
+            <View className="mt-6 gap-2">
+              <Text className="font-body-bold text-[13px] text-text-secondary">
                 Seviye
               </Text>
               <Text className="font-body text-xs text-text-tertiary">

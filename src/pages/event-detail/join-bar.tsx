@@ -7,6 +7,7 @@ import type { ButtonVariant } from "@/types/components";
 import type { EventDetail } from "@/types/events";
 import {
   canAccessEventChat,
+  formatEventFee,
   hasApprovedParticipation,
   hasEventEnded,
   hasPendingParticipation,
@@ -149,7 +150,9 @@ function resolveBar({
 
   return {
     statusTitle: spotsLeft == null ? "∞" : String(spotsLeft),
-    statusSubtitle: "yer kaldı",
+    statusSubtitle: event.isPaid
+      ? `yer kaldı · ${formatEventFee(true, event.feeAmount)}`
+      : "yer kaldı",
     actionLabel: "Katıl",
     action: onJoin,
     variant: "primary",

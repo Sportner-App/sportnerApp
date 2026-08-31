@@ -27,6 +27,7 @@ import type { IconName } from "@/types/components";
 import type { EventSummary } from "@/types/events";
 import {
   formatDurationLabel,
+  formatEventFee,
   formatEventTime,
   relativeEventBadge,
 } from "@/utils/events";
@@ -161,38 +162,54 @@ export function EventCard({ event, index, onPress }: EventCardProps) {
           ) : null}
 
           <View className="z-10 min-h-[210px] justify-between px-4 py-3.5">
-            {sportLabel || event.skillLevel != null ? (
-              <View className="flex-row flex-wrap items-center gap-1.5">
-                {sportLabel ? (
-                  <View className="flex-row items-center self-start rounded-pill bg-white/90 px-2 py-0.5">
-                    <FontAwesome6
-                      name={event.sportIcon}
-                      size={9}
-                      color={sportColor}
-                    />
-                    <Text
-                      numberOfLines={1}
-                      className="ml-1 font-body text-[10px] font-bold tracking-[1.2px]"
-                      style={{ color: sportColor }}
-                    >
-                      {sportLabel}
-                    </Text>
-                  </View>
-                ) : null}
-                {event.skillLevel != null ? (
-                  <View className="self-start rounded-pill bg-white/90 px-2 py-0.5">
-                    <Text
-                      numberOfLines={1}
-                      className="font-body text-[10px] font-bold tracking-[0.4px] text-text-secondary"
-                    >
-                      {SKILL_LEVEL_LABELS[skillKeyFromCode(event.skillLevel)]}
-                    </Text>
-                  </View>
-                ) : null}
+            <View className="flex-row flex-wrap items-center gap-1.5">
+              {sportLabel ? (
+                <View className="flex-row items-center self-start rounded-pill bg-white/90 px-2 py-0.5">
+                  <FontAwesome6
+                    name={event.sportIcon}
+                    size={9}
+                    color={sportColor}
+                  />
+                  <Text
+                    numberOfLines={1}
+                    className="ml-1 font-body text-[10px] font-bold tracking-[1.2px]"
+                    style={{ color: sportColor }}
+                  >
+                    {sportLabel}
+                  </Text>
+                </View>
+              ) : null}
+              {event.skillLevel != null ? (
+                <View className="self-start rounded-pill bg-white/90 px-2 py-0.5">
+                  <Text
+                    numberOfLines={1}
+                    className="font-body text-[10px] font-bold tracking-[0.4px] text-text-secondary"
+                  >
+                    {SKILL_LEVEL_LABELS[skillKeyFromCode(event.skillLevel)]}
+                  </Text>
+                </View>
+              ) : null}
+              <View
+                className="self-start rounded-pill px-2 py-0.5"
+                style={{
+                  backgroundColor: event.isPaid
+                    ? "rgba(255,255,255,0.95)"
+                    : "rgba(255,255,255,0.9)",
+                }}
+              >
+                <Text
+                  numberOfLines={1}
+                  className="font-body text-[10px] font-bold tracking-[0.4px]"
+                  style={{
+                    color: event.isPaid
+                      ? sportColor
+                      : themeColors.text.secondary,
+                  }}
+                >
+                  {formatEventFee(event.isPaid, event.feeAmount)}
+                </Text>
               </View>
-            ) : (
-              <View />
-            )}
+            </View>
 
             <View>
               <View className="w-[62%] pr-2">
