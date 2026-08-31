@@ -2,6 +2,7 @@ import { useIsFocused } from "@react-navigation/native";
 import type { ImageSourcePropType } from "react-native";
 import {
   ImageBackground,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -38,6 +39,7 @@ type FirstLaunchScaffoldProps = {
   primaryGlow?: "default" | "subtle";
   primaryHaptic?: "light" | "medium" | "success";
   accentLine?: number;
+  embedded?: boolean;
 };
 
 export function FirstLaunchScaffold({
@@ -56,16 +58,23 @@ export function FirstLaunchScaffold({
   primaryGlow = "subtle",
   primaryHaptic = "light",
   accentLine,
+  embedded = false,
 }: FirstLaunchScaffoldProps) {
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
-  const translateX = useSharedValue(22);
+  const translateX = useSharedValue(embedded ? 0 : 22);
+  const reduceEnter = embedded && Platform.OS === "android";
+  const overlayId = progressStep ? `intro-${progressStep}` : "welcome";
 
   useEffect(() => {
+    if (embedded) {
+      return;
+    }
+
     translateX.value = withTiming(isFocused ? 0 : -22, {
       duration: isFocused ? 260 : 180,
     });
-  }, [isFocused, translateX]);
+  }, [embedded, isFocused, translateX]);
 
   const transitionStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
@@ -74,14 +83,15 @@ export function FirstLaunchScaffold({
   return (
     <Animated.View
       className="flex-1 bg-background-primary"
-      style={transitionStyle}
+      style={embedded ? undefined : transitionStyle}
     >
       <ImageBackground
         source={image}
         resizeMode="cover"
+        fadeDuration={0}
         style={StyleSheet.absoluteFill}
       />
-      <PhotoOverlay />
+      <PhotoOverlay overlayId={overlayId} />
 
       <View
         className="flex-1 px-6"
@@ -93,7 +103,10 @@ export function FirstLaunchScaffold({
         <BrandMark />
 
         {progressStep ? (
-          <Animated.View entering={FadeInDown.duration(380)} className="mt-10">
+          <Animated.View
+            entering={reduceEnter ? undefined : FadeInDown.duration(380)}
+            className="mt-10"
+          >
             <Text className="font-mono text-[28px] text-text-primary">
               0{progressStep}
             </Text>
@@ -103,7 +116,11 @@ export function FirstLaunchScaffold({
 
         <View className="flex-1" />
 
-        <Animated.View entering={FadeInDown.duration(440).delay(60)}>
+        <Animated.View
+          entering={
+            reduceEnter ? undefined : FadeInDown.duration(440).delay(60)
+          }
+        >
           <View className="gap-0.5">
             {title.split("\n").map((line, index) => (
               <Text
@@ -163,25 +180,28 @@ export function FirstLaunchScaffold({
   );
 }
 
-function PhotoOverlay() {
+function PhotoOverlay({ overlayId }: { overlayId: string }) {
+  const topId = `launch-top-${overlayId}`;
+  const bottomId = `launch-bottom-${overlayId}`;
+
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       <Svg width="100%" height="100%">
         <Defs>
-          <LinearGradient id="launch-top" x1="0" y1="0" x2="0" y2="1">
+          <LinearGradient id={topId} x1="0" y1="0" x2="0" y2="1">
             <Stop offset="0" stopColor="#06111a" stopOpacity="0.88" />
             <Stop offset="0.38" stopColor="#06111a" stopOpacity="0.12" />
             <Stop offset="1" stopColor="#06111a" stopOpacity="0" />
           </LinearGradient>
-          <LinearGradient id="launch-bottom" x1="0" y1="1" x2="0" y2="0">
+          <LinearGradient id={bottomId} x1="0" y1="1" x2="0" y2="0">
             <Stop offset="0" stopColor="#06111a" stopOpacity="1" />
             <Stop offset="0.48" stopColor="#06111a" stopOpacity="0.78" />
             <Stop offset="0.78" stopColor="#06111a" stopOpacity="0.08" />
             <Stop offset="1" stopColor="#06111a" stopOpacity="0" />
           </LinearGradient>
         </Defs>
-        <Rect width="100%" height="100%" fill="url(#launch-top)" />
-        <Rect width="100%" height="100%" fill="url(#launch-bottom)" />
+        <Rect width="100%" height="100%" fill={`url(#${topId})`} />
+        <Rect width="100%" height="100%" fill={`url(#${bottomId})`} />
       </Svg>
       <View className="absolute -right-20 top-[18%] h-52 w-52 rounded-full border-[30px] border-brand-primary/15" />
     </View>

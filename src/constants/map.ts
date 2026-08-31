@@ -1,6 +1,10 @@
-import type { MapStyleElement } from "react-native-maps";
-
 import { DEFAULT_EVENT_LOCATION } from "@/constants/events";
+
+type MapStyleElement = {
+  elementType?: string;
+  featureType?: string;
+  stylers: Array<Record<string, string | number | undefined>>;
+};
 
 export const MAP_INITIAL_REGION = {
   latitude: DEFAULT_EVENT_LOCATION.latitude,
