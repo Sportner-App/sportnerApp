@@ -15,6 +15,7 @@ import { ProfileHero } from "@/pages/profile/profile-hero";
 import { ReviewsSection } from "@/pages/profile/reviews-section";
 import { SportsSection } from "@/pages/profile/sports-section";
 import { StatsSection } from "@/pages/profile/stats-section";
+import { createDirectConversation } from "@/services/messaging-service";
 import { getPublicProfile } from "@/services/profile-service";
 import { listUserReviews } from "@/services/reviews-service";
 import {
@@ -31,7 +32,7 @@ import type { ApiReview } from "@/types/reviews";
 import { FRIENDSHIP_STATUS } from "@/types/social";
 import { errorNotification, successNotification } from "@/utils/haptics";
 
-type FriendAction = "send" | "accept" | "reject" | "block" | null;
+type FriendAction = "send" | "accept" | "reject" | "block" | "message" | null;
 
 export function PublicProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -183,6 +184,27 @@ export function PublicProfileScreen() {
     }
   };
 
+  const handleMessage = async () => {
+    if (!profile || friendAction === "message") {
+      return;
+    }
+
+    setFriendAction("message");
+    try {
+      const conversation = await createDirectConversation(profile.userId);
+      router.push(`/conversations/${conversation.id}`);
+    } catch (error) {
+      errorNotification();
+      showToast({
+        type: "error",
+        title: "Sohbet açılamadı",
+        description: getApiErrorMessage(error),
+      });
+    } finally {
+      setFriendAction(null);
+    }
+  };
+
   const handleBlock = async () => {
     if (!profile || friendAction === "block") {
       return;
@@ -258,10 +280,13 @@ export function PublicProfileScreen() {
                   <View className="flex-1">
                     {isAccepted ? (
                       <Button
-                        label="Arkadaşsınız"
-                        variant="secondary"
+                        label="Mesaj gönder"
                         size="sm"
-                        disabled
+                        isLoading={friendAction === "message"}
+                        disabled={
+                          friendAction !== null && friendAction !== "message"
+                        }
+                        onPress={() => void handleMessage()}
                       />
                     ) : isOutgoingPending ? (
                       <Button

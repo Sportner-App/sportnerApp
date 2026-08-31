@@ -16,14 +16,31 @@ type ConversationPage = {
   hasNext: boolean;
 };
 
-export async function listMyConversations(): Promise<ConversationPage> {
+export async function listMyConversations(options?: {
+  type?: number;
+}): Promise<ConversationPage> {
   const response = await apiClient.get<ConversationPage>("/api/conversations", {
-    params: { page: 1, pageSize: 50 },
+    params: { page: 1, pageSize: 50, type: options?.type },
   });
   return {
     ...response.data,
     items: response.data?.items ?? [],
   };
+}
+
+export async function createDirectConversation(otherUserId: string) {
+  const response = await apiClient.post<ApiConversation>(
+    "/api/conversations/direct",
+    { otherUserId },
+  );
+  return response.data;
+}
+
+export async function getConversation(conversationId: string) {
+  const response = await apiClient.get<ApiConversation>(
+    `/api/conversations/${conversationId}`,
+  );
+  return response.data;
 }
 
 export async function getEventConversation(eventId: string) {

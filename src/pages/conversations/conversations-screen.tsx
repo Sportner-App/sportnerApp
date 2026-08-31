@@ -7,17 +7,50 @@ import {
   AppScreen,
   Avatar,
   BrandRefreshControl,
+  LinearRefreshBar,
   ScreenHeader,
+  SegmentedTabs,
   SportLoader,
 } from "@/components";
 import { themeColors } from "@/constants/theme";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { listMyConversations } from "@/services/messaging-service";
-import type { ApiConversationListItem } from "@/types/messaging";
+import {
+  CONVERSATION_TYPE,
+  type ApiConversationListItem,
+} from "@/types/messaging";
+
+type InboxTab = "events" | "friends";
+
+const TAB_COPY: Record<
+  InboxTab,
+  {
+    subtitle: string;
+    emptyTitle: string;
+    emptyBody: string;
+    icon: "calendar-days" | "user-group";
+  }
+> = {
+  events: {
+    subtitle: "Katıldığın etkinliklerin grup sohbetleri.",
+    emptyTitle: "Henüz etkinlik sohbetin yok",
+    emptyBody: "Bir etkinliğe katıldığında sohbet burada görünecek.",
+    icon: "calendar-days",
+  },
+  friends: {
+    subtitle: "Arkadaşlarınla birebir yazışmaların.",
+    emptyTitle: "Henüz arkadaş sohbetin yok",
+    emptyBody:
+      "Bir arkadaşının profilinden Mesaj gönder diyerek sohbet başlatabilirsin.",
+    icon: "user-group",
+  },
+};
 
 export function ConversationsScreen() {
   const router = useRouter();
-  const [items, setItems] = useState<ApiConversationListItem[]>([]);
+  const [tab, setTab] = useState<InboxTab>("events");
+  const [eventItems, setEventItems] = useState<ApiConversationListItem[]>([]);
+  const [friendItems, setFriendItems] = useState<ApiConversationListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,8 +59,12 @@ export function ConversationsScreen() {
     refresh ? setIsRefreshing(true) : setIsLoading(true);
     try {
       setError(null);
-      const page = await listMyConversations();
-      setItems(page.items);
+      const [events, friends] = await Promise.all([
+        listMyConversations({ type: CONVERSATION_TYPE.event }),
+        listMyConversations({ type: CONVERSATION_TYPE.direct }),
+      ]);
+      setEventItems(events.items);
+      setFriendItems(friends.items);
     } catch (loadError) {
       setError(getApiErrorMessage(loadError, "Sohbetler yüklenemedi."));
     } finally {
@@ -42,9 +79,13 @@ export function ConversationsScreen() {
     }, [load]),
   );
 
+  const items = tab === "events" ? eventItems : friendItems;
+  const copy = TAB_COPY[tab];
+
   return (
     <AppScreen
       header={<ScreenHeader title="SOHBETLERİM" showBack />}
+      belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="gap-3 px-5 pt-3"
       refreshControl={
         <BrandRefreshControl
@@ -53,14 +94,23 @@ export function ConversationsScreen() {
         />
       }
     >
-      <View className="gap-1 pb-2">
+      <View className="gap-1 pb-1">
         <Text className="font-display text-[28px] text-text-inverse">
           Mesajların
         </Text>
         <Text className="font-body text-sm leading-5 text-text-tertiary">
-          Katıldığın etkinliklerin sohbetlerine buradan hızlıca ulaşabilirsin.
+          {copy.subtitle}
         </Text>
       </View>
+
+      <SegmentedTabs
+        options={[
+          { key: "events", label: "Etkinlik" },
+          { key: "friends", label: "Arkadaşlar" },
+        ]}
+        value={tab}
+        onChange={setTab}
+      />
 
       {isLoading ? (
         <View className="items-center py-3xl">
@@ -89,16 +139,16 @@ export function ConversationsScreen() {
         <View className="items-center gap-3 rounded-[28px] border border-white/10 bg-surface-primary px-6 py-12">
           <View className="h-14 w-14 items-center justify-center rounded-full bg-brand-primary/10">
             <FontAwesome6
-              name="comments"
+              name={copy.icon}
               size={22}
               color={themeColors.brand.primary}
             />
           </View>
           <Text className="font-body-bold text-base text-text-primary">
-            Henüz sohbetin yok
+            {copy.emptyTitle}
           </Text>
           <Text className="text-center font-body text-sm leading-5 text-text-tertiary">
-            Bir etkinliğe katıldığında etkinlik sohbeti burada görünecek.
+            {copy.emptyBody}
           </Text>
         </View>
       ) : (
@@ -121,7 +171,7 @@ function ConversationRow({
   item: ApiConversationListItem;
   onPress: () => void;
 }) {
-  const isEvent = item.type === 0;
+  const isEvent = item.type === CONVERSATION_TYPE.event;
   const title = isEvent
     ? item.title || "Etkinlik sohbeti"
     : item.peerFirstName || item.peerUsername || item.title || "Sohbet";

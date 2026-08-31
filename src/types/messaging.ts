@@ -1,3 +1,21 @@
+export const CONVERSATION_TYPE = {
+  event: 0,
+  direct: 1,
+  group: 2,
+} as const;
+
+export type ConversationType =
+  (typeof CONVERSATION_TYPE)[keyof typeof CONVERSATION_TYPE];
+
+export type ApiConversationMember = {
+  userId: string;
+  username: string | null;
+  firstName: string | null;
+  profileImageUrl: string | null;
+  role: number;
+  joinedAt: string;
+};
+
 export type ApiMessage = {
   id: string;
   conversationId: string;
@@ -24,6 +42,7 @@ export type ApiConversation = {
   title: string | null;
   isClosed: boolean;
   myRole: number;
+  members?: ApiConversationMember[];
 };
 
 export type ApiConversationListItem = {

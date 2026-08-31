@@ -7,11 +7,16 @@ import { useSession, useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { connectEventChat } from "@/lib/signalr";
 import {
+  getConversation,
   getEventConversation,
   listMessages,
   sendTextMessage,
 } from "@/services/messaging-service";
-import type { ApiMessage } from "@/types/messaging";
+import {
+  CONVERSATION_TYPE,
+  type ApiConversation,
+  type ApiMessage,
+} from "@/types/messaging";
 
 import { MessageRow } from "./message-row";
 
@@ -27,6 +32,9 @@ export function EventChatScreen({
   const { user } = useSession();
   const { showToast } = useToast();
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [conversation, setConversation] = useState<ApiConversation | null>(
+    null,
+  );
   const [messages, setMessages] = useState<ApiMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
@@ -47,6 +55,12 @@ export function EventChatScreen({
           return;
         }
         setConversationId(resolvedConversationId);
+        const details = await getConversation(resolvedConversationId).catch(
+          () => null,
+        );
+        if (!disposed) {
+          setConversation(details);
+        }
         const page = await listMessages(resolvedConversationId);
         if (disposed) {
           return;
@@ -88,6 +102,18 @@ export function EventChatScreen({
     [messages],
   );
 
+  const headerTitle = useMemo(() => {
+    if (conversation?.type === CONVERSATION_TYPE.direct) {
+      const peer = conversation.members?.find(
+        (member) => member.userId !== user?.id,
+      );
+      const name = peer?.firstName || peer?.username || conversation.title;
+      return (name || "SOHBET").toLocaleUpperCase("tr-TR");
+    }
+
+    return conversation?.title || "SOHBET";
+  }, [conversation, user?.id]);
+
   const send = async () => {
     const text = draft.trim();
     if (!conversationId || !text || sending) {
@@ -114,7 +140,7 @@ export function EventChatScreen({
   return (
     <AppScreen
       keyboardAvoiding
-      header={<ScreenHeader title="SOHBET" showBack />}
+      header={<ScreenHeader title={headerTitle} showBack />}
       contentClassName="gap-3 px-6 pt-2"
       footer={
         <View className="flex-row items-center gap-2 border-t border-white/10 px-6 py-3">
