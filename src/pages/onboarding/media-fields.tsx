@@ -32,6 +32,7 @@ export function MediaFields({
           size={96}
           fallbackIcon="camera"
           borderColor="rgba(204,255,0,0.3)"
+          previewable={false}
           onPress={onPickAvatar}
           accessibilityLabel="Profil fotoğrafı seç"
         />

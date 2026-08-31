@@ -17,6 +17,7 @@ export { SegmentedTabs } from "./segmented-tabs";
 export { SelectField } from "./select-field";
 export { SelectSheet } from "./select-sheet";
 export { SportLoader } from "./sport-loader";
+export { AnimatedSplashScreen } from "./animated-splash-screen";
 export { TabScreenHeader } from "./tab-screen-header";
 export { TabPage } from "./tab-page";
 export { UserIdentity } from "./user-identity";

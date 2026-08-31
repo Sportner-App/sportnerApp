@@ -25,3 +25,21 @@ export type ApiConversation = {
   isClosed: boolean;
   myRole: number;
 };
+
+export type ApiConversationListItem = {
+  id: string;
+  type: number;
+  eventId: string | null;
+  title: string | null;
+  isClosed: boolean;
+  createdAt: string;
+  lastMessageAt: string | null;
+  lastMessagePreview: string | null;
+  unreadCount: number;
+  isMuted: boolean;
+  isFriend: boolean | null;
+  peerUserId: string | null;
+  peerUsername: string | null;
+  peerFirstName: string | null;
+  peerProfileImageUrl: string | null;
+};

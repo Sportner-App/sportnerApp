@@ -1,49 +1,60 @@
-import { useFocusEffect } from "@react-navigation/native";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
-import { useCallback, useState } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { useSession } from "@/contexts";
-import { getMyProfile } from "@/services/profile-service";
-import type { UserProfile } from "@/types/profile";
-import { Avatar } from "./avatar";
+import { themeColors } from "@/constants/theme";
 import { BrandMark } from "./brand-mark";
 
 export function TabScreenHeader() {
   const router = useRouter();
-  const { user } = useSession();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-
-  useFocusEffect(
-    useCallback(() => {
-      let active = true;
-      void getMyProfile()
-        .then((next) => {
-          if (active) setProfile(next);
-        })
-        .catch(() => {
-          // Session bilgisi header'ı kullanılabilir tutar.
-        });
-      return () => {
-        active = false;
-      };
-    }, []),
-  );
-
-  const avatarUrl = profile?.avatarUrl ?? user?.avatarUrl;
-  const displayName = profile?.fullName ?? user?.fullName ?? user?.username;
 
   return (
     <View className="flex-row items-center justify-between py-2">
       <BrandMark />
-      <Avatar
-        uri={avatarUrl}
-        name={displayName}
-        size={44}
-        borderWidth={2}
-        onPress={() => router.navigate("/(tabs)/profile")}
-        accessibilityLabel="Profiline git"
-      />
+      <View className="flex-row items-center gap-2">
+        <HeaderAction
+          icon="comments"
+          label="Sohbetlerim"
+          onPress={() => router.push("/conversations")}
+        />
+        <HeaderAction
+          icon="bell"
+          label="Bildirimler"
+          showIndicator
+          onPress={() => router.push("/notifications")}
+        />
+      </View>
     </View>
+  );
+}
+
+function HeaderAction({
+  icon,
+  label,
+  showIndicator = false,
+  onPress,
+}: {
+  icon: "comments" | "bell";
+  label: string;
+  showIndicator?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      hitSlop={6}
+      onPress={onPress}
+      className="h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 active:opacity-70"
+    >
+      <FontAwesome6
+        name={icon}
+        size={17}
+        color={themeColors.text.inverse}
+      />
+      {showIndicator ? (
+        <View className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full border-2 border-background-primary bg-[#ff6b35]" />
+      ) : null}
+    </Pressable>
   );
 }

@@ -61,18 +61,6 @@ export function HomeScreen() {
                 <View className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full border-2 border-background-primary bg-brand-primary" />
               ) : null}
             </Pressable>
-            <Pressable
-              hitSlop={8}
-              onPress={() => router.push("/notifications")}
-              className="h-11 w-11 items-center justify-center rounded-full active:opacity-70"
-            >
-              <FontAwesome6
-                name="bell"
-                size={17}
-                color={themeColors.text.inverse}
-              />
-              <View className="absolute right-2.5 top-2 h-2.5 w-2.5 rounded-full border-2 border-background-primary bg-[#ff6b35]" />
-            </Pressable>
           </View>
         </View>
 
