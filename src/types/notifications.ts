@@ -32,7 +32,20 @@ export const NOTIFICATION_ENTITY = {
 export const NOTIFICATION_TYPE = {
   friendRequest: 0,
   friendAccepted: 1,
+  postLiked: 7,
 } as const;
+
+export function notificationCopy(item: ApiNotification) {
+  if (item.notificationType === NOTIFICATION_TYPE.postLiked) {
+    const who = item.actorUsername?.trim();
+    const title = who
+      ? `${who} kullanıcısı fotoğrafını beğendi`
+      : "Bir kullanıcı fotoğrafını beğendi";
+    return { title, body: title };
+  }
+
+  return { title: item.title, body: item.body };
+}
 
 export const NOTIFICATION_SETTING_LABELS: Record<number, string> = {
   0: "Arkadaşlık isteği",

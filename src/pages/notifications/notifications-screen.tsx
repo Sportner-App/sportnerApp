@@ -18,7 +18,11 @@ import {
   markNotificationRead,
 } from "@/services/notifications-service";
 import type { ApiNotification } from "@/types/notifications";
-import { NOTIFICATION_ENTITY, NOTIFICATION_TYPE } from "@/types/notifications";
+import {
+  NOTIFICATION_ENTITY,
+  NOTIFICATION_TYPE,
+  notificationCopy,
+} from "@/types/notifications";
 
 export function NotificationsScreen() {
   const router = useRouter();
@@ -131,24 +135,29 @@ export function NotificationsScreen() {
           Yeni bildirimin yok.
         </Text>
       ) : (
-        items.map((item) => (
-          <Pressable
-            key={item.id}
-            onPress={() => open(item)}
-            className={`rounded-2xl border px-4 py-3.5 ${
-              item.isRead
-                ? "border-white/10 bg-brand-surface/70"
-                : "border-brand-primary/30 bg-brand-primary/10"
-            }`}
-          >
-            <Text className="font-body text-sm font-semibold text-white">
-              {item.title}
-            </Text>
-            <Text className="mt-1 font-body text-xs text-brand-neutral">
-              {item.body}
-            </Text>
-          </Pressable>
-        ))
+        items.map((item) => {
+          const copy = notificationCopy(item);
+          return (
+            <Pressable
+              key={item.id}
+              onPress={() => open(item)}
+              className={`rounded-2xl border px-4 py-3.5 ${
+                item.isRead
+                  ? "border-white/10 bg-brand-surface/70"
+                  : "border-brand-primary/30 bg-brand-primary/10"
+              }`}
+            >
+              <Text className="font-body text-sm font-semibold text-white">
+                {copy.title}
+              </Text>
+              {copy.body && copy.body !== copy.title ? (
+                <Text className="mt-1 font-body text-xs text-brand-neutral">
+                  {copy.body}
+                </Text>
+              ) : null}
+            </Pressable>
+          );
+        })
       )}
 
       {cursor ? (
