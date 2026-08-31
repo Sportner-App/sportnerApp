@@ -28,6 +28,11 @@ export async function listNotifications(params: {
   };
 }
 
+export async function hasUnreadNotifications(): Promise<boolean> {
+  const page = await listNotifications({ unreadOnly: true, limit: 1 });
+  return page.items.length > 0;
+}
+
 export async function markNotificationRead(id: string) {
   await apiClient.post(`/api/notifications/${id}/read`);
 }
