@@ -32,19 +32,48 @@ export const NOTIFICATION_ENTITY = {
 export const NOTIFICATION_TYPE = {
   friendRequest: 0,
   friendAccepted: 1,
+  eventInvitation: 2,
+  eventRequestApproved: 3,
+  eventRequestRejected: 4,
+  eventReminder: 5,
+  eventCancelled: 6,
   postLiked: 7,
+  postCommented: 8,
+  commentReplied: 9,
+  badgeEarned: 10,
+  newMessage: 11,
+  system: 12,
+  questCompleted: 13,
 } as const;
 
+const NAMED_ACTIONS: Partial<Record<number, string>> = {
+  [NOTIFICATION_TYPE.friendRequest]: "arkadaşlık isteği gönderdi",
+  [NOTIFICATION_TYPE.friendAccepted]: "arkadaşlık isteğini kabul etti",
+  [NOTIFICATION_TYPE.eventInvitation]: "seni etkinliğe davet etti",
+  [NOTIFICATION_TYPE.eventRequestApproved]: "başvurunu onayladı",
+  [NOTIFICATION_TYPE.eventRequestRejected]: "başvurunu reddetti",
+  [NOTIFICATION_TYPE.eventCancelled]: "etkinliği iptal etti",
+  [NOTIFICATION_TYPE.postLiked]: "fotoğrafını beğendi",
+  [NOTIFICATION_TYPE.postCommented]: "fotoğrafına yorum yaptı",
+  [NOTIFICATION_TYPE.commentReplied]: "yorumuna yanıt verdi",
+  [NOTIFICATION_TYPE.newMessage]: "mesaj gönderdi",
+};
+
 export function notificationCopy(item: ApiNotification) {
-  if (item.notificationType === NOTIFICATION_TYPE.postLiked) {
-    const who = item.actorUsername?.trim();
-    const title = who
-      ? `${who} kullanıcısı fotoğrafını beğendi`
-      : "Bir kullanıcı fotoğrafını beğendi";
-    return { title, body: title };
+  if (item.title.includes("kullanıcısı")) {
+    return { title: item.title, body: item.body };
   }
 
-  return { title: item.title, body: item.body };
+  const action = NAMED_ACTIONS[item.notificationType];
+  if (!action) {
+    return { title: item.title, body: item.body };
+  }
+
+  const who = item.actorUsername?.trim();
+  const title = who
+    ? `${who} kullanıcısı ${action}`
+    : `Bir kullanıcı ${action}`;
+  return { title, body: item.body };
 }
 
 export const NOTIFICATION_SETTING_LABELS: Record<number, string> = {
