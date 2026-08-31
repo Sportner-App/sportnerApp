@@ -9,6 +9,14 @@ export type PickedMedia = {
 
 export type MediaPickResult = PickedMedia | "denied" | "cancelled";
 
+export type MediaSource = "camera" | "gallery";
+
+export function mediaDeniedMessage(source: MediaSource) {
+  return source === "camera"
+    ? "Fotoğraf çekmek için kamera izni vermelisin."
+    : "Fotoğraf seçmek için galeri izni vermelisin.";
+}
+
 function guessVideoType(asset: ImagePicker.ImagePickerAsset): string {
   const mime = asset.mimeType?.toLowerCase();
   if (mime === "video/mp4" || mime === "video/quicktime" || mime === "video/webm") {
@@ -41,45 +49,96 @@ async function toJpegUpload(asset: ImagePicker.ImagePickerAsset, fallbackName: s
   };
 }
 
-export async function pickProfileImage(): Promise<MediaPickResult> {
-  const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  if (!permission.granted) {
-    return "denied";
+async function requestSourcePermission(source: MediaSource) {
+  const permission =
+    source === "camera"
+      ? await ImagePicker.requestCameraPermissionsAsync()
+      : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+  return permission.granted;
+}
+
+async function launchImages(
+  source: MediaSource,
+  options: ImagePicker.ImagePickerOptions,
+) {
+  if (!(await requestSourcePermission(source))) {
+    return "denied" as const;
   }
 
-  const result = await ImagePicker.launchImageLibraryAsync({
+  const result =
+    source === "camera"
+      ? await ImagePicker.launchCameraAsync({
+          ...options,
+          allowsMultipleSelection: false,
+        })
+      : await ImagePicker.launchImageLibraryAsync(options);
+
+  if (result.canceled || result.assets.length === 0) {
+    return "cancelled" as const;
+  }
+
+  return result.assets;
+}
+
+export async function pickProfileImage(
+  source: MediaSource = "gallery",
+): Promise<MediaPickResult> {
+  const assets = await launchImages(source, {
     mediaTypes: ["images"],
     allowsEditing: true,
     aspect: [1, 1],
     quality: 0.8,
   });
 
-  if (result.canceled || !result.assets[0]) {
+  if (assets === "denied" || assets === "cancelled") {
+    return assets;
+  }
+
+  const asset = assets[0];
+  if (!asset) {
     return "cancelled";
   }
 
-  return toJpegUpload(result.assets[0], "avatar.jpg");
+  return toJpegUpload(asset, "avatar.jpg");
 }
 
-export async function pickPostImages(): Promise<PickedMedia[] | "denied" | "cancelled"> {
-  const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  if (!permission.granted) {
-    return "denied";
-  }
-
-  const result = await ImagePicker.launchImageLibraryAsync({
+export async function pickSingleImage(
+  source: MediaSource = "gallery",
+): Promise<MediaPickResult> {
+  const assets = await launchImages(source, {
     mediaTypes: ["images"],
-    allowsMultipleSelection: true,
-    selectionLimit: 10,
     quality: 0.85,
   });
 
-  if (result.canceled || result.assets.length === 0) {
+  if (assets === "denied" || assets === "cancelled") {
+    return assets;
+  }
+
+  const asset = assets[0];
+  if (!asset) {
     return "cancelled";
   }
 
+  return toJpegUpload(asset, "photo.jpg");
+}
+
+export async function pickPostImages(
+  source: MediaSource = "gallery",
+): Promise<PickedMedia[] | "denied" | "cancelled"> {
+  const assets = await launchImages(source, {
+    mediaTypes: ["images"],
+    allowsMultipleSelection: source === "gallery",
+    selectionLimit: source === "gallery" ? 10 : 1,
+    quality: 0.85,
+  });
+
+  if (assets === "denied" || assets === "cancelled") {
+    return assets;
+  }
+
   return Promise.all(
-    result.assets.map((asset, index) => toJpegUpload(asset, `post-${index + 1}.jpg`)),
+    assets.map((asset, index) => toJpegUpload(asset, `post-${index + 1}.jpg`)),
   );
 }
 

@@ -13,7 +13,9 @@
       "bundleIdentifier": "com.yagizerdenler.sportner",
       "infoPlist": {
         "CFBundleDisplayName": "Sportner",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "Yeni fotoğraf çekmek için kamera erişimi gerekir.",
+        "NSPhotoLibraryUsageDescription": "Profil fotoğrafı ve gönderi eklemek için galeri erişimi gerekir."
       }
     },
     "android": {
@@ -35,6 +37,13 @@
       "expo-router",
       "expo-video",
       "expo-notifications",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Profil fotoğrafı ve gönderi eklemek için galeri erişimi gerekir.",
+          "cameraPermission": "Yeni fotoğraf çekmek için kamera erişimi gerekir."
+        }
+      ],
       [
         "expo-splash-screen",
         {

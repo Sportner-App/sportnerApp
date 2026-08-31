@@ -20,8 +20,10 @@ import { listSports } from "@/services/sports-service";
 import type { OnboardingSportDraft, OnboardingStep } from "@/types/onboarding";
 import type { Sport } from "@/types/sports";
 import {
+  mediaDeniedMessage,
   pickIntroVideo,
   pickProfileImage,
+  type MediaSource,
   type PickedMedia,
 } from "@/utils/media-picker";
 
@@ -170,13 +172,13 @@ export function useOnboarding() {
     setStep("details");
   };
 
-  const chooseAvatar = async () => {
-    const picked = await pickProfileImage();
+  const chooseAvatar = async (source: MediaSource) => {
+    const picked = await pickProfileImage(source);
     if (picked === "denied") {
       showToast({
         type: "error",
         title: "İzin gerekli",
-        description: "Fotoğraf seçmek için galeri izni vermelisin.",
+        description: mediaDeniedMessage(source),
       });
       return;
     }

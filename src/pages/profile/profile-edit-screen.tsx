@@ -10,6 +10,7 @@ import {
   SportLoader,
 } from "@/components";
 import { useToast } from "@/contexts";
+import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
 import { useProfile } from "@/hooks/use-profile";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { MediaFields } from "@/pages/onboarding/media-fields";
@@ -21,6 +22,7 @@ import {
   uploadIntroVideo,
 } from "@/services/profile-service";
 import {
+  mediaDeniedMessage,
   pickIntroVideo,
   pickProfileImage,
   type PickedMedia,
@@ -30,6 +32,7 @@ export function ProfileEditScreen() {
   const router = useRouter();
   const { showToast } = useToast();
   const { profile, isLoading, refresh } = useProfile();
+  const { chooseSource, sourceSheet } = useMediaSourceChoice();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [bio, setBio] = useState("");
@@ -59,8 +62,15 @@ export function ProfileEditScreen() {
   }, [profile]);
 
   const chooseMedia = async (kind: "avatar" | "video") => {
+    const source = kind === "avatar" ? await chooseSource() : "gallery";
+    if (kind === "avatar" && !source) {
+      return;
+    }
+
     const picked =
-      kind === "avatar" ? await pickProfileImage() : await pickIntroVideo();
+      kind === "avatar"
+        ? await pickProfileImage(source ?? "gallery")
+        : await pickIntroVideo();
 
     if (picked === "denied") {
       showToast({
@@ -68,7 +78,7 @@ export function ProfileEditScreen() {
         title: "İzin gerekli",
         description:
           kind === "avatar"
-            ? "Fotoğraf seçmek için galeri izni vermelisin."
+            ? mediaDeniedMessage(source ?? "gallery")
             : "Video seçmek için galeri izni vermelisin.",
       });
       return;
@@ -129,6 +139,7 @@ export function ProfileEditScreen() {
     <AppScreen
       keyboardAvoiding
       header={<ScreenHeader title="DÜZENLE" showBack />}
+      footer={sourceSheet}
       contentClassName="gap-5 px-6 pt-2"
     >
       {isLoading || !profile ? (

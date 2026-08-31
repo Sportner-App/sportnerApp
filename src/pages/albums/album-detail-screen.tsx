@@ -1,19 +1,21 @@
-import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Text, View } from "react-native";
 
 import { AppScreen, Button, ScreenHeader, SportLoader } from "@/components";
 import { useToast } from "@/contexts";
+import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { addAlbumMedia, getAlbum } from "@/services/albums-service";
 import type { ApiAlbumDetail } from "@/types/social";
+import { mediaDeniedMessage, pickSingleImage } from "@/utils/media-picker";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:5139";
 
 export function AlbumDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { showToast } = useToast();
+  const { chooseSource, sourceSheet } = useMediaSourceChoice();
   const [album, setAlbum] = useState<ApiAlbumDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -38,24 +40,30 @@ export function AlbumDetailScreen() {
   }, [id]);
 
   const upload = async () => {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted || !id) {
+    if (!id) {
       return;
     }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      quality: 0.8,
-    });
-    if (result.canceled || !result.assets[0]) {
+
+    const source = await chooseSource();
+    if (!source) {
       return;
     }
-    const asset = result.assets[0];
-    try {
-      await addAlbumMedia(id, {
-        uri: asset.uri,
-        name: asset.fileName || "photo.jpg",
-        type: asset.mimeType || "image/jpeg",
+
+    const picked = await pickSingleImage(source);
+    if (picked === "denied") {
+      showToast({
+        type: "error",
+        title: "İzin gerekli",
+        description: mediaDeniedMessage(source),
       });
+      return;
+    }
+    if (picked === "cancelled") {
+      return;
+    }
+
+    try {
+      await addAlbumMedia(id, picked);
       await load();
     } catch (error) {
       showToast({
@@ -69,6 +77,7 @@ export function AlbumDetailScreen() {
   return (
     <AppScreen
       header={<ScreenHeader title="ALBÜM" showBack />}
+      footer={sourceSheet}
       contentClassName="gap-4 px-6 pt-3"
     >
       {isLoading || !album ? (

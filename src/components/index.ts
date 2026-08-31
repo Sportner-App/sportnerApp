@@ -12,6 +12,7 @@ export { GlassTabBar } from "./glass-tab-bar";
 export { Input } from "./input";
 export { LinearRefreshBar } from "./linear-refresh-bar";
 export { MapPin } from "./map-pin";
+export { MediaSourceSheet } from "./media-source-sheet";
 export { BrandRefreshControl } from "./refresh-control";
 export { ScreenHeader } from "./screen-header";
 export { SegmentedTabs } from "./segmented-tabs";

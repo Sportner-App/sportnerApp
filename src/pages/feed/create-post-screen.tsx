@@ -5,13 +5,19 @@ import { Image, Pressable, Text, View } from "react-native";
 
 import { AppScreen, Button, Input, ScreenHeader } from "@/components";
 import { useToast } from "@/contexts";
+import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { createPost } from "@/services/social-service";
-import { pickPostImages, type PickedMedia } from "@/utils/media-picker";
+import {
+  mediaDeniedMessage,
+  pickPostImages,
+  type PickedMedia,
+} from "@/utils/media-picker";
 
 export function CreatePostScreen() {
   const router = useRouter();
   const { showToast } = useToast();
+  const { chooseSource, sourceSheet } = useMediaSourceChoice();
   const [content, setContent] = useState("");
   const [photos, setPhotos] = useState<PickedMedia[]>([]);
   const [saving, setSaving] = useState(false);
@@ -19,12 +25,17 @@ export function CreatePostScreen() {
   const canShare = Boolean(content.trim() || photos.length > 0);
 
   const choosePhotos = async () => {
-    const picked = await pickPostImages();
+    const source = await chooseSource();
+    if (!source) {
+      return;
+    }
+
+    const picked = await pickPostImages(source);
     if (picked === "denied") {
       showToast({
         type: "error",
         title: "İzin gerekli",
-        description: "Fotoğraf seçmek için galeri izni vermelisin.",
+        description: mediaDeniedMessage(source),
       });
       return;
     }
@@ -76,6 +87,7 @@ export function CreatePostScreen() {
     <AppScreen
       keyboardAvoiding
       header={<ScreenHeader title="YENİ GÖNDERİ" showBack />}
+      footer={sourceSheet}
       contentClassName="gap-4 px-6 pt-3"
     >
       <Text className="font-display text-2xl text-text-primary">
@@ -105,7 +117,7 @@ export function CreatePostScreen() {
           <Text className="font-body text-xs text-brand-neutral">
             {photos.length > 0
               ? `${photos.length} fotoğraf seçildi`
-              : "En fazla 10 fotoğraf"}
+              : "Kameradan çek veya galeriden seç · en fazla 10"}
           </Text>
         </View>
         <FontAwesome6 name="plus" size={12} color="#64748b" />

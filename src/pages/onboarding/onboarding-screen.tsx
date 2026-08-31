@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button, Input } from "@/components";
 import { ONBOARDING_COPY } from "@/constants/onboarding";
+import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
 import { useOnboarding } from "@/hooks/use-onboarding";
 import { AnimatedBackground } from "@/pages/auth/animated-background";
 
@@ -13,6 +14,7 @@ import { SportsPickerStep } from "./sports-picker-step";
 
 export function OnboardingScreen() {
   const form = useOnboarding();
+  const { chooseSource, sourceSheet } = useMediaSourceChoice();
   const insets = useSafeAreaInsets();
   const isSportsStep = form.step === "sports";
   const detailsCopy = ONBOARDING_COPY.details;
@@ -73,7 +75,14 @@ export function OnboardingScreen() {
             <MediaFields
               avatar={form.avatar}
               video={form.video}
-              onPickAvatar={form.chooseAvatar}
+              onPickAvatar={() => {
+                void (async () => {
+                  const source = await chooseSource();
+                  if (source) {
+                    await form.chooseAvatar(source);
+                  }
+                })();
+              }}
               onPickVideo={form.chooseVideo}
               onClearAvatar={form.clearAvatar}
               onClearVideo={form.clearVideo}
@@ -114,6 +123,7 @@ export function OnboardingScreen() {
           </Animated.View>
         </ScrollView>
       )}
+      {sourceSheet}
     </View>
   );
 }
