@@ -15,6 +15,7 @@ export type ApiEventListItem = {
   maxParticipants: number | null;
   minParticipantAge: number;
   maxParticipantAge: number;
+  skillLevel: number | null;
   status: number;
   occupiedParticipantCount: number;
 };
@@ -45,6 +46,7 @@ export type ApiEventDetail = {
   maxParticipants: number | null;
   minParticipantAge: number;
   maxParticipantAge: number;
+  skillLevel: number | null;
   status: number;
   occupiedParticipantCount: number;
   waitlistCount: number;
@@ -129,6 +131,7 @@ export type EventSummary = {
   maxParticipants: number | null;
   minParticipantAge: number;
   maxParticipantAge: number;
+  skillLevel: number | null;
   hostName: string;
   status: number;
   durationMinutes: number;
@@ -202,6 +205,7 @@ export type CreateEventPayload = {
   maxParticipants: number;
   minParticipantAge: number;
   maxParticipantAge: number;
+  skillLevel: number | null;
   address: string;
   latitude: number;
   longitude: number;
@@ -221,6 +225,7 @@ export type CreateEventFormValues = {
   maxPlayers: string;
   minParticipantAge: string;
   maxParticipantAge: string;
+  skillLevel: number | null;
   addressText: string;
   latitude: number | null;
   longitude: number | null;
@@ -235,6 +240,7 @@ export type DiscoverEventsParams = {
   minAge?: number;
   maxAge?: number;
   gender?: number;
+  skillLevel?: number;
   page?: number;
   pageSize?: number;
 };

@@ -7,12 +7,18 @@ import type { EventSummary } from "@/types/events";
 import type { Sport } from "@/types/sports";
 
 const PAGE_SIZE = 30;
-const DEFAULT_FILTERS = { minAge: 13, maxAge: 120, gender: null } as const;
+const DEFAULT_FILTERS = {
+  minAge: 13,
+  maxAge: 120,
+  gender: null,
+  skillLevel: null,
+} as const;
 
 export type EventListFilters = {
   minAge: number;
   maxAge: number;
   gender: number | null;
+  skillLevel: number | null;
 };
 
 export function useEvents() {
@@ -67,6 +73,7 @@ export function useEvents() {
               ? undefined
               : activeFilters.maxAge,
           gender: activeFilters.gender ?? undefined,
+          skillLevel: activeFilters.skillLevel ?? undefined,
         });
 
         setEvents((prev) =>

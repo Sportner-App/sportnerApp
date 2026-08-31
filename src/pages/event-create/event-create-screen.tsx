@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Keyboard, Text, View } from "react-native";
+import { Keyboard, Pressable, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Animated, {
   useSharedValue,
@@ -20,6 +20,7 @@ import {
   CREATE_EVENT_LIMITS,
   CREATE_EVENT_STEPS,
 } from "@/constants/events";
+import { ONBOARDING_SKILL_OPTIONS } from "@/constants/onboarding";
 import { useCreateEvent } from "@/hooks/use-create-event";
 
 import { EventCreateProgress } from "./event-create-progress";
@@ -310,6 +311,59 @@ export function EventCreateScreen() {
                   update("maxParticipantAge", String(maxAge));
                 }}
               />
+            </View>
+
+            <View className="mt-6 gap-2">
+              <Text className="font-body-bold text-[13px] text-text-secondary">
+                Seviye
+              </Text>
+              <Text className="font-body text-xs text-text-tertiary">
+                İsteğe bağlı. Katılımı kilitlemez, sadece bilgi.
+              </Text>
+              <View className="flex-row flex-wrap gap-2">
+                <Pressable
+                  onPress={() => update("skillLevel", null)}
+                  className={`rounded-full border px-3.5 py-2 active:opacity-80 ${
+                    values.skillLevel == null
+                      ? "border-brand-primary bg-brand-primary"
+                      : "border-border-default bg-surface-primary"
+                  }`}
+                >
+                  <Text
+                    className={`font-body-bold text-sm ${
+                      values.skillLevel == null
+                        ? "text-background-primary"
+                        : "text-text-secondary"
+                    }`}
+                  >
+                    Belirtme
+                  </Text>
+                </Pressable>
+                {ONBOARDING_SKILL_OPTIONS.map((option) => {
+                  const active = values.skillLevel === option.level;
+                  return (
+                    <Pressable
+                      key={option.key}
+                      onPress={() => update("skillLevel", option.level)}
+                      className={`rounded-full border px-3.5 py-2 active:opacity-80 ${
+                        active
+                          ? "border-brand-primary bg-brand-primary"
+                          : "border-border-default bg-surface-primary"
+                      }`}
+                    >
+                      <Text
+                        className={`font-body-bold text-sm ${
+                          active
+                            ? "text-background-primary"
+                            : "text-text-secondary"
+                        }`}
+                      >
+                        {option.label}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
             </View>
 
             <View className="mt-8">

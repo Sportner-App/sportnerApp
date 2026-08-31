@@ -70,6 +70,7 @@ export async function getEvents(
         minAge: params.minAge,
         maxAge: params.maxAge,
         gender: params.gender,
+        skillLevel: params.skillLevel,
         page: params.page ?? 1,
         pageSize: params.pageSize ?? 20,
       },
@@ -312,6 +313,7 @@ export async function exploreEvents(params: {
   lat?: number;
   lng?: number;
   radiusKm?: number;
+  skillLevel?: number;
   limit?: number;
 }): Promise<ExploreEventItem[]> {
   const response = await apiClient.get<ApiExploreEventItem[]>(
@@ -408,6 +410,7 @@ export async function createEvent(
       maxParticipants: payload.maxParticipants,
       minParticipantAge: payload.minParticipantAge,
       maxParticipantAge: payload.maxParticipantAge,
+      skillLevel: payload.skillLevel,
     });
 
     eventId = created.data?.id;

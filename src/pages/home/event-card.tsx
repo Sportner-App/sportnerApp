@@ -15,6 +15,7 @@ import Svg, {
   Stop,
 } from "react-native-svg";
 
+import { SKILL_LEVEL_LABELS, skillKeyFromCode } from "@/constants/profile";
 import { sportImageForSlug } from "@/constants/sport-images";
 import {
   radius,
@@ -160,20 +161,34 @@ export function EventCard({ event, index, onPress }: EventCardProps) {
           ) : null}
 
           <View className="z-10 min-h-[210px] justify-between px-4 py-3.5">
-            {sportLabel ? (
-              <View className="flex-row items-center self-start rounded-pill bg-white/90 px-2 py-0.5">
-                <FontAwesome6
-                  name={event.sportIcon}
-                  size={9}
-                  color={sportColor}
-                />
-                <Text
-                  numberOfLines={1}
-                  className="ml-1 font-body text-[10px] font-bold tracking-[1.2px]"
-                  style={{ color: sportColor }}
-                >
-                  {sportLabel}
-                </Text>
+            {sportLabel || event.skillLevel != null ? (
+              <View className="flex-row flex-wrap items-center gap-1.5">
+                {sportLabel ? (
+                  <View className="flex-row items-center self-start rounded-pill bg-white/90 px-2 py-0.5">
+                    <FontAwesome6
+                      name={event.sportIcon}
+                      size={9}
+                      color={sportColor}
+                    />
+                    <Text
+                      numberOfLines={1}
+                      className="ml-1 font-body text-[10px] font-bold tracking-[1.2px]"
+                      style={{ color: sportColor }}
+                    >
+                      {sportLabel}
+                    </Text>
+                  </View>
+                ) : null}
+                {event.skillLevel != null ? (
+                  <View className="self-start rounded-pill bg-white/90 px-2 py-0.5">
+                    <Text
+                      numberOfLines={1}
+                      className="font-body text-[10px] font-bold tracking-[0.4px] text-text-secondary"
+                    >
+                      {SKILL_LEVEL_LABELS[skillKeyFromCode(event.skillLevel)]}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
             ) : (
               <View />

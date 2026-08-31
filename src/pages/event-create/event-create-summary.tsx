@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
 
 import { DURATION_OPTIONS } from "@/constants/events";
+import { SKILL_LEVEL_LABELS, skillKeyFromCode } from "@/constants/profile";
 import { sportAccentToken, themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { CreateEventFormValues } from "@/types/events";
@@ -130,6 +131,11 @@ export function EventCreateSummary({
             <SummaryRow icon="id-card" accent={accent}>
               {`${values.minParticipantAge}–${values.maxParticipantAge} yaş`}
             </SummaryRow>
+            {values.skillLevel != null ? (
+              <SummaryRow icon="medal" accent={accent}>
+                {SKILL_LEVEL_LABELS[skillKeyFromCode(values.skillLevel)]}
+              </SummaryRow>
+            ) : null}
           </View>
         ) : null}
       </View>

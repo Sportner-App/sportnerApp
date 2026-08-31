@@ -3,6 +3,7 @@ import { Pressable, Text, View } from "react-native";
 
 import { BottomSheet, Button } from "@/components";
 import { GENDER_OPTIONS } from "@/constants/auth";
+import { ONBOARDING_SKILL_OPTIONS } from "@/constants/onboarding";
 import type { EventListFilters } from "@/hooks/use-events";
 import { AgeRangeSlider } from "@/pages/event-create/age-range-slider";
 
@@ -17,6 +18,7 @@ const DEFAULT_FILTERS: EventListFilters = {
   minAge: 13,
   maxAge: 120,
   gender: null,
+  skillLevel: null,
 };
 
 export function EventFilterSheet({
@@ -36,7 +38,7 @@ export function EventFilterSheet({
       visible={visible}
       onClose={onClose}
       title="Etkinlik filtreleri"
-      subtitle="Yaş aralığına ve organizatör cinsiyetine göre daralt."
+      subtitle="Yaş, seviye ve organizatör cinsiyetine göre daralt."
       showCancel={false}
     >
       <View className="gap-5">
@@ -47,6 +49,34 @@ export function EventFilterSheet({
             setDraft((current) => ({ ...current, minAge, maxAge }))
           }
         />
+
+        <View className="gap-2">
+          <Text className="font-body-bold text-[13px] text-text-secondary">
+            Seviye
+          </Text>
+          <View className="flex-row flex-wrap gap-2">
+            <GenderOption
+              label="Tümü"
+              selected={draft.skillLevel == null}
+              onPress={() =>
+                setDraft((current) => ({ ...current, skillLevel: null }))
+              }
+            />
+            {ONBOARDING_SKILL_OPTIONS.map((option) => (
+              <GenderOption
+                key={option.key}
+                label={option.label}
+                selected={draft.skillLevel === option.level}
+                onPress={() =>
+                  setDraft((current) => ({
+                    ...current,
+                    skillLevel: option.level,
+                  }))
+                }
+              />
+            ))}
+          </View>
+        </View>
 
         <View className="gap-2">
           <Text className="font-body-bold text-[13px] text-text-secondary">

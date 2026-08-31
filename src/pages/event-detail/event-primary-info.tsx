@@ -3,6 +3,7 @@ import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { Avatar } from "@/components";
+import { SKILL_LEVEL_LABELS, skillKeyFromCode } from "@/constants/profile";
 import { sportAccentToken, themeColors, typeStyles } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { EventDetail, EventParticipant } from "@/types/events";
@@ -58,6 +59,15 @@ export function EventPrimaryInfo({
           icon="id-card"
           label={`${event.minParticipantAge}–${event.maxParticipantAge} yaş`}
         />
+        {event.skillLevel != null ? (
+          <>
+            <MetaDot />
+            <MetaPiece
+              icon="medal"
+              label={SKILL_LEVEL_LABELS[skillKeyFromCode(event.skillLevel)]}
+            />
+          </>
+        ) : null}
       </View>
 
       <EventCapacitySummary

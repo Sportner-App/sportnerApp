@@ -57,7 +57,8 @@ export function HomeScreen() {
               />
               {filters.minAge !== 13 ||
               filters.maxAge !== 120 ||
-              filters.gender != null ? (
+              filters.gender != null ||
+              filters.skillLevel != null ? (
                 <View className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full border-2 border-background-primary bg-brand-primary" />
               ) : null}
             </Pressable>
