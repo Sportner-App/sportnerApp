@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
-import { Button, SportLoader, TabPage } from "@/components";
+import { Button, SegmentedTabs, SportLoader, TabPage } from "@/components";
 import { themeColors } from "@/constants/theme";
 import { useEvents } from "@/hooks/use-events";
 import { useRequireAuth } from "@/hooks/use-require-auth";
@@ -27,11 +27,15 @@ export function HomeScreen() {
     isLoadingMore,
     sportFilter,
     setSportFilter,
+    scope,
+    setScope,
     filters,
     applyFilters,
     refresh,
     loadMore,
   } = useEvents();
+
+  const isFriends = scope === "friends";
 
   return (
     <TabPage refreshing={isRefreshing} onRefresh={refresh}>
@@ -48,7 +52,7 @@ export function HomeScreen() {
       >
         <View className="flex-row items-center justify-between">
           <Text className="font-display text-[24px] leading-[30px] text-text-primary">
-            Yaklaşan Etkinlikler
+            Etkinlikler
           </Text>
           <View className="flex-row gap-sm">
             <Pressable
@@ -73,20 +77,36 @@ export function HomeScreen() {
           </View>
         </View>
 
+        <SegmentedTabs
+          options={[
+            { key: "all", label: "Genel" },
+            { key: "friends", label: "Arkadaşlarım" },
+          ]}
+          value={scope}
+          onChange={(next) => {
+            if (
+              next === "friends" &&
+              !requireAuth(
+                "Arkadaşlarının etkinliklerini görmek için giriş yapmalısın.",
+              )
+            ) {
+              return;
+            }
+            setScope(next);
+          }}
+        />
+
         <View className="flex-row items-center gap-sm">
           <FontAwesome6
-            name="location-dot"
+            name={isFriends ? "user-group" : "location-dot"}
             size={14}
             color={themeColors.text.primary}
           />
           <Text className="font-body-bold text-[15px] text-text-primary">
-            Yakınındaki etkinlikler
+            {isFriends
+              ? "Arkadaşlarının düzenlediği etkinlikler"
+              : "Yakınındaki etkinlikler"}
           </Text>
-          <FontAwesome6
-            name="chevron-down"
-            size={11}
-            color={themeColors.text.primary}
-          />
         </View>
 
         <SportFilter value={sportFilter} onChange={setSportFilter} />
@@ -107,7 +127,9 @@ export function HomeScreen() {
             color={themeColors.text.secondary}
           />
           <Text className="text-center font-body text-body-sm text-text-secondary">
-            Bu filtrelere uygun yaklaşan etkinlik yok.
+            {isFriends
+              ? "Arkadaşların henüz yaklaşan bir etkinlik oluşturmamış."
+              : "Bu filtrelere uygun yaklaşan etkinlik yok."}
           </Text>
         </View>
       ) : (

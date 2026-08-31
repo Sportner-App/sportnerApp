@@ -257,6 +257,7 @@ export type DiscoverEventsParams = {
   gender?: number;
   skillLevel?: number;
   isPaid?: boolean;
+  friendsOnly?: boolean;
   page?: number;
   pageSize?: number;
 };

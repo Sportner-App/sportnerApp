@@ -23,6 +23,8 @@ export type EventListFilters = {
   isPaid: boolean | null;
 };
 
+export type EventFeedScope = "all" | "friends";
+
 export function useEvents() {
   const [events, setEvents] = useState<EventSummary[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -33,6 +35,7 @@ export function useEvents() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [sportFilter, setSportFilter] = useState("all");
+  const [scope, setScope] = useState<EventFeedScope>("all");
   const [filters, setFilters] = useState<EventListFilters>(DEFAULT_FILTERS);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,6 +54,7 @@ export function useEvents() {
       catalog: Sport[],
       nextPage: number,
       activeFilters: EventListFilters,
+      activeScope: EventFeedScope,
     ) => {
       if (mode === "initial") {
         setIsLoading(true);
@@ -77,6 +81,7 @@ export function useEvents() {
           gender: activeFilters.gender ?? undefined,
           skillLevel: activeFilters.skillLevel ?? undefined,
           isPaid: activeFilters.isPaid ?? undefined,
+          friendsOnly: activeScope === "friends",
         });
 
         setEvents((prev) =>
@@ -114,7 +119,7 @@ export function useEvents() {
         }
 
         setSports(catalog);
-        await fetchPage("initial", "all", catalog, 1, DEFAULT_FILTERS);
+        await fetchPage("initial", "all", catalog, 1, DEFAULT_FILTERS, "all");
       } catch (err) {
         if (cancelled) {
           return;
@@ -131,30 +136,38 @@ export function useEvents() {
   }, [fetchPage]);
 
   const refresh = useCallback(() => {
-    void fetchPage("refresh", sportFilter, sports, 1, filters);
-  }, [fetchPage, filters, sportFilter, sports]);
+    void fetchPage("refresh", sportFilter, sports, 1, filters, scope);
+  }, [fetchPage, filters, scope, sportFilter, sports]);
 
   const loadMore = useCallback(() => {
     if (!hasNext || isLoadingMore) {
       return;
     }
-    void fetchPage("more", sportFilter, sports, page + 1, filters);
-  }, [fetchPage, filters, hasNext, isLoadingMore, page, sportFilter, sports]);
+    void fetchPage("more", sportFilter, sports, page + 1, filters, scope);
+  }, [fetchPage, filters, hasNext, isLoadingMore, page, scope, sportFilter, sports]);
 
   const changeSportFilter = useCallback(
     (slug: string) => {
       setSportFilter(slug);
-      void fetchPage("initial", slug, sports, 1, filters);
+      void fetchPage("initial", slug, sports, 1, filters, scope);
     },
-    [fetchPage, filters, sports],
+    [fetchPage, filters, scope, sports],
   );
 
   const applyFilters = useCallback(
     (nextFilters: EventListFilters) => {
       setFilters(nextFilters);
-      void fetchPage("initial", sportFilter, sports, 1, nextFilters);
+      void fetchPage("initial", sportFilter, sports, 1, nextFilters, scope);
     },
-    [fetchPage, sportFilter, sports],
+    [fetchPage, scope, sportFilter, sports],
+  );
+
+  const changeScope = useCallback(
+    (nextScope: EventFeedScope) => {
+      setScope(nextScope);
+      void fetchPage("initial", sportFilter, sports, 1, filters, nextScope);
+    },
+    [fetchPage, filters, sportFilter, sports],
   );
 
   return {
@@ -166,6 +179,8 @@ export function useEvents() {
     isLoadingMore,
     sportFilter,
     setSportFilter: changeSportFilter,
+    scope,
+    setScope: changeScope,
     filters,
     applyFilters,
     refresh,

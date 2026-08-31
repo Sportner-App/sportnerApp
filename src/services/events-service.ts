@@ -72,6 +72,7 @@ export async function getEvents(
         gender: params.gender,
         skillLevel: params.skillLevel,
         isPaid: params.isPaid,
+        friendsOnly: params.friendsOnly || undefined,
         page: params.page ?? 1,
         pageSize: params.pageSize ?? 20,
       },
