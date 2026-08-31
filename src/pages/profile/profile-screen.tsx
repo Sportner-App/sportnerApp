@@ -54,6 +54,7 @@ export function ProfileScreen() {
       notifications: "/notifications",
       "notification-settings": "/profile/notification-settings",
       privacy: "/profile/privacy",
+      feedback: "/feedback",
       help: "/help",
     };
     const href = routes[key];

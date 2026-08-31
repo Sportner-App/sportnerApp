@@ -1,6 +1,7 @@
+import { useRouter } from "expo-router";
 import { Text, View } from "react-native";
 
-import { AppScreen, ScreenHeader } from "@/components";
+import { AppScreen, Button, ScreenHeader } from "@/components";
 
 const FAQ = [
   {
@@ -18,6 +19,8 @@ const FAQ = [
 ];
 
 export function HelpScreen() {
+  const router = useRouter();
+
   return (
     <AppScreen
       header={<ScreenHeader title="YARDIM" showBack />}
@@ -37,6 +40,22 @@ export function HelpScreen() {
           </Text>
         </View>
       ))}
+
+      <View className="gap-3 rounded-3xl border border-white/10 bg-brand-surface/90 p-4">
+        <Text className="font-body text-sm font-semibold text-white">
+          Bir önerin mi var?
+        </Text>
+        <Text className="font-body text-sm text-brand-neutral">
+          Takıldığın bir yer veya eklenmesini istediğin bir özellik varsa bize
+          yaz.
+        </Text>
+        <Button
+          label="Öneri gönder"
+          variant="outline"
+          size="sm"
+          onPress={() => router.push("/feedback")}
+        />
+      </View>
     </AppScreen>
   );
 }

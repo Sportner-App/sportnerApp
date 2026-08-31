@@ -28,6 +28,7 @@ export const PROFILE_MENU_GROUPS: ProfileMenuGroup[] = [
         icon: "sliders",
       },
       { key: "privacy", label: "Gizlilik", icon: "shield-halved" },
+      { key: "feedback", label: "Öneri gönder", icon: "lightbulb" },
       { key: "help", label: "Yardım", icon: "circle-question" },
     ],
   },
