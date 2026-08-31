@@ -38,7 +38,7 @@ export function OnboardingScreen() {
               onPress={() => form.setStep("sports")}
               accessibilityRole="button"
               accessibilityLabel="Spor seçimine dön"
-              className="h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-brand-surface/90 active:opacity-80"
+              className="h-11 w-11 items-center justify-center rounded-full border border-border-default bg-surface-primary active:opacity-80"
             >
               <FontAwesome6 name="arrow-left" size={14} color="#ccff00" />
             </Pressable>
@@ -58,7 +58,7 @@ export function OnboardingScreen() {
           </Animated.View>
 
           <Animated.View entering={FadeInDown.duration(420)}>
-            <Text className="font-display text-5xl leading-[52px] text-white">
+            <Text className="font-display text-5xl leading-[52px] text-text-primary">
               {detailsCopy.title}
             </Text>
             <Text className="mt-3 font-body text-base leading-6 text-brand-neutral">
@@ -68,7 +68,7 @@ export function OnboardingScreen() {
 
           <Animated.View
             entering={FadeInUp.duration(500).delay(120)}
-            className="mt-8 gap-4 rounded-[28px] border border-white/10 bg-brand-surface/90 p-5"
+            className="mt-8 gap-4 rounded-[28px] border border-border-default bg-surface-primary p-5"
           >
             <MediaFields
               avatar={form.avatar}

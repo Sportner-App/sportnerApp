@@ -29,7 +29,7 @@ export function TabPage({
         <BrandRefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      <StatusBar style="light" />
+      <StatusBar style="auto" />
       <TabScreenHeader />
       {children}
     </AppScreen>

@@ -217,10 +217,12 @@ export type CreateEventPayload = {
   address: string;
   latitude: number;
   longitude: number;
+  recurrenceIntervalWeeks?: 1 | 2 | 4;
+  recurrenceCount?: number;
 };
 
 export type CreateEventResult = {
-  data: { id: string; published: boolean } | null;
+  data: { id: string; ids?: string[]; published: boolean } | null;
   error: { message: string } | null;
 };
 
@@ -239,6 +241,9 @@ export type CreateEventFormValues = {
   addressText: string;
   latitude: number | null;
   longitude: number | null;
+  isRecurring: boolean;
+  recurrenceIntervalWeeks: 1 | 2 | 4;
+  recurrenceCount: number;
 };
 
 export type DiscoverEventsParams = {

@@ -251,14 +251,16 @@ const Wheel = forwardRef<
             >
               <Text
                 className={`font-mono text-[30px] ${
-                  active ? "font-mono-bold text-brand-primary" : "text-white/30"
+                  active
+                    ? "font-mono-bold text-brand-primary"
+                    : "text-text-tertiary"
                 }`}
               >
                 {String(item).padStart(2, "0")}
               </Text>
               <Text
                 className={`w-8 font-body text-[11px] ${
-                  active ? "text-brand-primary" : "text-white/20"
+                  active ? "text-brand-primary" : "text-text-tertiary"
                 }`}
               >
                 {suffix}

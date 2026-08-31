@@ -419,9 +419,10 @@ export async function createEvent(
   }
 
   let eventId: string | undefined;
+  let eventIds: string[] = [];
 
   try {
-    const created = await apiClient.post<ApiEventDetail>("/api/events", {
+    const requestBody = {
       sportId: payload.sportId,
       title,
       description: payload.description.trim() || null,
@@ -436,9 +437,26 @@ export async function createEvent(
       skillLevel: payload.skillLevel,
       isPaid: payload.isPaid,
       feeAmount: payload.isPaid ? payload.feeAmount : null,
-    });
-
-    eventId = created.data?.id;
+    };
+    if ((payload.recurrenceCount ?? 1) > 1) {
+      const created = await apiClient.post<{
+        firstEventId: string;
+        eventIds: string[];
+      }>("/api/events/recurring", {
+        ...requestBody,
+        intervalWeeks: payload.recurrenceIntervalWeeks ?? 1,
+        occurrenceCount: payload.recurrenceCount,
+      });
+      eventId = created.data?.firstEventId;
+      eventIds = created.data?.eventIds ?? [];
+    } else {
+      const created = await apiClient.post<ApiEventDetail>(
+        "/api/events",
+        requestBody,
+      );
+      eventId = created.data?.id;
+      eventIds = eventId ? [eventId] : [];
+    }
 
     if (!eventId) {
       return {
@@ -454,11 +472,16 @@ export async function createEvent(
   }
 
   try {
-    await apiClient.post(`/api/events/${eventId}/publish`);
-    return { data: { id: eventId, published: true }, error: null };
+    await Promise.all(
+      eventIds.map((id) => apiClient.post(`/api/events/${id}/publish`)),
+    );
+    return {
+      data: { id: eventId, ids: eventIds, published: true },
+      error: null,
+    };
   } catch (error) {
     return {
-      data: { id: eventId, published: false },
+      data: { id: eventId, ids: eventIds, published: false },
       error: {
         message: getApiErrorMessage(
           error,

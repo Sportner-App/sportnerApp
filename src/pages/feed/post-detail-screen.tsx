@@ -125,7 +125,7 @@ export function PostDetailScreen() {
             className="flex-row items-center gap-3 px-6"
           >
             <Avatar uri={post.profileImageUrl} name={author} size={40} />
-            <Text className="font-body text-sm font-semibold text-white">
+            <Text className="font-body text-sm font-semibold text-text-primary">
               @{post.username || "sporcu"}
             </Text>
           </Pressable>
@@ -148,7 +148,7 @@ export function PostDetailScreen() {
 
           <View className="gap-4 px-6">
             {post.content?.trim() ? (
-              <Text className="font-body text-base text-white">
+              <Text className="font-body text-base text-text-primary">
                 {post.content}
               </Text>
             ) : null}
@@ -175,7 +175,9 @@ export function PostDetailScreen() {
               </View>
             </View>
 
-            <Text className="font-display text-base text-white">Yorumlar</Text>
+            <Text className="font-display text-base text-text-primary">
+              Yorumlar
+            </Text>
             {comments.length === 0 ? (
               <Text className="font-body text-sm text-brand-neutral">
                 İlk yorumu sen yaz.
@@ -213,7 +215,7 @@ export function PostDetailScreen() {
                   : "Yorum yaz…"
               }
               placeholderTextColor="#64748b"
-              className="rounded-2xl border border-white/10 px-4 py-3 font-body text-white"
+              className="rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
             />
             <Button
               label={replyingTo ? "Yanıt gönder" : "Yorum gönder"}

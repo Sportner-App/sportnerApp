@@ -26,13 +26,15 @@ export function HelpScreen() {
       header={<ScreenHeader title="YARDIM" showBack />}
       contentClassName="gap-4 px-6 pt-3"
     >
-      <Text className="font-display text-3xl text-white">Sık sorulanlar</Text>
+      <Text className="font-display text-3xl text-text-primary">
+        Sık sorulanlar
+      </Text>
       {FAQ.map((item) => (
         <View
           key={item.q}
-          className="rounded-3xl border border-white/10 bg-brand-surface/90 p-4"
+          className="rounded-3xl border border-border-default bg-surface-primary p-4"
         >
-          <Text className="font-body text-sm font-semibold text-white">
+          <Text className="font-body text-sm font-semibold text-text-primary">
             {item.q}
           </Text>
           <Text className="mt-2 font-body text-sm text-brand-neutral">

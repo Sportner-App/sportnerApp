@@ -63,6 +63,9 @@ export function useCreateEvent() {
     addressText: "",
     latitude: null,
     longitude: null,
+    isRecurring: false,
+    recurrenceIntervalWeeks: 1,
+    recurrenceCount: 4,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [friends, setFriends] = useState<ApiFriend[]>([]);
@@ -318,6 +321,10 @@ export function useCreateEvent() {
         address: values.addressText.trim(),
         latitude: values.latitude,
         longitude: values.longitude,
+        recurrenceIntervalWeeks: values.isRecurring
+          ? values.recurrenceIntervalWeeks
+          : undefined,
+        recurrenceCount: values.isRecurring ? values.recurrenceCount : 1,
       });
 
       if (!data) {
@@ -344,17 +351,23 @@ export function useCreateEvent() {
         return;
       }
 
-      const assigned = await assignIfNeeded(data.id);
+      const assigned = await assignIfNeeded(data.ids ?? [data.id]);
 
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       showToast({
         type: assigned ? "success" : "error",
         title: assigned
-          ? "Etkinlik yayınlandı"
-          : "Etkinlik yayınlandı, davetler gönderilemedi",
+          ? values.isRecurring
+            ? `${values.recurrenceCount} etkinlik yayınlandı`
+            : "Etkinlik yayınlandı"
+          : values.isRecurring
+            ? "Etkinlikler yayınlandı, bazı davetler gönderilemedi"
+            : "Etkinlik yayınlandı, davetler gönderilemedi",
         description: assigned
           ? selectedFriendIds.length > 0
-            ? "Arkadaşlarına etkinlik daveti gönderildi."
+            ? values.isRecurring
+              ? "Arkadaşlarına serideki tüm etkinlikler için davet gönderildi."
+              : "Arkadaşlarına etkinlik daveti gönderildi."
             : "Oyuncular seni bekliyor."
           : "Davetleri etkinlik detayından tekrar gönderebilirsin.",
       });
@@ -365,17 +378,22 @@ export function useCreateEvent() {
     }
   };
 
-  const assignIfNeeded = async (eventId: string) => {
+  const assignIfNeeded = async (eventIds: string | string[]) => {
     if (guests.length === 0 && selectedFriendIds.length === 0) return true;
 
     try {
-      await assignEventParticipants(eventId, {
-        guests: guests.map((guest) => ({
-          firstName: guest.firstName.trim(),
-          lastName: guest.lastName.trim(),
-        })),
-        friendUserIds: selectedFriendIds,
-      });
+      const ids = Array.isArray(eventIds) ? eventIds : [eventIds];
+      await Promise.all(
+        ids.map((eventId) =>
+          assignEventParticipants(eventId, {
+            guests: guests.map((guest) => ({
+              firstName: guest.firstName.trim(),
+              lastName: guest.lastName.trim(),
+            })),
+            friendUserIds: selectedFriendIds,
+          }),
+        ),
+      );
       return true;
     } catch {
       return false;

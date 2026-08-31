@@ -17,7 +17,7 @@ export function NotFoundScreen() {
         <Text className="font-mono text-xs tracking-[4px] text-brand-neutral">
           404
         </Text>
-        <Text className="text-center font-display text-3xl text-white">
+        <Text className="text-center font-display text-3xl text-text-primary">
           Sayfa bulunamadı
         </Text>
         <Text className="max-w-[280px] text-center font-body text-sm leading-5 text-brand-neutral">

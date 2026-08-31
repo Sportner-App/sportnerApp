@@ -46,7 +46,9 @@ export function BadgesScreen() {
         </View>
       ) : (
         <>
-          <Text className="font-display text-2xl text-white">Rozetlerin</Text>
+          <Text className="font-display text-2xl text-text-primary">
+            Rozetlerin
+          </Text>
           {badges.length === 0 ? (
             <Text className="font-body text-sm text-brand-neutral">
               Henüz rozet kazanmadın.
@@ -61,7 +63,9 @@ export function BadgesScreen() {
             ))
           )}
 
-          <Text className="mt-2 font-display text-2xl text-white">İlerleme</Text>
+          <Text className="mt-2 font-display text-2xl text-text-primary">
+            İlerleme
+          </Text>
           {progress.map((badge) => (
             <Card
               key={badge.badgeId ?? badge.id}
@@ -70,7 +74,9 @@ export function BadgesScreen() {
             />
           ))}
 
-          <Text className="mt-2 font-display text-2xl text-white">Görevler</Text>
+          <Text className="mt-2 font-display text-2xl text-text-primary">
+            Görevler
+          </Text>
           {quests.length === 0 ? (
             <Text className="font-body text-sm text-brand-neutral">
               Aktif görev yok.
@@ -92,8 +98,10 @@ export function BadgesScreen() {
 
 function Card({ title, body }: { title: string; body: string }) {
   return (
-    <View className="rounded-2xl border border-white/10 bg-brand-surface/90 p-4">
-      <Text className="font-body text-sm font-semibold text-white">{title}</Text>
+    <View className="rounded-2xl border border-border-default bg-surface-primary p-4">
+      <Text className="font-body text-sm font-semibold text-text-primary">
+        {title}
+      </Text>
       <Text className="mt-1 font-body text-xs text-brand-neutral">{body}</Text>
     </View>
   );

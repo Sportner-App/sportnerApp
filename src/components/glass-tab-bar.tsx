@@ -3,7 +3,13 @@ import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Platform, Pressable, Text, View } from "react-native";
+import {
+  Platform,
+  Pressable,
+  Text,
+  View,
+  type View as ViewType,
+} from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -14,8 +20,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TAB_ITEMS } from "@/constants/tabs";
 import { themeColors } from "@/constants/theme";
-import { useSession } from "@/contexts";
+import { useAppTour, useSession } from "@/contexts";
 import { getMyProfile } from "@/services/profile-service";
+import { useRequireAuth } from "@/hooks/use-require-auth";
 import type { UserProfile } from "@/types/profile";
 import { Avatar } from "./avatar";
 
@@ -29,6 +36,7 @@ function TabButton({
   avatarUrl,
   avatarName,
   onPress,
+  tourTargetRef,
 }: {
   label: string;
   icon: (typeof TAB_ITEMS)[number]["icon"];
@@ -37,6 +45,7 @@ function TabButton({
   avatarUrl?: string | null;
   avatarName?: string | null;
   onPress: () => void;
+  tourTargetRef?: (node: ViewType | null) => void;
 }) {
   const scale = useSharedValue(1);
   const glow = useSharedValue(0);
@@ -63,7 +72,11 @@ function TabButton({
 
   if (isAction) {
     return (
-      <View className="h-full flex-1 items-center justify-center">
+      <View
+        ref={tourTargetRef}
+        collapsable={false}
+        className="h-full flex-1 items-center justify-center"
+      >
         <AnimatedPressable
           accessibilityRole="button"
           accessibilityLabel={label}
@@ -106,59 +119,61 @@ function TabButton({
   }
 
   return (
-    <AnimatedPressable
-      accessibilityRole="button"
-      accessibilityState={{ selected: focused }}
-      accessibilityLabel={label}
-      onPress={onPress}
-      onPressIn={pressIn}
-      onPressOut={pressOut}
-      style={animatedStyle}
-      className="flex-1 items-center justify-center px-0.5"
-    >
-      <View
-        className={`min-h-[48px] min-w-[52px] items-center justify-center gap-1 rounded-[20px] border px-2 ${
-          focused
-            ? "border-white/20 bg-white/10"
-            : "border-transparent bg-transparent"
-        }`}
+    <View ref={tourTargetRef} collapsable={false} className="h-full flex-1">
+      <AnimatedPressable
+        accessibilityRole="button"
+        accessibilityState={{ selected: focused }}
+        accessibilityLabel={label}
+        onPress={onPress}
+        onPressIn={pressIn}
+        onPressOut={pressOut}
+        style={animatedStyle}
+        className="h-full items-center justify-center px-0.5"
       >
-        <View className="h-6 items-center justify-center">
-          {label === "Profil" ? (
-            <Avatar
-              uri={avatarUrl}
-              name={avatarName}
-              size={22}
-              borderWidth={focused ? 2 : 1}
-              borderColor={
-                focused
-                  ? themeColors.brand.primary
-                  : themeColors.text.secondary
-              }
-              previewable={false}
-            />
-          ) : (
-            <FontAwesome6
-              name={icon}
-              size={16}
-              color={
-                focused
-                  ? themeColors.brand.primary
-                  : themeColors.text.secondary
-              }
-            />
-          )}
-        </View>
-        <Text
-          numberOfLines={1}
-          className={`text-center font-body-bold text-[10px] leading-3 tracking-[-0.1px] ${
-            focused ? "text-text-primary" : "text-text-tertiary"
+        <View
+          className={`min-h-[48px] min-w-[52px] items-center justify-center gap-1 rounded-[20px] border px-2 ${
+            focused
+              ? "border-white/20 bg-white/10"
+              : "border-transparent bg-transparent"
           }`}
         >
-          {label}
-        </Text>
-      </View>
-    </AnimatedPressable>
+          <View className="h-6 items-center justify-center">
+            {label === "Profil" ? (
+              <Avatar
+                uri={avatarUrl}
+                name={avatarName}
+                size={22}
+                borderWidth={focused ? 2 : 1}
+                borderColor={
+                  focused
+                    ? themeColors.brand.primary
+                    : themeColors.text.secondary
+                }
+                previewable={false}
+              />
+            ) : (
+              <FontAwesome6
+                name={icon}
+                size={16}
+                color={
+                  focused
+                    ? themeColors.brand.primary
+                    : themeColors.text.secondary
+                }
+              />
+            )}
+          </View>
+          <Text
+            numberOfLines={1}
+            className={`text-center font-body-bold text-[10px] leading-3 tracking-[-0.1px] ${
+              focused ? "text-white" : "text-white/55"
+            }`}
+          >
+            {label}
+          </Text>
+        </View>
+      </AnimatedPressable>
+    </View>
   );
 }
 
@@ -167,9 +182,15 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
   const router = useRouter();
   const { user } = useSession();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const { registerTarget } = useAppTour();
+  const { isAuthenticated, requireAuth } = useRequireAuth();
 
   useEffect(() => {
     let active = true;
+    if (!isAuthenticated) {
+      setProfile(null);
+      return;
+    }
     void getMyProfile()
       .then((next) => {
         if (active) setProfile(next);
@@ -178,7 +199,7 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
     return () => {
       active = false;
     };
-  }, [state.index]);
+  }, [isAuthenticated, state.index]);
 
   const avatarUrl = profile?.avatarUrl ?? user?.avatarUrl;
   const avatarName = profile?.fullName ?? user?.fullName ?? user?.username;
@@ -237,11 +258,34 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
                   isAction={item.isAction}
                   avatarUrl={item.key === "profile" ? avatarUrl : undefined}
                   avatarName={item.key === "profile" ? avatarName : undefined}
+                  tourTargetRef={
+                    item.isAction
+                      ? registerTarget("create")
+                      : item.key === "discover"
+                        ? registerTarget("discover")
+                        : undefined
+                  }
                   onPress={() => {
                     if (item.isAction) {
+                      if (
+                        !requireAuth(
+                          "Etkinlik oluşturmak için giriş yapmalısın.",
+                        )
+                      )
+                        return;
                       router.push("/events/create");
                       return;
                     }
+
+                    if (
+                      (item.key === "activity" || item.key === "profile") &&
+                      !requireAuth(
+                        item.key === "activity"
+                          ? "Etkinliklerini görmek için giriş yapmalısın."
+                          : "Profilini görmek için giriş yapmalısın.",
+                      )
+                    )
+                      return;
 
                     const route = state.routes[routeIndex];
                     if (!route) {

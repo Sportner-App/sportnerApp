@@ -29,7 +29,7 @@ export function PlaceholderTab({
         <View className="h-16 w-16 items-center justify-center rounded-3xl border border-brand-primary/25 bg-brand-primary/10">
           <FontAwesome6 name={icon} size={24} color="#ccff00" />
         </View>
-        <Text className="font-display text-2xl text-white">{title}</Text>
+        <Text className="font-display text-2xl text-text-primary">{title}</Text>
         <Text className="max-w-[260px] text-center font-body text-sm leading-5 text-brand-neutral">
           {description}
         </Text>

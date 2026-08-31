@@ -14,6 +14,7 @@ import {
 } from "@/components";
 import { radius, spacing, themeColors } from "@/constants/theme";
 import { useEventDetail } from "@/hooks/use-event-detail";
+import { useRequireAuth } from "@/hooks/use-require-auth";
 import { EVENT_STATUS, PARTICIPANT_STATUS } from "@/types/events";
 import { hasApprovedParticipation, hasEventEnded } from "@/utils/events";
 
@@ -33,6 +34,7 @@ export function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const detail = useEventDetail(id);
+  const { isAuthenticated, requireAuth } = useRequireAuth();
 
   const [pendingSheetOpen, setPendingSheetOpen] = useState(false);
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
@@ -86,9 +88,15 @@ export function EventDetailScreen() {
             isLeaving={detail.isLeaving}
             isFull={detail.isFull}
             isOrganizer={detail.isOrganizer}
-            onJoin={detail.join}
+            onJoin={() =>
+              requireAuth("Etkinliğe katılmak için giriş yapmalısın.") &&
+              void detail.join()
+            }
             onLeave={detail.leave}
-            onChat={openChat}
+            onChat={() =>
+              requireAuth("Etkinlik sohbetine girmek için giriş yapmalısın.") &&
+              openChat()
+            }
             isRespondingInvitation={detail.isRespondingInvitation}
             onAcceptInvitation={detail.acceptInvitation}
             onDeclineInvitation={detail.declineInvitation}
@@ -221,7 +229,7 @@ export function EventDetailScreen() {
               </View>
             ) : null}
 
-            {!detail.isOrganizer ? (
+            {!detail.isOrganizer && isAuthenticated ? (
               <View className="mt-sm">
                 <Button
                   label="Şikayet et"

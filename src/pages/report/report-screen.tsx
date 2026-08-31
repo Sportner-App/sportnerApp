@@ -2,7 +2,13 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { AppScreen, Button, Input, ScreenHeader, SportLoader } from "@/components";
+import {
+  AppScreen,
+  Button,
+  Input,
+  ScreenHeader,
+  SportLoader,
+} from "@/components";
 import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { createReport, listReportReasons } from "@/services/reports-service";
@@ -39,7 +45,7 @@ export function ReportScreen() {
         </View>
       ) : (
         <>
-          <Text className="font-display text-2xl text-white">
+          <Text className="font-display text-2xl text-text-primary">
             Neden bildiriyorsun?
           </Text>
           {reasons.map((reason) => (
@@ -49,10 +55,12 @@ export function ReportScreen() {
               className={`rounded-2xl border px-4 py-3 ${
                 reasonId === reason.id
                   ? "border-brand-primary bg-brand-primary/10"
-                  : "border-white/10"
+                  : "border-border-default"
               }`}
             >
-              <Text className="font-body text-sm text-white">{reason.name}</Text>
+              <Text className="font-body text-sm text-text-primary">
+                {reason.name}
+              </Text>
             </Pressable>
           ))}
           <Input

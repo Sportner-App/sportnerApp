@@ -312,7 +312,9 @@ function PickerWheel({
               <Text
                 numberOfLines={1}
                 className={`font-mono text-[25px] ${
-                  active ? "font-mono-bold text-brand-primary" : "text-white/30"
+                  active
+                    ? "font-mono-bold text-brand-primary"
+                    : "text-text-tertiary"
                 }`}
               >
                 {item.label}
@@ -320,7 +322,7 @@ function PickerWheel({
               {suffix ? (
                 <Text
                   className={`font-body text-[10px] ${
-                    active ? "text-brand-primary" : "text-white/20"
+                    active ? "text-brand-primary" : "text-text-tertiary"
                   }`}
                 >
                   {suffix}

@@ -42,7 +42,7 @@ export function SegmentedTabs<T extends string>({
 
   return (
     <View
-      className={`relative flex-row rounded-2xl border border-white/10 bg-background-primary/70 p-1 ${
+      className={`relative flex-row rounded-2xl border border-border-default bg-background-secondary p-1 ${
         disabled ? "opacity-50" : ""
       }`}
       onLayout={(event) =>

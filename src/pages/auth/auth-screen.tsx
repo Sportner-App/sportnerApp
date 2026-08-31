@@ -111,7 +111,7 @@ export function AuthScreen() {
           contentContainerClassName="flex-grow justify-center px-6 py-14"
         >
           <Animated.View entering={fadeUp(180, 6)} className="mb-10">
-            <BrandMark />
+            <BrandMark tone="light" />
           </Animated.View>
 
           <View className="min-h-[140px]">
@@ -122,7 +122,7 @@ export function AuthScreen() {
               }
               exiting={authExiting(shift)}
             >
-              <Text className="font-display text-5xl leading-[52px] text-white">
+              <Text className="font-display text-5xl leading-[52px] text-text-primary">
                 {copy.title}
               </Text>
               <Text className="mt-3 font-body text-base leading-6 text-brand-neutral">
@@ -134,7 +134,7 @@ export function AuthScreen() {
           <Animated.View
             entering={fadeUp(240, 12, 100)}
             layout={cardTransition}
-            className="mt-9 rounded-[28px] border border-white/10 bg-brand-surface/90 p-5"
+            className="mt-9 rounded-[28px] border border-border-default bg-surface-primary p-5"
           >
             <SegmentedTabs
               options={AUTH_MODE_OPTIONS}

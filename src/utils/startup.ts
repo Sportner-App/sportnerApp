@@ -1,8 +1,5 @@
 export type StartupDestination =
-  | "tabs"
-  | "profile-setup"
-  | "auth"
-  | "first-launch";
+  "tabs" | "profile-setup" | "auth" | "first-launch";
 
 type StartupInput = {
   authBypass: boolean;
@@ -32,7 +29,11 @@ export function getStartupDestination({
     return isOnboarded ? "tabs" : "profile-setup";
   }
 
-  return hasSeenOnboarding || isEnteringAuth ? "auth" : "first-launch";
+  if (isEnteringAuth) {
+    return "auth";
+  }
+
+  return hasSeenOnboarding ? "tabs" : "first-launch";
 }
 
 export const STARTUP_HREF = {

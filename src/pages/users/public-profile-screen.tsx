@@ -31,6 +31,7 @@ import type { ApiProfileFriendship, UserProfile } from "@/types/profile";
 import type { ApiReview } from "@/types/reviews";
 import { FRIENDSHIP_STATUS } from "@/types/social";
 import { errorNotification, successNotification } from "@/utils/haptics";
+import { useRequireAuth } from "@/hooks/use-require-auth";
 
 type FriendAction = "send" | "accept" | "reject" | "block" | "message" | null;
 
@@ -39,6 +40,7 @@ export function PublicProfileScreen() {
   const router = useRouter();
   const { user } = useSession();
   const { showToast } = useToast();
+  const { isAuthenticated, requireAuth } = useRequireAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [reviews, setReviews] = useState<ApiReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,9 +54,10 @@ export function PublicProfileScreen() {
     }
     void getPublicProfile(id)
       .then(async (next) => {
-        const friendship =
-          next.friendship ??
-          (await resolveFriendshipWith(next.userId).catch(() => null));
+        const friendship = isAuthenticated
+          ? (next.friendship ??
+            (await resolveFriendshipWith(next.userId).catch(() => null)))
+          : null;
         setProfile({ ...next, friendship });
         setReviewsLoading(true);
         return listUserReviews(next.userId)
@@ -70,7 +73,7 @@ export function PublicProfileScreen() {
         }),
       )
       .finally(() => setIsLoading(false));
-  }, [id, showToast]);
+  }, [id, isAuthenticated, showToast]);
 
   const isMe = Boolean(
     user?.id && profile && sameUserId(user.id, profile.userId),
@@ -93,6 +96,8 @@ export function PublicProfileScreen() {
   };
 
   const handleSend = async () => {
+    if (!requireAuth("Arkadaşlık isteği göndermek için giriş yapmalısın."))
+      return;
     if (!profile) {
       return;
     }
@@ -310,12 +315,18 @@ export function PublicProfileScreen() {
                     label="Şikayet et"
                     variant="outline"
                     size="sm"
-                    onPress={() =>
+                    onPress={() => {
+                      if (
+                        !requireAuth(
+                          "Bir kullanıcıyı şikayet etmek için giriş yapmalısın.",
+                        )
+                      )
+                        return;
                       router.push({
                         pathname: "/report",
                         params: { entityType: "0", entityId: profile.userId },
-                      })
-                    }
+                      });
+                    }}
                   />
                 </View>
               </View>

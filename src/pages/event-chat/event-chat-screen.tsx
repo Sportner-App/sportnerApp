@@ -67,17 +67,20 @@ export function EventChatScreen({
         }
         setMessages([...page.items].reverse());
 
-        connection = await connectEventChat(resolvedConversationId, (payload) => {
-          const incoming = payload as ApiMessage;
-          if (!incoming?.id) {
-            return;
-          }
-          setMessages((prev) =>
-            prev.some((item) => item.id === incoming.id)
-              ? prev
-              : [...prev, incoming],
-          );
-        });
+        connection = await connectEventChat(
+          resolvedConversationId,
+          (payload) => {
+            const incoming = payload as ApiMessage;
+            if (!incoming?.id) {
+              return;
+            }
+            setMessages((prev) =>
+              prev.some((item) => item.id === incoming.id)
+                ? prev
+                : [...prev, incoming],
+            );
+          },
+        );
       } catch (error) {
         showToast({
           type: "error",
@@ -140,8 +143,7 @@ export function EventChatScreen({
       const closed =
         conversation?.type === CONVERSATION_TYPE.event &&
         isApiError(error) &&
-        (error.code === "Messaging.ConversationClosed" ||
-          error.status === 409);
+        (error.code === "Messaging.ConversationClosed" || error.status === 409);
       if (closed) {
         markClosed();
       }
@@ -164,13 +166,13 @@ export function EventChatScreen({
       contentClassName="gap-3 px-6 pt-2"
       footer={
         isClosed ? (
-          <View className="border-t border-white/10 px-6 py-4">
+          <View className="border-t border-border-default px-6 py-4">
             <Text className="text-center font-body text-sm leading-5 text-brand-neutral">
               Etkinlik bitti. Sohbet kapandı, geçmişi okuyabilirsin.
             </Text>
           </View>
         ) : (
-          <View className="flex-row items-center gap-2 border-t border-white/10 px-6 py-3">
+          <View className="flex-row items-center gap-2 border-t border-border-default px-6 py-3">
             <TextInput
               value={draft}
               onChangeText={setDraft}
@@ -187,7 +189,7 @@ export function EventChatScreen({
                 paddingTop: 0,
                 paddingBottom: 0,
               }}
-              className="flex-1 rounded-2xl border border-white/10 bg-brand-surface/90 px-4 font-body text-base text-white"
+              className="flex-1 rounded-2xl border border-border-default bg-surface-primary px-4 font-body text-base text-text-primary"
             />
             <Pressable
               onPress={send}

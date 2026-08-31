@@ -132,6 +132,11 @@ export function EventCreateSummary({
             <SummaryRow icon="id-card" accent={accent}>
               {`${values.minParticipantAge}–${values.maxParticipantAge} yaş`}
             </SummaryRow>
+            {values.isRecurring ? (
+              <SummaryRow icon="repeat" accent={accent}>
+                {`${values.recurrenceCount} etkinlik · ${values.recurrenceIntervalWeeks === 1 ? "her hafta" : `${values.recurrenceIntervalWeeks} haftada bir`}`}
+              </SummaryRow>
+            ) : null}
             {values.skillLevel != null ? (
               <SummaryRow icon="medal" accent={accent}>
                 {SKILL_LEVEL_LABELS[skillKeyFromCode(values.skillLevel)]}

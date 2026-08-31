@@ -137,7 +137,9 @@ export function EventEditScreen() {
       }
     >
       <View className="gap-1.5">
-        <Text className="font-display text-3xl text-white">Etkinliği düzenle</Text>
+        <Text className="font-display text-3xl text-text-primary">
+          Etkinliği düzenle
+        </Text>
         <Text className="font-body text-sm text-brand-neutral">
           Başlık, zaman, konum, kapasite ve ücreti güncelle.
         </Text>
@@ -158,7 +160,11 @@ export function EventEditScreen() {
         textAlignVertical="top"
         style={{ minHeight: 110, paddingTop: 14 }}
       />
-      <DateField label="Tarih & Saat" value={eventDate} onChange={setEventDate} />
+      <DateField
+        label="Tarih & Saat"
+        value={eventDate}
+        onChange={setEventDate}
+      />
       <SelectField
         label="Süre"
         value={String(durationMinutes)}

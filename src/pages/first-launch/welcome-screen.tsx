@@ -4,6 +4,7 @@ import { FIRST_LAUNCH_COPY } from "@/constants/first-launch";
 import { useFirstLaunch } from "@/contexts/first-launch-context";
 
 import { FirstLaunchScaffold } from "./first-launch-scaffold";
+import { WelcomeVisual } from "./welcome-visual";
 
 export function WelcomeScreen() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export function WelcomeScreen() {
     <FirstLaunchScaffold
       title={copy.title}
       subtitle={copy.subtitle}
-      image={require("../../../assets/images/first-launch/welcome.png")}
+      visual={<WelcomeVisual />}
       primaryLabel={copy.continue}
       onPrimary={() => router.push("/(first-launch)/intro-1")}
       secondaryHint={copy.loginHint}

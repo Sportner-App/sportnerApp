@@ -50,7 +50,9 @@ export function PrivacyScreen() {
         </View>
       ) : (
         <>
-          <Text className="font-display text-3xl text-white">Gizlilik</Text>
+          <Text className="font-display text-3xl text-text-primary">
+            Gizlilik
+          </Text>
           <Text className="font-body text-sm text-brand-neutral">
             Profilinin kimler tarafından görüleceğini seç.
           </Text>
@@ -70,13 +72,13 @@ export function PrivacyScreen() {
 
           <Pressable
             onPress={() => router.push("/profile/blocked")}
-            className="mt-2 flex-row items-center gap-3 rounded-3xl border border-white/10 bg-brand-surface/90 px-4 py-4 active:opacity-70"
+            className="mt-2 flex-row items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-4 py-4 active:opacity-70"
           >
             <View className="h-8 w-8 items-center justify-center rounded-full bg-background-secondary">
               <FontAwesome6 name="ban" size={12} color="#ccff00" />
             </View>
             <View className="min-w-0 flex-1">
-              <Text className="font-body text-base font-semibold text-white">
+              <Text className="font-body text-base font-semibold text-text-primary">
                 Engellenenler
               </Text>
               <Text className="mt-0.5 font-body text-xs text-brand-neutral">
@@ -108,10 +110,12 @@ function Option({
       className={`rounded-3xl border p-4 ${
         active
           ? "border-brand-primary/50 bg-brand-primary/10"
-          : "border-white/10 bg-brand-surface/90"
+          : "border-border-default bg-surface-primary"
       }`}
     >
-      <Text className="font-body text-base font-semibold text-white">{title}</Text>
+      <Text className="font-body text-base font-semibold text-text-primary">
+        {title}
+      </Text>
       <Text className="mt-1 font-body text-xs text-brand-neutral">
         {description}
       </Text>
