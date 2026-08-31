@@ -27,9 +27,15 @@ export const PROFILE_MENU_GROUPS: ProfileMenuGroup[] = [
         label: "Bildirim ayarları",
         icon: "sliders",
       },
+      { key: "appearance", label: "Görünüm", icon: "circle-half-stroke" },
       { key: "privacy", label: "Gizlilik", icon: "shield-halved" },
       { key: "feedback", label: "Öneri gönder", icon: "lightbulb" },
       { key: "help", label: "Yardım", icon: "circle-question" },
+      {
+        key: "app-tour",
+        label: "Uygulama turunu yeniden göster",
+        icon: "route",
+      },
     ],
   },
 ];

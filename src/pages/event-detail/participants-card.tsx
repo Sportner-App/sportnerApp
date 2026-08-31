@@ -65,10 +65,12 @@ export function ParticipantsCard({
   return (
     <Animated.View
       entering={FadeInDown.duration(500).delay(220)}
-      className="gap-4 rounded-3xl border border-white/10 bg-brand-surface/90 p-5"
+      className="gap-4 rounded-3xl border border-border-default bg-surface-primary p-5"
     >
       <View className="flex-row items-center justify-between">
-        <Text className="font-display text-base text-white">Katılımcılar</Text>
+        <Text className="font-display text-base text-text-primary">
+          Katılımcılar
+        </Text>
         <Text className="font-mono text-xs text-brand-primary">
           {capacityLabel}
         </Text>
@@ -120,9 +122,9 @@ export function ParticipantsCard({
       {onOpenReviews ? (
         <Pressable
           onPress={onOpenReviews}
-          className="items-center rounded-2xl border border-white/10 py-2.5"
+          className="items-center rounded-2xl border border-border-default py-2.5"
         >
-          <Text className="font-body text-xs font-semibold text-white">
+          <Text className="font-body text-xs font-semibold text-text-primary">
             Değerlendirmeler
           </Text>
         </Pressable>

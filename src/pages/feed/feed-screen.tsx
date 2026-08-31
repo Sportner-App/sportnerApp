@@ -115,7 +115,7 @@ export function FeedScreen() {
           <Pressable
             key={post.id}
             onPress={() => router.push(`/posts/${post.id}`)}
-            className="gap-2 rounded-3xl border border-white/10 bg-brand-surface/90 p-4"
+            className="gap-2 rounded-3xl border border-border-default bg-surface-primary p-4"
           >
             <UserIdentity
               username={post.username}
@@ -124,7 +124,7 @@ export function FeedScreen() {
               avatarSize={38}
               onPress={() => router.push(`/users/${post.userId}`)}
             />
-            <Text className="font-body text-sm text-white">
+            <Text className="font-body text-sm text-text-primary">
               {post.content || "Gönderi"}
             </Text>
             <View className="flex-row gap-4">

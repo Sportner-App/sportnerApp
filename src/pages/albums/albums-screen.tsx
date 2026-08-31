@@ -2,7 +2,13 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { AppScreen, Button, Input, ScreenHeader, SportLoader } from "@/components";
+import {
+  AppScreen,
+  Button,
+  Input,
+  ScreenHeader,
+  SportLoader,
+} from "@/components";
 import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { createAlbum, listMyAlbums } from "@/services/albums-service";
@@ -64,9 +70,9 @@ export function AlbumsScreen() {
             <Pressable
               key={album.id}
               onPress={() => router.push(`/albums/${album.id}`)}
-              className="rounded-2xl border border-white/10 bg-brand-surface/90 p-4"
+              className="rounded-2xl border border-border-default bg-surface-primary p-4"
             >
-              <Text className="font-body text-sm font-semibold text-white">
+              <Text className="font-body text-sm font-semibold text-text-primary">
                 {album.title}
               </Text>
               <Text className="font-body text-xs text-brand-neutral">

@@ -54,7 +54,9 @@ export function ActivityScreen() {
   return (
     <TabPage refreshing={isRefreshing} onRefresh={refresh}>
       <View className="gap-2">
-        <Text className="font-display text-3xl text-white">Etkinliklerim</Text>
+        <Text className="font-display text-3xl text-text-primary">
+          Etkinliklerim
+        </Text>
         <Text className="font-body text-sm text-brand-neutral">
           Devam edenler, geçmiştekiler ve düzenlediklerin.
         </Text>
@@ -67,7 +69,7 @@ export function ActivityScreen() {
           <SportLoader size={148} label="Etkinlikler yükleniyor" />
         </View>
       ) : error && events.length === 0 ? (
-        <View className="items-center gap-3 rounded-3xl border border-white/10 bg-brand-surface/60 px-6 py-12">
+        <View className="items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
           <FontAwesome6 name="triangle-exclamation" size={22} color="#64748b" />
           <Text className="text-center font-body text-sm text-brand-neutral">
             {error}
@@ -80,7 +82,7 @@ export function ActivityScreen() {
           />
         </View>
       ) : events.length === 0 ? (
-        <View className="items-center gap-2 rounded-3xl border border-white/10 bg-brand-surface/60 px-6 py-12">
+        <View className="items-center gap-2 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
           <FontAwesome6 name="calendar-check" size={22} color="#64748b" />
           <Text className="text-center font-body text-sm text-brand-neutral">
             {empty.message}

@@ -45,7 +45,9 @@ export function SportsEditScreen() {
         </View>
       ) : (
         <>
-          <Text className="font-display text-3xl text-white">Sporların</Text>
+          <Text className="font-display text-3xl text-text-primary">
+            Sporların
+          </Text>
           <Text className="font-body text-sm text-brand-neutral">
             Seviyeni değiştir, birincil seç veya kaldır.
           </Text>
@@ -53,7 +55,7 @@ export function SportsEditScreen() {
           {profile.sports.map((sport) => (
             <View
               key={sport.sportId}
-              className="gap-3 rounded-3xl border border-white/10 bg-brand-surface/90 p-4"
+              className="gap-3 rounded-3xl border border-border-default bg-surface-primary p-4"
             >
               <View className="flex-row items-center gap-3">
                 <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-primary/15">
@@ -64,7 +66,7 @@ export function SportsEditScreen() {
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-body text-sm font-semibold text-white">
+                  <Text className="font-body text-sm font-semibold text-text-primary">
                     {sport.sportName}
                   </Text>
                   <Text className="font-body text-xs text-brand-neutral">
@@ -96,12 +98,12 @@ export function SportsEditScreen() {
                       className={`rounded-full border px-3 py-1.5 ${
                         active
                           ? "border-brand-primary bg-brand-primary"
-                          : "border-white/10"
+                          : "border-border-default"
                       }`}
                     >
                       <Text
                         className={`font-body text-xs ${
-                          active ? "text-brand-secondary" : "text-white"
+                          active ? "text-brand-secondary" : "text-text-primary"
                         }`}
                       >
                         {option.shortLabel}
@@ -117,7 +119,10 @@ export function SportsEditScreen() {
                   variant="outline"
                   size="sm"
                   onPress={() =>
-                    run(() => setPrimarySport(sport.sportId), "Birincil spor seçildi")
+                    run(
+                      () => setPrimarySport(sport.sportId),
+                      "Birincil spor seçildi",
+                    )
                   }
                 />
               ) : null}

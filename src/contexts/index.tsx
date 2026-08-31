@@ -24,3 +24,8 @@ export { AuthContext, useAuth } from "./auth-context";
 export { FirstLaunchContext, useFirstLaunch } from "./first-launch-context";
 export { SessionContext, useSession } from "./session-context";
 export { useToast } from "./toast-provider";
+export { AppTourProvider, useAppTour } from "./app-tour-context";
+export {
+  ThemePreferenceProvider,
+  useThemePreference,
+} from "./theme-preference-provider";

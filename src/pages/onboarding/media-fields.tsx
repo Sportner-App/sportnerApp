@@ -51,13 +51,13 @@ export function MediaFields({
       {showVideo ? (
         <Pressable
           onPress={onPickVideo}
-          className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-background-primary/70 px-4 py-3.5 active:opacity-80"
+          className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-background-secondary px-4 py-3.5 active:opacity-80"
         >
           <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-primary/15">
             <FontAwesome6 name="video" size={14} color="#ccff00" />
           </View>
           <View className="flex-1">
-            <Text className="font-body text-sm font-semibold text-white">
+            <Text className="font-body text-sm font-semibold text-text-primary">
               Tanıtım videosu
             </Text>
             <Text

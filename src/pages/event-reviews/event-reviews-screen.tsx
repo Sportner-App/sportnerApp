@@ -115,8 +115,8 @@ export function EventReviewsScreen() {
       ) : (
         <>
           {peers.length > 0 ? (
-            <View className="gap-3 rounded-3xl border border-white/10 bg-brand-surface/90 p-4">
-              <Text className="font-display text-base text-white">
+            <View className="gap-3 rounded-3xl border border-border-default bg-surface-primary p-4">
+              <Text className="font-display text-base text-text-primary">
                 Kimi değerlendirmek istersin?
               </Text>
               <Text className="font-body text-xs text-brand-neutral">
@@ -130,7 +130,7 @@ export function EventReviewsScreen() {
                   className={`flex-row items-center gap-3 rounded-2xl border px-3 py-2.5 ${
                     selectedUserId === peer.userId
                       ? "border-brand-primary bg-brand-primary/10"
-                      : "border-white/10"
+                      : "border-border-default"
                   }`}
                 >
                   <Avatar
@@ -139,7 +139,7 @@ export function EventReviewsScreen() {
                     size={36}
                     borderWidth={0}
                   />
-                  <Text className="font-body text-sm text-white">
+                  <Text className="font-body text-sm text-text-primary">
                     @{peer.username || "sporcu"}
                   </Text>
                 </Pressable>
@@ -155,7 +155,9 @@ export function EventReviewsScreen() {
                   >
                     <Text
                       className={`font-mono ${
-                        rating >= value ? "text-brand-secondary" : "text-white"
+                        rating >= value
+                          ? "text-brand-secondary"
+                          : "text-text-primary"
                       }`}
                     >
                       {value}
@@ -168,7 +170,7 @@ export function EventReviewsScreen() {
                 onChangeText={setComment}
                 placeholder="Yorum (opsiyonel)"
                 placeholderTextColor="#64748b"
-                className="rounded-2xl border border-white/10 px-4 py-3 font-body text-white"
+                className="rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
               />
               <Button
                 label="Gönder"
@@ -178,8 +180,8 @@ export function EventReviewsScreen() {
               />
             </View>
           ) : (
-            <View className="gap-2 rounded-3xl border border-white/10 bg-brand-surface/90 p-4">
-              <Text className="font-display text-base text-white">
+            <View className="gap-2 rounded-3xl border border-border-default bg-surface-primary p-4">
+              <Text className="font-display text-base text-text-primary">
                 Şu an puanlanacak kimse yok
               </Text>
               <Text className="font-body text-sm leading-5 text-brand-neutral">
@@ -189,7 +191,7 @@ export function EventReviewsScreen() {
             </View>
           )}
 
-          <Text className="font-display text-base text-white">
+          <Text className="font-display text-base text-text-primary">
             Bu etkinlikteki yorumlar
           </Text>
           {reviews.length === 0 ? (
@@ -200,7 +202,7 @@ export function EventReviewsScreen() {
             reviews.map((review) => (
               <View
                 key={review.id}
-                className="rounded-2xl border border-white/10 bg-brand-surface/90 p-4"
+                className="rounded-2xl border border-border-default bg-surface-primary p-4"
               >
                 <View className="flex-row items-center gap-3">
                   <Avatar
@@ -209,7 +211,7 @@ export function EventReviewsScreen() {
                     size={36}
                     borderWidth={0}
                   />
-                  <Text className="flex-1 font-body text-sm font-semibold text-white">
+                  <Text className="flex-1 font-body text-sm font-semibold text-text-primary">
                     @{review.reviewerUsername || "sporcu"} → @
                     {review.reviewedUsername || "sporcu"}
                   </Text>

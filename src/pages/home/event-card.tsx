@@ -39,7 +39,8 @@ type EventCardProps = {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const PRESS_MS = 120;
-const MIST = themeColors.surface.primary;
+// Fotoğraf üzerindeki içerik her iki temada da koyu overlay üzerinde okunur.
+const MIST = "#06111a";
 
 export function EventCard({ event, index, onPress }: EventCardProps) {
   const [cardSize, setCardSize] = useState({ width: 0, height: 0 });
@@ -198,7 +199,7 @@ export function EventCard({ event, index, onPress }: EventCardProps) {
               <View className="w-[62%] pr-2">
                 <Text
                   numberOfLines={2}
-                  className="font-display text-[22px] leading-7 text-text-primary"
+                  className="font-display text-[22px] leading-7 text-white"
                 >
                   {title}
                 </Text>
@@ -239,15 +240,13 @@ export function EventCard({ event, index, onPress }: EventCardProps) {
                   ) : null}
                 </View>
                 <View className="items-end">
-                  <Text className="font-body-bold text-[18px] leading-6 text-text-primary">
+                  <Text className="font-body-bold text-[18px] leading-6 text-white">
                     {countLabel}
                   </Text>
                   <Text
                     className="mt-0.5 font-body text-caption"
                     style={{
-                      color: isFull
-                        ? themeColors.warning
-                        : themeColors.text.secondary,
+                      color: isFull ? themeColors.warning : "#cbd5e1",
                     }}
                   >
                     {remainingLabel}
@@ -265,10 +264,10 @@ export function EventCard({ event, index, onPress }: EventCardProps) {
 function MetaItem({ icon, label }: { icon: IconName; label: string }) {
   return (
     <View className="flex-row items-center gap-1.5">
-      <FontAwesome6 name={icon} size={10} color={themeColors.text.secondary} />
+      <FontAwesome6 name={icon} size={10} color="#cbd5e1" />
       <Text
         numberOfLines={1}
-        className="max-w-[140px] font-body text-[12px] text-text-secondary"
+        className="max-w-[140px] font-body text-[12px] text-white/75"
       >
         {label}
       </Text>

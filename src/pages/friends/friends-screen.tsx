@@ -145,7 +145,7 @@ export function FriendsScreen() {
             return (
               <View
                 key={item.id}
-                className="flex-row items-center gap-2 rounded-2xl border border-white/10 p-3"
+                className="flex-row items-center gap-2 rounded-2xl border border-border-default p-3"
               >
                 <View className="min-w-0 flex-1">
                   <UserIdentity

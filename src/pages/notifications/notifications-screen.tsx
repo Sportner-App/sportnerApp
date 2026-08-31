@@ -32,27 +32,32 @@ export function NotificationsScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const load = useCallback(async (mode: "initial" | "refresh" | "more") => {
-    if (mode === "initial") setIsLoading(true);
-    if (mode === "refresh") setIsRefreshing(true);
+  const load = useCallback(
+    async (mode: "initial" | "refresh" | "more") => {
+      if (mode === "initial") setIsLoading(true);
+      if (mode === "refresh") setIsRefreshing(true);
 
-    try {
-      const page = await listNotifications({
-        before: mode === "more" ? cursor ?? undefined : undefined,
-      });
-      setItems((prev) => (mode === "more" ? [...prev, ...page.items] : page.items));
-      setCursor(page.nextCursor);
-    } catch (error) {
-      showToast({
-        type: "error",
-        title: "Yüklenemedi",
-        description: getApiErrorMessage(error),
-      });
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [cursor, showToast]);
+      try {
+        const page = await listNotifications({
+          before: mode === "more" ? (cursor ?? undefined) : undefined,
+        });
+        setItems((prev) =>
+          mode === "more" ? [...prev, ...page.items] : page.items,
+        );
+        setCursor(page.nextCursor);
+      } catch (error) {
+        showToast({
+          type: "error",
+          title: "Yüklenemedi",
+          description: getApiErrorMessage(error),
+        });
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [cursor, showToast],
+  );
 
   useEffect(() => {
     void load("initial");
@@ -106,7 +111,9 @@ export function NotificationsScreen() {
             <Pressable
               onPress={async () => {
                 await markAllNotificationsRead().catch(() => undefined);
-                setItems((prev) => prev.map((item) => ({ ...item, isRead: true })));
+                setItems((prev) =>
+                  prev.map((item) => ({ ...item, isRead: true })),
+                );
               }}
               className="px-2"
             >
@@ -143,11 +150,11 @@ export function NotificationsScreen() {
               onPress={() => open(item)}
               className={`rounded-2xl border px-4 py-3.5 ${
                 item.isRead
-                  ? "border-white/10 bg-brand-surface/70"
+                  ? "border-border-default bg-surface-primary"
                   : "border-brand-primary/30 bg-brand-primary/10"
               }`}
             >
-              <Text className="font-body text-sm font-semibold text-white">
+              <Text className="font-body text-sm font-semibold text-text-primary">
                 {copy.title}
               </Text>
               {copy.body && copy.body !== copy.title ? (

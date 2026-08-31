@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 
 import { PROFILE_COPY } from "@/constants/profile";
+import { useAppTour } from "@/contexts";
 import { useProfile } from "@/hooks/use-profile";
 import { listUserReviews } from "@/services/reviews-service";
 import type { ApiReview } from "@/types/reviews";
@@ -18,6 +19,7 @@ import { StatsSection } from "./stats-section";
 
 export function ProfileScreen() {
   const router = useRouter();
+  const { startTour } = useAppTour();
   const {
     profile,
     isLoading,
@@ -45,6 +47,11 @@ export function ProfileScreen() {
   }, [profile?.userId, isRefreshing]);
 
   const openMenu = (key: string) => {
+    if (key === "app-tour") {
+      router.navigate("/(tabs)" as never);
+      setTimeout(startTour, 250);
+      return;
+    }
     const routes: Record<string, string> = {
       edit: "/profile/edit",
       sports: "/profile/sports",
@@ -53,6 +60,7 @@ export function ProfileScreen() {
       badges: "/badges",
       notifications: "/notifications",
       "notification-settings": "/profile/notification-settings",
+      appearance: "/profile/appearance",
       privacy: "/profile/privacy",
       feedback: "/feedback",
       help: "/help",
@@ -70,7 +78,7 @@ export function ProfileScreen() {
           <SportLoader size={148} label="Profil yükleniyor" />
         </View>
       ) : !profile ? (
-        <View className="items-center gap-4 rounded-3xl border border-white/10 bg-brand-surface/60 px-6 py-16">
+        <View className="items-center gap-4 rounded-3xl border border-border-default bg-surface-primary px-6 py-16">
           <FontAwesome6
             name={notFound ? "user-slash" : "triangle-exclamation"}
             size={24}

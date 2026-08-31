@@ -77,7 +77,9 @@ export function AlbumDetailScreen() {
         </View>
       ) : (
         <>
-          <Text className="font-display text-2xl text-white">{album.title}</Text>
+          <Text className="font-display text-2xl text-text-primary">
+            {album.title}
+          </Text>
           <Button label="Fotoğraf ekle" onPress={upload} />
           <View className="flex-row flex-wrap gap-2">
             {album.media.map((item) => (

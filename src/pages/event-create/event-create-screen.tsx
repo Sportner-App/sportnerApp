@@ -290,6 +290,107 @@ export function EventCreateScreen() {
                 }
                 disabled={isSubmitting}
               />
+
+              <View className="rounded-[24px] border border-border-default bg-surface-primary p-4">
+                <Pressable
+                  accessibilityRole="switch"
+                  accessibilityState={{ checked: values.isRecurring }}
+                  onPress={() => update("isRecurring", !values.isRecurring)}
+                  className="flex-row items-center justify-between active:opacity-80"
+                >
+                  <View className="flex-1 pr-4">
+                    <Text className="font-body-bold text-sm text-text-primary">
+                      Tekrarlayan etkinlik
+                    </Text>
+                    <Text className="mt-1 font-body text-xs leading-5 text-text-tertiary">
+                      Aynı etkinliği seçtiğin haftalarda otomatik oluştur.
+                    </Text>
+                  </View>
+                  <View
+                    className={`h-7 w-12 justify-center rounded-full px-1 ${values.isRecurring ? "bg-brand-primary" : "bg-surface-secondary"}`}
+                  >
+                    <View
+                      className={`h-5 w-5 rounded-full bg-white ${values.isRecurring ? "self-end" : "self-start"}`}
+                    />
+                  </View>
+                </Pressable>
+
+                {values.isRecurring ? (
+                  <View className="mt-4 gap-4 border-t border-border-default pt-4">
+                    <View>
+                      <Text className="mb-2 font-body-bold text-xs text-text-secondary">
+                        Tekrar sıklığı
+                      </Text>
+                      <View className="flex-row gap-2">
+                        {(
+                          [
+                            { value: 1, label: "Her hafta" },
+                            { value: 2, label: "2 haftada bir" },
+                            { value: 4, label: "4 haftada bir" },
+                          ] as const
+                        ).map((option) => (
+                          <Pressable
+                            key={option.value}
+                            onPress={() =>
+                              update("recurrenceIntervalWeeks", option.value)
+                            }
+                            className={`flex-1 items-center rounded-full border px-2 py-2.5 ${values.recurrenceIntervalWeeks === option.value ? "border-brand-primary bg-brand-primary" : "border-border-default bg-surface-secondary"}`}
+                          >
+                            <Text
+                              className={`text-center font-body-bold text-[11px] ${values.recurrenceIntervalWeeks === option.value ? "text-background-primary" : "text-text-secondary"}`}
+                            >
+                              {option.label}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </View>
+                    </View>
+                    <View className="flex-row items-center justify-between">
+                      <View>
+                        <Text className="font-body-bold text-sm text-text-primary">
+                          Tekrar sayısı
+                        </Text>
+                        <Text className="mt-1 font-body text-xs text-text-tertiary">
+                          İlk etkinlik dahil
+                        </Text>
+                      </View>
+                      <View className="flex-row items-center gap-3">
+                        <Pressable
+                          disabled={values.recurrenceCount <= 2}
+                          onPress={() =>
+                            update(
+                              "recurrenceCount",
+                              Math.max(2, values.recurrenceCount - 1),
+                            )
+                          }
+                          className="h-9 w-9 items-center justify-center rounded-full bg-surface-secondary disabled:opacity-35"
+                        >
+                          <Text className="font-display text-xl text-text-primary">
+                            −
+                          </Text>
+                        </Pressable>
+                        <Text className="w-7 text-center font-mono text-base text-brand-primary">
+                          {values.recurrenceCount}
+                        </Text>
+                        <Pressable
+                          disabled={values.recurrenceCount >= 12}
+                          onPress={() =>
+                            update(
+                              "recurrenceCount",
+                              Math.min(12, values.recurrenceCount + 1),
+                            )
+                          }
+                          className="h-9 w-9 items-center justify-center rounded-full bg-surface-secondary disabled:opacity-35"
+                        >
+                          <Text className="font-display text-xl text-text-primary">
+                            +
+                          </Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  </View>
+                ) : null}
+              </View>
             </View>
           </View>
         ) : null}

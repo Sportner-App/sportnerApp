@@ -94,8 +94,8 @@ export function ConversationsScreen() {
         />
       }
     >
-      <View className="gap-1 pb-1">
-        <Text className="font-display text-[28px] text-text-inverse">
+      <View className="gap-1 pb-2">
+        <Text className="font-display text-[28px] text-text-primary">
           Mesajların
         </Text>
         <Text className="font-body text-sm leading-5 text-text-tertiary">
@@ -117,7 +117,7 @@ export function ConversationsScreen() {
           <SportLoader size={132} label="Sohbetler yükleniyor" />
         </View>
       ) : error ? (
-        <View className="items-center gap-4 rounded-[28px] border border-white/10 bg-surface-primary px-6 py-10">
+        <View className="items-center gap-4 rounded-[28px] border border-border-default bg-surface-primary px-6 py-10">
           <FontAwesome6
             name="triangle-exclamation"
             size={24}
@@ -136,7 +136,7 @@ export function ConversationsScreen() {
           </Pressable>
         </View>
       ) : items.length === 0 ? (
-        <View className="items-center gap-3 rounded-[28px] border border-white/10 bg-surface-primary px-6 py-12">
+        <View className="items-center gap-3 rounded-[28px] border border-border-default bg-surface-primary px-6 py-12">
           <View className="h-14 w-14 items-center justify-center rounded-full bg-brand-primary/10">
             <FontAwesome6
               name={copy.icon}
@@ -181,7 +181,7 @@ function ConversationRow({
       accessibilityRole="button"
       accessibilityLabel={`${title} sohbetini aç`}
       onPress={onPress}
-      className="flex-row items-center gap-3 rounded-[24px] border border-white/10 bg-surface-primary px-4 py-4 active:opacity-75"
+      className="flex-row items-center gap-3 rounded-[24px] border border-border-default bg-surface-primary px-4 py-4 active:opacity-75"
     >
       {isEvent ? (
         <View className="h-12 w-12 items-center justify-center rounded-full border border-brand-primary/30 bg-brand-primary/10">
@@ -225,9 +225,7 @@ function ConversationRow({
           <Text
             numberOfLines={1}
             className={`min-w-0 flex-1 font-body text-[13px] ${
-              item.unreadCount > 0
-                ? "text-text-primary"
-                : "text-text-tertiary"
+              item.unreadCount > 0 ? "text-text-primary" : "text-text-tertiary"
             }`}
           >
             {item.lastMessagePreview || "Henüz mesaj yok"}

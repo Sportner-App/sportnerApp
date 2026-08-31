@@ -110,15 +110,14 @@ export function PendingRequestsBanner({
         pressScale.value = withTiming(1, { duration: 95 });
       }}
       style={pressStyle}
-      className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-brand-surface/90 px-4 py-3"
+      className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-3"
     >
       <View className="h-8 w-8 items-center justify-center rounded-full bg-brand-primary/15">
         <FontAwesome6 name="user-group" size={12} color="#ccff00" />
       </View>
-      <Text className="flex-1 font-body text-sm text-white">
-        <Text className="font-mono text-brand-primary">{count}</Text>
-        {" "}
-        katılım isteği bekliyor
+      <Text className="flex-1 font-body text-sm text-text-primary">
+        <Text className="font-mono text-brand-primary">{count}</Text> katılım
+        isteği bekliyor
       </Text>
       <FontAwesome6 name="chevron-right" size={12} color="#64748b" />
     </AnimatedPressable>

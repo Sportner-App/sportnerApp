@@ -55,7 +55,7 @@ function SportTile({
       className={`mb-2.5 items-center rounded-2xl border px-2 py-3 active:opacity-85 ${
         isSelected
           ? "border-brand-primary/55 bg-brand-primary/12"
-          : "border-white/10 bg-brand-surface/75"
+          : "border-border-default bg-surface-primary"
       }`}
     >
       <View
@@ -71,7 +71,7 @@ function SportTile({
       </View>
       <Text
         numberOfLines={2}
-        className="min-h-[32px] text-center font-body text-[12px] font-semibold leading-4 text-white"
+        className="min-h-[32px] text-center font-body text-[12px] font-semibold leading-4 text-text-primary"
       >
         {sport.name}
       </Text>
@@ -123,14 +123,14 @@ export function SportsPickerStep({ form }: { form: Form }) {
           </View>
         </View>
 
-        <Text className="font-display text-[40px] leading-[44px] text-white">
+        <Text className="font-display text-[40px] leading-[44px] text-text-primary">
           {copy.title}
         </Text>
         <Text className="mt-2 font-body text-sm leading-5 text-brand-neutral">
           {copy.subtitle}
         </Text>
 
-        <View className="mt-5 flex-row items-center gap-3 rounded-2xl border border-white/10 bg-brand-surface/90 px-4 py-3">
+        <View className="mt-5 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-3">
           <FontAwesome6 name="magnifying-glass" size={14} color="#64748b" />
           <TextInput
             value={form.query}
@@ -139,7 +139,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
             placeholderTextColor="#64748b"
             autoCorrect={false}
             autoCapitalize="none"
-            className="flex-1 font-body text-base text-white"
+            className="flex-1 font-body text-base text-text-primary"
           />
           {form.query.length > 0 ? (
             <Pressable
@@ -173,7 +173,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
                 className={`flex-row items-center gap-2 rounded-full border px-3.5 py-2 active:opacity-80 ${
                   active
                     ? "border-brand-primary/50 bg-brand-primary/15"
-                    : "border-white/10 bg-brand-surface/70"
+                    : "border-border-default bg-surface-primary"
                 }`}
               >
                 <FontAwesome6
@@ -239,7 +239,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
       </View>
 
       <View
-        className="border-t border-white/10 bg-background-primary/95 px-5 pt-3"
+        className="border-t border-border-default bg-background-primary/95 px-5 pt-3"
         style={{ paddingBottom: Math.max(insets.bottom, 12) }}
       >
         <View className="mb-3 flex-row items-center justify-between">
@@ -280,7 +280,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
             ))}
           </ScrollView>
         ) : (
-          <View className="mb-3 h-11 justify-center rounded-2xl border border-dashed border-white/10 px-3">
+          <View className="mb-3 h-11 justify-center rounded-2xl border border-dashed border-border-default px-3">
             <Text className="font-body text-xs text-brand-neutral/80">
               Grid’den spor seç — seçtiklerin burada toplanır.
             </Text>
@@ -320,7 +320,7 @@ function SelectedSportChip({
       className={`flex-row items-center gap-2 rounded-full border px-3 py-2 active:opacity-85 ${
         isActive
           ? "border-brand-primary bg-brand-primary/20"
-          : "border-white/12 bg-brand-surface"
+          : "border-border-default bg-surface-primary"
       }`}
     >
       <FontAwesome6
@@ -328,7 +328,7 @@ function SelectedSportChip({
         size={12}
         color="#ccff00"
       />
-      <Text className="font-body text-xs font-semibold text-white">
+      <Text className="font-body text-xs font-semibold text-text-primary">
         {draft.sportName}
       </Text>
       <View className="rounded-full bg-white/10 px-1.5 py-0.5">
@@ -375,12 +375,12 @@ function SportConfigSheet({ form }: { form: Form }) {
                     className={`rounded-full border px-3.5 py-2 active:opacity-80 ${
                       active
                         ? "border-brand-primary bg-brand-primary"
-                        : "border-white/10 bg-background-primary/80"
+                        : "border-border-default bg-background-secondary"
                     }`}
                   >
                     <Text
                       className={`font-body text-xs font-semibold ${
-                        active ? "text-brand-secondary" : "text-white"
+                        active ? "text-brand-secondary" : "text-text-primary"
                       }`}
                     >
                       {option.label}
@@ -396,7 +396,7 @@ function SportConfigSheet({ form }: { form: Form }) {
             className={`flex-row items-center gap-3 rounded-2xl border px-4 py-3.5 active:opacity-85 ${
               isPrimary
                 ? "border-brand-primary/45 bg-brand-primary/12"
-                : "border-white/10 bg-background-primary/70"
+                : "border-border-default bg-background-secondary"
             }`}
           >
             <FontAwesome6
@@ -405,7 +405,7 @@ function SportConfigSheet({ form }: { form: Form }) {
               color={isPrimary ? "#ccff00" : "#64748b"}
             />
             <View className="flex-1">
-              <Text className="font-body text-sm font-semibold text-white">
+              <Text className="font-body text-sm font-semibold text-text-primary">
                 Birincil spor
               </Text>
               <Text className="mt-0.5 font-body text-xs text-brand-neutral">

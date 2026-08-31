@@ -1,4 +1,5 @@
 import { useIsFocused } from "@react-navigation/native";
+import type { ReactNode } from "react";
 import type { ImageSourcePropType } from "react-native";
 import {
   ImageBackground,
@@ -19,14 +20,19 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useEffect } from "react";
 
 import { BrandMark, Button } from "@/components";
+import { DARK_THEME_COLORS } from "@/constants/theme-palettes";
+import { createThemeVariables } from "@/contexts/theme-preference-provider";
 import type { IconName } from "@/types/components";
 
 import { OnboardingProgress } from "./onboarding-progress";
 
+const DARK_THEME_VARIABLES = createThemeVariables(DARK_THEME_COLORS);
+
 type FirstLaunchScaffoldProps = {
   title: string;
   subtitle: string;
-  image: ImageSourcePropType;
+  image?: ImageSourcePropType;
+  visual?: ReactNode;
   primaryLabel?: string;
   onPrimary?: () => void;
   secondaryLabel?: string;
@@ -46,6 +52,7 @@ export function FirstLaunchScaffold({
   title,
   subtitle,
   image,
+  visual,
   primaryLabel,
   onPrimary,
   secondaryLabel,
@@ -83,14 +90,16 @@ export function FirstLaunchScaffold({
   return (
     <Animated.View
       className="flex-1 bg-background-primary"
-      style={embedded ? undefined : transitionStyle}
+      style={[DARK_THEME_VARIABLES, embedded ? undefined : transitionStyle]}
     >
-      <ImageBackground
-        source={image}
-        resizeMode="cover"
-        fadeDuration={0}
-        style={StyleSheet.absoluteFill}
-      />
+      {image ? (
+        <ImageBackground
+          source={image}
+          resizeMode="cover"
+          fadeDuration={0}
+          style={StyleSheet.absoluteFill}
+        />
+      ) : null}
       <PhotoOverlay overlayId={overlayId} />
 
       <View
@@ -112,6 +121,16 @@ export function FirstLaunchScaffold({
             </Text>
             <View className="mt-2 h-0.5 w-7 bg-brand-primary" />
           </Animated.View>
+        ) : null}
+
+        {visual ? (
+          <View
+            pointerEvents="none"
+            className="absolute left-6 right-6"
+            style={{ top: progressStep ? insets.top + 108 : insets.top + 88 }}
+          >
+            {visual}
+          </View>
         ) : null}
 
         <View className="flex-1" />

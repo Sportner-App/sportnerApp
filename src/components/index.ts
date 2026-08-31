@@ -1,4 +1,5 @@
 export { AppScreen } from "./app-screen";
+export { AppTourOverlay } from "./app-tour-overlay";
 export { Avatar } from "./avatar";
 export { CommentThread } from "./comment-thread";
 export { BottomSheet } from "./bottom-sheet";

@@ -2,7 +2,10 @@ import { colors } from "@/constants/colors";
 import { FEATURE_FLAGS } from "@/constants/feature-flags";
 import { AnimatedSplashScreen } from "@/components/animated-splash-screen";
 import { AppProviders } from "@/contexts";
-import { useColorScheme } from "@/hooks/use-color-scheme";
+import {
+  ThemePreferenceProvider,
+  useThemePreference,
+} from "@/contexts/theme-preference-provider";
 import {
   DarkTheme,
   DefaultTheme,
@@ -66,7 +69,15 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  return (
+    <ThemePreferenceProvider>
+      <ThemedRootLayoutNav />
+    </ThemePreferenceProvider>
+  );
+}
+
+function ThemedRootLayoutNav() {
+  const { resolvedScheme: colorScheme } = useThemePreference();
   const appColors = colors[colorScheme];
   const navigationTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
 

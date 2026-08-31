@@ -5,11 +5,13 @@ import { Pressable, Text, View } from "react-native";
 import { Avatar, Button, SportLoader, TabPage } from "@/components";
 import { themeColors } from "@/constants/theme";
 import { useDiscover } from "@/hooks/use-discover";
+import { useRequireAuth } from "@/hooks/use-require-auth";
 
 import { DiscoverPost } from "./discover-post";
 
 export function DiscoverScreen() {
   const router = useRouter();
+  const { requireAuth } = useRequireAuth();
   const {
     posts,
     people,
@@ -26,7 +28,10 @@ export function DiscoverScreen() {
     <TabPage keyboardAvoiding refreshing={isRefreshing} onRefresh={refresh}>
       <DiscoverHero
         postCount={posts.length}
-        onCreate={() => router.push("/posts/create")}
+        onCreate={() =>
+          requireAuth("Gönderi paylaşmak için giriş yapmalısın.") &&
+          router.push("/posts/create")
+        }
       />
 
       {people.length > 0 ? (
@@ -124,7 +129,10 @@ export function DiscoverScreen() {
           <Button
             label="Fotoğraf paylaş"
             size="sm"
-            onPress={() => router.push("/posts/create")}
+            onPress={() =>
+              requireAuth("Gönderi paylaşmak için giriş yapmalısın.") &&
+              router.push("/posts/create")
+            }
           />
         </View>
       ) : (
@@ -132,9 +140,21 @@ export function DiscoverScreen() {
           <DiscoverPost
             key={post.id}
             post={post}
-            onLike={() => toggleLike(post)}
-            onComment={(content) => addComment(post, content)}
-            onReply={(parent, content) => addReply(post, parent.id, content)}
+            onLike={async () => {
+              if (!requireAuth("Gönderileri beğenmek için giriş yapmalısın."))
+                return;
+              await toggleLike(post);
+            }}
+            onComment={(content) => {
+              if (!requireAuth("Yorum yapmak için giriş yapmalısın."))
+                return Promise.reject(new Error("AUTH_REQUIRED"));
+              return addComment(post, content);
+            }}
+            onReply={(parent, content) => {
+              if (!requireAuth("Yanıt vermek için giriş yapmalısın."))
+                return Promise.reject(new Error("AUTH_REQUIRED"));
+              return addReply(post, parent.id, content);
+            }}
             onAuthorPress={() => router.push(`/users/${post.userId}`)}
           />
         ))

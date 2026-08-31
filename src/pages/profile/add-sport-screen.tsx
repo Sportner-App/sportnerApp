@@ -24,7 +24,9 @@ export function AddSportScreen() {
   }, []);
 
   const filtered = sports.filter((sport) =>
-    sport.name.toLocaleLowerCase("tr-TR").includes(query.trim().toLocaleLowerCase("tr-TR")),
+    sport.name
+      .toLocaleLowerCase("tr-TR")
+      .includes(query.trim().toLocaleLowerCase("tr-TR")),
   );
 
   const save = async () => {
@@ -60,7 +62,7 @@ export function AddSportScreen() {
         onChangeText={setQuery}
         placeholder="Spor ara…"
         placeholderTextColor="#64748b"
-        className="rounded-2xl border border-white/10 bg-brand-surface/90 px-4 py-3 font-body text-base text-white"
+        className="rounded-2xl border border-border-default bg-surface-primary px-4 py-3 font-body text-base text-text-primary"
       />
 
       {filtered.slice(0, 20).map((sport) => {
@@ -72,10 +74,10 @@ export function AddSportScreen() {
             className={`rounded-2xl border px-4 py-3 ${
               active
                 ? "border-brand-primary/50 bg-brand-primary/10"
-                : "border-white/10 bg-brand-surface/90"
+                : "border-border-default bg-surface-primary"
             }`}
           >
-            <Text className="font-body text-sm font-semibold text-white">
+            <Text className="font-body text-sm font-semibold text-text-primary">
               {sport.name}
             </Text>
           </Pressable>
@@ -91,12 +93,14 @@ export function AddSportScreen() {
               className={`rounded-full border px-3 py-1.5 ${
                 level === option.level
                   ? "border-brand-primary bg-brand-primary"
-                  : "border-white/10"
+                  : "border-border-default"
               }`}
             >
               <Text
                 className={`font-body text-xs ${
-                  level === option.level ? "text-brand-secondary" : "text-white"
+                  level === option.level
+                    ? "text-brand-secondary"
+                    : "text-text-primary"
                 }`}
               >
                 {option.label}

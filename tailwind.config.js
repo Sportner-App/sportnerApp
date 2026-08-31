@@ -10,6 +10,8 @@ const {
   palette,
 } = require("./src/constants/design-tokens");
 
+const themed = (name) => `rgb(var(--color-${name}) / <alpha-value>)`;
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
@@ -18,33 +20,33 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          primary: colors.brand.primary,
+          primary: themed("brand-primary"),
           /** App canvas; retained alias for screens using brand-secondary. */
-          secondary: colors.background.primary,
+          secondary: themed("background-primary"),
           tertiary: palette.navyMuted,
-          neutral: palette.slate500,
-          surface: palette.navySurface,
-          raised: palette.navyRaised,
+          neutral: themed("text-tertiary"),
+          surface: themed("surface-primary"),
+          raised: themed("surface-secondary"),
           charcoal: colors.surface.dark,
         },
         background: {
-          primary: colors.background.primary,
-          secondary: colors.background.secondary,
+          primary: themed("background-primary"),
+          secondary: themed("background-secondary"),
         },
         surface: {
-          primary: colors.surface.primary,
-          secondary: colors.surface.secondary,
+          primary: themed("surface-primary"),
+          secondary: themed("surface-secondary"),
           dark: colors.surface.dark,
         },
         text: {
-          primary: colors.text.primary,
-          secondary: colors.text.secondary,
-          tertiary: colors.text.tertiary,
-          inverse: colors.text.inverse,
+          primary: themed("text-primary"),
+          secondary: themed("text-secondary"),
+          tertiary: themed("text-tertiary"),
+          inverse: themed("text-inverse"),
         },
         border: {
-          default: colors.border.default,
-          strong: colors.border.strong,
+          default: themed("border-default"),
+          strong: themed("border-strong"),
         },
         overlay: {
           dark: colors.overlay.dark,

@@ -7,6 +7,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { Button, SportLoader, TabPage } from "@/components";
 import { themeColors } from "@/constants/theme";
 import { useEvents } from "@/hooks/use-events";
+import { useRequireAuth } from "@/hooks/use-require-auth";
 
 import { EventCard } from "./event-card";
 import { EventFilterSheet } from "./event-filter-sheet";
@@ -16,6 +17,7 @@ import { SportFilter } from "./sport-filter";
 export function HomeScreen() {
   const router = useRouter();
   const [filterOpen, setFilterOpen] = useState(false);
+  const { requireAuth } = useRequireAuth();
   const {
     events,
     totalCount,
@@ -33,14 +35,19 @@ export function HomeScreen() {
 
   return (
     <TabPage refreshing={isRefreshing} onRefresh={refresh}>
-      <Hero onCreatePress={() => router.push("/events/create")} />
+      <Hero
+        onCreatePress={() =>
+          requireAuth("Etkinlik oluşturmak için giriş yapmalısın.") &&
+          router.push("/events/create")
+        }
+      />
 
       <Animated.View
         entering={FadeInDown.duration(500).delay(60)}
         className="gap-md"
       >
         <View className="flex-row items-center justify-between">
-          <Text className="font-display text-[24px] leading-[30px] text-text-inverse">
+          <Text className="font-display text-[24px] leading-[30px] text-text-primary">
             Yaklaşan Etkinlikler
           </Text>
           <View className="flex-row gap-sm">
@@ -53,7 +60,7 @@ export function HomeScreen() {
               <FontAwesome6
                 name="sliders"
                 size={17}
-                color={themeColors.text.inverse}
+                color={themeColors.text.primary}
               />
               {filters.minAge !== 13 ||
               filters.maxAge !== 120 ||
@@ -69,20 +76,20 @@ export function HomeScreen() {
           <FontAwesome6
             name="location-dot"
             size={14}
-            color={themeColors.text.inverse}
+            color={themeColors.text.primary}
           />
-          <Text className="font-body-bold text-[15px] text-text-inverse">
+          <Text className="font-body-bold text-[15px] text-text-primary">
             Yakınındaki etkinlikler
           </Text>
           <FontAwesome6
             name="chevron-down"
             size={11}
-            color={themeColors.text.inverse}
+            color={themeColors.text.primary}
           />
         </View>
 
         <SportFilter value={sportFilter} onChange={setSportFilter} />
-        <Text className="font-mono text-caption text-white/65">
+        <Text className="font-mono text-caption text-text-tertiary">
           {totalCount} etkinlik bulundu
         </Text>
       </Animated.View>

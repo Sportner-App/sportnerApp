@@ -68,9 +68,9 @@ export function NotificationSettingsScreen() {
         settings.map((item) => (
           <View
             key={item.notificationType}
-            className="gap-3 rounded-3xl border border-white/10 bg-brand-surface/90 p-4"
+            className="gap-3 rounded-3xl border border-border-default bg-surface-primary p-4"
           >
-            <Text className="font-body text-sm font-semibold text-white">
+            <Text className="font-body text-sm font-semibold text-text-primary">
               {NOTIFICATION_SETTING_LABELS[item.notificationType] ??
                 `Tür ${item.notificationType}`}
             </Text>

@@ -19,7 +19,7 @@ export function ScreenHeader({
   onBack,
   left,
   right,
-  tone = "dark",
+  tone = "light",
 }: ScreenHeaderProps) {
   const router = useRouter();
   const isLight = tone === "light";

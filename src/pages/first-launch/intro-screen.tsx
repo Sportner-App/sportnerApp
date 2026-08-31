@@ -15,12 +15,9 @@ import { FIRST_LAUNCH_COPY } from "@/constants/first-launch";
 import { useFirstLaunch } from "@/contexts/first-launch-context";
 
 import { FirstLaunchScaffold } from "./first-launch-scaffold";
-
-const IMAGES = {
-  1: require("../../../assets/images/first-launch/intro-discover.png"),
-  2: require("../../../assets/images/first-launch/intro-connect.png"),
-  3: require("../../../assets/images/first-launch/intro-move.png"),
-} as const;
+import { IntroCommunityVisual } from "./intro-community-visual";
+import { IntroEventsVisual } from "./intro-events-visual";
+import { IntroPeopleVisual } from "./intro-people-visual";
 
 type IntroStep = 1 | 2 | 3;
 
@@ -50,7 +47,7 @@ export function IntroScreen({ step }: { step: IntroStep }) {
     setIsFinishing(true);
     try {
       await markOnboardingSeen();
-      router.replace("/(auth)/login");
+      router.replace("/(tabs)");
     } finally {
       setIsFinishing(false);
     }
@@ -124,6 +121,14 @@ function IntroSlide({
   const copy = FIRST_LAUNCH_COPY[`intro${step}`];
   const isLastStep = step === 3;
   const pageOffset = (step - 1) * width;
+  const visual =
+    step === 1 ? (
+      <IntroEventsVisual />
+    ) : step === 2 ? (
+      <IntroPeopleVisual />
+    ) : (
+      <IntroCommunityVisual />
+    );
 
   const transitionStyle = useAnimatedStyle(() => {
     const distance = scrollX.value - pageOffset;
@@ -167,11 +172,14 @@ function IntroSlide({
         <FirstLaunchScaffold
           title={copy.title}
           subtitle={copy.subtitle}
-          image={IMAGES[step]}
+          visual={visual}
           progressStep={step}
           primaryLabel={copy.next}
           onPrimary={isLastStep ? onFinish : onNext}
           primaryLoading={isLastStep ? isFinishing : undefined}
+          secondaryLabel="Atla"
+          onSecondary={onFinish}
+          secondaryLoading={isFinishing}
           primaryHaptic={isLastStep ? "success" : "light"}
           embedded
         />
