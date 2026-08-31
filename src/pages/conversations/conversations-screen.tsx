@@ -208,6 +208,13 @@ function ConversationRow({
           >
             {title}
           </Text>
+          {isEvent && item.isClosed ? (
+            <View className="rounded-full bg-white/10 px-2 py-0.5">
+              <Text className="font-mono text-[9px] uppercase tracking-wide text-text-tertiary">
+                Kapandı
+              </Text>
+            </View>
+          ) : null}
           {item.lastMessageAt ? (
             <Text className="font-mono text-[10px] text-text-tertiary">
               {formatConversationTime(item.lastMessageAt)}

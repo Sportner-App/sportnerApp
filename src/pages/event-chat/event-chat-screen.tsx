@@ -4,7 +4,7 @@ import { Pressable, Text, TextInput, View } from "react-native";
 
 import { AppScreen, ScreenHeader } from "@/components";
 import { useSession, useToast } from "@/contexts";
-import { getApiErrorMessage } from "@/lib/api/errors";
+import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { connectEventChat } from "@/lib/signalr";
 import {
   getConversation,
@@ -114,9 +114,19 @@ export function EventChatScreen({
     return conversation?.title || "SOHBET";
   }, [conversation, user?.id]);
 
+  const isClosed =
+    conversation?.isClosed === true &&
+    conversation.type === CONVERSATION_TYPE.event;
+
+  const markClosed = () => {
+    setConversation((current) =>
+      current ? { ...current, isClosed: true } : current,
+    );
+  };
+
   const send = async () => {
     const text = draft.trim();
-    if (!conversationId || !text || sending) {
+    if (!conversationId || !text || sending || isClosed) {
       return;
     }
     setSending(true);
@@ -127,10 +137,20 @@ export function EventChatScreen({
       );
       setDraft("");
     } catch (error) {
+      const closed =
+        conversation?.type === CONVERSATION_TYPE.event &&
+        isApiError(error) &&
+        (error.code === "Messaging.ConversationClosed" ||
+          error.status === 409);
+      if (closed) {
+        markClosed();
+      }
       showToast({
         type: "error",
-        title: "Gönderilemedi",
-        description: getApiErrorMessage(error),
+        title: closed ? "Sohbet kapandı" : "Gönderilemedi",
+        description: closed
+          ? "Etkinlik bittiği için artık mesaj gönderilemez."
+          : getApiErrorMessage(error),
       });
     } finally {
       setSending(false);
@@ -143,40 +163,50 @@ export function EventChatScreen({
       header={<ScreenHeader title={headerTitle} showBack />}
       contentClassName="gap-3 px-6 pt-2"
       footer={
-        <View className="flex-row items-center gap-2 border-t border-white/10 px-6 py-3">
-          <TextInput
-            value={draft}
-            onChangeText={setDraft}
-            placeholder="Mesaj yaz…"
-            placeholderTextColor="#64748b"
-            textAlignVertical="center"
-            hitSlop={8}
-            returnKeyType="send"
-            blurOnSubmit={false}
-            onSubmitEditing={send}
-            style={{
-              height: 48,
-              lineHeight: 20,
-              paddingTop: 0,
-              paddingBottom: 0,
-            }}
-            className="flex-1 rounded-2xl border border-white/10 bg-brand-surface/90 px-4 font-body text-base text-white"
-          />
-          <Pressable
-            onPress={send}
-            disabled={sending}
-            className="h-12 items-center justify-center rounded-2xl bg-brand-primary px-5"
-          >
-            <Text className="font-body font-semibold text-brand-secondary">
-              Gönder
+        isClosed ? (
+          <View className="border-t border-white/10 px-6 py-4">
+            <Text className="text-center font-body text-sm leading-5 text-brand-neutral">
+              Etkinlik bitti. Sohbet kapandı, geçmişi okuyabilirsin.
             </Text>
-          </Pressable>
-        </View>
+          </View>
+        ) : (
+          <View className="flex-row items-center gap-2 border-t border-white/10 px-6 py-3">
+            <TextInput
+              value={draft}
+              onChangeText={setDraft}
+              placeholder="Mesaj yaz…"
+              placeholderTextColor="#64748b"
+              textAlignVertical="center"
+              hitSlop={8}
+              returnKeyType="send"
+              blurOnSubmit={false}
+              onSubmitEditing={send}
+              style={{
+                height: 48,
+                lineHeight: 20,
+                paddingTop: 0,
+                paddingBottom: 0,
+              }}
+              className="flex-1 rounded-2xl border border-white/10 bg-brand-surface/90 px-4 font-body text-base text-white"
+            />
+            <Pressable
+              onPress={send}
+              disabled={sending}
+              className="h-12 items-center justify-center rounded-2xl bg-brand-primary px-5"
+            >
+              <Text className="font-body font-semibold text-brand-secondary">
+                Gönder
+              </Text>
+            </Pressable>
+          </View>
+        )
       }
     >
       {sorted.length === 0 ? (
         <Text className="py-10 text-center font-body text-sm text-brand-neutral">
-          İlk mesajı sen yaz.
+          {isClosed
+            ? "Bu etkinlik sohbetinde mesaj yok."
+            : "İlk mesajı sen yaz."}
         </Text>
       ) : (
         sorted.map((message, index) => {

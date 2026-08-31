@@ -494,16 +494,9 @@ export function canAccessEventChat(
   status: number | null | undefined,
   isOrganizer: boolean,
   conversationId: string | null | undefined,
-  eventStatus: number,
+  _eventStatus: number,
 ): boolean {
   if (!conversationId) {
-    return false;
-  }
-
-  if (
-    eventStatus === EVENT_STATUS.cancelled ||
-    eventStatus === EVENT_STATUS.completed
-  ) {
     return false;
   }
 

@@ -83,18 +83,18 @@ function resolveBar({
   if (isOrganizer) {
     return {
       statusTitle: occupancyLabel(event),
-      actionLabel: "Sohbete Git",
+      actionLabel: ended ? "Sohbeti gör" : "Sohbete Git",
       action: canChat ? onChat : undefined,
-      variant: "primary",
+      variant: ended ? "secondary" : "primary",
     };
   }
 
   if (hasApprovedParticipation(event.myParticipationStatus)) {
     return {
-      statusTitle: "✓ Katılıyorsun",
-      actionLabel: "Sohbete Git",
+      statusTitle: ended ? "Etkinlik bitti" : "✓ Katılıyorsun",
+      actionLabel: ended ? "Sohbeti gör" : "Sohbete Git",
       action: canChat ? onChat : undefined,
-      variant: "primary",
+      variant: ended ? "secondary" : "primary",
     };
   }
 
