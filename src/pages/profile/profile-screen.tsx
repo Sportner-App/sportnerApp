@@ -11,6 +11,7 @@ import { useProfile } from "@/hooks/use-profile";
 import { listUserReviews } from "@/services/reviews-service";
 import type { ApiReview } from "@/types/reviews";
 
+import { OrganizationsSection } from "../organizations/organizations-section";
 import { MenuSection } from "./menu-section";
 import { ProfileHero } from "./profile-hero";
 import { ReviewsSection } from "./reviews-section";
@@ -101,6 +102,12 @@ export function ProfileScreen() {
             onEdit={() => router.push("/profile/edit")}
           />
           <StatsSection statistics={profile.statistics} />
+          <OrganizationsSection
+            onPressList={() => router.push("/organizations")}
+            onPressItem={(organizationId) =>
+              router.push(`/organizations/${organizationId}`)
+            }
+          />
           <SportsSection
             profile={profile}
             onPress={() => router.push("/profile/sports")}

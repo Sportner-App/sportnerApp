@@ -27,6 +27,7 @@ export const NOTIFICATION_ENTITY = {
   conversation: 4,
   badge: 5,
   quest: 6,
+  organization: 7,
 } as const;
 
 export const NOTIFICATION_TYPE = {
@@ -46,6 +47,12 @@ export const NOTIFICATION_TYPE = {
   questCompleted: 13,
   eventQuestionAsked: 14,
   eventQuestionReplied: 15,
+  organizationJoinRequested: 16,
+  organizationJoinApproved: 17,
+  organizationJoinRejected: 18,
+  organizationRoleChanged: 19,
+  organizationMemberRemoved: 20,
+  organizationMemberBlocked: 21,
 } as const;
 
 const NAMED_ACTIONS: Partial<Record<number, string>> = {
@@ -61,6 +68,12 @@ const NAMED_ACTIONS: Partial<Record<number, string>> = {
   [NOTIFICATION_TYPE.newMessage]: "mesaj gönderdi",
   [NOTIFICATION_TYPE.eventQuestionAsked]: "etkinliğine soru sordu",
   [NOTIFICATION_TYPE.eventQuestionReplied]: "soruna yanıt verdi",
+  [NOTIFICATION_TYPE.organizationJoinRequested]: "organizasyona katılmak istiyor",
+  [NOTIFICATION_TYPE.organizationJoinApproved]: "organizasyon katılımını onayladı",
+  [NOTIFICATION_TYPE.organizationJoinRejected]: "organizasyon katılımını reddetti",
+  [NOTIFICATION_TYPE.organizationRoleChanged]: "organizasyon rolünü güncelledi",
+  [NOTIFICATION_TYPE.organizationMemberRemoved]: "seni organizasyondan çıkardı",
+  [NOTIFICATION_TYPE.organizationMemberBlocked]: "seni organizasyondan engelledi",
 };
 
 export function notificationCopy(item: ApiNotification) {
@@ -97,4 +110,10 @@ export const NOTIFICATION_SETTING_LABELS: Record<number, string> = {
   13: "Görev tamamlandı",
   14: "Etkinlik sorusu",
   15: "Soru yanıtı",
+  16: "Organizasyon katılım isteği",
+  17: "Organizasyon katılımı onaylandı",
+  18: "Organizasyon katılımı reddedildi",
+  19: "Organizasyon rolü değişti",
+  20: "Organizasyondan çıkarıldın",
+  21: "Organizasyondan engellendin",
 };

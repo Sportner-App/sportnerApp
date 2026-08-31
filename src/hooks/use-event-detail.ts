@@ -103,6 +103,11 @@ export function useEventDetail(id: string | undefined) {
   const canTakeAttendance =
     isOrganizer && event?.status === EVENT_STATUS.completed;
 
+  const canCancel =
+    event?.canCancel === true &&
+    event.status !== EVENT_STATUS.cancelled &&
+    event.status !== EVENT_STATUS.completed;
+
   const runAction = async (
     action: () => Promise<{ error: { message: string } | null }>,
     successTitle: string,
@@ -333,6 +338,7 @@ export function useEventDetail(id: string | undefined) {
     hasJoined,
     isFull,
     isOrganizer,
+    canCancel,
     canManage,
     canComplete,
     canTakeAttendance,

@@ -42,9 +42,10 @@ function toSportOptions(sports: Sport[]): SportCategory[] {
     }));
 }
 
-export function useCreateEvent() {
+export function useCreateEvent(organizationId?: string) {
   const router = useRouter();
   const { showToast } = useToast();
+  const isOrganizationEvent = Boolean(organizationId);
 
   const [sports, setSports] = useState<Sport[]>([]);
   const [isSportsLoading, setIsSportsLoading] = useState(true);
@@ -321,10 +322,15 @@ export function useCreateEvent() {
         address: values.addressText.trim(),
         latitude: values.latitude,
         longitude: values.longitude,
-        recurrenceIntervalWeeks: values.isRecurring
-          ? values.recurrenceIntervalWeeks
-          : undefined,
-        recurrenceCount: values.isRecurring ? values.recurrenceCount : 1,
+        recurrenceIntervalWeeks:
+          !isOrganizationEvent && values.isRecurring
+            ? values.recurrenceIntervalWeeks
+            : undefined,
+        recurrenceCount:
+          !isOrganizationEvent && values.isRecurring
+            ? values.recurrenceCount
+            : 1,
+        organizationId,
       });
 
       if (!data) {

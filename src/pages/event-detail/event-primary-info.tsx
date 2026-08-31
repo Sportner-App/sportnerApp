@@ -76,7 +76,16 @@ export function EventPrimaryInfo({
         />
       </View>
 
-      {event.isPaid ? (
+        {event.organizationName ? (
+          <View className="flex-row items-center gap-2 rounded-full border border-brand-primary/30 bg-brand-primary/10 self-start px-3 py-1.5">
+            <FontAwesome6 name="users" size={10} color="#ccff00" />
+            <Text className="font-body text-xs font-semibold text-text-primary">
+              {event.organizationName}
+            </Text>
+          </View>
+        ) : null}
+
+        {event.isPaid ? (
         <Text
           className="font-body text-[12px] leading-5"
           style={{ color: themeColors.text.tertiary }}

@@ -43,6 +43,8 @@ export const PROFILE_MENU_GROUPS: ProfileMenuGroup[] = [
 export const PROFILE_COPY = {
   header: "PROFİL",
   sportsTitle: "Sporlar",
+  organizationsTitle: "Organizasyonlar",
+  emptyOrganizations: "Henüz organizasyonun yok. Dokunarak ekle veya katıl.",
   statsTitle: "Özet",
   socialTitle: "Sosyal",
   menuTitle: "Hesap",

@@ -438,6 +438,7 @@ export async function createEvent(
       skillLevel: payload.skillLevel,
       isPaid: payload.isPaid,
       feeAmount: payload.isPaid ? payload.feeAmount : null,
+      organizationId: payload.organizationId || undefined,
     };
     if ((payload.recurrenceCount ?? 1) > 1) {
       const created = await apiClient.post<{

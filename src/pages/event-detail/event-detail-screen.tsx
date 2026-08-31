@@ -229,6 +229,18 @@ export function EventDetailScreen() {
               </View>
             ) : null}
 
+            {!detail.isOrganizer && detail.canCancel ? (
+              <View className="mt-lg">
+                <Button
+                  label="Etkinliği kapat"
+                  variant="danger"
+                  onPress={detail.cancel}
+                  isLoading={detail.isMutating}
+                  disabled={detail.isMutating}
+                />
+              </View>
+            ) : null}
+
             {!detail.isOrganizer && isAuthenticated ? (
               <View className="mt-sm">
                 <Button

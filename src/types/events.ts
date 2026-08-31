@@ -57,6 +57,9 @@ export type ApiEventDetail = {
   myParticipationStatus: number | null;
   isOnWaitlist: boolean;
   conversationId: string | null;
+  organizationId?: string | null;
+  organizationName?: string | null;
+  canCancel?: boolean;
 };
 
 /** API: ParticipantResponse */
@@ -186,6 +189,9 @@ export type EventDetail = EventSummary & {
   waitlistCount: number;
   conversationId: string | null;
   organizerUserId: string;
+  organizationId?: string | null;
+  organizationName?: string | null;
+  canCancel?: boolean;
 };
 
 export type EventActionResult<T = ApiApplyToEventResponse | null> = {
@@ -219,6 +225,7 @@ export type CreateEventPayload = {
   longitude: number;
   recurrenceIntervalWeeks?: 1 | 2 | 4;
   recurrenceCount?: number;
+  organizationId?: string;
 };
 
 export type CreateEventResult = {

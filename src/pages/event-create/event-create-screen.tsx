@@ -1,3 +1,4 @@
+import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Keyboard, Pressable, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
@@ -79,6 +80,8 @@ function stepExiting(direction: { value: number }) {
 }
 
 export function EventCreateScreen() {
+  const { organizationId } = useLocalSearchParams<{ organizationId?: string }>();
+  const orgId = Array.isArray(organizationId) ? organizationId[0] : organizationId;
   const {
     values,
     update,
@@ -99,7 +102,7 @@ export function EventCreateScreen() {
     removeGuest,
     toggleFriend,
     submit,
-  } = useCreateEvent();
+  } = useCreateEvent(orgId);
   const [currentStep, setCurrentStep] = useState<CreateEventStep>(1);
   const direction = useSharedValue(1);
   const hasMounted = useRef(false);
@@ -291,6 +294,7 @@ export function EventCreateScreen() {
                 disabled={isSubmitting}
               />
 
+              {orgId ? null : (
               <View className="rounded-[24px] border border-border-default bg-surface-primary p-4">
                 <Pressable
                   accessibilityRole="switch"
@@ -391,6 +395,7 @@ export function EventCreateScreen() {
                   </View>
                 ) : null}
               </View>
+              )}
             </View>
           </View>
         ) : null}

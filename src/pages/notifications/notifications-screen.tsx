@@ -98,6 +98,8 @@ export function NotificationsScreen() {
       router.push(`/conversations/${item.entityId}`);
     } else if (item.entityType === NOTIFICATION_ENTITY.badge) {
       router.push("/badges");
+    } else if (item.entityType === NOTIFICATION_ENTITY.organization) {
+      router.push(`/organizations/${item.entityId}`);
     }
   };
 

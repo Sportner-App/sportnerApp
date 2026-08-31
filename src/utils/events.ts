@@ -338,6 +338,9 @@ export function mapDetailToEvent(
     waitlistCount: detail.waitlistCount,
     conversationId: detail.conversationId,
     organizerUserId: organizer.userId,
+    organizationId: detail.organizationId ?? null,
+    organizationName: detail.organizationName ?? null,
+    canCancel: detail.canCancel === true,
   };
 }
 
