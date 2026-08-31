@@ -7,6 +7,14 @@ export type ApiFriend = {
   friendsSince: string;
 };
 
+export type ApiBlockedUser = {
+  userId: string;
+  username: string | null;
+  firstName: string | null;
+  profileImageUrl: string | null;
+  createdAt: string;
+};
+
 export type ApiFriendship = {
   id: string;
   requesterUserId: string;

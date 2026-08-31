@@ -1,6 +1,7 @@
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { useCallback, useRef, useState } from "react";
+import { Text, View } from "react-native";
 
 import {
   AppScreen,
@@ -39,6 +40,7 @@ export function FriendsScreen() {
   const [suggestions, setSuggestions] = useState<ApiFriendSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const hasLoaded = useRef(false);
 
   const load = useCallback(
     async (mode: "initial" | "refresh") => {
@@ -67,9 +69,13 @@ export function FriendsScreen() {
     [showToast],
   );
 
-  useEffect(() => {
-    void load("initial");
-  }, [load]);
+  useFocusEffect(
+    useCallback(() => {
+      void load(hasLoaded.current ? "refresh" : "initial").finally(() => {
+        hasLoaded.current = true;
+      });
+    }, [load]),
+  );
 
   return (
     <AppScreen

@@ -1,3 +1,5 @@
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
@@ -8,6 +10,7 @@ import { getApiErrorMessage } from "@/lib/api/errors";
 import { updateVisibility } from "@/services/profile-service";
 
 export function PrivacyScreen() {
+  const router = useRouter();
   const { profile, isLoading, refresh } = useProfile();
   const { showToast } = useToast();
   const [saving, setSaving] = useState(false);
@@ -64,6 +67,24 @@ export function PrivacyScreen() {
             active={!profile.isProfilePublic}
             onPress={() => toggle(false)}
           />
+
+          <Pressable
+            onPress={() => router.push("/profile/blocked")}
+            className="mt-2 flex-row items-center gap-3 rounded-3xl border border-white/10 bg-brand-surface/90 px-4 py-4 active:opacity-70"
+          >
+            <View className="h-8 w-8 items-center justify-center rounded-full bg-background-secondary">
+              <FontAwesome6 name="ban" size={12} color="#ccff00" />
+            </View>
+            <View className="min-w-0 flex-1">
+              <Text className="font-body text-base font-semibold text-white">
+                Engellenenler
+              </Text>
+              <Text className="mt-0.5 font-body text-xs text-brand-neutral">
+                Engellediğin kişileri gör ve engeli kaldır.
+              </Text>
+            </View>
+            <FontAwesome6 name="chevron-right" size={10} color="#6f7d86" />
+          </Pressable>
         </>
       )}
     </AppScreen>

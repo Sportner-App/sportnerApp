@@ -3,6 +3,7 @@ import type { CursorPagedResult } from "@/types/api";
 import type { PagedResult } from "@/types/events";
 import type { ApiProfileFriendship } from "@/types/profile";
 import type {
+  ApiBlockedUser,
   ApiComment,
   ApiFriend,
   ApiFriendship,
@@ -120,6 +121,25 @@ export async function rejectFriendRequest(friendshipId: string) {
 
 export async function removeFriendship(friendshipId: string) {
   await apiClient.delete(`/api/friendships/${friendshipId}`);
+}
+
+export async function listBlockedUsers(page = 1, pageSize = 30) {
+  const response = await apiClient.get<PagedResult<ApiBlockedUser>>(
+    "/api/blocks",
+    { params: { page, pageSize } },
+  );
+  return response.data;
+}
+
+export async function blockUser(userId: string) {
+  const response = await apiClient.post<ApiBlockedUser>("/api/blocks", {
+    userId,
+  });
+  return response.data;
+}
+
+export async function unblockUser(userId: string) {
+  await apiClient.delete(`/api/blocks/${userId}`);
 }
 
 export async function getHomeFeed(before?: string) {

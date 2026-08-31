@@ -2,7 +2,13 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 
-import { AppScreen, Button, ScreenHeader, SportLoader } from "@/components";
+import {
+  AppScreen,
+  BottomSheet,
+  Button,
+  ScreenHeader,
+  SportLoader,
+} from "@/components";
 import { useSession, useToast } from "@/contexts";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { ProfileHero } from "@/pages/profile/profile-hero";
@@ -13,6 +19,7 @@ import { getPublicProfile } from "@/services/profile-service";
 import { listUserReviews } from "@/services/reviews-service";
 import {
   acceptFriendRequest,
+  blockUser,
   rejectFriendRequest,
   resolveFriendshipWith,
   sameUserId,
@@ -24,7 +31,7 @@ import type { ApiReview } from "@/types/reviews";
 import { FRIENDSHIP_STATUS } from "@/types/social";
 import { errorNotification, successNotification } from "@/utils/haptics";
 
-type FriendAction = "send" | "accept" | "reject" | null;
+type FriendAction = "send" | "accept" | "reject" | "block" | null;
 
 export function PublicProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -36,6 +43,7 @@ export function PublicProfileScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [friendAction, setFriendAction] = useState<FriendAction>(null);
+  const [blockConfirmOpen, setBlockConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (!id) {
@@ -175,6 +183,30 @@ export function PublicProfileScreen() {
     }
   };
 
+  const handleBlock = async () => {
+    if (!profile || friendAction === "block") {
+      return;
+    }
+
+    setFriendAction("block");
+    try {
+      await blockUser(profile.userId);
+      successNotification();
+      setBlockConfirmOpen(false);
+      showToast({ type: "success", title: "Kullanıcı engellendi" });
+      router.back();
+    } catch (error) {
+      errorNotification();
+      showToast({
+        type: "error",
+        title: "Engellenemedi",
+        description: getApiErrorMessage(error),
+      });
+    } finally {
+      setFriendAction(null);
+    }
+  };
+
   return (
     <AppScreen
       header={<ScreenHeader title="PROFİL" showBack />}
@@ -220,48 +252,79 @@ export function PublicProfileScreen() {
               </View>
             ) : null}
 
-            <View className="flex-row gap-2">
-              {!isMe && !isIncomingPending && !isBlocked ? (
+            {!isMe ? (
+              <View className="flex-row gap-2">
+                {!isIncomingPending && !isBlocked ? (
+                  <View className="flex-1">
+                    {isAccepted ? (
+                      <Button
+                        label="Arkadaşsınız"
+                        variant="secondary"
+                        size="sm"
+                        disabled
+                      />
+                    ) : isOutgoingPending ? (
+                      <Button
+                        label="İstek gönderildi"
+                        variant="secondary"
+                        size="sm"
+                        disabled
+                      />
+                    ) : (
+                      <Button
+                        label="Arkadaş ekle"
+                        size="sm"
+                        isLoading={friendAction === "send"}
+                        onPress={() => void handleSend()}
+                      />
+                    )}
+                  </View>
+                ) : null}
                 <View className="flex-1">
-                  {isAccepted ? (
-                    <Button
-                      label="Arkadaşsınız"
-                      variant="secondary"
-                      size="sm"
-                      disabled
-                    />
-                  ) : isOutgoingPending ? (
-                    <Button
-                      label="İstek gönderildi"
-                      variant="secondary"
-                      size="sm"
-                      disabled
-                    />
-                  ) : (
-                    <Button
-                      label="Arkadaş ekle"
-                      size="sm"
-                      isLoading={friendAction === "send"}
-                      onPress={() => void handleSend()}
-                    />
-                  )}
+                  <Button
+                    label="Şikayet et"
+                    variant="outline"
+                    size="sm"
+                    onPress={() =>
+                      router.push({
+                        pathname: "/report",
+                        params: { entityType: "0", entityId: profile.userId },
+                      })
+                    }
+                  />
                 </View>
-              ) : null}
-              <View className="flex-1">
-                <Button
-                  label="Şikayet et"
-                  variant="outline"
-                  size="sm"
-                  onPress={() =>
-                    router.push({
-                      pathname: "/report",
-                      params: { entityType: "0", entityId: profile.userId },
-                    })
-                  }
-                />
               </View>
-            </View>
+            ) : null}
+
+            {!isMe ? (
+              <Button
+                label="Engelle"
+                variant="ghost"
+                size="sm"
+                disabled={friendAction === "block"}
+                onPress={() => setBlockConfirmOpen(true)}
+              />
+            ) : null}
           </View>
+
+          <BottomSheet
+            visible={blockConfirmOpen}
+            onClose={() => {
+              if (friendAction !== "block") {
+                setBlockConfirmOpen(false);
+              }
+            }}
+            title="Bu kişiyi engellemek istiyor musun?"
+            subtitle="Birbirinizi listelerde ve profilde göremezsiniz. İstediğin zaman Gizlilik’ten engeli kaldırabilirsin."
+          >
+            <Button
+              label="Engelle"
+              variant="danger"
+              isLoading={friendAction === "block"}
+              disabled={friendAction === "block"}
+              onPress={() => void handleBlock()}
+            />
+          </BottomSheet>
         </>
       )}
     </AppScreen>
