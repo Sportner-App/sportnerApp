@@ -44,6 +44,8 @@ export const NOTIFICATION_TYPE = {
   newMessage: 11,
   system: 12,
   questCompleted: 13,
+  eventQuestionAsked: 14,
+  eventQuestionReplied: 15,
 } as const;
 
 const NAMED_ACTIONS: Partial<Record<number, string>> = {
@@ -57,6 +59,8 @@ const NAMED_ACTIONS: Partial<Record<number, string>> = {
   [NOTIFICATION_TYPE.postCommented]: "fotoğrafına yorum yaptı",
   [NOTIFICATION_TYPE.commentReplied]: "yorumuna yanıt verdi",
   [NOTIFICATION_TYPE.newMessage]: "mesaj gönderdi",
+  [NOTIFICATION_TYPE.eventQuestionAsked]: "etkinliğine soru sordu",
+  [NOTIFICATION_TYPE.eventQuestionReplied]: "soruna yanıt verdi",
 };
 
 export function notificationCopy(item: ApiNotification) {
@@ -91,4 +95,6 @@ export const NOTIFICATION_SETTING_LABELS: Record<number, string> = {
   11: "Yeni mesaj",
   12: "Sistem",
   13: "Görev tamamlandı",
+  14: "Etkinlik sorusu",
+  15: "Soru yanıtı",
 };

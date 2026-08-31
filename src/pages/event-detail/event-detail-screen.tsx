@@ -18,6 +18,7 @@ import { EVENT_STATUS, PARTICIPANT_STATUS } from "@/types/events";
 import { hasApprovedParticipation, hasEventEnded } from "@/utils/events";
 
 import { AboutSection } from "./about-section";
+import { EventQnASection } from "./event-qna-section";
 import { EventDetailHero } from "./event-detail-hero";
 import { EventOrganizerSection } from "./event-organizer-section";
 import { EventPrimaryInfo } from "./event-primary-info";
@@ -196,6 +197,14 @@ export function EventDetailScreen() {
             <SectionDivider />
 
             <AboutSection event={detail.event} />
+
+            <SectionDivider />
+
+            <EventQnASection
+              event={detail.event}
+              isOrganizer={detail.isOrganizer}
+              onOpenUser={(userId) => router.push(`/users/${userId}`)}
+            />
 
             <SectionDivider />
 
