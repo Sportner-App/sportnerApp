@@ -21,6 +21,7 @@ import { AboutSection } from "./about-section";
 import { EventDetailHero } from "./event-detail-hero";
 import { EventOrganizerSection } from "./event-organizer-section";
 import { EventPrimaryInfo } from "./event-primary-info";
+import { EventShareSheet } from "./event-share-sheet";
 import { JoinBar } from "./join-bar";
 import { LeaveEventAction } from "./leave-event-action";
 import { LocationMap } from "./location-map";
@@ -33,6 +34,7 @@ export function EventDetailScreen() {
   const detail = useEventDetail(id);
 
   const [pendingSheetOpen, setPendingSheetOpen] = useState(false);
+  const [shareSheetOpen, setShareSheetOpen] = useState(false);
 
   const pendingCount = detail.isOrganizer
     ? (detail.event?.participants.filter(
@@ -120,6 +122,7 @@ export function EventDetailScreen() {
           <EventDetailHero
             event={detail.event}
             onBack={() => router.back()}
+            onShare={() => setShareSheetOpen(true)}
             pendingCount={showPendingEntry ? pendingCount : 0}
             onPendingPress={
               showPendingEntry ? handleOpenPendingRequests : undefined
@@ -242,6 +245,13 @@ export function EventDetailScreen() {
             setPendingSheetOpen(false);
             router.push(`/users/${userId}`);
           }}
+        />
+      ) : null}
+      {detail.event ? (
+        <EventShareSheet
+          visible={shareSheetOpen}
+          event={detail.event}
+          onClose={() => setShareSheetOpen(false)}
         />
       ) : null}
     </AppScreen>

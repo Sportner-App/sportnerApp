@@ -21,6 +21,7 @@ import { PendingRequestsHeaderAction } from "./pending-requests-entry";
 type EventDetailHeroProps = {
   event: EventDetail;
   onBack: () => void;
+  onShare: () => void;
   pendingCount?: number;
   onPendingPress?: () => void;
 };
@@ -31,6 +32,7 @@ const OVERLAY = themeColors.surface.dark;
 export function EventDetailHero({
   event,
   onBack,
+  onShare,
   pendingCount = 0,
   onPendingPress,
 }: EventDetailHeroProps) {
@@ -89,12 +91,19 @@ export function EventDetailHero({
               icon="arrow-left"
               onPress={onBack}
             />
-            {showPending ? (
-              <PendingRequestsHeaderAction
-                count={pendingCount}
-                onPress={onPendingPress}
+            <View className="flex-row items-center gap-2">
+              {showPending ? (
+                <PendingRequestsHeaderAction
+                  count={pendingCount}
+                  onPress={onPendingPress}
+                />
+              ) : null}
+              <GlassControl
+                accessibilityLabel="Etkinliği paylaş"
+                icon="arrow-up-from-bracket"
+                onPress={onShare}
               />
-            ) : null}
+            </View>
           </View>
 
           <View className="flex-row items-end justify-between gap-2">
