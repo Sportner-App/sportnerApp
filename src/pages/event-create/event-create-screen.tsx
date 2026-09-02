@@ -30,6 +30,7 @@ import { EventCompanionsStep } from "./event-companions-step";
 import { EventCreateSummary } from "./event-create-summary";
 import { DurationPickerField } from "./duration-picker-field";
 import { LocationPicker } from "./location-picker";
+import { OrganizationSelectStep } from "./organization-select-step";
 import { PlayersStepper } from "./players-stepper";
 import { SubmitBar } from "./submit-bar";
 
@@ -80,12 +81,22 @@ function stepExiting(direction: { value: number }) {
 }
 
 export function EventCreateScreen() {
-  const { organizationId } = useLocalSearchParams<{ organizationId?: string }>();
-  const orgId = Array.isArray(organizationId) ? organizationId[0] : organizationId;
+  const { organizationId: routeOrganizationId } = useLocalSearchParams<{
+    organizationId?: string;
+  }>();
+  const initialOrganizationId = Array.isArray(routeOrganizationId)
+    ? routeOrganizationId[0]
+    : routeOrganizationId;
   const {
     values,
     update,
     setLocation,
+    organizationId,
+    setOrganizationId,
+    wantsOrganizationEvent,
+    setOrganizationIntent,
+    organizations,
+    isOrganizationLocked,
     isStep1Valid,
     isStep2Valid,
     canSubmit,
@@ -102,7 +113,11 @@ export function EventCreateScreen() {
     removeGuest,
     toggleFriend,
     submit,
-  } = useCreateEvent(orgId);
+  } = useCreateEvent(initialOrganizationId);
+  const isOrganizationEvent = Boolean(organizationId);
+  const lockedOrganizationName = organizations.find(
+    (organization) => organization.id === organizationId,
+  )?.name;
   const [currentStep, setCurrentStep] = useState<CreateEventStep>(1);
   const direction = useSharedValue(1);
   const hasMounted = useRef(false);
@@ -206,6 +221,17 @@ export function EventCreateScreen() {
 
         {currentStep === 1 ? (
           <View>
+            <OrganizationSelectStep
+              isLocked={isOrganizationLocked}
+              lockedOrganizationName={lockedOrganizationName}
+              wantsOrganizationEvent={wantsOrganizationEvent}
+              onIntentChange={setOrganizationIntent}
+              organizations={organizations}
+              organizationId={organizationId}
+              onOrganizationChange={setOrganizationId}
+              disabled={isSubmitting}
+            />
+
             <View className="mt-7">
               <SelectField
                 label="Spor"
@@ -294,7 +320,7 @@ export function EventCreateScreen() {
                 disabled={isSubmitting}
               />
 
-              {orgId ? null : (
+              {isOrganizationEvent ? null : (
               <View className="rounded-[24px] border border-border-default bg-surface-primary p-4">
                 <Pressable
                   accessibilityRole="switch"

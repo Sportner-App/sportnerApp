@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { getEvents } from "@/services/events-service";
@@ -7,14 +8,15 @@ import type { EventSummary } from "@/types/events";
 import type { Sport } from "@/types/sports";
 
 const PAGE_SIZE = 30;
-const DEFAULT_FILTERS = {
+export const DEFAULT_EVENT_FILTERS: EventListFilters = {
   city: null,
   minAge: 13,
   maxAge: 120,
   gender: null,
   skillLevel: null,
   isPaid: null,
-} as const;
+  organizationId: null,
+};
 
 export type EventListFilters = {
   city: string | null;
@@ -23,11 +25,15 @@ export type EventListFilters = {
   gender: number | null;
   skillLevel: number | null;
   isPaid: boolean | null;
+  organizationId: string | null;
 };
 
-export type EventFeedScope = "all" | "friends";
+export type EventFeedScope = "all" | "friends" | "organizations";
 
-export function useEvents() {
+export function useEvents(
+  initialScope: EventFeedScope = "all",
+  initialOrganizationId: string | null = null,
+) {
   const [events, setEvents] = useState<EventSummary[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -37,8 +43,11 @@ export function useEvents() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [sportFilter, setSportFilter] = useState("all");
-  const [scope, setScope] = useState<EventFeedScope>("all");
-  const [filters, setFilters] = useState<EventListFilters>(DEFAULT_FILTERS);
+  const [scope, setScope] = useState<EventFeedScope>(initialScope);
+  const [filters, setFilters] = useState<EventListFilters>({
+    ...DEFAULT_EVENT_FILTERS,
+    organizationId: initialOrganizationId,
+  });
   const [error, setError] = useState<string | null>(null);
 
   const resolveSportId = useCallback(
@@ -74,17 +83,22 @@ export function useEvents() {
           page: nextPage,
           pageSize: PAGE_SIZE,
           minAge:
-            activeFilters.minAge === DEFAULT_FILTERS.minAge
+            activeFilters.minAge === DEFAULT_EVENT_FILTERS.minAge
               ? undefined
               : activeFilters.minAge,
           maxAge:
-            activeFilters.maxAge === DEFAULT_FILTERS.maxAge
+            activeFilters.maxAge === DEFAULT_EVENT_FILTERS.maxAge
               ? undefined
               : activeFilters.maxAge,
           gender: activeFilters.gender ?? undefined,
           skillLevel: activeFilters.skillLevel ?? undefined,
           isPaid: activeFilters.isPaid ?? undefined,
           friendsOnly: activeScope === "friends",
+          organizationsOnly: activeScope === "organizations",
+          organizationId:
+            activeScope === "organizations"
+              ? (activeFilters.organizationId ?? undefined)
+              : undefined,
         });
 
         setEvents((prev) =>
@@ -109,34 +123,79 @@ export function useEvents() {
     [resolveSportId],
   );
 
+  // Ekran her odaklandığında (ör. etkinlik oluşturma/düzenlemeden geri
+  // dönüldüğünde) listeyi arka planda sessizce tazelemek için en güncel
+  // filtre/scope/sport değerlerini ref'lerde tutuyoruz — böylece
+  // useFocusEffect yalnızca gerçek focus/blur geçişlerinde tetiklenir,
+  // her filtre değişiminde değil (o değişimler zaten kendi fetchPage
+  // çağrısını yapıyor).
+  const sportFilterRef = useRef(sportFilter);
+  const scopeRef = useRef(scope);
+  const filtersRef = useRef(filters);
+  const sportsRef = useRef(sports);
+
   useEffect(() => {
-    let cancelled = false;
+    sportFilterRef.current = sportFilter;
+  }, [sportFilter]);
 
-    void (async () => {
-      setIsLoading(true);
+  useEffect(() => {
+    scopeRef.current = scope;
+  }, [scope]);
 
-      try {
-        const catalog = await listSports();
-        if (cancelled) {
-          return;
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
+
+  useEffect(() => {
+    sportsRef.current = sports;
+  }, [sports]);
+
+  const hasLoadedRef = useRef(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+
+      void (async () => {
+        const isFirstLoad = !hasLoadedRef.current;
+        hasLoadedRef.current = true;
+
+        try {
+          let catalog = sportsRef.current;
+
+          if (isFirstLoad) {
+            setIsLoading(true);
+            catalog = await listSports();
+            if (cancelled) {
+              return;
+            }
+            setSports(catalog);
+            sportsRef.current = catalog;
+          }
+
+          await fetchPage(
+            isFirstLoad ? "initial" : "refresh",
+            sportFilterRef.current,
+            catalog,
+            1,
+            filtersRef.current,
+            scopeRef.current,
+          );
+        } catch (err) {
+          if (cancelled) {
+            return;
+          }
+
+          setError(getApiErrorMessage(err, "Etkinlikler yüklenemedi."));
+          setIsLoading(false);
         }
+      })();
 
-        setSports(catalog);
-        await fetchPage("initial", "all", catalog, 1, DEFAULT_FILTERS, "all");
-      } catch (err) {
-        if (cancelled) {
-          return;
-        }
-
-        setError(getApiErrorMessage(err, "Etkinlikler yüklenemedi."));
-        setIsLoading(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [fetchPage]);
+      return () => {
+        cancelled = true;
+      };
+    }, [fetchPage]),
+  );
 
   const refresh = useCallback(() => {
     void fetchPage("refresh", sportFilter, sports, 1, filters, scope);
@@ -176,8 +235,17 @@ export function useEvents() {
 
   const changeScope = useCallback(
     (nextScope: EventFeedScope) => {
+      const nextFilters = { ...filters, organizationId: null };
       setScope(nextScope);
-      void fetchPage("initial", sportFilter, sports, 1, filters, nextScope);
+      setFilters(nextFilters);
+      void fetchPage(
+        "initial",
+        sportFilter,
+        sports,
+        1,
+        nextFilters,
+        nextScope,
+      );
     },
     [fetchPage, filters, sportFilter, sports],
   );

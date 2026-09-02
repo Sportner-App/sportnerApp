@@ -4,24 +4,20 @@ import { Pressable, Text, View } from "react-native";
 import { BottomSheet, Button, SelectField } from "@/components";
 import { GENDER_OPTIONS } from "@/constants/auth";
 import { ONBOARDING_SKILL_OPTIONS } from "@/constants/onboarding";
-import type { EventListFilters } from "@/hooks/use-events";
+import {
+  DEFAULT_EVENT_FILTERS,
+  type EventListFilters,
+} from "@/hooks/use-events";
 import { useCities } from "@/hooks/use-cities";
 import { AgeRangeSlider } from "@/pages/event-create/age-range-slider";
+import type { ApiOrganizationListItem } from "@/types/organizations";
 
 type EventFilterSheetProps = {
   visible: boolean;
   filters: EventListFilters;
   onClose: () => void;
   onApply: (filters: EventListFilters) => void;
-};
-
-const DEFAULT_FILTERS: EventListFilters = {
-  city: null,
-  minAge: 13,
-  maxAge: 120,
-  gender: null,
-  skillLevel: null,
-  isPaid: null,
+  organizations?: ApiOrganizationListItem[];
 };
 
 export function EventFilterSheet({
@@ -29,6 +25,7 @@ export function EventFilterSheet({
   filters,
   onClose,
   onApply,
+  organizations = [],
 }: EventFilterSheetProps) {
   const [draft, setDraft] = useState(filters);
   const {
@@ -43,6 +40,17 @@ export function EventFilterSheet({
       description: "Konuma göre filtreleme yapma",
     },
     ...cityOptions,
+  ];
+  const organizationOptions = [
+    {
+      key: "",
+      label: "Tüm organizasyonlar",
+      description: "Organizasyona göre filtreleme yapma",
+    },
+    ...organizations.map((organization) => ({
+      key: organization.id,
+      label: organization.name,
+    })),
   ];
 
   useEffect(() => {
@@ -73,6 +81,26 @@ export function EventFilterSheet({
           sheetTitle="Konum seç"
           sheetSubtitle="Etkinliğin bulunduğu şehri seç"
         />
+
+        {organizations.length > 1 ? (
+          <SelectField
+            label="Organizasyon"
+            placeholder="Organizasyon seç"
+            icon="building"
+            options={organizationOptions}
+            value={draft.organizationId ?? ""}
+            onChange={(organizationId) =>
+              setDraft((current) => ({
+                ...current,
+                organizationId: organizationId || null,
+              }))
+            }
+            searchable
+            searchPlaceholder="Organizasyon ara"
+            sheetTitle="Organizasyon seç"
+            sheetSubtitle="Hangi organizasyonun etkinliklerini görmek istersin?"
+          />
+        ) : null}
 
         <AgeRangeSlider
           minValue={draft.minAge}
@@ -172,7 +200,7 @@ export function EventFilterSheet({
             <Button
               label="Temizle"
               variant="secondary"
-              onPress={() => setDraft(DEFAULT_FILTERS)}
+              onPress={() => setDraft(DEFAULT_EVENT_FILTERS)}
             />
           </View>
           <View className="flex-1">

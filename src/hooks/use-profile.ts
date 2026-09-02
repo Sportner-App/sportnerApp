@@ -1,5 +1,6 @@
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { AUTH_BYPASS } from "@/constants/env";
 import { useAuth, useToast } from "@/contexts";
@@ -51,9 +52,15 @@ export function useProfile() {
 
   const refresh = useCallback(() => load("refresh"), [load]);
 
-  useEffect(() => {
-    void load("initial");
-  }, [load]);
+  const hasLoadedRef = useRef(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      void load(hasLoadedRef.current ? "refresh" : "initial").finally(() => {
+        hasLoadedRef.current = true;
+      });
+    }, [load]),
+  );
 
   const logout = async () => {
     if (isSigningOut) {

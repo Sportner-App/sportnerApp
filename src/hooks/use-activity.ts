@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useRef, useState } from "react";
 
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
@@ -78,9 +79,15 @@ export function useActivity() {
     }
   }, []);
 
-  useEffect(() => {
-    void load("initial");
-  }, [load]);
+  const hasLoadedRef = useRef(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      void load(hasLoadedRef.current ? "refresh" : "initial").finally(() => {
+        hasLoadedRef.current = true;
+      });
+    }, [load]),
+  );
 
   const current =
     tab === "upcoming" ? upcoming : tab === "past" ? past : organized;

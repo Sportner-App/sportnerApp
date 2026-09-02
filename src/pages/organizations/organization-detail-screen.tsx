@@ -17,7 +17,6 @@ import {
 import { themeColors } from "@/constants/theme";
 import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
-import { EventCard } from "@/pages/home/event-card";
 import {
   getOrganization,
   leaveOrganization,
@@ -350,15 +349,20 @@ export function OrganizationDetailScreen() {
                   Bu organizasyona ait yayınlanmış etkinlik yok.
                 </Text>
               ) : (
-                events.map((event, index) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    index={index}
-                    animateEntrance={false}
-                    onPress={() => router.push(`/events/${event.id}`)}
-                  />
-                ))
+                <Button
+                  label="Organizasyona bağlı etkinlikleri gör"
+                  variant="outline"
+                  icon="calendar-day"
+                  onPress={() =>
+                    router.push({
+                      pathname: "/(tabs)",
+                      params: {
+                        scope: "organizations",
+                        organizationId: organization.id,
+                      },
+                    })
+                  }
+                />
               )}
 
               <View className="flex-row items-center justify-between">

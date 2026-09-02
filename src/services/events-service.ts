@@ -73,6 +73,8 @@ export async function getEvents(
         skillLevel: params.skillLevel,
         isPaid: params.isPaid,
         friendsOnly: params.friendsOnly || undefined,
+        organizationsOnly: params.organizationsOnly || undefined,
+        organizationId: params.organizationId || undefined,
         page: params.page ?? 1,
         pageSize: params.pageSize ?? 20,
       },

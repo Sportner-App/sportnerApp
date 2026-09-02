@@ -19,7 +19,9 @@ export function SegmentedTabs<T extends string>({
   disabled = false,
   indicatorMotion = "spring",
 }: SegmentedTabsProps<T>) {
-  const [segmentWidth, setSegmentWidth] = useState(0);
+  const [trackWidth, setTrackWidth] = useState(0);
+  const segmentWidth =
+    trackWidth > 0 ? (trackWidth - TRACK_INSET) / options.length : 0;
 
   const activeIndex = Math.max(
     0,
@@ -45,11 +47,7 @@ export function SegmentedTabs<T extends string>({
       className={`relative flex-row rounded-2xl border border-border-default bg-background-secondary p-1 ${
         disabled ? "opacity-50" : ""
       }`}
-      onLayout={(event) =>
-        setSegmentWidth(
-          (event.nativeEvent.layout.width - TRACK_INSET) / options.length,
-        )
-      }
+      onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
     >
       {segmentWidth > 0 && (
         <Animated.View

@@ -10,6 +10,7 @@ import {
   DEFAULT_EVENT_MIN_AGE,
 } from "@/constants/events";
 import { useToast } from "@/contexts";
+import { useMyOrganizations } from "@/hooks/use-organizations";
 import {
   assignEventParticipants,
   createEvent,
@@ -18,6 +19,7 @@ import { listFriends } from "@/services/social-service";
 import { listSports } from "@/services/sports-service";
 import type { CreateEventFormValues } from "@/types/events";
 import type { SelectedLocation } from "@/types/location";
+import { ORGANIZATION_STATUS } from "@/types/organizations";
 import type { Sport, SportCategory } from "@/types/sports";
 import type { ApiFriend } from "@/types/social";
 import { parseFeeAmount, sportIconForSlug } from "@/utils/events";
@@ -42,10 +44,34 @@ function toSportOptions(sports: Sport[]): SportCategory[] {
     }));
 }
 
-export function useCreateEvent(organizationId?: string) {
+export function useCreateEvent(initialOrganizationId?: string) {
   const router = useRouter();
   const { showToast } = useToast();
+  const isOrganizationLocked = Boolean(initialOrganizationId);
+  const [organizationId, setOrganizationId] = useState<string | undefined>(
+    initialOrganizationId,
+  );
+  const [wantsOrganizationEvent, setWantsOrganizationEvent] = useState(
+    isOrganizationLocked,
+  );
   const isOrganizationEvent = Boolean(organizationId);
+
+  const setOrganizationIntent = (wants: boolean) => {
+    setWantsOrganizationEvent(wants);
+    if (!wants) {
+      setOrganizationId(undefined);
+    }
+  };
+
+  const { items: myOrganizations } = useMyOrganizations();
+  const organizations = useMemo(
+    () =>
+      myOrganizations.filter(
+        (organization) => organization.status === ORGANIZATION_STATUS.approved,
+      ),
+    [myOrganizations],
+  );
+  const hasOrganizations = organizations.length > 0;
 
   const [sports, setSports] = useState<Sport[]>([]);
   const [isSportsLoading, setIsSportsLoading] = useState(true);
@@ -165,9 +191,16 @@ export function useCreateEvent(organizationId?: string) {
       Boolean(values.sportSlug) &&
       title.length > 0 &&
       title.length <= CREATE_EVENT_LIMITS.titleMax &&
-      !isSportsLoading
+      !isSportsLoading &&
+      (!wantsOrganizationEvent || Boolean(organizationId))
     );
-  }, [isSportsLoading, values.sportSlug, values.title]);
+  }, [
+    isSportsLoading,
+    organizationId,
+    values.sportSlug,
+    values.title,
+    wantsOrganizationEvent,
+  ]);
 
   const isStep2Valid = useMemo(() => {
     return (
@@ -410,6 +443,13 @@ export function useCreateEvent(organizationId?: string) {
     values,
     update,
     setLocation,
+    organizationId,
+    setOrganizationId,
+    wantsOrganizationEvent,
+    setOrganizationIntent,
+    organizations,
+    hasOrganizations,
+    isOrganizationLocked,
     isStep1Valid,
     isStep2Valid,
     isStep3Valid,

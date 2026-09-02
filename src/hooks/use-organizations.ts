@@ -5,9 +5,9 @@ import { getApiErrorMessage } from "@/lib/api/errors";
 import { listMyOrganizations } from "@/services/organizations-service";
 import type { ApiOrganizationListItem } from "@/types/organizations";
 
-export function useMyOrganizations() {
+export function useMyOrganizations(enabled = true) {
   const [items, setItems] = useState<ApiOrganizationListItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(enabled);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hasLoaded = useRef(false);
@@ -29,10 +29,18 @@ export function useMyOrganizations() {
 
   useFocusEffect(
     useCallback(() => {
+      if (!enabled) {
+        hasLoaded.current = false;
+        setItems([]);
+        setError(null);
+        setIsLoading(false);
+        return;
+      }
+
       void load(hasLoaded.current ? "refresh" : "initial").finally(() => {
         hasLoaded.current = true;
       });
-    }, [load]),
+    }, [enabled, load]),
   );
 
   return { items, isLoading, isRefreshing, error, refresh: () => load("refresh") };

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useRef, useState } from "react";
 
 import { useSession, useToast } from "@/contexts";
 import {
@@ -68,9 +69,20 @@ export function useEventDetail(id: string | undefined) {
 
   const refresh = useCallback(() => load("refresh"), [load]);
 
-  useEffect(() => {
-    void load("initial");
-  }, [load]);
+  const hasLoadedRef = useRef(false);
+  const lastIdRef = useRef(id);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (lastIdRef.current !== id) {
+        lastIdRef.current = id;
+        hasLoadedRef.current = false;
+      }
+      void load(hasLoadedRef.current ? "refresh" : "initial").finally(() => {
+        hasLoadedRef.current = true;
+      });
+    }, [id, load]),
+  );
 
   const hasJoined = hasActiveParticipation(
     event?.myParticipationStatus,
