@@ -36,6 +36,7 @@ type EventCardProps = {
   event: EventSummary;
   index: number;
   onPress?: () => void;
+  animateEntrance?: boolean;
 };
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -43,7 +44,12 @@ const PRESS_MS = 120;
 // Fotoğraf üzerindeki içerik her iki temada da koyu overlay üzerinde okunur.
 const MIST = "#06111a";
 
-export function EventCard({ event, index, onPress }: EventCardProps) {
+export function EventCard({
+  event,
+  index,
+  onPress,
+  animateEntrance = true,
+}: EventCardProps) {
   const [cardSize, setCardSize] = useState({ width: 0, height: 0 });
   const scale = useSharedValue(1);
   const pressStyle = useAnimatedStyle(() => ({
@@ -101,7 +107,9 @@ export function EventCard({ event, index, onPress }: EventCardProps) {
 
   return (
     <Animated.View
-      entering={FadeInDown.duration(400).delay(index * 70)}
+      entering={
+        animateEntrance ? FadeInDown.duration(400).delay(index * 70) : undefined
+      }
       style={[shadows.md, { borderRadius: radius.xl }]}
     >
       <AnimatedPressable

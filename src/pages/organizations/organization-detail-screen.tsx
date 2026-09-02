@@ -67,30 +67,27 @@ export function OrganizationDetailScreen() {
         setOrganization(detail);
 
         if (detail.myStatus === ORGANIZATION_STATUS.approved) {
-          const [eventsResult, membersResult] = await Promise.allSettled([
-            listOrganizationEvents(organizationId),
-            listOrganizationMembers(organizationId),
-          ]);
-
-          if (eventsResult.status === "fulfilled") {
-            setEvents(eventsResult.value.map(mapListItemToSummary));
-          } else {
+          try {
+            const organizationEvents =
+              await listOrganizationEvents(organizationId);
+            setEvents(organizationEvents.map(mapListItemToSummary));
+          } catch (error) {
             setEvents([]);
             showToast({
               type: "error",
               title: "Etkinlikler yüklenemedi",
-              description: getApiErrorMessage(eventsResult.reason),
+              description: getApiErrorMessage(error),
             });
           }
 
-          if (membersResult.status === "fulfilled") {
-            setMembers(membersResult.value);
-          } else {
+          try {
+            setMembers(await listOrganizationMembers(organizationId));
+          } catch (error) {
             setMembers([]);
             showToast({
               type: "error",
               title: "Üyeler yüklenemedi",
-              description: getApiErrorMessage(membersResult.reason),
+              description: getApiErrorMessage(error),
             });
           }
         } else {
@@ -358,6 +355,7 @@ export function OrganizationDetailScreen() {
                     key={event.id}
                     event={event}
                     index={index}
+                    animateEntrance={false}
                     onPress={() => router.push(`/events/${event.id}`)}
                   />
                 ))
