@@ -1,4 +1,11 @@
-import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+} from "react-native";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -25,9 +32,24 @@ export function AppScreen({
   edgeToEdgeTop = false,
   backdrop = "default",
   tone = "dark",
+  onEndReached,
+  onEndReachedThreshold = 240,
 }: AppScreenProps) {
   const insets = useSafeAreaInsets();
   const bottomPad = withTabBar ? TAB_BAR_CLEARANCE + 16 : 32;
+
+  const handleScroll = onEndReached
+    ? (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const { layoutMeasurement, contentOffset, contentSize } =
+          event.nativeEvent;
+        if (
+          layoutMeasurement.height + contentOffset.y >=
+          contentSize.height - onEndReachedThreshold
+        ) {
+          onEndReached();
+        }
+      }
+    : undefined;
 
   const body = scroll ? (
     <ScrollView
@@ -46,6 +68,8 @@ export function AppScreen({
           : undefined
       }
       refreshControl={refreshControl}
+      onScroll={handleScroll}
+      scrollEventThrottle={handleScroll ? 100 : undefined}
     >
       {children}
     </ScrollView>

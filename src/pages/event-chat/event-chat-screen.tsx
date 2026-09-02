@@ -10,6 +10,7 @@ import {
   getConversation,
   getEventConversation,
   listMessages,
+  markConversationRead,
   sendTextMessage,
 } from "@/services/messaging-service";
 import {
@@ -65,7 +66,15 @@ export function EventChatScreen({
         if (disposed) {
           return;
         }
-        setMessages([...page.items].reverse());
+        const ordered = [...page.items].reverse();
+        setMessages(ordered);
+
+        const latest = ordered[ordered.length - 1];
+        if (latest) {
+          void markConversationRead(resolvedConversationId, latest.id).catch(
+            () => undefined,
+          );
+        }
 
         connection = await connectEventChat(
           resolvedConversationId,
@@ -74,11 +83,23 @@ export function EventChatScreen({
             if (!incoming?.id) {
               return;
             }
-            setMessages((prev) =>
-              prev.some((item) => item.id === incoming.id)
-                ? prev
-                : [...prev, incoming],
-            );
+            setMessages((prev) => {
+              const index = prev.findIndex(
+                (item) => item.id === incoming.id,
+              );
+              if (index === -1) {
+                return [...prev, incoming];
+              }
+              const next = [...prev];
+              next[index] = incoming;
+              return next;
+            });
+            if (incoming.senderUserId !== user?.id) {
+              void markConversationRead(
+                resolvedConversationId,
+                incoming.id,
+              ).catch(() => undefined);
+            }
           },
         );
       } catch (error) {

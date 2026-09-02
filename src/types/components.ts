@@ -186,4 +186,8 @@ export type AppScreenProps = PropsWithChildren<{
   backdrop?: "default" | "olive";
   /** `light` uses background.primary. Default stays legacy navy. */
   tone?: UiTone;
+  /** Scroll listenin sonuna yaklaşılınca (sayfalama) tetiklenir. */
+  onEndReached?: () => void;
+  /** `onEndReached`'ın kaç piksel önce tetikleneceği (varsayılan 240). */
+  onEndReachedThreshold?: number;
 }>;

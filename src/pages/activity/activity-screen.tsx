@@ -40,7 +40,6 @@ export function ActivityScreen() {
     setTab,
     events,
     totalCount,
-    hasNext,
     isLoading,
     isRefreshing,
     isLoadingMore,
@@ -52,7 +51,11 @@ export function ActivityScreen() {
   const empty = EMPTY_COPY[tab];
 
   return (
-    <TabPage refreshing={isRefreshing} onRefresh={refresh}>
+    <TabPage
+      refreshing={isRefreshing}
+      onRefresh={refresh}
+      onEndReached={loadMore}
+    >
       <View className="gap-2">
         <Text className="font-display text-3xl text-text-primary">
           Etkinliklerim
@@ -107,14 +110,10 @@ export function ActivityScreen() {
               onPress={() => router.push(`/events/${event.id}`)}
             />
           ))}
-          {hasNext ? (
-            <Button
-              label="Daha fazla yükle"
-              variant="outline"
-              size="sm"
-              isLoading={isLoadingMore}
-              onPress={loadMore}
-            />
+          {isLoadingMore ? (
+            <View className="items-center py-5">
+              <SportLoader size={64} label="Etkinlikler yükleniyor" />
+            </View>
           ) : null}
         </View>
       )}

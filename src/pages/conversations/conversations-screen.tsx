@@ -20,6 +20,8 @@ import {
   type ApiConversationListItem,
 } from "@/types/messaging";
 
+import { NewConversationSheet } from "./new-conversation-sheet";
+
 type InboxTab = "events" | "friends";
 
 const TAB_COPY: Record<
@@ -54,6 +56,7 @@ export function ConversationsScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [composeOpen, setComposeOpen] = useState(false);
 
   const load = useCallback(async (refresh = false) => {
     refresh ? setIsRefreshing(true) : setIsLoading(true);
@@ -84,7 +87,29 @@ export function ConversationsScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="SOHBETLERİM" showBack />}
+      header={
+        <ScreenHeader
+          title="SOHBETLERİM"
+          showBack
+          right={
+            tab === "friends" ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Yeni sohbet başlat"
+                hitSlop={8}
+                onPress={() => setComposeOpen(true)}
+                className="h-9 w-9 items-center justify-center rounded-full border border-border-default bg-surface-primary active:opacity-70"
+              >
+                <FontAwesome6
+                  name="pen-to-square"
+                  size={14}
+                  color={themeColors.brand.primary}
+                />
+              </Pressable>
+            ) : undefined
+          }
+        />
+      }
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="gap-3 px-5 pt-3"
       refreshControl={
@@ -150,6 +175,16 @@ export function ConversationsScreen() {
           <Text className="text-center font-body text-sm leading-5 text-text-tertiary">
             {copy.emptyBody}
           </Text>
+          {tab === "friends" ? (
+            <Pressable
+              onPress={() => setComposeOpen(true)}
+              className="mt-1 rounded-full bg-brand-primary px-5 py-3 active:opacity-75"
+            >
+              <Text className="font-body-bold text-sm text-text-on-primary">
+                Yeni sohbet başlat
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
       ) : (
         items.map((item) => (
@@ -160,6 +195,11 @@ export function ConversationsScreen() {
           />
         ))
       )}
+
+      <NewConversationSheet
+        visible={composeOpen}
+        onClose={() => setComposeOpen(false)}
+      />
     </AppScreen>
   );
 }

@@ -224,22 +224,29 @@ export function EventCard({
               <View className="w-[62%] pr-2">
                 <Text
                   numberOfLines={2}
-                  className="font-display text-[22px] leading-7 text-white"
+                  className="font-display text-[20px] leading-6 text-white"
                 >
                   {title}
                 </Text>
 
-                <View className="mt-1 flex-row flex-wrap items-center gap-x-3 gap-y-0.5">
+                <View className="mt-2 gap-1">
                   {showPlace ? (
-                    <MetaItem icon="location-dot" label={place} />
+                    <MetaItem
+                      icon="location-dot"
+                      label={place}
+                      accent={sportColor}
+                    />
                   ) : null}
-                  {time ? <MetaItem icon="clock" label={time} /> : null}
+                  <MetaItem
+                    icon="calendar-day"
+                    label={
+                      duration
+                        ? `${event.dateLabel} · ${duration}`
+                        : event.dateLabel
+                    }
+                    accent={sportColor}
+                  />
                 </View>
-                {duration ? (
-                  <View className="mt-0.5">
-                    <MetaItem icon="clock" label={duration} />
-                  </View>
-                ) : null}
               </View>
 
               <View className="mt-3 flex-row items-end justify-between gap-3">
@@ -286,13 +293,21 @@ export function EventCard({
   );
 }
 
-function MetaItem({ icon, label }: { icon: IconName; label: string }) {
+function MetaItem({
+  icon,
+  label,
+  accent,
+}: {
+  icon: IconName;
+  label: string;
+  accent?: string;
+}) {
   return (
     <View className="flex-row items-center gap-1.5">
-      <FontAwesome6 name={icon} size={10} color="#cbd5e1" />
+      <FontAwesome6 name={icon} size={12} color={accent ?? "#cbd5e1"} />
       <Text
         numberOfLines={1}
-        className="max-w-[140px] font-body text-[12px] text-white/75"
+        className="max-w-[200px] font-body-bold text-[13px] text-white"
       >
         {label}
       </Text>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
-import { Button, SegmentedTabs, SportLoader, TabPage } from "@/components";
+import { SegmentedTabs, SportLoader, TabPage } from "@/components";
 import { themeColors } from "@/constants/theme";
 import { useAuth } from "@/contexts";
 import {
@@ -39,7 +39,6 @@ export function HomeScreen() {
   const {
     events,
     totalCount,
-    hasNext,
     isLoading,
     isRefreshing,
     isLoadingMore,
@@ -95,7 +94,11 @@ export function HomeScreen() {
     filters.organizationId != null;
 
   return (
-    <TabPage refreshing={isRefreshing} onRefresh={refresh}>
+    <TabPage
+      refreshing={isRefreshing}
+      onRefresh={refresh}
+      onEndReached={loadMore}
+    >
       <Hero
         onCreatePress={() =>
           requireAuth("Etkinlik oluşturmak için giriş yapmalısın.") &&
@@ -229,14 +232,10 @@ export function HomeScreen() {
               onPress={() => router.push(`/events/${event.id}`)}
             />
           ))}
-          {hasNext ? (
-            <Button
-              label="Daha fazla yükle"
-              variant="outline"
-              size="sm"
-              isLoading={isLoadingMore}
-              onPress={loadMore}
-            />
+          {isLoadingMore ? (
+            <View className="items-center py-5">
+              <SportLoader size={64} label="Etkinlikler yükleniyor" />
+            </View>
           ) : null}
         </View>
       )}

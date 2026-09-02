@@ -27,6 +27,7 @@ export async function connectEventChat(
 
   connection.on("MessageCreated", onMessage);
   connection.on("MessageEdited", onMessage);
+  connection.on("MessageRedacted", onMessage);
   await connection.start();
   await connection.invoke("JoinConversation", conversationId);
   return connection;

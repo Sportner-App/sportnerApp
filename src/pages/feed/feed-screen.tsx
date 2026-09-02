@@ -5,7 +5,6 @@ import { Pressable, Text, View } from "react-native";
 import {
   AppScreen,
   BrandRefreshControl,
-  Button,
   LinearRefreshBar,
   ScreenHeader,
   SegmentedTabs,
@@ -32,11 +31,13 @@ export function FeedScreen() {
   const [cursor, setCursor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const load = useCallback(
     async (mode: "initial" | "refresh" | "more", nextTab = tab) => {
       if (mode === "initial") setIsLoading(true);
       if (mode === "refresh") setIsRefreshing(true);
+      if (mode === "more") setIsLoadingMore(true);
       try {
         const fetch = nextTab === "home" ? getHomeFeed : getExploreFeed;
         const page = await fetch(
@@ -55,6 +56,7 @@ export function FeedScreen() {
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
+        setIsLoadingMore(false);
       }
     },
     [cursor, showToast, tab],
@@ -64,6 +66,13 @@ export function FeedScreen() {
     void load("initial");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
+
+  const loadMore = useCallback(() => {
+    if (!cursor || isLoading || isRefreshing || isLoadingMore) {
+      return;
+    }
+    void load("more");
+  }, [cursor, isLoading, isLoadingMore, isRefreshing, load]);
 
   return (
     <AppScreen
@@ -89,6 +98,7 @@ export function FeedScreen() {
           onRefresh={() => load("refresh")}
         />
       }
+      onEndReached={loadMore}
     >
       <SegmentedTabs
         options={[
@@ -158,13 +168,10 @@ export function FeedScreen() {
         ))
       )}
 
-      {cursor ? (
-        <Button
-          label="Daha fazla"
-          variant="outline"
-          size="sm"
-          onPress={() => load("more")}
-        />
+      {isLoadingMore ? (
+        <View className="items-center py-5">
+          <SportLoader size={64} label="Akış yükleniyor" />
+        </View>
       ) : null}
     </AppScreen>
   );

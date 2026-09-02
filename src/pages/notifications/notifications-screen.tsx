@@ -5,7 +5,6 @@ import { Pressable, Text, View } from "react-native";
 import {
   AppScreen,
   BrandRefreshControl,
-  Button,
   LinearRefreshBar,
   ScreenHeader,
   SportLoader,
@@ -31,11 +30,13 @@ export function NotificationsScreen() {
   const [cursor, setCursor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const load = useCallback(
     async (mode: "initial" | "refresh" | "more") => {
       if (mode === "initial") setIsLoading(true);
       if (mode === "refresh") setIsRefreshing(true);
+      if (mode === "more") setIsLoadingMore(true);
 
       try {
         const page = await listNotifications({
@@ -54,6 +55,7 @@ export function NotificationsScreen() {
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
+        setIsLoadingMore(false);
       }
     },
     [cursor, showToast],
@@ -63,6 +65,13 @@ export function NotificationsScreen() {
     void load("initial");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const loadMore = useCallback(() => {
+    if (!cursor || isLoading || isRefreshing || isLoadingMore) {
+      return;
+    }
+    void load("more");
+  }, [cursor, isLoading, isLoadingMore, isRefreshing, load]);
 
   const open = async (item: ApiNotification) => {
     if (!item.isRead) {
@@ -134,6 +143,7 @@ export function NotificationsScreen() {
           onRefresh={() => load("refresh")}
         />
       }
+      onEndReached={loadMore}
     >
       {isLoading ? (
         <View className="items-center py-16">
@@ -169,13 +179,10 @@ export function NotificationsScreen() {
         })
       )}
 
-      {cursor ? (
-        <Button
-          label="Daha fazla"
-          variant="outline"
-          size="sm"
-          onPress={() => load("more")}
-        />
+      {isLoadingMore ? (
+        <View className="items-center py-5">
+          <SportLoader size={64} label="Bildirimler yükleniyor" />
+        </View>
       ) : null}
     </AppScreen>
   );

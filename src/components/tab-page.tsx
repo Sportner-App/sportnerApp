@@ -10,6 +10,7 @@ type TabPageProps = PropsWithChildren<{
   refreshing: boolean;
   onRefresh: () => void;
   keyboardAvoiding?: boolean;
+  onEndReached?: () => void;
 }>;
 
 /** Ana tab sayfalarının ortak safe-area, header, spacing ve refresh kabuğu. */
@@ -18,6 +19,7 @@ export function TabPage({
   refreshing,
   onRefresh,
   keyboardAvoiding = false,
+  onEndReached,
 }: TabPageProps) {
   return (
     <AppScreen
@@ -28,6 +30,7 @@ export function TabPage({
       refreshControl={
         <BrandRefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
+      onEndReached={onEndReached}
     >
       <StatusBar style="auto" />
       <TabScreenHeader />
