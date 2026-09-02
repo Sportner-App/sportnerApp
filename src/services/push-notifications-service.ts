@@ -40,7 +40,7 @@ export function configureForegroundNotifications() {
 export async function registerCurrentDeviceForPush() {
   if (Platform.OS === "web") return null;
   if (!Device.isDevice) {
-    console.info("Push notification kaydı yalnızca fiziksel cihazda yapılır.");
+    console.info("");
     return null;
   }
 

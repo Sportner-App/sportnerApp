@@ -213,16 +213,35 @@ function shortenPlaceName(value: string) {
   return `${cleaned.slice(0, 25)}…`;
 }
 
+function addressParts(value: string): string[] {
+  const parts: string[] = [];
+  let start = 0;
+
+  for (let index = 0; index <= value.length; index += 1) {
+    const character = value[index];
+    if (index !== value.length && character !== "," && character !== "/") {
+      continue;
+    }
+
+    const part = value.slice(start, index).trim();
+    if (part) {
+      parts.push(part);
+    }
+    start = index + 1;
+  }
+
+  return parts;
+}
+
 function shortLocation(address: string): string {
-  const trimmed = address.trim();
+  const trimmed = typeof address === "string" ? address.trim() : "";
   if (!trimmed) {
     return "Konum yok";
   }
 
-  const parts = trimmed
-    .split(/[,/]/)
-    .map((part) => part.trim())
-    .filter(Boolean);
+  // Hermes on physical iOS devices can crash inside String.prototype.split
+  // for this regex path. Scan the two separators without invoking split.
+  const parts = addressParts(trimmed);
   const useful = parts.filter(
     (part) => !isPostcode(part) && !isCountryOrRegion(part),
   );

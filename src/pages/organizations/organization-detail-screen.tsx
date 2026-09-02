@@ -456,7 +456,10 @@ function OrganizationHero({
   eventCount: number;
   onEdit?: () => void;
 }) {
-  const initial = organization.name.trim().charAt(0).toLocaleUpperCase("tr-TR");
+  // Production may still contain legacy organization rows whose name is null.
+  // Keep the detail route renderable instead of crashing on String.trim().
+  const organizationName = organization.name?.trim() || "Organizasyon";
+  const initial = organizationName.charAt(0).toLocaleUpperCase("tr-TR");
 
   return (
     <View className="relative overflow-hidden rounded-[30px] border border-border-default bg-surface-primary p-5">
@@ -475,7 +478,7 @@ function OrganizationHero({
             numberOfLines={2}
             className="font-display text-[26px] leading-8 text-text-primary"
           >
-            {organization.name}
+            {organizationName}
           </Text>
 
           <View className="mt-2 flex-row flex-wrap gap-2">

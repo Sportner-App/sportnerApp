@@ -139,13 +139,27 @@ export function Avatar({
 }
 
 function initials(value?: string | null) {
-  if (!value?.trim()) return "S";
-  return value
-    .trim()
-    .split(/\s+/)
-    .map((part) => part[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toLocaleUpperCase("tr-TR");
+  const normalized = value?.trim();
+  if (!normalized) return "S";
+
+  const result: string[] = [];
+  let isAtWordStart = true;
+
+  for (const character of normalized) {
+    const isWhitespace =
+      character === " " ||
+      character === "\t" ||
+      character === "\n" ||
+      character === "\r";
+
+    if (isWhitespace) {
+      isAtWordStart = true;
+    } else if (isAtWordStart) {
+      result.push(character);
+      isAtWordStart = false;
+      if (result.length === 2) break;
+    }
+  }
+
+  return result.join("").toLocaleUpperCase("tr-TR") || "S";
 }
