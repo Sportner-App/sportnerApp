@@ -1,6 +1,10 @@
 import { apiClient } from "@/lib/api/client";
 import { ApiError, getApiErrorMessage } from "@/lib/api/errors";
-import type { ApiMyProfile, ApiPublicProfile, UserProfile } from "@/types/profile";
+import type {
+  ApiMyProfile,
+  ApiPublicProfile,
+  UserProfile,
+} from "@/types/profile";
 import { mapMyProfile, mapPublicProfile } from "@/utils/profile";
 
 export class ProfileNotFoundError extends Error {
@@ -50,6 +54,20 @@ export async function updateDisplayName(
   await apiClient.put("/api/user-profiles/me/display-name", {
     firstName,
     lastName: lastName || null,
+  });
+}
+
+export async function updateUsername(username: string) {
+  await apiClient.put("/api/user-profiles/me/username", { username });
+}
+
+export async function updatePersonalDetails(
+  gender: number | null,
+  birthDate: string | null,
+) {
+  await apiClient.put("/api/user-profiles/me/personal-details", {
+    gender,
+    birthDate,
   });
 }
 

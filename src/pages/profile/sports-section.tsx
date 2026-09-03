@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import {
@@ -13,16 +13,18 @@ import { sportIconForSlug } from "@/utils/events";
 type SportsSectionProps = {
   profile: UserProfile;
   onPress?: () => void;
+  onAdd?: () => void;
 };
 
-const VISIBLE_SPORT_COUNT = 4;
-
-export function SportsSection({ profile, onPress }: SportsSectionProps) {
+export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
   const sports = [...profile.sports].sort(
     (a, b) => Number(b.isPrimary) - Number(a.isPrimary),
   );
-  const visible = sports.slice(0, VISIBLE_SPORT_COUNT);
-  const remaining = sports.length - visible.length;
+  const primarySport = sports.find((sport) => sport.isPrimary) ?? sports[0];
+  const rating =
+    profile.statistics?.averageRating ?? profile.averageRating ?? 0;
+  const reviewCount =
+    profile.statistics?.totalReviews ?? profile.reviewCount ?? 0;
 
   return (
     <Animated.View
@@ -34,9 +36,15 @@ export function SportsSection({ profile, onPress }: SportsSectionProps) {
           {PROFILE_COPY.sportsTitle}
         </Text>
         {onPress ? (
-          <Pressable onPress={onPress} hitSlop={8}>
-            <Text className="font-body text-[11px] font-semibold text-brand-primary">
-              {sports.length === 0 ? "Ekle" : "Tümü"}
+          <Pressable
+            onPress={onPress}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="Sporları düzenle"
+            className="min-h-[36px] flex-row items-center gap-1.5 rounded-full px-2 active:opacity-65"
+          >
+            <Text className="font-body text-xs font-semibold text-brand-primary">
+              Düzenle
             </Text>
           </Pressable>
         ) : null}
@@ -44,57 +52,91 @@ export function SportsSection({ profile, onPress }: SportsSectionProps) {
 
       {sports.length === 0 ? (
         <Pressable
-          disabled={!onPress}
-          onPress={onPress}
+          disabled={!onAdd && !onPress}
+          onPress={onAdd ?? onPress}
           className="rounded-[20px] border border-dashed border-border-strong bg-surface-primary/50 px-4 py-5"
         >
           <Text className="text-center font-body text-sm text-text-secondary">
-            {onPress
+            {onAdd || onPress
               ? PROFILE_COPY.emptySports
               : PROFILE_COPY.emptySportsPublic}
           </Text>
         </Pressable>
       ) : (
-        <View className="flex-row flex-wrap gap-2">
-          {visible.map((sport) => {
-            const skill =
-              SKILL_LEVEL_LABELS[skillKeyFromCode(sport.skillLevel)];
-            return (
-              <Pressable
-                key={sport.sportId}
-                disabled={!onPress}
-                onPress={onPress}
-                className={`flex-row items-center gap-2 rounded-full border px-3 py-2.5 ${
-                  sport.isPrimary
-                    ? "border-brand-primary/30 bg-brand-primary/10"
-                    : "border-border-default bg-surface-primary"
-                }`}
-              >
-                <FontAwesome6
-                  name={sportIconForSlug(sport.sportSlug)}
-                  size={11}
-                  color="#ccff00"
-                />
-                <Text className="font-body text-xs font-semibold text-text-primary">
-                  {sport.sportName}
-                </Text>
-                <Text className="font-body text-[9px] text-text-tertiary">
-                  {skill}
-                </Text>
-              </Pressable>
-            );
-          })}
-          {remaining > 0 ? (
-            <Pressable
-              disabled={!onPress}
-              onPress={onPress}
-              className="rounded-full border border-border-default bg-surface-primary px-3 py-2.5"
+        <View className="gap-3">
+          <View className="flex-row items-center gap-2">
+            <ScrollView
+              horizontal
+              className="min-w-0 flex-1"
+              contentContainerClassName="gap-2 pr-2"
+              showsHorizontalScrollIndicator={false}
             >
-              <Text className="font-mono text-xs text-text-secondary">
-                +{remaining}
+              {sports.map((sport) => (
+                <Pressable
+                  key={sport.sportId}
+                  disabled={!onPress}
+                  onPress={onPress}
+                  className={`flex-row items-center gap-2 rounded-full border px-3 py-2 ${
+                    sport.isPrimary
+                      ? "border-brand-primary/40 bg-brand-primary/10"
+                      : "border-border-default bg-surface-primary"
+                  }`}
+                >
+                  <FontAwesome6
+                    name={sportIconForSlug(sport.sportSlug)}
+                    size={11}
+                    color="#ccff00"
+                  />
+                  <Text className="font-body text-xs font-semibold text-text-primary">
+                    {sport.sportName}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+            {onAdd ? (
+              <Pressable
+                onPress={onAdd}
+                accessibilityRole="button"
+                accessibilityLabel="Spor ekle veya düzenle"
+                className="h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-primary active:opacity-75"
+              >
+                <FontAwesome6 name="plus" size={13} color="#06111a" />
+              </Pressable>
+            ) : null}
+          </View>
+
+          <View className="flex-row overflow-hidden rounded-[22px] border border-border-default bg-surface-primary">
+            <View className="flex-1 items-center px-3 py-4">
+              <Text className="font-body text-[10px] uppercase tracking-[1.2px] text-text-tertiary">
+                Ana spor seviyesi
               </Text>
-            </Pressable>
-          ) : null}
+              <Text className="mt-2 font-display text-xl text-brand-primary">
+                {primarySport
+                  ? SKILL_LEVEL_LABELS[
+                      skillKeyFromCode(primarySport.skillLevel)
+                    ]
+                  : "—"}
+              </Text>
+              <Text className="mt-1 font-body text-[10px] text-text-secondary">
+                {primarySport?.sportName ?? "Spor eklenmedi"}
+              </Text>
+            </View>
+            <View className="my-3 w-px bg-border-default" />
+            <View className="flex-1 items-center px-3 py-4">
+              <Text className="font-body text-[10px] uppercase tracking-[1.2px] text-text-tertiary">
+                Oyuncu puanı
+              </Text>
+              <View className="mt-2 flex-row items-center gap-1.5">
+                <Text className="font-display text-xl text-brand-primary">
+                  {Number(rating).toFixed(1)}
+                </Text>
+                <FontAwesome6 name="star" size={12} color="#ccff00" />
+              </View>
+              <Text className="mt-1 font-body text-[10px] text-text-secondary">
+                {reviewCount} değerlendirme
+              </Text>
+            </View>
+          </View>
         </View>
       )}
     </Animated.View>

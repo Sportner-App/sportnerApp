@@ -8,6 +8,8 @@ import type { ApiReview } from "@/types/reviews";
 type ReviewsSectionProps = {
   reviews: ApiReview[];
   isLoading?: boolean;
+  averageRating?: number;
+  totalReviews?: number;
 };
 
 function formatReviewDate(value: string) {
@@ -23,15 +25,38 @@ function formatReviewDate(value: string) {
   });
 }
 
-export function ReviewsSection({ reviews, isLoading }: ReviewsSectionProps) {
+export function ReviewsSection({
+  reviews,
+  isLoading,
+  averageRating = 0,
+  totalReviews,
+}: ReviewsSectionProps) {
   return (
     <Animated.View
       entering={FadeInDown.duration(380).delay(110)}
       className="gap-3"
     >
-      <Text className="font-display text-lg text-text-primary">
-        {PROFILE_COPY.reviewsTitle}
-      </Text>
+      <View className="flex-row items-end justify-between">
+        <View>
+          <Text className="font-display text-lg text-text-primary">
+            {PROFILE_COPY.reviewsTitle}
+          </Text>
+          <Text className="mt-1 font-body text-[11px] text-text-tertiary">
+            Etkinliklerden gelen oyuncu geri bildirimleri
+          </Text>
+        </View>
+        <View className="items-end">
+          <View className="flex-row items-center gap-1">
+            <Text className="font-display text-2xl text-brand-primary">
+              {Number(averageRating).toFixed(1)}
+            </Text>
+            <Text className="text-sm text-brand-primary">★</Text>
+          </View>
+          <Text className="font-body text-[9px] text-text-tertiary">
+            {totalReviews ?? reviews.length} yorum
+          </Text>
+        </View>
+      </View>
 
       {isLoading ? (
         <Text className="font-body text-sm text-text-secondary">
@@ -42,37 +67,43 @@ export function ReviewsSection({ reviews, isLoading }: ReviewsSectionProps) {
           {PROFILE_COPY.emptyReviews}
         </Text>
       ) : (
-        reviews.map((review) => (
-          <View
-            key={review.id}
-            className="gap-1.5 border-b border-border-default px-1 pb-4 pt-1"
-          >
-            <View className="flex-row items-center justify-between">
-              <View className="min-w-0 flex-1">
-                <UserIdentity
-                  username={review.reviewerUsername}
-                  avatarUrl={review.reviewerProfileImageUrl}
-                  fallbackName={review.reviewerFirstName}
-                  avatarSize={34}
-                />
+        <View className="overflow-hidden rounded-[22px] border border-border-default bg-surface-primary px-4">
+          {reviews.map((review, index) => (
+            <View
+              key={review.id}
+              className={`gap-2 py-4 ${
+                index < reviews.length - 1
+                  ? "border-b border-border-default"
+                  : ""
+              }`}
+            >
+              <View className="flex-row items-center justify-between">
+                <View className="min-w-0 flex-1">
+                  <UserIdentity
+                    username={review.reviewerUsername}
+                    avatarUrl={review.reviewerProfileImageUrl}
+                    fallbackName={review.reviewerFirstName}
+                    avatarSize={34}
+                  />
+                </View>
+                <View className="flex-row items-center gap-1 rounded-full bg-brand-primary/10 px-2 py-1">
+                  <Text className="font-mono-bold text-[10px] text-brand-primary">
+                    {Number(review.rating).toFixed(1)}
+                  </Text>
+                  <Text className="text-[9px] text-brand-primary">★</Text>
+                </View>
               </View>
-              <View className="flex-row items-center gap-1 rounded-full bg-brand-primary/10 px-2 py-1">
-                <Text className="font-mono-bold text-[10px] text-brand-primary">
-                  {Number(review.rating).toFixed(1)}
+              {review.comment ? (
+                <Text className="font-body text-sm leading-5 text-text-secondary">
+                  {review.comment}
                 </Text>
-                <Text className="text-[9px] text-brand-primary">★</Text>
-              </View>
-            </View>
-            {review.comment ? (
-              <Text className="font-body text-sm leading-5 text-text-secondary">
-                {review.comment}
+              ) : null}
+              <Text className="font-body text-[10px] text-text-tertiary">
+                {formatReviewDate(review.createdAt)}
               </Text>
-            ) : null}
-            <Text className="font-body text-[10px] text-text-tertiary">
-              {formatReviewDate(review.createdAt)}
-            </Text>
-          </View>
-        ))
+            </View>
+          ))}
+        </View>
       )}
     </Animated.View>
   );

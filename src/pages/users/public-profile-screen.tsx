@@ -7,11 +7,14 @@ import {
   BottomSheet,
   Button,
   ScreenHeader,
+  SegmentedTabs,
   SportLoader,
 } from "@/components";
+import { ProfileAboutSection } from "@/pages/profile/profile-about-section";
 import { useSession, useToast } from "@/contexts";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { ProfileHero } from "@/pages/profile/profile-hero";
+import { ProfileIntroVideo } from "@/pages/profile/profile-intro-video";
 import { ReviewsSection } from "@/pages/profile/reviews-section";
 import { SportsSection } from "@/pages/profile/sports-section";
 import { StatsSection } from "@/pages/profile/stats-section";
@@ -34,6 +37,12 @@ import { errorNotification, successNotification } from "@/utils/haptics";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 
 type FriendAction = "send" | "accept" | "reject" | "block" | "message" | null;
+type ProfileTab = "activity" | "reviews";
+
+const PROFILE_TABS = [
+  { key: "activity", label: "Aktivite" },
+  { key: "reviews", label: "Yorumlar" },
+] satisfies { key: ProfileTab; label: string }[];
 
 export function PublicProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -47,6 +56,7 @@ export function PublicProfileScreen() {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [friendAction, setFriendAction] = useState<FriendAction>(null);
   const [blockConfirmOpen, setBlockConfirmOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<ProfileTab>("activity");
 
   useEffect(() => {
     if (!id) {
@@ -250,10 +260,7 @@ export function PublicProfileScreen() {
       ) : (
         <>
           <ProfileHero profile={profile} />
-          <StatsSection statistics={profile.statistics} />
-          <SportsSection profile={profile} />
-          <ReviewsSection reviews={reviews} isLoading={reviewsLoading} />
-
+          <ProfileAboutSection bio={profile.bio} />
           <View className="gap-2">
             {isIncomingPending ? (
               <View className="flex-row gap-2">
@@ -310,29 +317,58 @@ export function PublicProfileScreen() {
                     )}
                   </View>
                 ) : null}
-                <View className="flex-1">
-                  <Button
-                    label="Şikayet et"
-                    variant="outline"
-                    size="sm"
-                    onPress={() => {
-                      if (
-                        !requireAuth(
-                          "Bir kullanıcıyı şikayet etmek için giriş yapmalısın.",
-                        )
-                      )
-                        return;
-                      router.push({
-                        pathname: "/report",
-                        params: { entityType: "0", entityId: profile.userId },
-                      });
-                    }}
-                  />
-                </View>
               </View>
             ) : null}
+          </View>
 
-            {!isMe ? (
+          <SportsSection profile={profile} />
+          <SegmentedTabs
+            options={PROFILE_TABS}
+            value={activeTab}
+            onChange={setActiveTab}
+          />
+
+          {activeTab === "activity" ? (
+            <>
+              <StatsSection statistics={profile.statistics} />
+              {profile.introVideoUrl ? (
+                <ProfileIntroVideo uri={profile.introVideoUrl} />
+              ) : null}
+            </>
+          ) : null}
+
+          {activeTab === "reviews" ? (
+            <ReviewsSection
+              reviews={reviews}
+              isLoading={reviewsLoading}
+              averageRating={
+                profile.statistics?.averageRating ?? profile.averageRating
+              }
+              totalReviews={
+                profile.statistics?.totalReviews ?? profile.reviewCount
+              }
+            />
+          ) : null}
+
+          {!isMe ? (
+            <View className="gap-2">
+              <Button
+                label="Şikayet et"
+                variant="outline"
+                size="sm"
+                onPress={() => {
+                  if (
+                    !requireAuth(
+                      "Bir kullanıcıyı şikayet etmek için giriş yapmalısın.",
+                    )
+                  )
+                    return;
+                  router.push({
+                    pathname: "/report",
+                    params: { entityType: "0", entityId: profile.userId },
+                  });
+                }}
+              />
               <Button
                 label="Engelle"
                 variant="ghost"
@@ -340,8 +376,8 @@ export function PublicProfileScreen() {
                 disabled={friendAction === "block"}
                 onPress={() => setBlockConfirmOpen(true)}
               />
-            ) : null}
-          </View>
+            </View>
+          ) : null}
 
           <BottomSheet
             visible={blockConfirmOpen}

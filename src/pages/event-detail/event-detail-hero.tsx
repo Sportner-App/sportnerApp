@@ -5,7 +5,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
-import { sportImageForSlug } from "@/constants/sport-images";
+import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
 import {
   media,
   shadows,
@@ -38,7 +38,7 @@ export function EventDetailHero({
 }: EventDetailHeroProps) {
   const insets = useSafeAreaInsets();
   const [size, setSize] = useState({ width: 0, height: 0 });
-  const photo = sportImageForSlug(event.sport);
+  const photo = resolveEventPhoto(event.sportCoverImageUrl);
   const accent = sportAccentToken(event.sport);
   const sportColor = accent?.accent ?? themeColors.text.secondary;
   const sportSoft = accent?.soft ?? themeColors.surface.secondary;
@@ -65,9 +65,6 @@ export function EventDetailHero({
       >
         <HeroPhoto
           image={photo}
-          icon={event.sportIcon}
-          accent={sportColor}
-          soft={sportSoft}
           width={size.width}
           height={size.height}
         />
@@ -222,56 +219,32 @@ function HeroReadabilityOverlay({
 
 function HeroPhoto({
   image,
-  icon,
-  accent,
-  soft,
   width,
   height,
 }: {
-  image: ReturnType<typeof sportImageForSlug>;
-  icon: IconName;
-  accent: string;
-  soft: string;
+  image: ReturnType<typeof resolveEventPhoto>;
   width: number;
   height: number;
 }) {
-  if (image) {
-    if (width <= 0 || height <= 0) {
-      return null;
-    }
+  const [failed, setFailed] = useState(false);
 
-    return (
-      <Image
-        source={image}
-        resizeMode="cover"
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width,
-          height,
-          backgroundColor: "transparent",
-        }}
-      />
-    );
+  if (width <= 0 || height <= 0) {
+    return null;
   }
 
   return (
-    <View
-      className="items-center justify-center"
-      style={[StyleSheet.absoluteFill, { backgroundColor: soft }]}
-    >
-      <View
-        pointerEvents="none"
-        className="absolute -right-10 -top-12 h-44 w-44 rounded-full opacity-35"
-        style={{ backgroundColor: accent }}
-      />
-      <View
-        pointerEvents="none"
-        className="absolute -bottom-8 -left-8 h-28 w-28 rounded-full opacity-25"
-        style={{ backgroundColor: accent }}
-      />
-      <FontAwesome6 name={icon} size={44} color={accent} />
-    </View>
+    <Image
+      source={failed ? FALLBACK_SPORT_IMAGE : image}
+      resizeMode="cover"
+      onError={() => setFailed(true)}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width,
+        height,
+        backgroundColor: "transparent",
+      }}
+    />
   );
 }

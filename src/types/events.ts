@@ -6,11 +6,14 @@ export type ApiEventListItem = {
   sportId: string;
   sportName: string;
   sportSlug: string;
+  sportCoverImageUrl: string | null;
   organizerUserId: string;
   organizerUsername: string | null;
   title: string;
   eventDate: string;
   durationMinutes: number;
+  latitude: number;
+  longitude: number;
   address: string;
   maxParticipants: number | null;
   minParticipantAge: number;
@@ -37,6 +40,7 @@ export type ApiEventDetail = {
   sportId: string;
   sportName: string;
   sportSlug: string;
+  sportCoverImageUrl: string | null;
   organizer: ApiOrganizerSnippet;
   title: string;
   description: string | null;
@@ -131,6 +135,9 @@ export type EventSummary = {
   sport: string;
   sportName: string;
   sportIcon: IconName;
+  sportCoverImageUrl: string | null;
+  latitude: number;
+  longitude: number;
   dateLabel: string;
   eventDate: string;
   location: string;
@@ -179,8 +186,6 @@ export type EventWaitlistEntry = {
 export type EventDetail = EventSummary & {
   description: string;
   address: string;
-  latitude: number;
-  longitude: number;
   durationLabel: string;
   participants: EventParticipant[];
   waitlist: EventWaitlistEntry[];

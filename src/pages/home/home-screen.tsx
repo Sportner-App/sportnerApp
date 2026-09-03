@@ -18,8 +18,11 @@ import { ORGANIZATION_STATUS } from "@/types/organizations";
 
 import { EventCard } from "./event-card";
 import { EventFilterSheet } from "./event-filter-sheet";
+import { EventsMap } from "./events-map";
 import { Hero } from "./hero";
 import { SportFilter } from "./sport-filter";
+
+type ViewMode = "list" | "map";
 
 export function HomeScreen() {
   const router = useRouter();
@@ -32,6 +35,7 @@ export function HomeScreen() {
   const initialOrganizationId =
     initialScope === "organizations" ? (organizationIdParam ?? null) : null;
   const [filterOpen, setFilterOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
   const { requireAuth } = useRequireAuth();
   const { isAuthenticated } = useAuth();
   const { items: myOrganizations, isLoading: isOrganizationsLoading } =
@@ -114,7 +118,22 @@ export function HomeScreen() {
           <Text className="font-display text-[24px] leading-[30px] text-text-primary">
             Etkinlikler
           </Text>
-          <View className="flex-row gap-sm">
+          <View className="flex-row items-center gap-sm">
+            <View className="flex-row items-center gap-1 rounded-full border border-border-default bg-background-secondary p-1">
+              <ViewModeButton
+                icon="list"
+                label="Liste görünümü"
+                active={viewMode === "list"}
+                onPress={() => setViewMode("list")}
+              />
+              <ViewModeButton
+                icon="map-location-dot"
+                label="Harita görünümü"
+                active={viewMode === "map"}
+                onPress={() => setViewMode("map")}
+              />
+            </View>
+
             {hasActiveFilters ? (
               <Pressable
                 accessibilityRole="button"
@@ -222,6 +241,11 @@ export function HomeScreen() {
                 : "Bu filtrelere uygun yaklaşan etkinlik yok."}
           </Text>
         </View>
+      ) : viewMode === "map" ? (
+        <EventsMap
+          events={events}
+          onOpenEvent={(eventId) => router.push(`/events/${eventId}`)}
+        />
       ) : (
         <View className="gap-lg">
           {events.map((event, index) => (
@@ -248,5 +272,35 @@ export function HomeScreen() {
         organizations={isOrganizations ? approvedOrganizations : []}
       />
     </TabPage>
+  );
+}
+
+function ViewModeButton({
+  icon,
+  label,
+  active,
+  onPress,
+}: {
+  icon: "list" | "map-location-dot";
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ selected: active }}
+      onPress={onPress}
+      className={`h-9 w-9 items-center justify-center rounded-full active:opacity-80 ${
+        active ? "bg-brand-primary" : ""
+      }`}
+    >
+      <FontAwesome6
+        name={icon}
+        size={14}
+        color={active ? themeColors.text.onPrimary : themeColors.text.secondary}
+      />
+    </Pressable>
   );
 }

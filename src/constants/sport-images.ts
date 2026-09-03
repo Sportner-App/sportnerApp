@@ -1,26 +1,17 @@
 import type { ImageSourcePropType } from "react-native";
 
-import { sportKeyForSlug, type SportAccentName } from "./theme";
+export const FALLBACK_SPORT_IMAGE: ImageSourcePropType = require("../../assets/images/sports/fallback.png");
 
-const SPORT_IMAGE_BY_KEY = {
-  basketball: require("../../assets/images/sports/basketball.png"),
-  football: require("../../assets/images/sports/football.png"),
-  volleyball: require("../../assets/images/sports/volleyball.png"),
-  running: require("../../assets/images/sports/running.png"),
-} as const satisfies Partial<Record<SportAccentName, ImageSourcePropType>>;
-
-export const SPORT_IMAGES = SPORT_IMAGE_BY_KEY;
-
-export type SportImageKey = keyof typeof SPORT_IMAGE_BY_KEY;
-
-export function sportImageForSlug(
-  slug: string | null | undefined,
-): ImageSourcePropType | null {
-  const key = sportKeyForSlug(slug);
-
-  if (!key || !(key in SPORT_IMAGE_BY_KEY)) {
-    return null;
+/**
+ * Etkinlik/spor fotoğrafı: backend'in yüklediği kapak görseli varsa onu,
+ * yoksa genel fallback görselini kullanır.
+ */
+export function resolveEventPhoto(
+  coverImageUrl?: string | null,
+): ImageSourcePropType {
+  if (coverImageUrl) {
+    return { uri: coverImageUrl };
   }
 
-  return SPORT_IMAGE_BY_KEY[key as SportImageKey];
+  return FALLBACK_SPORT_IMAGE;
 }

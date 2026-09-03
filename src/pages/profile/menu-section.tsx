@@ -3,11 +3,7 @@ import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { Button } from "@/components";
-import {
-  PROFILE_COPY,
-  PROFILE_MENU_GROUPS,
-  PROFILE_SOCIAL_ACTIONS,
-} from "@/constants/profile";
+import { PROFILE_COPY, PROFILE_MENU_GROUPS } from "@/constants/profile";
 
 type MenuSectionProps = {
   onItemPress: (key: string) => void;
@@ -25,31 +21,6 @@ export function MenuSection({
       entering={FadeInDown.duration(420).delay(140)}
       className="gap-7"
     >
-      <View className="gap-3">
-        <Text className="font-display text-lg text-text-primary">
-          {PROFILE_COPY.socialTitle}
-        </Text>
-        <View className="flex-row rounded-[22px] border border-border-default bg-surface-primary px-1 py-3">
-          {PROFILE_SOCIAL_ACTIONS.map((item) => (
-            <Pressable
-              key={item.key}
-              onPress={() => onItemPress(item.key)}
-              className="flex-1 items-center gap-2 py-1 active:opacity-65"
-            >
-              <View className="h-9 w-9 items-center justify-center rounded-full bg-background-secondary">
-                <FontAwesome6 name={item.icon} size={12} color="#ccff00" />
-              </View>
-              <Text
-                numberOfLines={1}
-                className="font-body text-[9px] font-semibold text-text-secondary"
-              >
-                {item.label}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      </View>
-
       {PROFILE_MENU_GROUPS.map((group) => (
         <View key={group.key} className="gap-3">
           <Text className="font-display text-lg text-text-primary">

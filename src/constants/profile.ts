@@ -19,8 +19,9 @@ export const PROFILE_SOCIAL_ACTIONS = PROFILE_SOCIAL_ACTION_ITEMS.filter(
 export const PROFILE_MENU_GROUPS: ProfileMenuGroup[] = [
   {
     key: "account",
-    title: "Hesap",
+    title: "Ayarlar",
     items: [
+      { key: "edit", label: "Profili düzenle", icon: "user-pen" },
       { key: "notifications", label: "Bildirimler", icon: "bell" },
       {
         key: "notification-settings",

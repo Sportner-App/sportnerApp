@@ -16,7 +16,7 @@ import Svg, {
 } from "react-native-svg";
 
 import { SKILL_LEVEL_LABELS, skillKeyFromCode } from "@/constants/profile";
-import { sportImageForSlug } from "@/constants/sport-images";
+import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
 import {
   radius,
   shadows,
@@ -72,7 +72,7 @@ export function EventCard({
   const title = event.title.trim() || "Etkinlik";
   const place = event.location.trim();
   const showPlace = place.length > 0 && place !== "Konum yok";
-  const photo = sportImageForSlug(event.sport);
+  const photo = resolveEventPhoto(event.sportCoverImageUrl);
   const accent = sportAccentToken(event.sport);
   const sportColor = accent?.accent ?? themeColors.text.secondary;
   const sportSoft = accent?.soft ?? themeColors.surface.secondary;
@@ -143,9 +143,6 @@ export function EventCard({
           <View pointerEvents="none" style={StyleSheet.absoluteFill}>
             <SportPhoto
               image={photo}
-              icon={event.sportIcon}
-              accent={sportColor}
-              soft={sportSoft}
               width={cardSize.width}
               height={cardSize.height}
             />
@@ -412,52 +409,33 @@ function MistOverlay({
 
 function SportPhoto({
   image,
-  icon,
-  accent,
-  soft,
   width,
   height,
 }: {
-  image: ReturnType<typeof sportImageForSlug>;
-  icon: IconName;
-  accent: string;
-  soft: string;
+  image: ReturnType<typeof resolveEventPhoto>;
   width: number;
   height: number;
 }) {
-  if (image) {
-    if (width <= 0 || height <= 0) {
-      return null;
-    }
+  const [failed, setFailed] = useState(false);
 
-    return (
-      <Image
-        source={image}
-        resizeMode="cover"
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width,
-          height,
-          backgroundColor: "transparent",
-        }}
-      />
-    );
+  if (width <= 0 || height <= 0) {
+    return null;
   }
 
   return (
-    <View
-      className="items-center justify-center"
-      style={[StyleSheet.absoluteFill, { backgroundColor: soft }]}
-    >
-      <View
-        pointerEvents="none"
-        className="absolute -right-8 -top-10 h-40 w-40 rounded-full opacity-35"
-        style={{ backgroundColor: accent }}
-      />
-      <FontAwesome6 name={icon} size={40} color={accent} />
-    </View>
+    <Image
+      source={failed ? FALLBACK_SPORT_IMAGE : image}
+      resizeMode="cover"
+      onError={() => setFailed(true)}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width,
+        height,
+        backgroundColor: "transparent",
+      }}
+    />
   );
 }
 

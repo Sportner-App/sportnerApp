@@ -8,7 +8,6 @@ import QRCode from "react-native-qrcode-svg";
 import ViewShot, { captureRef } from "react-native-view-shot";
 
 import { BottomSheet } from "@/components";
-import { sportImageForSlug } from "@/constants/sport-images";
 import { sportAccentToken, themeColors } from "@/constants/theme";
 import { useToast } from "@/contexts";
 import type { EventDetail } from "@/types/events";
@@ -205,7 +204,6 @@ function EventShareArtwork({
   const width = 360;
   const height = format === "story" ? 640 : 450;
   const accent = sportAccentToken(event.sport)?.accent ?? "#ccff00";
-  const photo = sportImageForSlug(event.sport);
   const capacity = event.maxParticipants
     ? `${event.participantCount}/${event.maxParticipants} katılımcı`
     : `${event.participantCount} katılımcı`;
@@ -228,25 +226,23 @@ function EventShareArtwork({
         justifyContent: "space-between",
       }}
     >
-      {photo ? (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            width: format === "story" ? 255 : 220,
-            height: format === "story" ? 260 : 220,
-            opacity: 0.22,
-            transform: [{ rotate: "8deg" }],
-          }}
-        >
-          <FontAwesome6
-            name={event.sportIcon}
-            size={format === "story" ? 190 : 150}
-            color={accent}
-          />
-        </View>
-      ) : null}
+      <View
+        style={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          width: format === "story" ? 255 : 220,
+          height: format === "story" ? 260 : 220,
+          opacity: 0.22,
+          transform: [{ rotate: "8deg" }],
+        }}
+      >
+        <FontAwesome6
+          name={event.sportIcon}
+          size={format === "story" ? 190 : 150}
+          color={accent}
+        />
+      </View>
 
       <View style={{ gap: 14 }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>

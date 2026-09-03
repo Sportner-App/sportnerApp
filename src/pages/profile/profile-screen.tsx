@@ -1,7 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
 
-import { Button, SportLoader, TabPage } from "@/components";
+import { Button, SegmentedTabs, SportLoader, TabPage } from "@/components";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 
@@ -13,10 +13,20 @@ import type { ApiReview } from "@/types/reviews";
 
 import { OrganizationsSection } from "../organizations/organizations-section";
 import { MenuSection } from "./menu-section";
+import { ProfileAboutSection } from "./profile-about-section";
 import { ProfileHero } from "./profile-hero";
+import { ProfileIntroVideo } from "./profile-intro-video";
 import { ReviewsSection } from "./reviews-section";
 import { SportsSection } from "./sports-section";
 import { StatsSection } from "./stats-section";
+
+type ProfileTab = "activity" | "reviews" | "settings";
+
+const PROFILE_TABS = [
+  { key: "activity", label: "Aktivite" },
+  { key: "reviews", label: "Yorumlar" },
+  { key: "settings", label: "Ayarlar" },
+] satisfies { key: ProfileTab; label: string }[];
 
 export function ProfileScreen() {
   const router = useRouter();
@@ -33,6 +43,7 @@ export function ProfileScreen() {
   } = useProfile();
   const [reviews, setReviews] = useState<ApiReview[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<ProfileTab>("activity");
 
   useEffect(() => {
     if (!profile?.userId) {
@@ -101,23 +112,57 @@ export function ProfileScreen() {
             profile={profile}
             onEdit={() => router.push("/profile/edit")}
           />
-          <StatsSection statistics={profile.statistics} />
-          <OrganizationsSection
-            onPressList={() => router.push("/organizations")}
-            onPressItem={(organizationId) =>
-              router.push(`/organizations/${organizationId}`)
-            }
+          <ProfileAboutSection
+            bio={profile.bio}
+            onFriendsPress={() => router.push("/friends")}
+            onBadgesPress={() => router.push("/badges")}
           />
           <SportsSection
             profile={profile}
             onPress={() => router.push("/profile/sports")}
+            onAdd={() => router.push("/profile/add-sport")}
           />
-          <ReviewsSection reviews={reviews} isLoading={reviewsLoading} />
-          <MenuSection
-            onItemPress={openMenu}
-            onLogout={logout}
-            isSigningOut={isSigningOut}
+          <SegmentedTabs
+            options={PROFILE_TABS}
+            value={activeTab}
+            onChange={setActiveTab}
           />
+
+          {activeTab === "activity" ? (
+            <>
+              <StatsSection statistics={profile.statistics} />
+              {profile.introVideoUrl ? (
+                <ProfileIntroVideo uri={profile.introVideoUrl} />
+              ) : null}
+              <OrganizationsSection
+                onPressList={() => router.push("/organizations")}
+                onPressItem={(organizationId) =>
+                  router.push(`/organizations/${organizationId}`)
+                }
+              />
+            </>
+          ) : null}
+
+          {activeTab === "reviews" ? (
+            <ReviewsSection
+              reviews={reviews}
+              isLoading={reviewsLoading}
+              averageRating={
+                profile.statistics?.averageRating ?? profile.averageRating
+              }
+              totalReviews={
+                profile.statistics?.totalReviews ?? profile.reviewCount
+              }
+            />
+          ) : null}
+
+          {activeTab === "settings" ? (
+            <MenuSection
+              onItemPress={openMenu}
+              onLogout={logout}
+              isSigningOut={isSigningOut}
+            />
+          ) : null}
         </>
       )}
     </TabPage>

@@ -20,6 +20,26 @@ export async function addMySport(payload: {
   return response.data ?? [];
 }
 
+export async function addMySports(
+  sports: Array<{
+    sportId: string;
+    skillLevel: number;
+    isPrimary?: boolean;
+  }>,
+): Promise<UserSportResponse[]> {
+  const response = await apiClient.post<UserSportResponse[]>(
+    "/api/me/sports/batch",
+    {
+      sports: sports.map((sport) => ({
+        sportId: sport.sportId,
+        skillLevel: sport.skillLevel,
+        isPrimary: sport.isPrimary ?? false,
+      })),
+    },
+  );
+  return response.data ?? [];
+}
+
 /** Idempotent: 409 AlreadyAdded is treated as success. */
 export async function addMySportSafe(payload: {
   sportId: string;

@@ -4,11 +4,7 @@ import type { IconName } from "./components";
 export type SkillLevelCode = 0 | 1 | 2 | 3 | 4;
 
 export type SkillLevelKey =
-  | "beginner"
-  | "intermediate"
-  | "advanced"
-  | "expert"
-  | "professional";
+  "beginner" | "intermediate" | "advanced" | "expert" | "professional";
 
 /** API: ProfileSportResponse */
 export type ProfileSport = {
@@ -57,7 +53,7 @@ export type ApiMyProfile = {
   reviewCount: number;
   isProfilePublic: boolean;
   usernameChangedAt: string;
-  usernameChangeAvailableAt: string;
+  usernameChangeAvailableAt: string | null;
   sports: ProfileSport[];
   statistics: ProfileStatistics | null;
 };
@@ -86,6 +82,8 @@ export type UserProfile = {
   firstName: string;
   lastName: string | null;
   fullName: string;
+  gender: number | null;
+  birthDate: string | null;
   bio: string | null;
   city: string | null;
   avatarUrl: string | null;
@@ -93,6 +91,8 @@ export type UserProfile = {
   averageRating: number;
   reviewCount: number;
   isProfilePublic: boolean;
+  usernameChangedAt: string;
+  usernameChangeAvailableAt: string | null;
   sports: ProfileSport[];
   statistics: ProfileStatistics | null;
   friendship: ApiProfileFriendship | null;
