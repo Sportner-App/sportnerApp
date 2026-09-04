@@ -74,6 +74,7 @@ export function OnboardingScreen() {
           >
             <MediaFields
               avatar={form.avatar}
+              existingAvatarUrl={form.existingAvatarUrl}
               video={form.video}
               onPickAvatar={() => {
                 void (async () => {
@@ -89,7 +90,9 @@ export function OnboardingScreen() {
             />
             <SelectField
               label="Şehir"
-              placeholder={form.isCitiesLoading ? "Şehirler yükleniyor..." : "Şehir seç"}
+              placeholder={
+                form.isCitiesLoading ? "Şehirler yükleniyor..." : "Şehir seç"
+              }
               icon="location-dot"
               options={form.cityOptions}
               value={form.city}

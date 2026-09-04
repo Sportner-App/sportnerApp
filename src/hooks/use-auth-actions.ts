@@ -1,6 +1,13 @@
 import { useMemo } from "react";
 
-import { login, register, signOut } from "@/services/auth-service";
+import {
+  login,
+  register,
+  signInWithApple,
+  signInWithGoogle,
+  signOut,
+  completeExternalRegistration,
+} from "@/services/auth-service";
 import type { AuthActions } from "@/types/auth";
 
 export function useAuthActions(): AuthActions {
@@ -9,6 +16,9 @@ export function useAuthActions(): AuthActions {
       login,
       register,
       signOut,
+      signInWithGoogle,
+      signInWithApple,
+      completeExternalRegistration,
     }),
     [],
   );

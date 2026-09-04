@@ -6,6 +6,7 @@ import type { PickedMedia } from "@/utils/media-picker";
 
 type MediaFieldsProps = {
   avatar: PickedMedia | null;
+  existingAvatarUrl?: string | null;
   video?: PickedMedia | null;
   onPickAvatar: () => void;
   onPickVideo?: () => void;
@@ -16,6 +17,7 @@ type MediaFieldsProps = {
 
 export function MediaFields({
   avatar,
+  existingAvatarUrl,
   video,
   onPickAvatar,
   onPickVideo,
@@ -23,11 +25,14 @@ export function MediaFields({
   onClearVideo,
   showVideo = true,
 }: MediaFieldsProps) {
+  const avatarUri = avatar?.uri ?? existingAvatarUrl;
+  const hasExistingAvatar = Boolean(existingAvatarUrl && !avatar);
+
   return (
     <View className="gap-4">
       <View className="items-center gap-2">
         <Avatar
-          uri={avatar?.uri}
+          uri={avatarUri}
           name="Profil"
           size={96}
           fallbackIcon="camera"
@@ -38,12 +43,21 @@ export function MediaFields({
         />
         <Pressable onPress={onPickAvatar} hitSlop={8}>
           <Text className="font-body text-xs text-brand-primary">
-            {avatar ? "Fotoğrafı değiştir" : "Profil fotoğrafı ekle (zorunlu)"}
+            {avatarUri
+              ? "Fotoğrafı değiştir"
+              : "Profil fotoğrafı ekle (zorunlu)"}
           </Text>
         </Pressable>
+        {hasExistingAvatar ? (
+          <Text className="font-body text-center text-xs text-brand-neutral">
+            Google profil fotoğrafın hazır. İstersen değiştirebilirsin.
+          </Text>
+        ) : null}
         {avatar && onClearAvatar ? (
           <Pressable onPress={onClearAvatar} hitSlop={8}>
-            <Text className="font-body text-xs text-brand-neutral">Kaldır</Text>
+            <Text className="font-body text-xs text-brand-neutral">
+              {existingAvatarUrl ? "Google fotoğrafına dön" : "Kaldır"}
+            </Text>
           </Pressable>
         ) : null}
       </View>

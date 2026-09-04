@@ -28,6 +28,28 @@ export type AuthenticationResponse = {
   isOnboardingCompleted: boolean;
 };
 
+export type ExternalRegistration = {
+  registrationToken: string;
+  registrationTokenExpiresAt: string;
+  suggestedUsername: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  profileImageUrl?: string;
+};
+
+export type ExternalSignInResponse = {
+  requiresRegistration: boolean;
+  authentication: AuthenticationResponse | null;
+  registrationToken: string | null;
+  registrationTokenExpiresAt: string | null;
+  suggestedUsername: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  profileImageUrl: string | null;
+};
+
 export type AuthError = {
   message: string;
 };
@@ -57,6 +79,21 @@ export type AuthSession = {
 export type AuthResult =
   { data: AuthSession; error: null } | { data: null; error: AuthError };
 
+export type ExternalAuthResult =
+  | { data: AuthSession; registration: null; error: null }
+  | { data: null; registration: ExternalRegistration; error: null }
+  | { data: null; registration: null; error: AuthError };
+
+export type CompleteExternalRegistrationPayload = {
+  registrationToken: string;
+  username: string;
+  firstName: string;
+  lastName?: string;
+  birthDate: string;
+  gender?: number;
+  profileImageUrl?: string;
+};
+
 export type StoredSession = {
   access_token: string;
   refresh_token?: string;
@@ -76,6 +113,12 @@ export type AuthActions = {
   login: (payload: AuthCredentials) => Promise<AuthResult>;
   register: (payload: RegisterPayload) => Promise<AuthResult>;
   signOut: () => Promise<AuthActionResult>;
+  /** Resolves to null when the user cancels the native sign-in flow. */
+  signInWithGoogle: () => Promise<ExternalAuthResult | null>;
+  signInWithApple: () => Promise<ExternalAuthResult | null>;
+  completeExternalRegistration: (
+    payload: CompleteExternalRegistrationPayload,
+  ) => Promise<AuthResult>;
 };
 
 export type AuthContextValue = AuthActions & {

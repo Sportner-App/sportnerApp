@@ -13,4 +13,4 @@ export type OnboardingSportDraft = {
   skillLevel: number;
 };
 
-export type OnboardingStep = "sports" | "details";
+export type OnboardingStep = "identity" | "sports" | "details";

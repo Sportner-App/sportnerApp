@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import * as AppleAuthentication from "expo-apple-authentication";
 import * as Haptics from "expo-haptics";
 import {
   KeyboardAvoidingView,
@@ -25,9 +26,11 @@ import {
 } from "@/components";
 import { AUTH_COPY, AUTH_MODE_OPTIONS, GENDER_OPTIONS } from "@/constants/auth";
 import { useAuthForm } from "@/hooks/use-auth-form";
+import { useSocialAuth } from "@/hooks/use-social-auth";
 import type { AuthMode } from "@/types/auth";
 
 import { AnimatedBackground } from "./animated-background";
+import { SocialRegistrationOverlay } from "./social-registration-overlay";
 
 const cardTransition = LinearTransition.duration(220);
 const SHIFT = 12;
@@ -81,12 +84,21 @@ function authExiting(shift: number) {
 
 export function AuthScreen() {
   const form = useAuthForm();
+  const social = useSocialAuth();
   const copy = AUTH_COPY[form.mode];
   const shift = form.isLogin ? -SHIFT : SHIFT;
   const hasMounted = useRef(false);
+  const [isAppleAvailable, setIsAppleAvailable] = useState(false);
 
   useEffect(() => {
     hasMounted.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS !== "ios") {
+      return;
+    }
+    void AppleAuthentication.isAvailableAsync().then(setIsAppleAvailable);
   }, []);
 
   const handleModeChange = (mode: AuthMode) => {
@@ -100,6 +112,7 @@ export function AuthScreen() {
 
   return (
     <View className="flex-1 bg-background-primary">
+      <SocialRegistrationOverlay social={social} />
       <AnimatedBackground />
 
       <KeyboardAvoidingView
@@ -245,6 +258,36 @@ export function AuthScreen() {
                 ) : null}
               </View>
             </Animated.View>
+
+            <View className="mt-5 flex-row items-center gap-3">
+              <View className="h-px flex-1 bg-border-default" />
+              <Text className="font-body text-xs text-brand-neutral">veya</Text>
+              <View className="h-px flex-1 bg-border-default" />
+            </View>
+
+            <View className="mt-4 gap-3">
+              <Button
+                label="Google ile devam et"
+                variant="secondary"
+                size="lg"
+                isLoading={social.loadingProvider === "google"}
+                disabled={social.loadingProvider !== null}
+                onPress={social.signInWithGoogle}
+              />
+              {isAppleAvailable ? (
+                <AppleAuthentication.AppleAuthenticationButton
+                  buttonType={
+                    AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
+                  }
+                  buttonStyle={
+                    AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
+                  }
+                  cornerRadius={16}
+                  style={{ height: 58 }}
+                  onPress={social.signInWithApple}
+                />
+              ) : null}
+            </View>
           </Animated.View>
 
           <Animated.View

@@ -9,14 +9,20 @@ import {
 } from "@/constants/onboarding";
 import { useSession, useToast } from "@/contexts";
 import { useCities } from "@/hooks/use-cities";
+import { apiClient } from "@/lib/api/client";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
   addMySportSafe,
   completeOnboarding,
+  createMyProfile,
   markLocalOnboardingComplete,
   upsertOnboardingProfileDetails,
 } from "@/services/onboarding-service";
-import { uploadAvatar, uploadIntroVideo } from "@/services/profile-service";
+import {
+  updatePersonalDetails,
+  uploadAvatar,
+  uploadIntroVideo,
+} from "@/services/profile-service";
 import { listSports } from "@/services/sports-service";
 import type { OnboardingSportDraft, OnboardingStep } from "@/types/onboarding";
 import type { Sport } from "@/types/sports";
@@ -28,12 +34,98 @@ import {
   type PickedMedia,
 } from "@/utils/media-picker";
 
+const USERNAME_PATTERN = /^[a-zA-Z0-9._]+$/;
+
+type IdentityFieldErrors = {
+  username?: string;
+  firstName?: string;
+  birthDate?: string;
+};
+
+/** Gender isn't collected on the social-signup identity step; default to "prefer not to say". */
+const DEFAULT_IDENTITY_GENDER = 0;
+
+const TURKISH_CHAR_MAP: Record<string, string> = {
+  ç: "c",
+  ğ: "g",
+  ı: "i",
+  ö: "o",
+  ş: "s",
+  ü: "u",
+};
+
+function suggestUsername(firstName?: string, lastName?: string) {
+  const base = `${firstName ?? ""}${lastName ?? ""}`
+    .toLowerCase()
+    .replace(/[çğıöşü]/g, (char) => TURKISH_CHAR_MAP[char] ?? char)
+    .replace(/[^a-z0-9]/g, "")
+    .slice(0, 20);
+
+  const suffix = Math.floor(1000 + Math.random() * 9000);
+
+  return `${base || "sporcu"}${suffix}`;
+}
+
+function parseBirthDate(value: string): Date | null {
+  const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value.trim());
+  if (!match) return null;
+  const [, dayText, monthText, yearText] = match;
+  const day = Number(dayText);
+  const month = Number(monthText);
+  const year = Number(yearText);
+  const date = new Date(year, month - 1, day);
+  return date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day
+    ? date
+    : null;
+}
+
+function isAllowedBirthDate(date: Date) {
+  const today = new Date();
+  const youngest = new Date(
+    today.getFullYear() - 13,
+    today.getMonth(),
+    today.getDate(),
+  );
+  const oldest = new Date(
+    today.getFullYear() - 120,
+    today.getMonth(),
+    today.getDate(),
+  );
+  return date >= oldest && date <= youngest;
+}
+
+function toApiBirthDate(value: string) {
+  const [day, month, year] = value.trim().split(".");
+  return `${year}-${month}-${day}`;
+}
+
+function formatBirthDateInput(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}.${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4)}`;
+}
+
 export function useOnboarding() {
   const router = useRouter();
   const { refreshSession, user } = useSession();
   const { showToast } = useToast();
 
+  // Username and birth date are completed before a social-auth session is created.
+  // Starting from the sports step also avoids briefly rendering a duplicate identity
+  // screen while the persisted session user is still hydrating.
   const [step, setStep] = useState<OnboardingStep>("sports");
+  const [username, setUsername] = useState(() =>
+    suggestUsername(user?.firstName, user?.lastName),
+  );
+  const [firstName, setFirstName] = useState(user?.firstName ?? "");
+  const [lastName, setLastName] = useState(user?.lastName ?? "");
+  const [birthDateState, setBirthDateState] = useState("");
+  const [identityFieldErrors, setIdentityFieldErrors] =
+    useState<IdentityFieldErrors>({});
+  const [isIdentitySubmitting, setIsIdentitySubmitting] = useState(false);
   const [sports, setSports] = useState<Sport[]>([]);
   const [isSportsLoading, setIsSportsLoading] = useState(true);
   const [selected, setSelected] = useState<OnboardingSportDraft[]>([]);
@@ -210,12 +302,95 @@ export function useOnboarding() {
     setVideo(picked);
   };
 
+  const setBirthDate = (value: string) => {
+    setBirthDateState(formatBirthDateInput(value));
+  };
+
+  const submitIdentity = async () => {
+    if (isIdentitySubmitting) {
+      return;
+    }
+
+    const trimmedUsername = username.trim();
+    const trimmedFirstName = firstName.trim();
+    const trimmedLastName = lastName.trim();
+    const parsedBirthDate = parseBirthDate(birthDateState);
+
+    const errors: IdentityFieldErrors = {};
+
+    if (!trimmedUsername) {
+      errors.username = "Kullanıcı adı gerekli.";
+    } else if (trimmedUsername.length < 3) {
+      errors.username = "Kullanıcı adı en az 3 karakter olmalı.";
+    } else if (trimmedUsername.length > 30) {
+      errors.username = "Kullanıcı adı en fazla 30 karakter olabilir.";
+    } else if (!USERNAME_PATTERN.test(trimmedUsername)) {
+      errors.username =
+        "Kullanıcı adı yalnızca harf, rakam, . ve _ içerebilir.";
+    }
+
+    if (!trimmedFirstName) {
+      errors.firstName = "Ad gerekli.";
+    } else if (trimmedFirstName.length > 50) {
+      errors.firstName = "Ad en fazla 50 karakter olabilir.";
+    }
+
+    if (!birthDateState.trim()) {
+      errors.birthDate = "Doğum tarihi gerekli.";
+    } else if (!parsedBirthDate) {
+      errors.birthDate = "Tarihi GG.AA.YYYY formatında gir.";
+    } else if (!isAllowedBirthDate(parsedBirthDate)) {
+      errors.birthDate = "Yaş 13 ile 120 arasında olmalı.";
+    }
+
+    setIdentityFieldErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
+
+    setIsIdentitySubmitting(true);
+
+    try {
+      const normalizedUsername = trimmedUsername.toLowerCase();
+
+      await createMyProfile({
+        username: normalizedUsername,
+        firstName: trimmedFirstName,
+        lastName: trimmedLastName || null,
+      });
+      await updatePersonalDetails(
+        DEFAULT_IDENTITY_GENDER,
+        toApiBirthDate(birthDateState),
+      );
+
+      const currentUser = await apiClient.getUser();
+      await apiClient.setUser({
+        ...currentUser,
+        username: normalizedUsername,
+        firstName: trimmedFirstName,
+        lastName: trimmedLastName || undefined,
+      });
+      await refreshSession?.();
+
+      setStep("sports");
+    } catch (error) {
+      showToast({
+        type: "error",
+        title: "Kaydedilemedi",
+        description: getApiErrorMessage(error, "Bilgiler kaydedilemedi."),
+      });
+    } finally {
+      setIsIdentitySubmitting(false);
+    }
+  };
+
   const finish = async () => {
     if (!canContinueSports || isSubmitting) {
       return;
     }
 
-    if (!avatar) {
+    if (!avatar && !user?.avatarUrl) {
       showToast({
         type: "error",
         title: "Profil fotoğrafı gerekli",
@@ -246,7 +421,9 @@ export function useOnboarding() {
         lastName: user?.lastName,
       });
 
-      await uploadAvatar(avatar);
+      if (avatar) {
+        await uploadAvatar(avatar);
+      }
 
       if (video) {
         await uploadIntroVideo(video);
@@ -290,6 +467,17 @@ export function useOnboarding() {
   return {
     step,
     setStep,
+    username,
+    setUsername,
+    firstName,
+    setFirstName,
+    lastName,
+    setLastName,
+    identityBirthDate: birthDateState,
+    setIdentityBirthDate: setBirthDate,
+    identityFieldErrors,
+    isIdentitySubmitting,
+    submitIdentity,
     sports,
     filteredSports,
     isSportsLoading,
@@ -312,6 +500,7 @@ export function useOnboarding() {
     bio,
     setBio,
     avatar,
+    existingAvatarUrl: user?.avatarUrl ?? null,
     video,
     chooseAvatar,
     chooseVideo,
@@ -319,7 +508,7 @@ export function useOnboarding() {
     clearVideo: () => setVideo(null),
     isSubmitting,
     canContinueSports,
-    canFinish: canContinueSports && Boolean(avatar),
+    canFinish: canContinueSports && Boolean(avatar || user?.avatarUrl),
     toggleSport,
     setSportSkill,
     goToDetails,

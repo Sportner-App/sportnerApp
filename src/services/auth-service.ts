@@ -1,12 +1,19 @@
+import * as AppleAuthentication from "expo-apple-authentication";
+import Constants from "expo-constants";
+
 import { apiClient } from "@/lib/api/client";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { clearCurrentDevicePushToken } from "@/services/push-notifications-service";
+import { getMyProfile } from "@/services/profile-service";
 import type {
   AuthActionResult,
   AuthCredentials,
   AuthResult,
   AuthUser,
   AuthenticationResponse,
+  CompleteExternalRegistrationPayload,
+  ExternalAuthResult,
+  ExternalSignInResponse,
   RegisterPayload,
   SessionResult,
 } from "@/types/auth";
@@ -19,8 +26,13 @@ function normalizeUsername(username: string) {
 
 function toAuthUser(
   response: AuthenticationResponse,
-  username: string,
-  names?: { firstName?: string; lastName?: string },
+  username?: string,
+  names?: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    avatarUrl?: string;
+  },
 ): AuthUser {
   const firstName = names?.firstName?.trim();
   const lastName = names?.lastName?.trim();
@@ -32,6 +44,8 @@ function toAuthUser(
     firstName,
     lastName,
     fullName,
+    email: names?.email,
+    avatarUrl: names?.avatarUrl,
     isNewUser: response.isNewUser,
     isOnboarded: response.isOnboardingCompleted,
   };
@@ -112,6 +126,279 @@ async function persistAuthSession(
     },
     error: null,
   };
+}
+
+async function persistExternalAuthSession(
+  body: AuthenticationResponse,
+  hints?: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    avatarUrl?: string;
+  },
+): Promise<AuthResult> {
+  if (!body?.accessToken || !body?.userId || !body?.refreshToken) {
+    throw new Error("API geçersiz response döndü: token veya userId eksik");
+  }
+
+  const user = toAuthUser(body, undefined, hints);
+
+  await apiClient.setSession({
+    accessToken: body.accessToken,
+    refreshToken: body.refreshToken,
+    user,
+  });
+
+  // Social auth responses do not carry profile fields. A profile exists both after external
+  // registration and for returning users, even while sports onboarding is still incomplete.
+  try {
+    const profile = await getMyProfile();
+    const mergedUser: AuthUser = {
+      ...user,
+      username: profile.username,
+      firstName: profile.firstName,
+      lastName: profile.lastName ?? undefined,
+      fullName:
+        [profile.firstName, profile.lastName].filter(Boolean).join(" ") ||
+        undefined,
+      avatarUrl: profile.avatarUrl ?? undefined,
+    };
+    await apiClient.setUser(mergedUser);
+
+    return {
+      data: {
+        user: mergedUser,
+        session: {
+          access_token: body.accessToken,
+          refresh_token: body.refreshToken,
+        },
+        isNewUser: body.isNewUser,
+        isOnboardingCompleted: body.isOnboardingCompleted,
+      },
+      error: null,
+    };
+  } catch {
+    // Best-effort compatibility for legacy profile-less accounts.
+  }
+
+  return {
+    data: {
+      user,
+      session: {
+        access_token: body.accessToken,
+        refresh_token: body.refreshToken,
+      },
+      isNewUser: body.isNewUser,
+      isOnboardingCompleted: body.isOnboardingCompleted,
+    },
+    error: null,
+  };
+}
+
+function toExternalRegistration(body: ExternalSignInResponse) {
+  if (
+    !body.registrationToken ||
+    !body.registrationTokenExpiresAt ||
+    !body.suggestedUsername
+  ) {
+    throw new Error("API geçersiz sosyal kayıt bilgisi döndürdü.");
+  }
+
+  return {
+    registrationToken: body.registrationToken,
+    registrationTokenExpiresAt: body.registrationTokenExpiresAt,
+    suggestedUsername: body.suggestedUsername,
+    firstName: body.firstName ?? undefined,
+    lastName: body.lastName ?? undefined,
+    email: body.email ?? undefined,
+    profileImageUrl: body.profileImageUrl ?? undefined,
+  };
+}
+
+async function handleExternalSignInResponse(
+  body: ExternalSignInResponse,
+): Promise<ExternalAuthResult> {
+  if (body.requiresRegistration) {
+    return {
+      data: null,
+      registration: toExternalRegistration(body),
+      error: null,
+    };
+  }
+
+  if (!body.authentication) {
+    throw new Error("API geçersiz sosyal giriş cevabı döndürdü.");
+  }
+
+  const result = await persistExternalAuthSession(body.authentication);
+  return result.error
+    ? { data: null, registration: null, error: result.error }
+    : { data: result.data, registration: null, error: null };
+}
+
+let isGoogleSignInConfigured = false;
+
+type GoogleSignInModule =
+  typeof import("@react-native-google-signin/google-signin");
+
+function loadGoogleSignInModule(): GoogleSignInModule {
+  try {
+    // Keep this native dependency lazy: Expo Go or an outdated development binary must
+    // not crash the entire application before the user even taps Google sign-in.
+    return require("@react-native-google-signin/google-signin") as GoogleSignInModule;
+  } catch {
+    throw new Error(
+      "Google ile giriş bu uygulama sürümünde bulunmuyor. Native uygulamayı yeniden derleyip yükle.",
+    );
+  }
+}
+
+function ensureGoogleSignInConfigured(
+  GoogleSignin: GoogleSignInModule["GoogleSignin"],
+) {
+  if (isGoogleSignInConfigured) {
+    return;
+  }
+
+  const auth = Constants.expoConfig?.extra?.auth as
+    { googleWebClientId?: string; googleIosClientId?: string } | undefined;
+
+  GoogleSignin.configure({
+    webClientId: auth?.googleWebClientId,
+    iosClientId: auth?.googleIosClientId,
+  });
+  isGoogleSignInConfigured = true;
+}
+
+/**
+ * Native Google sign-in → POST /api/auth/google.
+ * Returns null when the user cancels (not an error — nothing to show).
+ */
+export async function signInWithGoogle(): Promise<ExternalAuthResult | null> {
+  try {
+    const { GoogleSignin, isSuccessResponse } = loadGoogleSignInModule();
+    ensureGoogleSignInConfigured(GoogleSignin);
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    const response = await GoogleSignin.signIn();
+
+    if (!isSuccessResponse(response)) {
+      return null;
+    }
+
+    const idToken = response.data.idToken;
+    if (!idToken) {
+      return {
+        data: null,
+        registration: null,
+        error: { message: "Google kimlik bilgisi alınamadı." },
+      };
+    }
+
+    const apiResponse = await apiClient.post<ExternalSignInResponse>(
+      "/api/auth/google",
+      { idToken },
+    );
+
+    return handleExternalSignInResponse(apiResponse.data);
+  } catch (error) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "SIGN_IN_CANCELLED"
+    ) {
+      return null;
+    }
+
+    return {
+      data: null,
+      registration: null,
+      error: {
+        message: getApiErrorMessage(error, "Google ile giriş başarısız"),
+      },
+    };
+  }
+}
+
+/**
+ * Native Apple sign-in → POST /api/auth/apple.
+ * Returns null when the user cancels (not an error — nothing to show).
+ */
+export async function signInWithApple(): Promise<ExternalAuthResult | null> {
+  try {
+    const credential = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+    });
+
+    if (!credential.identityToken) {
+      return {
+        data: null,
+        registration: null,
+        error: { message: "Apple kimlik bilgisi alınamadı." },
+      };
+    }
+
+    const apiResponse = await apiClient.post<ExternalSignInResponse>(
+      "/api/auth/apple",
+      {
+        identityToken: credential.identityToken,
+        firstName: credential.fullName?.givenName ?? undefined,
+        lastName: credential.fullName?.familyName ?? undefined,
+      },
+    );
+
+    return handleExternalSignInResponse(apiResponse.data);
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      "code" in error &&
+      (error as { code?: string }).code === "ERR_REQUEST_CANCELED"
+    ) {
+      return null;
+    }
+
+    return {
+      data: null,
+      registration: null,
+      error: {
+        message: getApiErrorMessage(error, "Apple ile giriş başarısız"),
+      },
+    };
+  }
+}
+
+export async function completeExternalRegistration(
+  payload: CompleteExternalRegistrationPayload,
+): Promise<AuthResult> {
+  try {
+    const response = await apiClient.post<AuthenticationResponse>(
+      "/api/auth/external/complete",
+      {
+        registrationToken: payload.registrationToken,
+        username: normalizeUsername(payload.username),
+        firstName: payload.firstName.trim(),
+        lastName: payload.lastName?.trim() || null,
+        birthDate: payload.birthDate,
+        gender: payload.gender ?? 0,
+      },
+    );
+
+    return persistExternalAuthSession(response.data, {
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      avatarUrl: payload.profileImageUrl,
+    });
+  } catch (error) {
+    return {
+      data: null,
+      error: {
+        message: getApiErrorMessage(error, "Sosyal kayıt tamamlanamadı"),
+      },
+    };
+  }
 }
 
 /**
