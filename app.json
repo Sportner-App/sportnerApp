@@ -11,6 +11,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.yagizerdenler.sportner",
+      "buildNumber": "14",
       "infoPlist": {
         "CFBundleDisplayName": "Sportner",
         "ITSAppUsesNonExemptEncryption": false,
