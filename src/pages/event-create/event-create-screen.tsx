@@ -103,6 +103,7 @@ export function EventCreateScreen() {
     isSubmitting,
     isSportsLoading,
     sportOptions,
+    sportGroups,
     friends,
     isFriendsLoading,
     guests,
@@ -249,7 +250,11 @@ export function EventCreateScreen() {
                   key: sport.key,
                   label: sport.label,
                   icon: sport.icon,
+                  description: sport.description,
+                  groupKey: sport.groupKey,
                 }))}
+                groups={sportGroups}
+                allGroupLabel="Tüm kategoriler"
                 disabled={isSportsLoading || isSubmitting}
               />
             </View>
@@ -333,7 +338,8 @@ export function EventCreateScreen() {
                       Tekrarlayan etkinlik
                     </Text>
                     <Text className="mt-1 font-body text-xs leading-5 text-text-tertiary">
-                      Aynı etkinliği seçtiğin haftalarda otomatik oluştur.
+                      Şimdi yalnızca ilk etkinlik yayınlanır; sıradaki her
+                      etkinlik bir önceki bittiğinde otomatik açılır.
                     </Text>
                   </View>
                   <View
@@ -381,7 +387,7 @@ export function EventCreateScreen() {
                           Tekrar sayısı
                         </Text>
                         <Text className="mt-1 font-body text-xs text-text-tertiary">
-                          İlk etkinlik dahil
+                          İlk etkinlik dahil, sırayla açılır
                         </Text>
                       </View>
                       <View className="flex-row items-center gap-3">

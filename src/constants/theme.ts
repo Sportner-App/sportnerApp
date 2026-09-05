@@ -22,17 +22,70 @@ export type {
   TextStyleToken,
 } from "./design-tokens";
 
+/**
+ * Katalog slug'ı → aksan tokeni. Hem güncel Türkçe slug'lar hem de seed'deki
+ * legacy İngilizce slug'lar eşlenir; katalogdaki 34 branşın tamamı kapsanır.
+ */
 const SPORT_ACCENT_BY_SLUG: Record<string, SportAccentName> = {
-  basketball: "basketball",
+  // Takım sporları
   basketbol: "basketball",
-  football: "football",
+  basketball: "basketball",
   futbol: "football",
-  running: "running",
-  kosu: "running",
-  volleyball: "volleyball",
+  football: "football",
   voleybol: "volleyball",
-  tennis: "tennis",
+  volleyball: "volleyball",
+  hentbol: "handball",
+  "plaj-voleybolu": "beachVolleyball",
+  rugby: "rugby",
+
+  // Raket sporları
   tenis: "tennis",
+  tennis: "tennis",
+  "masa-tenisi": "tableTennis",
+  "table-tennis": "tableTennis",
+  badminton: "badminton",
+  padel: "padel",
+  pickleball: "pickleball",
+  squash: "squash",
+
+  // Fitness & kondisyon
+  fitness: "fitness",
+  crossfit: "crossfit",
+  pilates: "pilates",
+  yoga: "yoga",
+  dans: "dance",
+
+  // Dövüş sporları
+  boks: "boxing",
+  boxing: "boxing",
+  kickboks: "kickboxing",
+  judo: "judo",
+  "jiu-jitsu": "jiuJitsu",
+  karate: "karate",
+
+  // Outdoor & dayanıklılık
+  kosu: "running",
+  running: "running",
+  bisiklet: "cycling",
+  cycling: "cycling",
+  "doga-yuruyusu": "hiking",
+  hiking: "hiking",
+  tirmanis: "climbing",
+
+  // Su sporları
+  yuzme: "swimming",
+  swimming: "swimming",
+  dalis: "diving",
+  yelken: "sailing",
+
+  // Kış sporları
+  kayak: "ski",
+  snowboard: "snowboard",
+
+  // Hedef sporları
+  bowling: "bowling",
+  golf: "golf",
+  okculuk: "archery",
 };
 
 export const palette = tokens.palette;

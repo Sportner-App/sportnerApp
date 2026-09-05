@@ -12,6 +12,7 @@ import { addMySports } from "@/services/onboarding-service";
 import { listSports } from "@/services/sports-service";
 import type { Sport } from "@/types/sports";
 import { sportIconForSlug } from "@/utils/events";
+import { groupSportsByCategory } from "@/utils/sports";
 
 export function AddSportScreen() {
   const router = useRouter();
@@ -41,6 +42,7 @@ export function AddSportScreen() {
   );
   const selectedSports = Object.values(selected);
   const activeSelection = activeSportId ? selected[activeSportId] : undefined;
+  const groupedSports = groupSportsByCategory(filtered);
 
   const toggleSport = (sport: Sport) => {
     if (selected[sport.id]) {
@@ -265,42 +267,59 @@ export function AddSportScreen() {
         </View>
       )}
 
-      <View className="flex-row flex-wrap justify-between gap-y-3">
-        {filtered.slice(0, 20).map((sport) => {
-          const active = Boolean(selected[sport.id]);
-          return (
-            <Pressable
-              key={sport.id}
-              onPress={() => toggleSport(sport)}
-              className={`w-[48.5%] items-center gap-3 rounded-[22px] border px-3 py-5 active:opacity-75 ${
-                active
-                  ? "border-brand-primary bg-brand-primary/10"
-                  : "border-border-default bg-surface-primary"
-              }`}
-            >
-              <View
-                className={`h-12 w-12 items-center justify-center rounded-full ${
-                  active ? "bg-brand-primary" : "bg-background-secondary"
-                }`}
-              >
-                <FontAwesome6
-                  name={sportIconForSlug(sport.slug)}
-                  size={18}
-                  color={active ? "#06111a" : "#ccff00"}
-                />
-              </View>
-              <Text className="text-center font-body text-sm font-semibold text-text-primary">
-                {sport.name}
-              </Text>
-              {active ? (
-                <View className="absolute right-3 top-3">
-                  <FontAwesome6 name="circle-check" size={15} color="#ccff00" />
-                </View>
-              ) : null}
-            </Pressable>
-          );
-        })}
-      </View>
+      {groupedSports.map((group) => (
+        <View key={group.key} className="gap-3">
+          <View className="flex-row items-baseline gap-2 px-1">
+            <Text className="font-body-bold text-[13px] text-text-secondary">
+              {group.label}
+            </Text>
+            <Text className="font-mono text-[10px] text-text-tertiary">
+              {group.sports.length}
+            </Text>
+          </View>
+
+          <View className="flex-row flex-wrap justify-between gap-y-3">
+            {group.sports.map((sport) => {
+              const active = Boolean(selected[sport.id]);
+              return (
+                <Pressable
+                  key={sport.id}
+                  onPress={() => toggleSport(sport)}
+                  className={`w-[48.5%] items-center gap-3 rounded-[22px] border px-3 py-5 active:opacity-75 ${
+                    active
+                      ? "border-brand-primary bg-brand-primary/10"
+                      : "border-border-default bg-surface-primary"
+                  }`}
+                >
+                  <View
+                    className={`h-12 w-12 items-center justify-center rounded-full ${
+                      active ? "bg-brand-primary" : "bg-background-secondary"
+                    }`}
+                  >
+                    <FontAwesome6
+                      name={sportIconForSlug(sport.slug)}
+                      size={18}
+                      color={active ? "#06111a" : "#ccff00"}
+                    />
+                  </View>
+                  <Text className="text-center font-body text-sm font-semibold text-text-primary">
+                    {sport.name}
+                  </Text>
+                  {active ? (
+                    <View className="absolute right-3 top-3">
+                      <FontAwesome6
+                        name="circle-check"
+                        size={15}
+                        color="#ccff00"
+                      />
+                    </View>
+                  ) : null}
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      ))}
 
       {filtered.length === 0 ? (
         <View className="items-center gap-2 rounded-[22px] border border-dashed border-border-strong px-5 py-8">

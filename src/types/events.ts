@@ -260,6 +260,7 @@ export type CreateEventFormValues = {
 
 export type DiscoverEventsParams = {
   sportId?: string;
+  sportCategoryId?: string;
   city?: string;
   lat?: number;
   lng?: number;

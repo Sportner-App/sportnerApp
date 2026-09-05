@@ -79,32 +79,107 @@ const colors = {
   destructive: palette.destructive,
 };
 
+/**
+ * Aksan renginden koyu zemin tonu ve okunabilir metin rengi türetir; böylece
+ * her spor için üç değeri elle yazmak gerekmez.
+ */
+function sportAccent(accent) {
+  const hex = accent.replace("#", "");
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+
+  // Kart zeminine (#06111a) doğru karıştırılmış koyu ton.
+  const mix = (channel, canvas) =>
+    Math.round(channel * 0.18 + canvas * 0.82)
+      .toString(16)
+      .padStart(2, "0");
+
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+  return {
+    accent,
+    soft: `#${mix(r, 6)}${mix(g, 17)}${mix(b, 26)}`,
+    onAccent: luminance > 0.6 ? "#06111a" : "#ffffff",
+  };
+}
+
+/**
+ * Katalogdaki her spor için canlı bir aksan. Renkler kategori ailelerine göre
+ * seçildi; tokensız kalan bir spor gri fallback'e düşüp rozetlerde soluk
+ * göründüğü için katalogdaki 34 branşın tamamı burada tanımlı.
+ */
 const sports = {
+  // Takım sporları
   basketball: {
     accent: "#ff6b1a",
     soft: "#3a2016",
     onAccent: "#ffffff",
   },
   football: {
+    // Açık sarı-yeşil zemin: beyaz yazı okunmuyordu, koyu metin kullanılıyor.
     accent: "#9ed900",
     soft: "#253414",
-    onAccent: "#ffffff",
-  },
-  running: {
-    accent: "#42a5ff",
-    soft: "#142d45",
-    onAccent: "#ffffff",
+    onAccent: "#06111a",
   },
   volleyball: {
     accent: "#9a72ff",
     soft: "#2c2148",
     onAccent: "#ffffff",
   },
+  handball: sportAccent("#14b8a6"),
+  beachVolleyball: sportAccent("#fbbf24"),
+  rugby: sportAccent("#dc2626"),
+
+  // Raket sporları
   tennis: {
     accent: "#d7ef32",
     soft: "#303817",
     onAccent: "#06111a",
   },
+  tableTennis: sportAccent("#22d3ee"),
+  badminton: sportAccent("#f472b6"),
+  padel: sportAccent("#6366f1"),
+  pickleball: sportAccent("#d946ef"),
+  squash: sportAccent("#0ea5e9"),
+
+  // Fitness & kondisyon
+  fitness: sportAccent("#a855f7"),
+  crossfit: sportAccent("#f43f5e"),
+  pilates: sportAccent("#fb923c"),
+  yoga: sportAccent("#34d399"),
+  dance: sportAccent("#e879f9"),
+
+  // Dövüş sporları
+  boxing: sportAccent("#ef4444"),
+  kickboxing: sportAccent("#f97316"),
+  judo: sportAccent("#3b82f6"),
+  jiuJitsu: sportAccent("#8b5cf6"),
+  karate: sportAccent("#eab308"),
+
+  // Outdoor & dayanıklılık
+  running: {
+    accent: "#42a5ff",
+    soft: "#142d45",
+    onAccent: "#ffffff",
+  },
+  cycling: sportAccent("#22c55e"),
+  hiking: sportAccent("#84cc16"),
+  climbing: sportAccent("#d97706"),
+
+  // Su sporları
+  swimming: sportAccent("#06b6d4"),
+  diving: sportAccent("#0284c7"),
+  sailing: sportAccent("#38bdf8"),
+
+  // Kış sporları
+  ski: sportAccent("#60a5fa"),
+  snowboard: sportAccent("#a78bfa"),
+
+  // Hedef sporları
+  bowling: sportAccent("#be123c"),
+  golf: sportAccent("#16a34a"),
+  archery: sportAccent("#ca8a04"),
 };
 
 const fonts = {

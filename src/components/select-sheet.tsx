@@ -26,15 +26,20 @@ function normalizeSearch(value: string) {
 function filterOptions<T extends string>(
   options: SelectOption<T>[],
   query: string,
+  groupKey: string | null,
 ) {
   const needle = normalizeSearch(query);
-  if (!needle) {
-    return options;
-  }
 
-  return options.filter((option) =>
-    normalizeSearch(option.label).includes(needle),
-  );
+  return options.filter((option) => {
+    // Grubu olmayan seçenekler (ör. "Tüm sporlar") her zaman görünür kalır.
+    const matchesGroup =
+      groupKey === null || !option.groupKey || option.groupKey === groupKey;
+
+    const matchesQuery =
+      !needle || normalizeSearch(option.label).includes(needle);
+
+    return matchesGroup && matchesQuery;
+  });
 }
 
 export function SelectSheet<T extends string>({
@@ -48,14 +53,18 @@ export function SelectSheet<T extends string>({
   variant = "list",
   searchable = false,
   searchPlaceholder = "Ara…",
+  groups,
+  allGroupLabel = "Tümü",
 }: SelectSheetProps<T>) {
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const [query, setQuery] = useState("");
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [keyboardInset, setKeyboardInset] = useState(0);
 
   useEffect(() => {
     if (!visible) {
       setQuery("");
+      setActiveGroup(null);
       setKeyboardInset(0);
       return;
     }
@@ -89,8 +98,8 @@ export function SelectSheet<T extends string>({
   }, [keyboardInset, searchable, variant, windowHeight]);
 
   const filtered = useMemo(
-    () => filterOptions(options, query),
-    [options, query],
+    () => filterOptions(options, query, activeGroup),
+    [activeGroup, options, query],
   );
 
   const tileWidth = useMemo(() => {
@@ -145,6 +154,33 @@ export function SelectSheet<T extends string>({
         </View>
       ) : null}
 
+      {groups && groups.length > 0 ? (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerClassName="gap-2 pb-3 pr-4"
+        >
+          <GroupChip
+            label={allGroupLabel}
+            isActive={activeGroup === null}
+            onPress={() => setActiveGroup(null)}
+          />
+          {groups.map((group) => (
+            <GroupChip
+              key={group.key}
+              label={group.label}
+              isActive={activeGroup === group.key}
+              onPress={() =>
+                setActiveGroup((current) =>
+                  current === group.key ? null : group.key,
+                )
+              }
+            />
+          ))}
+        </ScrollView>
+      ) : null}
+
       <ScrollView
         style={{ maxHeight: listMaxHeight }}
         showsVerticalScrollIndicator={false}
@@ -194,6 +230,37 @@ export function SelectSheet<T extends string>({
         )}
       </ScrollView>
     </BottomSheet>
+  );
+}
+
+function GroupChip({
+  label,
+  isActive,
+  onPress,
+}: {
+  label: string;
+  isActive: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected: isActive }}
+      onPress={onPress}
+      className={`rounded-full border px-3.5 py-2 active:opacity-80 ${
+        isActive
+          ? "border-brand-primary/50 bg-brand-primary/15"
+          : "border-border-default bg-surface-primary"
+      }`}
+    >
+      <Text
+        className={`font-body text-xs font-semibold ${
+          isActive ? "text-brand-primary" : "text-text-secondary"
+        }`}
+      >
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 

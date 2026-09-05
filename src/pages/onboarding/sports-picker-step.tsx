@@ -15,7 +15,6 @@ import { BottomSheet, Button } from "@/components";
 import {
   ONBOARDING_COPY,
   ONBOARDING_SKILL_OPTIONS,
-  ONBOARDING_SPORT_GROUPS,
 } from "@/constants/onboarding";
 import type { useOnboarding } from "@/hooks/use-onboarding";
 import type { OnboardingSportDraft } from "@/types/onboarding";
@@ -164,23 +163,24 @@ export function SportsPickerStep({ form }: { form: Form }) {
           showsHorizontalScrollIndicator={false}
           contentContainerClassName="gap-2 px-5 pb-3"
         >
-          {ONBOARDING_SPORT_GROUPS.map((group) => {
+          {[
+            { key: "all", label: "Tümü" },
+            ...form.sportCategories.map((category) => ({
+              key: category.id,
+              label: category.name,
+            })),
+          ].map((group) => {
             const active = form.groupKey === group.key;
             return (
               <Pressable
                 key={group.key}
                 onPress={() => form.setGroupKey(group.key)}
-                className={`flex-row items-center gap-2 rounded-full border px-3.5 py-2 active:opacity-80 ${
+                className={`rounded-full border px-3.5 py-2 active:opacity-80 ${
                   active
                     ? "border-brand-primary/50 bg-brand-primary/15"
                     : "border-border-default bg-surface-primary"
                 }`}
               >
-                <FontAwesome6
-                  name={group.icon}
-                  size={11}
-                  color={active ? "#ccff00" : "#94a3b8"}
-                />
                 <Text
                   className={`font-body text-xs font-semibold ${
                     active ? "text-brand-primary" : "text-brand-neutral"

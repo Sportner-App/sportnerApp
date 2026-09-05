@@ -4,10 +4,12 @@ import type {
   PropsWithChildren,
   ReactElement,
   ReactNode,
+  RefObject,
 } from "react";
 import type {
   PressableProps,
   RefreshControlProps,
+  ScrollView,
   StyleProp,
   TextInputProps,
   ViewStyle,
@@ -78,6 +80,14 @@ export type SelectOption<T extends string = string> = {
   label: string;
   description?: string;
   icon?: IconName;
+  /** `SelectSheetGroup.key` ile eşleşir; sheet içi grup filtresinde kullanılır. */
+  groupKey?: string;
+};
+
+/** Sheet içindeki hızlı filtre sekmesi (ör. spor kategorisi). */
+export type SelectSheetGroup = {
+  key: string;
+  label: string;
 };
 
 export type SelectSheetVariant = "list" | "grid";
@@ -93,6 +103,10 @@ export type SelectSheetProps<T extends string = string> = {
   variant?: SelectSheetVariant;
   searchable?: boolean;
   searchPlaceholder?: string;
+  /** Verilirse arama kutusunun altında "Tümü" + grup çipleri gösterilir. */
+  groups?: SelectSheetGroup[];
+  /** Grup çipi seçiliyken "Tümü" çipinin etiketi. */
+  allGroupLabel?: string;
 };
 
 export type SelectFieldProps<T extends string = string> = {
@@ -108,6 +122,8 @@ export type SelectFieldProps<T extends string = string> = {
   sheetVariant?: SelectSheetVariant;
   searchable?: boolean;
   searchPlaceholder?: string;
+  groups?: SelectSheetGroup[];
+  allGroupLabel?: string;
 };
 
 // DatePickerSheet / DateField
@@ -190,4 +206,8 @@ export type AppScreenProps = PropsWithChildren<{
   onEndReached?: () => void;
   /** `onEndReached`'ın kaç piksel önce tetikleneceği (varsayılan 240). */
   onEndReachedThreshold?: number;
+  /** Scroll'u dışarıdan sürmek için (ör. sohbette en alta inmek). */
+  scrollRef?: RefObject<ScrollView | null>;
+  /** İçerik yüksekliği değiştiğinde; layout sonrası scroll için güvenli nokta. */
+  onContentSizeChange?: (width: number, height: number) => void;
 }>;

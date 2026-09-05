@@ -3,9 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { getEvents } from "@/services/events-service";
-import { listSports } from "@/services/sports-service";
 import type { EventSummary } from "@/types/events";
-import type { Sport } from "@/types/sports";
 
 const PAGE_SIZE = 30;
 export const DEFAULT_EVENT_FILTERS: EventListFilters = {
@@ -16,6 +14,7 @@ export const DEFAULT_EVENT_FILTERS: EventListFilters = {
   skillLevel: null,
   isPaid: null,
   organizationId: null,
+  sportId: null,
 };
 
 export type EventListFilters = {
@@ -26,23 +25,32 @@ export type EventListFilters = {
   skillLevel: number | null;
   isPaid: boolean | null;
   organizationId: string | null;
+  /** Tek bir spor branşı (filtre çekmecesinden seçilir). */
+  sportId: string | null;
 };
 
 export type EventFeedScope = "all" | "friends" | "organizations";
 
+/** Listeyi yakından uzağa sıralamak için kullanıcının konumu. */
+export type EventFeedOrigin = {
+  latitude: number;
+  longitude: number;
+} | null;
+
 export function useEvents(
   initialScope: EventFeedScope = "all",
   initialOrganizationId: string | null = null,
+  origin: EventFeedOrigin = null,
 ) {
   const [events, setEvents] = useState<EventSummary[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
   const [hasNext, setHasNext] = useState(false);
-  const [sports, setSports] = useState<Sport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [sportFilter, setSportFilter] = useState("all");
+  /** Chip satırındaki kategori filtresi (kategori id'si; null = Tümü). */
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [scope, setScope] = useState<EventFeedScope>(initialScope);
   const [filters, setFilters] = useState<EventListFilters>({
     ...DEFAULT_EVENT_FILTERS,
@@ -50,19 +58,15 @@ export function useEvents(
   });
   const [error, setError] = useState<string | null>(null);
 
-  const resolveSportId = useCallback(
-    (filterSlug: string, catalog: Sport[]) =>
-      filterSlug === "all"
-        ? undefined
-        : catalog.find((sport) => sport.slug === filterSlug)?.id,
-    [],
-  );
+  // Konum ortam bilgisi: her çağrı yerinde argüman olarak taşımak yerine
+  // ref'ten okunuyor, böylece fetchPage'in imzası ve bağımlılıkları sabit kalır.
+  const originRef = useRef(origin);
+  originRef.current = origin;
 
   const fetchPage = useCallback(
     async (
       mode: "initial" | "refresh" | "more",
-      filterSlug: string,
-      catalog: Sport[],
+      activeCategoryId: string | null,
       nextPage: number,
       activeFilters: EventListFilters,
       activeScope: EventFeedScope,
@@ -77,9 +81,14 @@ export function useEvents(
 
       try {
         setError(null);
+        const activeOrigin = originRef.current;
         const result = await getEvents({
-          sportId: resolveSportId(filterSlug, catalog),
+          sportId: activeFilters.sportId ?? undefined,
+          sportCategoryId: activeCategoryId ?? undefined,
           city: activeFilters.city ?? undefined,
+          // Konum verilirse backend listeyi yakından uzağa sıralar.
+          lat: activeOrigin?.latitude,
+          lng: activeOrigin?.longitude,
           page: nextPage,
           pageSize: PAGE_SIZE,
           minAge:
@@ -120,23 +129,22 @@ export function useEvents(
         setIsLoadingMore(false);
       }
     },
-    [resolveSportId],
+    [],
   );
 
   // Ekran her odaklandığında (ör. etkinlik oluşturma/düzenlemeden geri
   // dönüldüğünde) listeyi arka planda sessizce tazelemek için en güncel
-  // filtre/scope/sport değerlerini ref'lerde tutuyoruz — böylece
+  // filtre/scope/kategori değerlerini ref'lerde tutuyoruz — böylece
   // useFocusEffect yalnızca gerçek focus/blur geçişlerinde tetiklenir,
   // her filtre değişiminde değil (o değişimler zaten kendi fetchPage
   // çağrısını yapıyor).
-  const sportFilterRef = useRef(sportFilter);
+  const categoryFilterRef = useRef(categoryFilter);
   const scopeRef = useRef(scope);
   const filtersRef = useRef(filters);
-  const sportsRef = useRef(sports);
 
   useEffect(() => {
-    sportFilterRef.current = sportFilter;
-  }, [sportFilter]);
+    categoryFilterRef.current = categoryFilter;
+  }, [categoryFilter]);
 
   useEffect(() => {
     scopeRef.current = scope;
@@ -145,10 +153,6 @@ export function useEvents(
   useEffect(() => {
     filtersRef.current = filters;
   }, [filters]);
-
-  useEffect(() => {
-    sportsRef.current = sports;
-  }, [sports]);
 
   const hasLoadedRef = useRef(false);
 
@@ -161,22 +165,9 @@ export function useEvents(
         hasLoadedRef.current = true;
 
         try {
-          let catalog = sportsRef.current;
-
-          if (isFirstLoad) {
-            setIsLoading(true);
-            catalog = await listSports();
-            if (cancelled) {
-              return;
-            }
-            setSports(catalog);
-            sportsRef.current = catalog;
-          }
-
           await fetchPage(
             isFirstLoad ? "initial" : "refresh",
-            sportFilterRef.current,
-            catalog,
+            categoryFilterRef.current,
             1,
             filtersRef.current,
             scopeRef.current,
@@ -197,40 +188,67 @@ export function useEvents(
     }, [fetchPage]),
   );
 
+  // Konum ilk açılışta listeden sonra gelir (izin + GPS ölçümü). Geldiğinde
+  // ilk sayfayı sessizce tazeliyoruz ki sıralama yakından uzağa dönsün.
+  // Anahtarı 3 basamağa yuvarlıyoruz (~100 m): son bilinen konum ile taze
+  // ölçüm arasındaki küçük fark ve GPS titremesi yeniden istek doğurmasın.
+  const originKey = origin
+    ? `${origin.latitude.toFixed(3)},${origin.longitude.toFixed(3)}`
+    : "";
+  const lastOriginKeyRef = useRef(originKey);
+
+  useEffect(() => {
+    if (originKey === lastOriginKeyRef.current) {
+      return;
+    }
+    lastOriginKeyRef.current = originKey;
+
+    if (!hasLoadedRef.current) {
+      return;
+    }
+
+    void fetchPage(
+      "refresh",
+      categoryFilterRef.current,
+      1,
+      filtersRef.current,
+      scopeRef.current,
+    );
+  }, [fetchPage, originKey]);
+
   const refresh = useCallback(() => {
-    void fetchPage("refresh", sportFilter, sports, 1, filters, scope);
-  }, [fetchPage, filters, scope, sportFilter, sports]);
+    void fetchPage("refresh", categoryFilter, 1, filters, scope);
+  }, [categoryFilter, fetchPage, filters, scope]);
 
   const loadMore = useCallback(() => {
     if (!hasNext || isLoadingMore) {
       return;
     }
-    void fetchPage("more", sportFilter, sports, page + 1, filters, scope);
+    void fetchPage("more", categoryFilter, page + 1, filters, scope);
   }, [
+    categoryFilter,
     fetchPage,
     filters,
     hasNext,
     isLoadingMore,
     page,
     scope,
-    sportFilter,
-    sports,
   ]);
 
-  const changeSportFilter = useCallback(
-    (slug: string) => {
-      setSportFilter(slug);
-      void fetchPage("initial", slug, sports, 1, filters, scope);
+  const changeCategoryFilter = useCallback(
+    (nextCategoryId: string | null) => {
+      setCategoryFilter(nextCategoryId);
+      void fetchPage("initial", nextCategoryId, 1, filters, scope);
     },
-    [fetchPage, filters, scope, sports],
+    [fetchPage, filters, scope],
   );
 
   const applyFilters = useCallback(
     (nextFilters: EventListFilters) => {
       setFilters(nextFilters);
-      void fetchPage("initial", sportFilter, sports, 1, nextFilters, scope);
+      void fetchPage("initial", categoryFilter, 1, nextFilters, scope);
     },
-    [fetchPage, scope, sportFilter, sports],
+    [categoryFilter, fetchPage, scope],
   );
 
   const changeScope = useCallback(
@@ -238,16 +256,9 @@ export function useEvents(
       const nextFilters = { ...filters, organizationId: null };
       setScope(nextScope);
       setFilters(nextFilters);
-      void fetchPage(
-        "initial",
-        sportFilter,
-        sports,
-        1,
-        nextFilters,
-        nextScope,
-      );
+      void fetchPage("initial", categoryFilter, 1, nextFilters, nextScope);
     },
-    [fetchPage, filters, sportFilter, sports],
+    [categoryFilter, fetchPage, filters],
   );
 
   return {
@@ -257,8 +268,8 @@ export function useEvents(
     isLoading,
     isRefreshing,
     isLoadingMore,
-    sportFilter,
-    setSportFilter: changeSportFilter,
+    categoryFilter,
+    setCategoryFilter: changeCategoryFilter,
     scope,
     setScope: changeScope,
     filters,

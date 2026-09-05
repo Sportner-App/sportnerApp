@@ -13,7 +13,10 @@ import {
   useEvents,
 } from "@/hooks/use-events";
 import { useMyOrganizations } from "@/hooks/use-organizations";
+import { useSportCatalog } from "@/hooks/use-sport-catalog";
+import { useSportCategories } from "@/hooks/use-sport-categories";
 import { useRequireAuth } from "@/hooks/use-require-auth";
+import { useUserLocation } from "@/hooks/use-user-location";
 import { ORGANIZATION_STATUS } from "@/types/organizations";
 
 import { EventCard } from "./event-card";
@@ -40,21 +43,28 @@ export function HomeScreen() {
   const { isAuthenticated } = useAuth();
   const { items: myOrganizations, isLoading: isOrganizationsLoading } =
     useMyOrganizations(isAuthenticated);
+  const { categories: sportCategories } = useSportCategories();
+  const { sports } = useSportCatalog();
+  const {
+    coordinates: userLocation,
+    status: locationStatus,
+    request: requestLocation,
+  } = useUserLocation();
   const {
     events,
     totalCount,
     isLoading,
     isRefreshing,
     isLoadingMore,
-    sportFilter,
-    setSportFilter,
+    categoryFilter,
+    setCategoryFilter,
     scope,
     setScope,
     filters,
     applyFilters,
     refresh,
     loadMore,
-  } = useEvents(initialScope, initialOrganizationId);
+  } = useEvents(initialScope, initialOrganizationId, userLocation);
 
   const approvedOrganizations = myOrganizations.filter(
     (organization) => organization.status === ORGANIZATION_STATUS.approved,
@@ -95,7 +105,8 @@ export function HomeScreen() {
     filters.gender != null ||
     filters.skillLevel != null ||
     filters.isPaid != null ||
-    filters.organizationId != null;
+    filters.organizationId != null ||
+    filters.sportId != null;
 
   return (
     <TabPage
@@ -216,7 +227,11 @@ export function HomeScreen() {
           </Text>
         </View>
 
-        <SportFilter value={sportFilter} onChange={setSportFilter} />
+        <SportFilter
+          categories={sportCategories}
+          value={categoryFilter}
+          onChange={setCategoryFilter}
+        />
         <Text className="font-mono text-caption text-text-tertiary">
           {totalCount} etkinlik bulundu
         </Text>
@@ -245,6 +260,9 @@ export function HomeScreen() {
         <EventsMap
           events={events}
           onOpenEvent={(eventId) => router.push(`/events/${eventId}`)}
+          userLocation={userLocation}
+          locationStatus={locationStatus}
+          onRequestLocation={() => void requestLocation()}
         />
       ) : (
         <View className="gap-lg">
@@ -270,6 +288,7 @@ export function HomeScreen() {
         onClose={() => setFilterOpen(false)}
         onApply={applyFilters}
         organizations={isOrganizations ? approvedOrganizations : []}
+        sports={sports}
       />
     </TabPage>
   );

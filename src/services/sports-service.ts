@@ -1,5 +1,10 @@
 import { apiClient } from "@/lib/api/client";
-import type { ListSportsParams, Sport, SportsPage } from "@/types/sports";
+import type {
+  ListSportsParams,
+  Sport,
+  SportCategory,
+  SportsPage,
+} from "@/types/sports";
 
 const DEFAULT_PAGE_SIZE = 50;
 
@@ -35,12 +40,21 @@ export async function listSportsPage(
   const response = await apiClient.get<SportsPage | Sport[]>("/api/sports", {
     params: {
       ...(search ? { q: search } : {}),
+      ...(params.categorySlug ? { categorySlug: params.categorySlug } : {}),
       page: params.page ?? 1,
       pageSize: params.pageSize ?? DEFAULT_PAGE_SIZE,
     },
   });
 
   return normalizeSportsPage(response.data);
+}
+
+/** Katalog kategorileri (Takım Sporları, Raket Sporları…). */
+export async function listSportCategories(): Promise<SportCategory[]> {
+  const response = await apiClient.get<SportCategory[]>(
+    "/api/sports/categories",
+  );
+  return response.data ?? [];
 }
 
 /** Convenience: returns only the items (catalog / create-event / home). */

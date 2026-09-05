@@ -30,6 +30,7 @@ import { useSocialAuth } from "@/hooks/use-social-auth";
 import type { AuthMode } from "@/types/auth";
 
 import { AnimatedBackground } from "./animated-background";
+import { SocialAuthButton } from "./social-auth-button";
 import { SocialRegistrationOverlay } from "./social-registration-overlay";
 
 const cardTransition = LinearTransition.duration(220);
@@ -266,24 +267,19 @@ export function AuthScreen() {
             </View>
 
             <View className="mt-4 gap-3">
-              <Button
+              <SocialAuthButton
+                provider="google"
                 label="Google ile devam et"
-                variant="secondary"
-                size="lg"
                 isLoading={social.loadingProvider === "google"}
                 disabled={social.loadingProvider !== null}
                 onPress={social.signInWithGoogle}
               />
               {isAppleAvailable ? (
-                <AppleAuthentication.AppleAuthenticationButton
-                  buttonType={
-                    AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
-                  }
-                  buttonStyle={
-                    AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
-                  }
-                  cornerRadius={16}
-                  style={{ height: 58 }}
+                <SocialAuthButton
+                  provider="apple"
+                  label="Apple ile devam et"
+                  isLoading={social.loadingProvider === "apple"}
+                  disabled={social.loadingProvider !== null}
                   onPress={social.signInWithApple}
                 />
               ) : null}

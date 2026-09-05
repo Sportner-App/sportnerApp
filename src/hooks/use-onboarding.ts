@@ -5,7 +5,6 @@ import {
   ONBOARDING_COPY,
   ONBOARDING_SEARCH_DEBOUNCE_MS,
   ONBOARDING_SEARCH_MIN_CHARS,
-  ONBOARDING_SPORT_GROUPS,
 } from "@/constants/onboarding";
 import { useSession, useToast } from "@/contexts";
 import { useCities } from "@/hooks/use-cities";
@@ -24,6 +23,7 @@ import {
   uploadIntroVideo,
 } from "@/services/profile-service";
 import { listSports } from "@/services/sports-service";
+import { useSportCategories } from "@/hooks/use-sport-categories";
 import type { OnboardingSportDraft, OnboardingStep } from "@/types/onboarding";
 import type { Sport } from "@/types/sports";
 import {
@@ -143,6 +143,7 @@ export function useOnboarding() {
     isLoading: isCitiesLoading,
     error: citiesError,
   } = useCities();
+  const { categories: sportCategories } = useSportCategories();
 
   const requestIdRef = useRef(0);
 
@@ -203,14 +204,12 @@ export function useOnboarding() {
 
   const filteredSports = useMemo(() => {
     const sorted = [...sports].sort((a, b) => a.displayOrder - b.displayOrder);
-    const group = ONBOARDING_SPORT_GROUPS.find((item) => item.key === groupKey);
-    const slugSet = group?.slugs ? new Set(group.slugs) : null;
 
-    if (!slugSet) {
+    if (groupKey === "all") {
       return sorted;
     }
 
-    return sorted.filter((sport) => slugSet.has(sport.slug.toLowerCase()));
+    return sorted.filter((sport) => sport.categoryId === groupKey);
   }, [groupKey, sports]);
 
   const editingDraft = useMemo(
@@ -480,6 +479,7 @@ export function useOnboarding() {
     submitIdentity,
     sports,
     filteredSports,
+    sportCategories,
     isSportsLoading,
     isSearchTooShort,
     selected,

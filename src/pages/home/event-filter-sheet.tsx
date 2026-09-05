@@ -11,6 +11,8 @@ import {
 import { useCities } from "@/hooks/use-cities";
 import { AgeRangeSlider } from "@/pages/event-create/age-range-slider";
 import type { ApiOrganizationListItem } from "@/types/organizations";
+import type { Sport } from "@/types/sports";
+import { sportIconForSlug } from "@/utils/events";
 
 type EventFilterSheetProps = {
   visible: boolean;
@@ -18,6 +20,7 @@ type EventFilterSheetProps = {
   onClose: () => void;
   onApply: (filters: EventListFilters) => void;
   organizations?: ApiOrganizationListItem[];
+  sports?: Sport[];
 };
 
 export function EventFilterSheet({
@@ -26,6 +29,7 @@ export function EventFilterSheet({
   onClose,
   onApply,
   organizations = [],
+  sports = [],
 }: EventFilterSheetProps) {
   const [draft, setDraft] = useState(filters);
   const {
@@ -51,6 +55,30 @@ export function EventFilterSheet({
       key: organization.id,
       label: organization.name,
     })),
+  ];
+  const sportOptions = [
+    {
+      key: "",
+      label: "Tüm sporlar",
+      description: "Branşa göre filtreleme yapma",
+    },
+    ...sports.map((sport) => ({
+      key: sport.id,
+      label: sport.name,
+      description: sport.categoryName ?? undefined,
+      icon: sportIconForSlug(sport.slug),
+      groupKey: sport.categoryId ?? undefined,
+    })),
+  ];
+  const sportGroups = [
+    ...new Map(
+      sports
+        .filter((sport) => sport.categoryId && sport.categoryName)
+        .map((sport) => [
+          sport.categoryId as string,
+          { key: sport.categoryId as string, label: sport.categoryName as string },
+        ]),
+    ).values(),
   ];
 
   useEffect(() => {
@@ -81,6 +109,28 @@ export function EventFilterSheet({
           sheetTitle="Konum seç"
           sheetSubtitle="Etkinliğin bulunduğu şehri seç"
         />
+
+        {sports.length > 0 ? (
+          <SelectField
+            label="Spor"
+            placeholder="Spor seç"
+            icon="shapes"
+            options={sportOptions}
+            value={draft.sportId ?? ""}
+            onChange={(sportId) =>
+              setDraft((current) => ({
+                ...current,
+                sportId: sportId || null,
+              }))
+            }
+            searchable
+            searchPlaceholder="Spor ara"
+            sheetTitle="Spor seç"
+            sheetSubtitle="Tek bir branşa göre daralt"
+            groups={sportGroups}
+            allGroupLabel="Tüm kategoriler"
+          />
+        ) : null}
 
         {organizations.length > 1 ? (
           <SelectField

@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import { AppScreen, ScreenHeader } from "@/components";
 import { useSession, useToast } from "@/contexts";
@@ -17,9 +17,32 @@ import {
   CONVERSATION_TYPE,
   type ApiConversation,
   type ApiMessage,
+  type ChatMessage,
 } from "@/types/messaging";
 
 import { MessageRow } from "./message-row";
+
+/**
+ * Sunucu yanıtı gelince iyimser baloncuğu gerçeğiyle değiştirir. SignalR
+ * yankısı HTTP yanıtından önce gelmiş olabilir; o durumda gerçek mesaj zaten
+ * listededir ve baloncuk yalnızca düşer.
+ */
+function settlePending(
+  list: ChatMessage[],
+  pendingId: string,
+  created: ApiMessage,
+): ChatMessage[] {
+  const alreadyEchoed = list.some(
+    (item) => item.id === created.id && item.pendingId == null,
+  );
+
+  return list.flatMap((item) => {
+    if (item.pendingId !== pendingId) {
+      return [item];
+    }
+    return alreadyEchoed ? [] : [created];
+  });
+}
 
 type EventChatScreenProps = {
   conversationId?: string;
@@ -36,9 +59,19 @@ export function EventChatScreen({
   const [conversation, setConversation] = useState<ApiConversation | null>(
     null,
   );
-  const [messages, setMessages] = useState<ApiMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
-  const [sending, setSending] = useState(false);
+
+  /** Taslağın senkron aynası: aynı karedeki ikinci dokunuş boş görsün. */
+  const draftRef = useRef("");
+  const scrollRef = useRef<ScrollView>(null);
+  /** Bir sonraki içerik ölçümünde en alta in (ilk yükleme + kendi mesajım). */
+  const stickToBottomRef = useRef(true);
+  const didInitialScrollRef = useRef(false);
+  /** SignalR callback'i efekt kurulurken kapanır; kimlik ref'ten okunur. */
+  const userIdRef = useRef<string | undefined>(user?.id);
+
+  userIdRef.current = user?.id;
 
   useEffect(() => {
     if (!id && !directConversationId) {
@@ -67,6 +100,7 @@ export function EventChatScreen({
           return;
         }
         const ordered = [...page.items].reverse();
+        stickToBottomRef.current = true;
         setMessages(ordered);
 
         const latest = ordered[ordered.length - 1];
@@ -85,16 +119,32 @@ export function EventChatScreen({
             }
             setMessages((prev) => {
               const index = prev.findIndex(
-                (item) => item.id === incoming.id,
+                (item) => item.id === incoming.id && item.pendingId == null,
               );
-              if (index === -1) {
-                return [...prev, incoming];
+              if (index !== -1) {
+                const next = [...prev];
+                next[index] = incoming;
+                return next;
               }
-              const next = [...prev];
-              next[index] = incoming;
-              return next;
+
+              // Kendi mesajımızın yankısı HTTP yanıtından önce gelebilir.
+              // İkinci bir baloncuk eklemek yerine bekleyenin yerine geçir.
+              if (incoming.senderUserId === userIdRef.current) {
+                const pendingIndex = prev.findIndex(
+                  (item) =>
+                    item.status === "sending" &&
+                    (item.content ?? "") === (incoming.content ?? ""),
+                );
+                if (pendingIndex !== -1) {
+                  const next = [...prev];
+                  next[pendingIndex] = incoming;
+                  return next;
+                }
+              }
+
+              return [...prev, incoming];
             });
-            if (incoming.senderUserId !== user?.id) {
+            if (incoming.senderUserId !== userIdRef.current) {
               void markConversationRead(
                 resolvedConversationId,
                 incoming.id,
@@ -148,18 +198,41 @@ export function EventChatScreen({
     );
   };
 
-  const send = async () => {
-    const text = draft.trim();
-    if (!conversationId || !text || sending || isClosed) {
-      return;
-    }
-    setSending(true);
+  const dispatchSend = async (
+    targetConversationId: string,
+    text: string,
+  ) => {
+    const pendingId = `pending-${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2, 8)}`;
+
+    const optimistic: ChatMessage = {
+      id: pendingId,
+      pendingId,
+      status: "sending",
+      conversationId: targetConversationId,
+      senderUserId: user?.id ?? "",
+      senderUsername: user?.username ?? null,
+      senderFirstName: user?.firstName ?? null,
+      senderLastName: user?.lastName ?? null,
+      senderProfileImageUrl: user?.avatarUrl ?? null,
+      messageType: 0,
+      content: text,
+      mediaUrl: null,
+      mediaSize: null,
+      mediaMimeType: null,
+      replyToMessageId: null,
+      editedAt: null,
+      isRedacted: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    stickToBottomRef.current = true;
+    setMessages((prev) => [...prev, optimistic]);
+
     try {
-      const created = await sendTextMessage(conversationId, text);
-      setMessages((prev) =>
-        prev.some((item) => item.id === created.id) ? prev : [...prev, created],
-      );
-      setDraft("");
+      const created = await sendTextMessage(targetConversationId, text);
+      setMessages((prev) => settlePending(prev, pendingId, created));
     } catch (error) {
       const closed =
         conversation?.type === CONVERSATION_TYPE.event &&
@@ -168,6 +241,15 @@ export function EventChatScreen({
       if (closed) {
         markClosed();
       }
+
+      setMessages((prev) =>
+        prev.map((item) =>
+          item.pendingId === pendingId
+            ? { ...item, status: "failed" as const }
+            : item,
+        ),
+      );
+
       showToast({
         type: "error",
         title: closed ? "Sohbet kapandı" : "Gönderilemedi",
@@ -175,14 +257,50 @@ export function EventChatScreen({
           ? "Etkinlik bittiği için artık mesaj gönderilemez."
           : getApiErrorMessage(error),
       });
-    } finally {
-      setSending(false);
     }
   };
+
+  const send = () => {
+    const text = draftRef.current.trim();
+    if (!conversationId || !text || isClosed) {
+      return;
+    }
+
+    // Taslağı senkron temizliyoruz: baloncuk anında görünür, alan boşalır ve
+    // aynı karede gelen ikinci dokunuş gönderecek metin bulamaz.
+    draftRef.current = "";
+    setDraft("");
+    void dispatchSend(conversationId, text);
+  };
+
+  const retry = (message: ChatMessage) => {
+    const text = message.content?.trim();
+    if (!conversationId || !message.pendingId || !text || isClosed) {
+      return;
+    }
+
+    setMessages((prev) =>
+      prev.filter((item) => item.pendingId !== message.pendingId),
+    );
+    void dispatchSend(conversationId, text);
+  };
+
+  const handleContentSizeChange = () => {
+    if (!stickToBottomRef.current) {
+      return;
+    }
+    stickToBottomRef.current = false;
+    scrollRef.current?.scrollToEnd({ animated: didInitialScrollRef.current });
+    didInitialScrollRef.current = true;
+  };
+
+  const canSend = draft.trim().length > 0;
 
   return (
     <AppScreen
       keyboardAvoiding
+      scrollRef={scrollRef}
+      onContentSizeChange={handleContentSizeChange}
       header={<ScreenHeader title={headerTitle} showBack />}
       contentClassName="gap-3 px-6 pt-2"
       footer={
@@ -196,7 +314,10 @@ export function EventChatScreen({
           <View className="flex-row items-center gap-2 border-t border-border-default px-6 py-3">
             <TextInput
               value={draft}
-              onChangeText={setDraft}
+              onChangeText={(value) => {
+                draftRef.current = value;
+                setDraft(value);
+              }}
               placeholder="Mesaj yaz…"
               placeholderTextColor="#64748b"
               textAlignVertical="center"
@@ -213,9 +334,13 @@ export function EventChatScreen({
               className="flex-1 rounded-2xl border border-border-default bg-surface-primary px-4 font-body text-base text-text-primary"
             />
             <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !canSend }}
               onPress={send}
-              disabled={sending}
-              className="h-12 items-center justify-center rounded-2xl bg-brand-primary px-5"
+              disabled={!canSend}
+              className={`h-12 items-center justify-center rounded-2xl px-5 active:opacity-75 ${
+                canSend ? "bg-brand-primary" : "bg-brand-primary/35"
+              }`}
             >
               <Text className="font-body font-semibold text-brand-secondary">
                 Gönder
@@ -245,6 +370,7 @@ export function EventChatScreen({
               mine={mine}
               showSender={showSender}
               onOpenSender={(userId) => router.push(`/users/${userId}`)}
+              onRetry={() => retry(message)}
             />
           );
         })

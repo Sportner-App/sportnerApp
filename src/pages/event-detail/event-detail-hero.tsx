@@ -5,6 +5,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
+import { resolveEventBadgeThemes } from "@/constants/badge-colors";
 import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
 import {
   media,
@@ -45,6 +46,11 @@ export function EventDetailHero({
   const onAccent = accent?.onAccent ?? themeColors.text.inverse;
   const sportLabel = event.sportName.trim().toLocaleUpperCase("tr-TR");
   const dateBadge = relativeEventBadge(event.eventDate);
+  const badgeThemes = resolveEventBadgeThemes({
+    sportAccent: sportColor,
+    isPaid: event.isPaid,
+    urgency: dateBadge === "BUGÜN" ? "today" : "upcoming",
+  });
   const showPending = pendingCount > 0 && onPendingPress;
 
   return (
@@ -105,16 +111,19 @@ export function EventDetailHero({
 
           <View className="flex-row items-end justify-between gap-2">
             {sportLabel ? (
-              <View className="max-w-[62%] flex-row items-center rounded-pill bg-white/90 px-2.5 py-1">
+              <View
+                className="max-w-[62%] flex-row items-center rounded-pill px-2.5 py-1"
+                style={{ backgroundColor: sportColor }}
+              >
                 <FontAwesome6
                   name={event.sportIcon}
                   size={10}
-                  color={sportColor}
+                  color={onAccent}
                 />
                 <Text
                   numberOfLines={1}
-                  className="ml-1.5 font-body text-[10px] font-bold tracking-[1.2px]"
-                  style={{ color: sportColor }}
+                  className="ml-1.5 font-body-bold text-[10px] tracking-[1.2px]"
+                  style={{ color: onAccent }}
                 >
                   {sportLabel}
                 </Text>
@@ -125,11 +134,11 @@ export function EventDetailHero({
             {dateBadge ? (
               <View
                 className="rounded-pill px-2.5 py-1"
-                style={{ backgroundColor: sportColor }}
+                style={{ backgroundColor: badgeThemes.date.background }}
               >
                 <Text
-                  className="font-body text-[10px] font-bold tracking-wide"
-                  style={{ color: onAccent }}
+                  className="font-body-bold text-[10px] tracking-wide"
+                  style={{ color: badgeThemes.date.foreground }}
                 >
                   {dateBadge}
                 </Text>

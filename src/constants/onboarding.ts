@@ -52,35 +52,3 @@ export const ONBOARDING_SKILL_OPTIONS: {
 ];
 
 /** Katalog büyüdükçe filtrelemeyi kolaylaştıran gruplar (slug bazlı). */
-export const ONBOARDING_SPORT_GROUPS: {
-  key: string;
-  label: string;
-  icon: IconName;
-  slugs?: readonly string[];
-}[] = [
-  { key: "all", label: "Tümü", icon: "shapes" },
-  {
-    key: "team",
-    label: "Takım",
-    icon: "users",
-    slugs: ["futbol", "basketbol", "voleybol"],
-  },
-  {
-    key: "racket",
-    label: "Raket",
-    icon: "table-tennis-paddle-ball",
-    slugs: ["tenis", "masa-tenisi", "badminton"],
-  },
-  {
-    key: "endurance",
-    label: "Dayanıklılık",
-    icon: "person-running",
-    slugs: ["kosu", "bisiklet", "yuzme", "doga-yuruyusu"],
-  },
-  {
-    key: "studio",
-    label: "Studio",
-    icon: "dumbbell",
-    slugs: ["fitness", "pilates", "yoga", "crossfit", "boks"],
-  },
-];

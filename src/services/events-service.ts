@@ -63,6 +63,7 @@ export async function getEvents(
     {
       params: {
         sportId: params.sportId,
+        sportCategoryId: params.sportCategoryId,
         city: params.city,
         lat: params.lat,
         lng: params.lng,

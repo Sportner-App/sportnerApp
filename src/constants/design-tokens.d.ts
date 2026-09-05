@@ -26,7 +26,48 @@ export type SportAccentToken = {
 };
 
 export type SportAccentName =
-  "basketball" | "football" | "running" | "volleyball" | "tennis";
+  // Takım sporları
+  | "basketball"
+  | "football"
+  | "volleyball"
+  | "handball"
+  | "beachVolleyball"
+  | "rugby"
+  // Raket sporları
+  | "tennis"
+  | "tableTennis"
+  | "badminton"
+  | "padel"
+  | "pickleball"
+  | "squash"
+  // Fitness & kondisyon
+  | "fitness"
+  | "crossfit"
+  | "pilates"
+  | "yoga"
+  | "dance"
+  // Dövüş sporları
+  | "boxing"
+  | "kickboxing"
+  | "judo"
+  | "jiuJitsu"
+  | "karate"
+  // Outdoor & dayanıklılık
+  | "running"
+  | "cycling"
+  | "hiking"
+  | "climbing"
+  // Su sporları
+  | "swimming"
+  | "diving"
+  | "sailing"
+  // Kış sporları
+  | "ski"
+  | "snowboard"
+  // Hedef sporları
+  | "bowling"
+  | "golf"
+  | "archery";
 
 export type LegacyScheme = {
   text: string;

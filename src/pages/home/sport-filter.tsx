@@ -1,60 +1,76 @@
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, ScrollView, Text } from "react-native";
 
-import { SPORT_FILTERS } from "@/constants/events";
-import { sportAccentForSlug, themeColors } from "@/constants/theme";
+import { themeColors } from "@/constants/theme";
+import type { SportCategory } from "@/types/sports";
 
-type SportFilterProps = {
-  value: string;
-  onChange: (key: string) => void;
+type CategoryFilterProps = {
+  categories: SportCategory[];
+  /** Seçili kategori id'si; null = Tümü */
+  value: string | null;
+  onChange: (categoryId: string | null) => void;
 };
 
-export function SportFilter({ value, onChange }: SportFilterProps) {
+/** Ana sayfadaki hızlı kategori filtresi (Tümü + katalog kategorileri). */
+export function SportFilter({
+  categories,
+  value,
+  onChange,
+}: CategoryFilterProps) {
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerClassName="gap-sm pr-xl"
     >
-      {SPORT_FILTERS.map((sport) => {
-        const isActive = sport.key === value;
-        const sportAccent =
-          sport.key === "all"
-            ? null
-            : sportAccentForSlug(sport.key, themeColors.text.secondary);
+      <CategoryChip
+        label="Tümü"
+        isActive={value === null}
+        onPress={() => onChange(null)}
+      />
 
-        return (
-          <Pressable
-            key={sport.key}
-            onPress={() => onChange(sport.key)}
-            className={`flex-row items-center gap-2 rounded-pill border px-lg py-sm ${
-              isActive
-                ? "border-brand-primary bg-brand-primary"
-                : "border-border-default bg-surface-primary"
-            }`}
-          >
-            <FontAwesome6
-              name={sport.icon}
-              size={13}
-              color={
-                isActive
-                  ? themeColors.text.onPrimary
-                  : (sportAccent ?? themeColors.text.secondary)
-              }
-            />
-            <Text
-              className="font-body text-sm font-semibold"
-              style={{
-                color: isActive
-                  ? themeColors.text.onPrimary
-                  : themeColors.text.secondary,
-              }}
-            >
-              {sport.label}
-            </Text>
-          </Pressable>
-        );
-      })}
+      {categories.map((category) => (
+        <CategoryChip
+          key={category.id}
+          label={category.name}
+          isActive={category.id === value}
+          onPress={() => onChange(category.id)}
+        />
+      ))}
     </ScrollView>
+  );
+}
+
+function CategoryChip({
+  label,
+  isActive,
+  onPress,
+}: {
+  label: string;
+  isActive: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected: isActive }}
+      onPress={onPress}
+      className={`rounded-pill border px-lg py-sm ${
+        isActive
+          ? "border-brand-primary bg-brand-primary"
+          : "border-border-default bg-surface-primary"
+      }`}
+    >
+      <Text
+        numberOfLines={1}
+        className="font-body text-sm font-semibold"
+        style={{
+          color: isActive
+            ? themeColors.text.onPrimary
+            : themeColors.text.secondary,
+        }}
+      >
+        {label}
+      </Text>
+    </Pressable>
   );
 }

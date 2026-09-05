@@ -7,11 +7,11 @@ import { formatEventFee, parseFeeAmount } from "@/utils/events";
 import { sportAccentToken, themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { CreateEventFormValues } from "@/types/events";
-import type { SportCategory } from "@/types/sports";
+import type { SportOption } from "@/types/sports";
 
 type EventCreateSummaryProps = {
   values: CreateEventFormValues;
-  sportOptions: SportCategory[];
+  sportOptions: SportOption[];
 };
 
 function formatSummaryDate(date: Date) {
@@ -134,7 +134,7 @@ export function EventCreateSummary({
             </SummaryRow>
             {values.isRecurring ? (
               <SummaryRow icon="repeat" accent={accent}>
-                {`${values.recurrenceCount} etkinlik · ${values.recurrenceIntervalWeeks === 1 ? "her hafta" : `${values.recurrenceIntervalWeeks} haftada bir`}`}
+                {`${values.recurrenceCount}'li seri · ${values.recurrenceIntervalWeeks === 1 ? "her hafta" : `${values.recurrenceIntervalWeeks} haftada bir`} · sırayla açılır`}
               </SummaryRow>
             ) : null}
             {values.skillLevel != null ? (

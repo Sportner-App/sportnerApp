@@ -47,6 +47,12 @@
         }
       ],
       [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Etkinlikleri sana en yakından uzağa sıralamak ve haritada konumunu göstermek için kullanılır."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#06111a"

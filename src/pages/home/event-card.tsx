@@ -15,6 +15,7 @@ import Svg, {
   Stop,
 } from "react-native-svg";
 
+import { resolveEventBadgeThemes } from "@/constants/badge-colors";
 import { SKILL_LEVEL_LABELS, skillKeyFromCode } from "@/constants/profile";
 import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
 import {
@@ -77,6 +78,13 @@ export function EventCard({
   const sportColor = accent?.accent ?? themeColors.text.secondary;
   const sportSoft = accent?.soft ?? themeColors.surface.secondary;
   const onAccent = accent?.onAccent ?? themeColors.text.inverse;
+  // Rozet renkleri: her biri kendi ailesinden, spor aksanına ve birbirlerine
+  // çakışmayacak şekilde seçilir.
+  const badgeThemes = resolveEventBadgeThemes({
+    sportAccent: sportColor,
+    isPaid: event.isPaid,
+    urgency: badge === "BUGÜN" ? "today" : "upcoming",
+  });
 
   const remainingLabel = unlimited
     ? "Sınırsız"
@@ -156,11 +164,11 @@ export function EventCard({
           {badge ? (
             <View
               className="absolute right-3.5 top-3.5 z-20 rounded-pill px-2.5 py-1"
-              style={{ backgroundColor: sportColor }}
+              style={{ backgroundColor: badgeThemes.date.background }}
             >
               <Text
-                className="font-body text-[10px] font-bold tracking-wide"
-                style={{ color: onAccent }}
+                className="font-body-bold text-[10px] tracking-wide"
+                style={{ color: badgeThemes.date.foreground }}
               >
                 {badge}
               </Text>
@@ -170,47 +178,46 @@ export function EventCard({
           <View className="z-10 min-h-[210px] justify-between px-4 py-3.5">
             <View className="flex-row flex-wrap items-center gap-1.5">
               {sportLabel ? (
-                <View className="flex-row items-center self-start rounded-pill bg-white/90 px-2 py-0.5">
+                <View
+                  className="flex-row items-center self-start rounded-pill px-2.5 py-1"
+                  style={{ backgroundColor: sportColor }}
+                >
                   <FontAwesome6
                     name={event.sportIcon}
                     size={9}
-                    color={sportColor}
+                    color={onAccent}
                   />
                   <Text
                     numberOfLines={1}
-                    className="ml-1 font-body text-[10px] font-bold tracking-[1.2px]"
-                    style={{ color: sportColor }}
+                    className="ml-1.5 font-body-bold text-[10px] tracking-[1.2px]"
+                    style={{ color: onAccent }}
                   >
                     {sportLabel}
                   </Text>
                 </View>
               ) : null}
               {event.skillLevel != null ? (
-                <View className="self-start rounded-pill bg-white/90 px-2 py-0.5">
+                <View
+                  className="self-start rounded-pill px-2.5 py-1"
+                  style={{ backgroundColor: badgeThemes.skill.background }}
+                >
                   <Text
                     numberOfLines={1}
-                    className="font-body text-[10px] font-bold tracking-[0.4px] text-text-secondary"
+                    className="font-body-bold text-[10px] tracking-[0.4px]"
+                    style={{ color: badgeThemes.skill.foreground }}
                   >
                     {SKILL_LEVEL_LABELS[skillKeyFromCode(event.skillLevel)]}
                   </Text>
                 </View>
               ) : null}
               <View
-                className="self-start rounded-pill px-2 py-0.5"
-                style={{
-                  backgroundColor: event.isPaid
-                    ? "rgba(255,255,255,0.95)"
-                    : "rgba(255,255,255,0.9)",
-                }}
+                className="self-start rounded-pill px-2.5 py-1"
+                style={{ backgroundColor: badgeThemes.fee.background }}
               >
                 <Text
                   numberOfLines={1}
-                  className="font-body text-[10px] font-bold tracking-[0.4px]"
-                  style={{
-                    color: event.isPaid
-                      ? sportColor
-                      : themeColors.text.secondary,
-                  }}
+                  className="font-body-bold text-[10px] tracking-[0.4px]"
+                  style={{ color: badgeThemes.fee.foreground }}
                 >
                   {formatEventFee(event.isPaid, event.feeAmount)}
                 </Text>

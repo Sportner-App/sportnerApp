@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ImageBackground, Pressable, Text, View } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import MapView, {
@@ -11,6 +11,7 @@ import MapView, {
 import { DARK_MAP_STYLE, MAP_INITIAL_REGION } from "@/constants/map";
 import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
 import { shadows, sportAccentToken, themeColors } from "@/constants/theme";
+import type { UserCoordinates, UserLocationStatus } from "@/hooks/use-user-location";
 import { isGooglePlacesEnabled } from "@/services/location-service";
 import type { IconName } from "@/types/components";
 import type { EventSummary } from "@/types/events";
@@ -19,32 +20,39 @@ import { formatEventTime, relativeEventBadge } from "@/utils/events";
 type EventsMapProps = {
   events: EventSummary[];
   onOpenEvent: (eventId: string) => void;
+  /** Kullanıcının mevcut konumu; ayrı bir marker olarak gösterilir. */
+  userLocation?: UserCoordinates | null;
+  locationStatus?: UserLocationStatus;
+  /** Konum izni yoksa istemek, reddedilmişse ayarlara götürmek için. */
+  onRequestLocation?: () => void;
 };
 
-function regionForEvents(events: EventSummary[]): Region {
-  if (events.length === 0) {
+function regionForPoints(
+  points: { latitude: number; longitude: number }[],
+): Region {
+  if (points.length === 0) {
     return MAP_INITIAL_REGION;
   }
 
-  if (events.length === 1) {
+  if (points.length === 1) {
     return {
-      latitude: events[0].latitude,
-      longitude: events[0].longitude,
+      latitude: points[0].latitude,
+      longitude: points[0].longitude,
       latitudeDelta: 0.05,
       longitudeDelta: 0.05,
     };
   }
 
-  let minLat = events[0].latitude;
-  let maxLat = events[0].latitude;
-  let minLng = events[0].longitude;
-  let maxLng = events[0].longitude;
+  let minLat = points[0].latitude;
+  let maxLat = points[0].latitude;
+  let minLng = points[0].longitude;
+  let maxLng = points[0].longitude;
 
-  for (const event of events) {
-    minLat = Math.min(minLat, event.latitude);
-    maxLat = Math.max(maxLat, event.latitude);
-    minLng = Math.min(minLng, event.longitude);
-    maxLng = Math.max(maxLng, event.longitude);
+  for (const point of points) {
+    minLat = Math.min(minLat, point.latitude);
+    maxLat = Math.max(maxLat, point.latitude);
+    minLng = Math.min(minLng, point.longitude);
+    maxLng = Math.max(maxLng, point.longitude);
   }
 
   const latSpan = Math.max(maxLat - minLat, 0.01);
@@ -58,9 +66,16 @@ function regionForEvents(events: EventSummary[]): Region {
   };
 }
 
-export function EventsMap({ events, onOpenEvent }: EventsMapProps) {
+export function EventsMap({
+  events,
+  onOpenEvent,
+  userLocation = null,
+  locationStatus = "idle",
+  onRequestLocation,
+}: EventsMapProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const useGoogleMaps = isGooglePlacesEnabled();
+  const mapRef = useRef<MapView>(null);
 
   const located = useMemo(
     () =>
@@ -71,13 +86,38 @@ export function EventsMap({ events, onOpenEvent }: EventsMapProps) {
     [events],
   );
 
-  const initialRegion = useMemo(() => regionForEvents(located), [located]);
+  // İlk kadraj kullanıcıyı da kapsasın: "ben neredeyim, etkinlikler nerede"
+  // sorusunun cevabı tek bakışta görünsün. MapView `initialRegion`'ı yalnızca
+  // ilk render'da okur; sonraki değişimler haritayı kullanıcının altından
+  // kaydırmaz, yeniden ortalamak için sağ alttaki düğme var.
+  const initialRegion = useMemo(
+    () => regionForPoints(userLocation ? [...located, userLocation] : located),
+    [located, userLocation],
+  );
+
   const selectedEvent =
     located.find((event) => event.id === selectedId) ?? null;
+
+  const centerOnUser = () => {
+    if (!userLocation) {
+      onRequestLocation?.();
+      return;
+    }
+
+    mapRef.current?.animateToRegion(
+      {
+        ...userLocation,
+        latitudeDelta: 0.03,
+        longitudeDelta: 0.03,
+      },
+      350,
+    );
+  };
 
   return (
     <View className="h-[560px] overflow-hidden rounded-xlarge border border-border-default">
       <MapView
+        ref={mapRef}
         style={{ flex: 1 }}
         provider={useGoogleMaps ? PROVIDER_GOOGLE : undefined}
         initialRegion={initialRegion}
@@ -89,6 +129,18 @@ export function EventsMap({ events, onOpenEvent }: EventsMapProps) {
         toolbarEnabled={false}
         onPress={() => setSelectedId(null)}
       >
+        {userLocation ? (
+          <Marker
+            coordinate={userLocation}
+            anchor={{ x: 0.5, y: 0.5 }}
+            zIndex={1}
+            title="Mevcut konumun"
+            tracksViewChanges={false}
+          >
+            <CurrentLocationPin />
+          </Marker>
+        ) : null}
+
         {located.map((event) => {
           const accent = sportAccentToken(event.sport);
           return (
@@ -115,17 +167,45 @@ export function EventsMap({ events, onOpenEvent }: EventsMapProps) {
       </MapView>
 
       {located.length === 0 ? (
-        <View className="absolute inset-0 items-center justify-center gap-2 bg-background-primary/92 px-10">
+        // Tam ekran örtü yerine üstte şerit: kullanıcının kendi konum
+        // marker'ı boş sonuçta da görünür kalsın.
+        <View
+          pointerEvents="none"
+          className="absolute inset-x-3 top-3 flex-row items-center gap-2 rounded-2xl border border-border-default bg-background-primary/92 px-3 py-2.5"
+        >
           <FontAwesome6
             name="map-location-dot"
-            size={22}
+            size={13}
             color={themeColors.text.tertiary}
           />
-          <Text className="text-center font-body text-sm text-text-secondary">
+          <Text className="flex-1 font-body text-xs text-text-secondary">
             Bu filtrelere uygun konumlu etkinlik yok.
           </Text>
         </View>
       ) : null}
+
+      {selectedEvent ? null : (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={
+            userLocation ? "Konumuma odaklan" : "Konum iznini aç"
+          }
+          onPress={centerOnUser}
+          disabled={locationStatus === "loading"}
+          className="absolute right-3 bottom-3 h-11 w-11 items-center justify-center rounded-full border border-border-default bg-background-primary/92 active:opacity-80"
+          style={shadows.md}
+        >
+          <FontAwesome6
+            name={userLocation ? "location-crosshairs" : "location-dot"}
+            size={15}
+            color={
+              userLocation
+                ? themeColors.brand.primary
+                : themeColors.text.tertiary
+            }
+          />
+        </Pressable>
+      )}
 
       {selectedEvent ? (
         <EventMapPreviewCard
@@ -135,6 +215,26 @@ export function EventsMap({ events, onOpenEvent }: EventsMapProps) {
           onPress={() => onOpenEvent(selectedEvent.id)}
         />
       ) : null}
+    </View>
+  );
+}
+
+/**
+ * Kullanıcının kendi konumu. Spor pinlerinden kasıtlı olarak farklı bir
+ * biçimde: yuvarlak nokta + hale, ikon yok — böylece etkinlik pinleriyle
+ * karıştırılmaz.
+ */
+function CurrentLocationPin() {
+  return (
+    <View className="h-8 w-8 items-center justify-center">
+      <View
+        className="absolute h-8 w-8 rounded-full"
+        style={{ backgroundColor: `${themeColors.brand.primary}33` }}
+      />
+      <View
+        className="h-3.5 w-3.5 rounded-full border-2 border-white"
+        style={{ backgroundColor: themeColors.brand.primary }}
+      />
     </View>
   );
 }

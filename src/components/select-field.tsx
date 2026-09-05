@@ -19,6 +19,8 @@ export function SelectField<T extends string>({
   sheetVariant,
   searchable,
   searchPlaceholder,
+  groups,
+  allGroupLabel,
 }: SelectFieldProps<T>) {
   const [open, setOpen] = useState(false);
   const selected = options.find((option) => option.key === value);
@@ -69,6 +71,8 @@ export function SelectField<T extends string>({
         variant={sheetVariant}
         searchable={searchable}
         searchPlaceholder={searchPlaceholder}
+        groups={groups}
+        allGroupLabel={allGroupLabel}
       />
     </View>
   );

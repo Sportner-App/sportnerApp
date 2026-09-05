@@ -1,19 +1,14 @@
-import type { SportCategory } from "@/types/sports";
+import type { SportOption } from "@/types/sports";
 
 /** Home filter chips — slug'lar backend seed ile uyumlu */
-export const SPORT_FILTERS: SportCategory[] = [
-  { key: "all", label: "Tümü", icon: "shapes" },
+/** Fallback create options (API sporları yüklenene kadar) */
+export const CREATE_SPORT_OPTIONS: SportOption[] = [
   { key: "futbol", label: "Futbol", icon: "futbol" },
   { key: "basketbol", label: "Basketbol", icon: "basketball" },
   { key: "voleybol", label: "Voleybol", icon: "volleyball" },
   { key: "tenis", label: "Tenis", icon: "table-tennis-paddle-ball" },
   { key: "kosu", label: "Koşu", icon: "person-running" },
 ];
-
-/** Fallback create options (API sporları yüklenene kadar) */
-export const CREATE_SPORT_OPTIONS: SportCategory[] = SPORT_FILTERS.filter(
-  (sport) => sport.key !== "all",
-);
 
 export const CREATE_EVENT_STEPS = {
   1: {

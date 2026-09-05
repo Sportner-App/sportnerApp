@@ -1,13 +1,15 @@
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import { Avatar } from "@/components";
-import type { ApiMessage } from "@/types/messaging";
+import type { ChatMessage } from "@/types/messaging";
 
 type MessageRowProps = {
-  message: ApiMessage;
+  message: ChatMessage;
   mine: boolean;
   showSender: boolean;
   onOpenSender?: (userId: string) => void;
+  /** Gönderilemeyen kendi mesajını yeniden dener. */
+  onRetry?: () => void;
 };
 
 function formatMessageTime(iso: string) {
@@ -28,7 +30,10 @@ export function MessageRow({
   mine,
   showSender,
   onOpenSender,
+  onRetry,
 }: MessageRowProps) {
+  const isPending = mine && message.status === "sending";
+  const isFailed = mine && message.status === "failed";
   const senderName =
     message.senderUsername || message.senderFirstName || "Sporcu";
   const name = mine ? "Sen" : `@${message.senderUsername || "sporcu"}`;
@@ -70,12 +75,27 @@ export function MessageRow({
           className={`rounded-2xl px-3 py-2 ${
             mine ? "bg-brand-primary/20" : "bg-brand-surface"
           }`}
+          style={isPending ? { opacity: 0.55 } : undefined}
         >
           <Text className="font-body text-sm text-white">{body}</Text>
         </View>
-        <Text className="mt-1 font-mono text-[10px] text-brand-neutral">
-          {formatMessageTime(message.createdAt)}
-        </Text>
+        {isFailed ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Mesajı yeniden gönder"
+            onPress={onRetry}
+            hitSlop={8}
+            className="mt-1 active:opacity-70"
+          >
+            <Text className="font-mono text-[10px] text-destructive">
+              Gönderilemedi · Tekrar dene
+            </Text>
+          </Pressable>
+        ) : (
+          <Text className="mt-1 font-mono text-[10px] text-brand-neutral">
+            {isPending ? "Gönderiliyor…" : formatMessageTime(message.createdAt)}
+          </Text>
+        )}
       </View>
       {mine ? avatar : null}
     </View>

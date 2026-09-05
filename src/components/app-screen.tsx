@@ -34,6 +34,8 @@ export function AppScreen({
   tone = "dark",
   onEndReached,
   onEndReachedThreshold = 240,
+  scrollRef,
+  onContentSizeChange,
 }: AppScreenProps) {
   const insets = useSafeAreaInsets();
   const bottomPad = withTabBar ? TAB_BAR_CLEARANCE + 16 : 32;
@@ -53,6 +55,8 @@ export function AppScreen({
 
   const body = scroll ? (
     <ScrollView
+      ref={scrollRef}
+      onContentSizeChange={onContentSizeChange}
       contentContainerClassName={contentClassName}
       contentContainerStyle={[
         { paddingBottom: bottomPad },

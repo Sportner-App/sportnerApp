@@ -10,6 +10,7 @@ import {
   DEFAULT_EVENT_MIN_AGE,
 } from "@/constants/events";
 import { useToast } from "@/contexts";
+import { getApiErrorMessage } from "@/lib/api/errors";
 import { useMyOrganizations } from "@/hooks/use-organizations";
 import {
   assignEventParticipants,
@@ -20,7 +21,7 @@ import { listSports } from "@/services/sports-service";
 import type { CreateEventFormValues } from "@/types/events";
 import type { SelectedLocation } from "@/types/location";
 import { ORGANIZATION_STATUS } from "@/types/organizations";
-import type { Sport, SportCategory } from "@/types/sports";
+import type { Sport, SportOption } from "@/types/sports";
 import type { ApiFriend } from "@/types/social";
 import { parseFeeAmount, sportIconForSlug } from "@/utils/events";
 
@@ -30,7 +31,7 @@ function getDefaultEventDate() {
   return date;
 }
 
-function toSportOptions(sports: Sport[]): SportCategory[] {
+function toSportOptions(sports: Sport[]): SportOption[] {
   if (sports.length === 0) {
     return CREATE_SPORT_OPTIONS;
   }
@@ -41,6 +42,8 @@ function toSportOptions(sports: Sport[]): SportCategory[] {
       key: sport.slug,
       label: sport.name,
       icon: sportIconForSlug(sport.slug),
+      description: sport.categoryName ?? undefined,
+      groupKey: sport.categoryId ?? undefined,
     }));
 }
 
@@ -163,6 +166,22 @@ export function useCreateEvent(initialOrganizationId?: string) {
   }, []);
 
   const sportOptions = useMemo(() => toSportOptions(sports), [sports]);
+  const sportGroups = useMemo(
+    () => [
+      ...new Map(
+        sports
+          .filter((sport) => sport.categoryId && sport.categoryName)
+          .map((sport) => [
+            sport.categoryId as string,
+            {
+              key: sport.categoryId as string,
+              label: sport.categoryName as string,
+            },
+          ]),
+      ).values(),
+    ],
+    [sports],
+  );
 
   const update = <K extends keyof CreateEventFormValues>(
     key: K,
@@ -390,25 +409,29 @@ export function useCreateEvent(initialOrganizationId?: string) {
         return;
       }
 
-      const assigned = await assignIfNeeded(data.ids ?? [data.id]);
+      const assignment = await assignIfNeeded(data.ids ?? [data.id]);
 
-      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      void Haptics.notificationAsync(
+        assignment.ok
+          ? Haptics.NotificationFeedbackType.Success
+          : Haptics.NotificationFeedbackType.Warning,
+      );
       showToast({
-        type: assigned ? "success" : "error",
-        title: assigned
+        type: assignment.ok ? "success" : "error",
+        title: assignment.ok
           ? values.isRecurring
-            ? `${values.recurrenceCount} etkinlik yayınlandı`
+            ? "Seri başlatıldı"
             : "Etkinlik yayınlandı"
-          : values.isRecurring
-            ? "Etkinlikler yayınlandı, bazı davetler gönderilemedi"
-            : "Etkinlik yayınlandı, davetler gönderilemedi",
-        description: assigned
-          ? selectedFriendIds.length > 0
-            ? values.isRecurring
-              ? "Arkadaşlarına serideki tüm etkinlikler için davet gönderildi."
-              : "Arkadaşlarına etkinlik daveti gönderildi."
-            : "Oyuncular seni bekliyor."
-          : "Davetleri etkinlik detayından tekrar gönderebilirsin.",
+          : "Etkinlik yayınlandı, davetler gönderilemedi",
+        description: assignment.ok
+          ? values.isRecurring
+            ? `Serinin ilk etkinliği yayında. Kalan ${
+                values.recurrenceCount - 1
+              } etkinlik, bir öncekisi bittikçe otomatik açılacak.`
+            : selectedFriendIds.length > 0
+              ? "Arkadaşlarına etkinlik daveti gönderildi."
+              : "Oyuncular seni bekliyor."
+          : `${assignment.reason} Davetleri etkinlik detayından tekrar gönderebilirsin.`,
       });
 
       router.replace(`/events/${data.id}`);
@@ -417,11 +440,21 @@ export function useCreateEvent(initialOrganizationId?: string) {
     }
   };
 
-  const assignIfNeeded = async (eventIds: string | string[]) => {
-    if (guests.length === 0 && selectedFriendIds.length === 0) return true;
+  /**
+   * Davet/misafir atamasını yapar. Hata durumunda backend'in gerçek sebebini
+   * geri döner — yutulursa kullanıcı da biz de neden başarısız olduğunu
+   * göremiyoruz (ör. yaş aralığı, kapasite, arkadaşlık durumu).
+   */
+  const assignIfNeeded = async (
+    eventIds: string | string[],
+  ): Promise<{ ok: boolean; reason?: string }> => {
+    if (guests.length === 0 && selectedFriendIds.length === 0) {
+      return { ok: true };
+    }
+
+    const ids = Array.isArray(eventIds) ? eventIds : [eventIds];
 
     try {
-      const ids = Array.isArray(eventIds) ? eventIds : [eventIds];
       await Promise.all(
         ids.map((eventId) =>
           assignEventParticipants(eventId, {
@@ -433,9 +466,15 @@ export function useCreateEvent(initialOrganizationId?: string) {
           }),
         ),
       );
-      return true;
-    } catch {
-      return false;
+      return { ok: true };
+    } catch (assignError) {
+      return {
+        ok: false,
+        reason: getApiErrorMessage(
+          assignError,
+          "Davetler gönderilemedi.",
+        ),
+      };
     }
   };
 
@@ -458,6 +497,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
     isSubmitting,
     isSportsLoading,
     sportOptions,
+    sportGroups,
     friends,
     isFriendsLoading,
     guests,

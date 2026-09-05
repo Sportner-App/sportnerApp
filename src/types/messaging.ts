@@ -35,6 +35,18 @@ export type ApiMessage = {
   createdAt: string;
 };
 
+export type MessageDeliveryStatus = "sending" | "failed";
+
+/**
+ * Sohbet listesinde gösterilen mesaj. Sunucuya henüz yazılmamış iyimser
+ * baloncuklar da bu tiple taşınır: `pendingId` doluysa mesaj yereldir.
+ */
+export type ChatMessage = ApiMessage & {
+  /** Yalnızca sunucu yanıtı beklenen yerel baloncuklarda dolu. */
+  pendingId?: string;
+  status?: MessageDeliveryStatus;
+};
+
 export type ApiConversation = {
   id: string;
   type: number;
