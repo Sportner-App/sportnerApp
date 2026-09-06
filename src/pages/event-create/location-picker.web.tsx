@@ -1,4 +1,5 @@
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { themeColors } from "@/constants/theme";
 import type { SelectedLocation } from "@/types/location";
@@ -15,6 +16,8 @@ export function LocationPicker({
   addressText,
   compact = false,
 }: LocationPickerProps) {
+  const { t } = useTranslation("eventCreate");
+
   return (
     <View
       className={`justify-center rounded-[28px] border border-border-default bg-surface-primary px-4 ${compact ? "h-40" : "h-56"}`}
@@ -23,7 +26,7 @@ export function LocationPicker({
         className="font-body text-sm"
         style={{ color: themeColors.text.secondary }}
       >
-        Harita bu ortamda kullanılamıyor.
+        {t("location.mapUnavailable")}
       </Text>
       {addressText ? (
         <Text

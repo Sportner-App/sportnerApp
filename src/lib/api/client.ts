@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { type AxiosInstance } from "axios";
 
+import { getCurrentAppLanguage, toAcceptLanguageHeader } from "@/i18n";
 import { toastService } from "@/services/toast-service";
 import type {
   ApiFeedbackMessage,
@@ -68,6 +69,14 @@ class APIClient {
       if (isFormData(config.data)) {
         config.headers?.delete("Content-Type");
       }
+
+      // Backend, doğrulama/hata mesajlarını Accept-Language'e göre
+      // yerelleştiriyor (bkz. LocalizationExtension.cs, en-US/tr-TR).
+      // Uygulama dili değişse bile sunucudan gelen metinler seçili dille
+      // eşleşsin diye her istekte güncel dili gönderiyoruz.
+      config.headers["Accept-Language"] = toAcceptLanguageHeader(
+        getCurrentAppLanguage(),
+      );
 
       try {
         const token = await AsyncStorage.getItem(TOKEN_STORAGE_KEY);

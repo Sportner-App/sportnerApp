@@ -1,5 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
@@ -8,14 +9,15 @@ type EventCreateProgressProps = {
   step: 1 | 2 | 3 | 4;
 };
 
-const STEPS: { step: 1 | 2 | 3 | 4; label: string; icon: IconName }[] = [
-  { step: 1, label: "Detaylar", icon: "pen" },
-  { step: 2, label: "Plan", icon: "location-dot" },
-  { step: 3, label: "Kapasite", icon: "users" },
-  { step: 4, label: "Kadro", icon: "check" },
-];
-
 export function EventCreateProgress({ step }: EventCreateProgressProps) {
+  const { t } = useTranslation("eventCreate");
+  const STEPS: { step: 1 | 2 | 3 | 4; label: string; icon: IconName }[] = [
+    { step: 1, label: t("progress.details"), icon: "pen" },
+    { step: 2, label: t("progress.plan"), icon: "location-dot" },
+    { step: 3, label: t("progress.capacity"), icon: "users" },
+    { step: 4, label: t("progress.roster"), icon: "check" },
+  ];
+
   return (
     <View className="flex-row rounded-[22px] border border-border-default bg-surface-primary/90 p-1.5">
       {STEPS.map((item) => {

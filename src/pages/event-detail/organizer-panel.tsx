@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components";
 import { themeColors } from "@/constants/theme";
@@ -49,6 +50,7 @@ export function OrganizerPanel({
   onOpenReviews,
   onRateUser,
 }: OrganizerPanelProps) {
+  const { t } = useTranslation("eventDetail");
   const [sheetTab, setSheetTab] = useState<OrganizerManageTab | null>(null);
   const hasWaitlist = event.waitlist.length > 0;
 
@@ -66,7 +68,7 @@ export function OrganizerPanel({
         <View className="gap-sm">
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Etkinliği düzenle"
+            accessibilityLabel={t("organizerPanel.editAccessibility")}
             onPress={() => {
               lightImpact();
               onEdit();
@@ -82,7 +84,7 @@ export function OrganizerPanel({
               className="font-body-bold text-sm"
               style={{ color: themeColors.text.primary }}
             >
-              Düzenle
+              {t("organizerPanel.edit")}
             </Text>
           </Pressable>
           <Pressable
@@ -100,7 +102,9 @@ export function OrganizerPanel({
               className="font-body text-sm"
               style={{ color: themeColors.destructive }}
             >
-              {isMutating ? "İptal ediliyor..." : "Etkinliği iptal et"}
+              {isMutating
+                ? t("organizerPanel.cancelling")
+                : t("organizerPanel.cancelEvent")}
             </Text>
           </Pressable>
         </View>
@@ -109,11 +113,13 @@ export function OrganizerPanel({
       {hasWaitlist ? (
         <InboxRow
           icon="clock"
-          title="Bekleme listesi"
+          title={t("organizerPanel.waitlistTitle")}
           subtitle={
             event.waitlist.length === 1
-              ? "1 kişi yer bekliyor"
-              : `${event.waitlist.length} kişi yer bekliyor`
+              ? t("organizerPanel.waitlistSubtitleOne")
+              : t("organizerPanel.waitlistSubtitleMany", {
+                  count: event.waitlist.length,
+                })
           }
           badge={event.waitlist.length}
           onPress={() => openSheet("waitlist")}
@@ -123,15 +129,15 @@ export function OrganizerPanel({
       {canTakeAttendance ? (
         <InboxRow
           icon="clipboard-check"
-          title="Yoklama"
-          subtitle="Kim geldi, kim gelmedi"
+          title={t("organizerPanel.attendanceTitle")}
+          subtitle={t("organizerPanel.attendanceSubtitle")}
           onPress={() => openSheet("attendance")}
         />
       ) : null}
 
       {canTakeAttendance ? (
         <Button
-          label="Katılımcıları değerlendir"
+          label={t("organizerPanel.rateParticipants")}
           variant="outline"
           size="sm"
           onPress={onOpenReviews}

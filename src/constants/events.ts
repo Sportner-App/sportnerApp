@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import type { SportOption } from "@/types/sports";
 
 /** Home filter chips — slug'lar backend seed ile uyumlu */
@@ -10,52 +12,52 @@ export const CREATE_SPORT_OPTIONS: SportOption[] = [
   { key: "kosu", label: "Koşu", icon: "person-running" },
 ];
 
-export const CREATE_EVENT_STEPS = {
-  1: {
-    title: "Etkinliğini oluştur",
-    subtitle: "Sporunu seç ve etkinliğini anlat.",
-  },
-  2: {
-    title: "Planını yap",
-    subtitle: "Nerede, ne zaman ve ne kadar süreceğini belirle.",
-  },
-  3: {
-    title: "Takımını kur",
-    subtitle: "Kaç kişinin katılabileceğini belirle.",
-  },
-  4: {
-    title: "Yanına kim geliyor?",
-    subtitle: "Misafir veya arkadaş ekleyebilirsin. Bu adımı atlayabilirsin.",
-  },
-} as const;
+/** Adım başlıkları/kopyaları — dil değiştiğinde yeniden çözülsün diye hook. */
+export function useCreateEventSteps() {
+  const { t } = useTranslation("eventCreate");
 
-export const CREATE_EVENT_COPY = {
-  header: "YENİ ETKİNLİK",
-  title: CREATE_EVENT_STEPS[1].title,
-  subtitle: CREATE_EVENT_STEPS[1].subtitle,
-  submit: "Etkinliği Yayınla",
-  publishing: "Yayınlanıyor...",
-  continue: "Devam Et",
-  back: "Geri",
-} as const;
+  return {
+    1: { title: t("steps.1.title"), subtitle: t("steps.1.subtitle") },
+    2: { title: t("steps.2.title"), subtitle: t("steps.2.subtitle") },
+    3: { title: t("steps.3.title"), subtitle: t("steps.3.subtitle") },
+    4: { title: t("steps.4.title"), subtitle: t("steps.4.subtitle") },
+  } as const;
+}
+
+export function useCreateEventCopy() {
+  const { t } = useTranslation("eventCreate");
+  const steps = useCreateEventSteps();
+
+  return {
+    header: t("header"),
+    title: steps[1].title,
+    subtitle: steps[1].subtitle,
+    submit: t("submit"),
+    publishing: t("publishing"),
+    continue: t("continue"),
+    back: t("back"),
+  } as const;
+}
 
 export const DEFAULT_EVENT_DURATION_MINUTES = 90;
 export const DEFAULT_EVENT_MIN_AGE = 18;
 export const DEFAULT_EVENT_MAX_AGE = 60;
 
-/** Backend: DurationMinutes > 0 */
-export const DURATION_OPTIONS: {
-  key: string;
-  label: string;
-  minutes: number;
-}[] = [
-  { key: "30", label: "30 dakika", minutes: 30 },
-  { key: "45", label: "45 dakika", minutes: 45 },
-  { key: "60", label: "1 saat", minutes: 60 },
-  { key: "90", label: "1.5 saat", minutes: 90 },
-  { key: "120", label: "2 saat", minutes: 120 },
-  { key: "180", label: "3 saat", minutes: 180 },
-];
+export type DurationOption = { key: string; label: string; minutes: number };
+
+/** Backend: DurationMinutes > 0. Dil değiştiğinde etiketler yeniden çözülsün diye hook. */
+export function useDurationOptions(): DurationOption[] {
+  const { t } = useTranslation("eventCreate");
+
+  return [
+    { key: "30", label: t("duration.minutesShort", { count: 30 }), minutes: 30 },
+    { key: "45", label: t("duration.minutesShort", { count: 45 }), minutes: 45 },
+    { key: "60", label: t("duration.hoursShort", { count: 1 }), minutes: 60 },
+    { key: "90", label: t("duration.hoursShort", { count: 1.5 }), minutes: 90 },
+    { key: "120", label: t("duration.hoursShort", { count: 2 }), minutes: 120 },
+    { key: "180", label: t("duration.hoursShort", { count: 3 }), minutes: 180 },
+  ];
+}
 
 export const CREATE_EVENT_LIMITS = {
   titleMax: 150,

@@ -1,0 +1,12 @@
+{
+  "beginner": "Beginner",
+  "intermediate": "Intermediate",
+  "advanced": "Advanced",
+  "expert": "Expert",
+  "professional": "Professional",
+  "beginnerShort": "Beg.",
+  "intermediateShort": "Int.",
+  "advancedShort": "Adv.",
+  "expertShort": "Expert",
+  "professionalShort": "Pro"
+}

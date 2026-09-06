@@ -9,6 +9,8 @@ import {
   Text,
   View,
 } from "react-native";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 import { BottomSheet, Button } from "@/components";
 import { themeColors } from "@/constants/theme";
@@ -31,12 +33,13 @@ export function DurationPickerField({
   onChange,
   disabled = false,
 }: DurationPickerFieldProps) {
+  const { t } = useTranslation("eventCreate");
   const [open, setOpen] = useState(false);
 
   return (
     <View className="gap-2">
       <Text className="font-body-bold text-[13px] text-text-secondary">
-        Süre
+        {t("duration.label")}
       </Text>
       <Pressable
         disabled={disabled}
@@ -51,7 +54,7 @@ export function DurationPickerField({
           />
         </View>
         <Text className="flex-1 font-body text-base text-text-primary">
-          {formatDuration(value)}
+          {formatDuration(t, value)}
         </Text>
         <FontAwesome6
           name="chevron-down"
@@ -81,6 +84,7 @@ function DurationPickerSheet({
   onClose: () => void;
   onChange: (minutes: number) => void;
 }) {
+  const { t } = useTranslation("eventCreate");
   const hourRef = useRef<ScrollView>(null);
   const minuteRef = useRef<ScrollView>(null);
   const initialHour = Math.min(Math.floor(value / 60), HOURS.length - 1);
@@ -122,8 +126,8 @@ function DurationPickerSheet({
     <BottomSheet
       visible={visible}
       onClose={onClose}
-      title="Etkinlik süresi"
-      subtitle="Saat ve dakikayı kaydırarak seç"
+      title={t("duration.sheetTitle")}
+      subtitle={t("duration.sheetSubtitle")}
       showCancel={false}
     >
       <View className="mb-5">
@@ -143,14 +147,14 @@ function DurationPickerSheet({
             ref={hourRef}
             values={HOURS}
             selected={hour}
-            suffix="saat"
+            suffix={t("duration.hourSuffix")}
             onSelect={setHour}
           />
           <Wheel
             ref={minuteRef}
             values={MINUTES}
             selected={minute}
-            suffix="dk"
+            suffix={t("duration.minuteSuffix")}
             onSelect={setMinute}
           />
         </View>
@@ -172,12 +176,14 @@ function DurationPickerSheet({
           color={themeColors.brand.primary}
         />
         <Text className="font-body-bold text-sm text-brand-primary">
-          {totalMinutes > 0 ? formatDuration(totalMinutes) : "Süre seçmelisin"}
+          {totalMinutes > 0
+            ? formatDuration(t, totalMinutes)
+            : t("duration.chooseHint")}
         </Text>
       </View>
 
       <Button
-        label="Süreyi Ayarla"
+        label={t("duration.confirm")}
         disabled={totalMinutes <= 0}
         haptic="light"
         onPress={confirm}
@@ -273,10 +279,10 @@ const Wheel = forwardRef<
   );
 });
 
-function formatDuration(minutes: number) {
+function formatDuration(t: TFunction<"eventCreate">, minutes: number) {
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
-  if (hours === 0) return `${rest} dakika`;
-  if (rest === 0) return `${hours} saat`;
-  return `${hours} saat ${rest} dakika`;
+  if (hours === 0) return t("duration.minutesShort", { count: rest });
+  if (rest === 0) return t("duration.hoursShort", { count: hours });
+  return t("duration.hoursAndMinutesShort", { hours, minutes: rest });
 }

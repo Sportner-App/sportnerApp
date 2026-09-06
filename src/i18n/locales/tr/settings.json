@@ -1,0 +1,57 @@
+{
+  "appearance": {
+    "title": "Görünüm",
+    "description": "Sportner’ın görünümünü seç. Sistem seçeneği telefonundaki tema değişikliklerini otomatik uygular.",
+    "options": {
+      "system": {
+        "label": "Sistem",
+        "description": "Telefonunun görünüm ayarını takip eder"
+      },
+      "light": {
+        "label": "Açık",
+        "description": "Her zaman açık temayı kullanır"
+      },
+      "dark": {
+        "label": "Koyu",
+        "description": "Her zaman koyu temayı kullanır"
+      }
+    }
+  },
+  "language": {
+    "title": "Dil",
+    "description": "Uygulama dilini seç. Sistem seçeneği telefonunun dil ayarını takip eder.",
+    "options": {
+      "system": {
+        "label": "Sistem",
+        "description": "Telefonunun dil ayarını takip eder"
+      },
+      "tr": {
+        "label": "Türkçe",
+        "description": "Uygulamayı her zaman Türkçe kullan"
+      },
+      "en": {
+        "label": "English",
+        "description": "Uygulamayı her zaman İngilizce kullan"
+      }
+    }
+  },
+  "menu": {
+    "settingsGroupTitle": "Ayarlar",
+    "editProfile": "Profili düzenle",
+    "notifications": "Bildirimler",
+    "notificationSettings": "Bildirim ayarları",
+    "appearance": "Görünüm",
+    "language": "Dil",
+    "privacy": "Gizlilik",
+    "feedback": "Öneri gönder",
+    "help": "Yardım",
+    "appTour": "Uygulama turunu yeniden göster"
+  },
+  "social": {
+    "friends": "Arkadaşlar",
+    "feed": "Akış",
+    "badges": "Rozetler",
+    "albums": "Albümler"
+  },
+  "logout": "Çıkış yap"
+}

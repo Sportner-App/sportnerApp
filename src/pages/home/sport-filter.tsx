@@ -1,4 +1,5 @@
 import { Pressable, ScrollView, Text } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { themeColors } from "@/constants/theme";
 import type { SportCategory } from "@/types/sports";
@@ -16,6 +17,8 @@ export function SportFilter({
   value,
   onChange,
 }: CategoryFilterProps) {
+  const { t } = useTranslation("home");
+
   return (
     <ScrollView
       horizontal
@@ -23,7 +26,7 @@ export function SportFilter({
       contentContainerClassName="gap-sm pr-xl"
     >
       <CategoryChip
-        label="Tümü"
+        label={t("sportFilter.all")}
         isActive={value === null}
         onPress={() => onChange(null)}
       />

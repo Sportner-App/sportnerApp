@@ -8,6 +8,7 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
+import { useTranslation } from "react-i18next";
 
 import { CREATE_EVENT_LIMITS } from "@/constants/events";
 import { themeColors } from "@/constants/theme";
@@ -44,6 +45,7 @@ export function AgeRangeSlider({
   onChange,
   disabled = false,
 }: AgeRangeSliderProps) {
+  const { t } = useTranslation("eventCreate");
   const [trackWidth, setTrackWidth] = useState(0);
   const [previewRange, setPreviewRange] = useState({
     min: minValue,
@@ -140,10 +142,10 @@ export function AgeRangeSlider({
       <View className="mb-6 flex-row items-center justify-between">
         <View>
           <Text className="font-body-bold text-[13px] text-text-secondary">
-            Katılım yaş aralığı
+            {t("ageRange.label")}
           </Text>
           <Text className="mt-1 font-body text-xs text-text-tertiary">
-            Tutamaçları sürükleyerek ayarla
+            {t("ageRange.hint")}
           </Text>
         </View>
         <View className="flex-row items-center rounded-full bg-brand-primary/10 px-3 py-1.5">
@@ -154,7 +156,9 @@ export function AgeRangeSlider({
           <Text className="min-w-6 text-center font-mono text-sm text-brand-primary">
             {previewRange.max}
           </Text>
-          <Text className="ml-1 font-body text-xs text-brand-primary">yaş</Text>
+          <Text className="ml-1 font-body text-xs text-brand-primary">
+            {t("ageRange.unit")}
+          </Text>
         </View>
       </View>
 
@@ -172,7 +176,7 @@ export function AgeRangeSlider({
         <GestureDetector gesture={minGesture}>
           <Animated.View
             accessibilityRole="adjustable"
-            accessibilityLabel="Minimum katılım yaşı"
+            accessibilityLabel={t("ageRange.minAccessibility")}
             className="absolute top-0 h-12 w-12 items-center justify-center"
             style={minThumbStyle}
           >
@@ -182,7 +186,7 @@ export function AgeRangeSlider({
         <GestureDetector gesture={maxGesture}>
           <Animated.View
             accessibilityRole="adjustable"
-            accessibilityLabel="Maksimum katılım yaşı"
+            accessibilityLabel={t("ageRange.maxAccessibility")}
             className="absolute top-0 h-12 w-12 items-center justify-center"
             style={maxThumbStyle}
           >

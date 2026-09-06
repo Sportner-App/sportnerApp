@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { SegmentedTabs, SportLoader, TabPage } from "@/components";
 import { themeColors } from "@/constants/theme";
@@ -28,6 +29,8 @@ import { SportFilter } from "./sport-filter";
 type ViewMode = "list" | "map";
 
 export function HomeScreen() {
+  const { t } = useTranslation("home");
+  const { t: tTabs } = useTranslation("tabs");
   const router = useRouter();
   const { scope: scopeParam, organizationId: organizationIdParam } =
     useLocalSearchParams<{ scope?: string; organizationId?: string }>();
@@ -116,7 +119,7 @@ export function HomeScreen() {
     >
       <Hero
         onCreatePress={() =>
-          requireAuth("Etkinlik oluşturmak için giriş yapmalısın.") &&
+          requireAuth(tTabs("requireAuth.create")) &&
           router.push("/events/create")
         }
       />
@@ -127,19 +130,19 @@ export function HomeScreen() {
       >
         <View className="flex-row items-center justify-between">
           <Text className="font-display text-[24px] leading-[30px] text-text-primary">
-            Etkinlikler
+            {tTabs("events")}
           </Text>
           <View className="flex-row items-center gap-sm">
             <View className="flex-row items-center gap-1 rounded-full border border-border-default bg-background-secondary p-1">
               <ViewModeButton
                 icon="list"
-                label="Liste görünümü"
+                label={t("viewMode.list")}
                 active={viewMode === "list"}
                 onPress={() => setViewMode("list")}
               />
               <ViewModeButton
                 icon="map-location-dot"
-                label="Harita görünümü"
+                label={t("viewMode.map")}
                 active={viewMode === "map"}
                 onPress={() => setViewMode("map")}
               />
@@ -148,7 +151,7 @@ export function HomeScreen() {
             {hasActiveFilters ? (
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Filtreleri temizle"
+                accessibilityLabel={t("filters.clearAccessibility")}
                 onPress={() => applyFilters(DEFAULT_EVENT_FILTERS)}
                 className="h-11 w-11 items-center justify-center rounded-full active:opacity-70"
               >
@@ -162,7 +165,7 @@ export function HomeScreen() {
 
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Filtreler"
+              accessibilityLabel={t("filters.accessibility")}
               onPress={() => setFilterOpen(true)}
               className="h-11 w-11 items-center justify-center rounded-full active:opacity-70"
             >
@@ -180,10 +183,10 @@ export function HomeScreen() {
 
         <SegmentedTabs
           options={[
-            { key: "all", label: "Genel" },
-            { key: "friends", label: "Arkadaşlarım" },
+            { key: "all", label: t("scope.all") },
+            { key: "friends", label: t("scope.friends") },
             ...(hasOrganizations
-              ? [{ key: "organizations", label: "Organizasyonlarım" } as const]
+              ? [{ key: "organizations", label: t("scope.organizations") } as const]
               : []),
           ]}
           value={scope}
@@ -192,8 +195,8 @@ export function HomeScreen() {
               (next === "friends" || next === "organizations") &&
               !requireAuth(
                 next === "friends"
-                  ? "Arkadaşlarının etkinliklerini görmek için giriş yapmalısın."
-                  : "Organizasyonlarının etkinliklerini görmek için giriş yapmalısın.",
+                  ? t("requireAuth.friends")
+                  : t("requireAuth.organizations"),
               )
             ) {
               return;
@@ -216,14 +219,14 @@ export function HomeScreen() {
           />
           <Text className="font-body-bold text-[15px] text-text-primary">
             {isOrganizations
-              ? (selectedOrganizationName ?? "Organizasyonlarının etkinlikleri")
+              ? (selectedOrganizationName ?? t("contextLabel.organizationsFallback"))
               : isFriends
                 ? filters.city
-                  ? `${filters.city} · Arkadaşlarının etkinlikleri`
-                  : "Arkadaşlarının düzenlediği etkinlikler"
+                  ? t("contextLabel.friendsWithCity", { city: filters.city })
+                  : t("contextLabel.friends")
                 : filters.city
-                  ? `${filters.city} etkinlikleri`
-                  : "Tüm şehirlerdeki etkinlikler"}
+                  ? t("contextLabel.cityEvents", { city: filters.city })
+                  : t("contextLabel.allCities")}
           </Text>
         </View>
 
@@ -233,13 +236,13 @@ export function HomeScreen() {
           onChange={setCategoryFilter}
         />
         <Text className="font-mono text-caption text-text-tertiary">
-          {totalCount} etkinlik bulundu
+          {t("resultCount", { count: totalCount })}
         </Text>
       </Animated.View>
 
       {isLoading ? (
         <View className="items-center py-3xl">
-          <SportLoader size={148} label="Etkinlikler yükleniyor" />
+          <SportLoader size={148} label={t("loadingEvents")} />
         </View>
       ) : events.length === 0 ? (
         <View className="items-center gap-sm rounded-xlarge border border-border-default bg-surface-primary px-xl py-3xl">
@@ -250,10 +253,10 @@ export function HomeScreen() {
           />
           <Text className="text-center font-body text-body-sm text-text-secondary">
             {isOrganizations
-              ? "Organizasyonlarının henüz yaklaşan bir etkinliği yok."
+              ? t("empty.organizations")
               : isFriends
-                ? "Arkadaşların henüz yaklaşan bir etkinlik oluşturmamış."
-                : "Bu filtrelere uygun yaklaşan etkinlik yok."}
+                ? t("empty.friends")
+                : t("empty.default")}
           </Text>
         </View>
       ) : viewMode === "map" ? (
@@ -276,7 +279,7 @@ export function HomeScreen() {
           ))}
           {isLoadingMore ? (
             <View className="items-center py-5">
-              <SportLoader size={64} label="Etkinlikler yükleniyor" />
+              <SportLoader size={64} label={t("loadingEvents")} />
             </View>
           ) : null}
         </View>

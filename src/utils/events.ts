@@ -1,3 +1,4 @@
+import i18n, { getCurrentLocale } from "@/i18n";
 import type { IconName } from "@/types/components";
 import {
   EVENT_STATUS,
@@ -44,11 +45,16 @@ const SPORT_ICON_BY_SLUG: Record<string, IconName> = {
   badminton: "table-tennis-paddle-ball",
 };
 
-const WEEKDAY_TR = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"] as const;
-
 function startOfDay(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
+
+/**
+ * @deprecated `@/i18n`'deki `getCurrentLocale()`'ı doğrudan kullan. Bu, geriye
+ * dönük uyumluluk için tutulan bir takma ad — mevcut çağrı yerlerini kırmamak
+ * için burada bırakıldı.
+ */
+export const currentDateLocale = getCurrentLocale;
 
 export function sportIconForSlug(slug: string): IconName {
   return SPORT_ICON_BY_SLUG[slug.toLowerCase()] ?? "shapes";
@@ -61,10 +67,23 @@ export function formatEventTime(isoDate: string): string {
     return "";
   }
 
-  return date.toLocaleTimeString("tr-TR", {
+  return date.toLocaleTimeString(currentDateLocale(), {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+/**
+ * Rozet metninden bağımsız aciliyet kontrolü — `relativeEventBadge`'in
+ * dönüş metni dile göre değiştiği için ("BUGÜN" vs "TODAY") rozet rengi gibi
+ * davranışsal kararlar bu metne değil doğrudan tarihe bakmalı.
+ */
+export function isEventToday(isoDate: string): boolean {
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime())) {
+    return false;
+  }
+  return startOfDay(date).getTime() === startOfDay(new Date()).getTime();
 }
 
 /** BUGÜN / YARIN / N GÜN SONRA — uzak tarihlerde null. */
@@ -82,15 +101,15 @@ export function relativeEventBadge(isoDate: string): string | null {
   );
 
   if (dayDiff === 0) {
-    return "BUGÜN";
+    return i18n.t("events:badge.today");
   }
 
   if (dayDiff === 1) {
-    return "YARIN";
+    return i18n.t("events:badge.tomorrow");
   }
 
   if (dayDiff >= 2 && dayDiff <= 6) {
-    return `${dayDiff} GÜN SONRA`;
+    return i18n.t("events:badge.inDays", { count: dayDiff });
   }
 
   return null;
@@ -103,7 +122,7 @@ export function formatEventDateLabel(isoDate: string): string {
     return isoDate;
   }
 
-  const time = date.toLocaleTimeString("tr-TR", {
+  const time = date.toLocaleTimeString(currentDateLocale(), {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -115,18 +134,21 @@ export function formatEventDateLabel(isoDate: string): string {
   );
 
   if (dayDiff === 0) {
-    return `Bugün · ${time}`;
+    return `${i18n.t("events:dateLabel.today")} · ${time}`;
   }
 
   if (dayDiff === 1) {
-    return `Yarın · ${time}`;
+    return `${i18n.t("events:dateLabel.tomorrow")} · ${time}`;
   }
 
   if (dayDiff > 1 && dayDiff < 7) {
-    return `${WEEKDAY_TR[date.getDay()]} · ${time}`;
+    const weekdaysShort = i18n.t("events:weekdaysShort", {
+      returnObjects: true,
+    }) as string[];
+    return `${weekdaysShort[date.getDay()]} · ${time}`;
   }
 
-  const dayMonth = date.toLocaleDateString("tr-TR", {
+  const dayMonth = date.toLocaleDateString(currentDateLocale(), {
     day: "numeric",
     month: "short",
   });
@@ -136,17 +158,17 @@ export function formatEventDateLabel(isoDate: string): string {
 
 export function formatDurationLabel(minutes: number): string {
   if (minutes < 60) {
-    return `${minutes} dk`;
+    return i18n.t("events:duration.minutes", { count: minutes });
   }
 
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
 
   if (rest === 0) {
-    return `${hours} sa`;
+    return i18n.t("events:duration.hours", { count: hours });
   }
 
-  return `${hours} sa ${rest} dk`;
+  return i18n.t("events:duration.hoursAndMinutes", { hours, minutes: rest });
 }
 
 export function formatPersonName(parts: {
@@ -167,7 +189,7 @@ export function formatPersonName(parts: {
     return `@${parts.username.trim()}`;
   }
 
-  return "Sporcu";
+  return i18n.t("events:fallback.athlete");
 }
 
 function isPostcode(value: string) {
@@ -233,10 +255,20 @@ function addressParts(value: string): string[] {
   return parts;
 }
 
+/** Etkinlik listesinde/haritasında adres yokken gösterilen yer tutucu. */
+export function noLocationLabel(): string {
+  return i18n.t("events:fallback.noLocation");
+}
+
+/** Açıklama girilmemişken gösterilen yer tutucu metin. */
+export function noDescriptionLabel(): string {
+  return i18n.t("events:fallback.noDescription");
+}
+
 function shortLocation(address: string): string {
   const trimmed = typeof address === "string" ? address.trim() : "";
   if (!trimmed) {
-    return "Konum yok";
+    return noLocationLabel();
   }
 
   // Hermes on physical iOS devices can crash inside String.prototype.split
@@ -247,7 +279,7 @@ function shortLocation(address: string): string {
   );
 
   if (useful.length === 0) {
-    return "Konum yok";
+    return noLocationLabel();
   }
 
   const districts = useful.filter(
@@ -258,7 +290,7 @@ function shortLocation(address: string): string {
     useful.find((part) => !isStreet(part)) ??
     useful[0];
 
-  return shortenPlaceName(raw) || "Konum yok";
+  return shortenPlaceName(raw) || noLocationLabel();
 }
 
 export function parseFeeAmount(raw: string): number | null {
@@ -276,7 +308,7 @@ export function parseFeeAmount(raw: string): number | null {
 }
 
 export function formatTryAmount(amount: number): string {
-  return `${new Intl.NumberFormat("tr-TR", {
+  return `${new Intl.NumberFormat(currentDateLocale(), {
     minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
     maximumFractionDigits: 2,
   }).format(amount)} ₺`;
@@ -287,7 +319,7 @@ export function formatEventFee(
   feeAmount: number | null | undefined,
 ): string {
   if (!isPaid || feeAmount == null) {
-    return "Ücretsiz";
+    return i18n.t("events:fee.free");
   }
 
   return formatTryAmount(feeAmount);
@@ -316,7 +348,7 @@ export function mapListItemToSummary(item: ApiEventListItem): EventSummary {
     feeAmount: item.feeAmount ?? null,
     hostName: item.organizerUsername
       ? `@${item.organizerUsername}`
-      : "Organizatör",
+      : i18n.t("events:fallback.organizer"),
     status: item.status,
     durationMinutes: item.durationMinutes,
   };
@@ -351,7 +383,7 @@ export function mapDetailToEvent(
     hostName: formatPersonName(organizer),
     status: detail.status,
     durationMinutes: detail.durationMinutes,
-    description: detail.description?.trim() || "Açıklama eklenmemiş.",
+    description: detail.description?.trim() || noDescriptionLabel(),
     address: detail.address,
     durationLabel: formatDurationLabel(detail.durationMinutes),
     participants: participants.map(mapParticipant),
@@ -380,7 +412,7 @@ export function mapParticipant(participant: ApiParticipant): EventParticipant {
     kind: participant.kind,
     isGuest,
     name: isGuest
-      ? guestName || "İsimsiz misafir"
+      ? guestName || i18n.t("events:fallback.unnamedGuest")
       : formatPersonName(participant),
     username: participant.username,
     avatarUrl: participant.profileImageUrl,
@@ -426,36 +458,36 @@ export function mapExplorePerson(item: ApiExplorePerson): ExplorePerson {
 export function eventStatusLabel(status: number): string {
   switch (status) {
     case 0:
-      return "Taslak";
+      return i18n.t("events:status.draft");
     case 1:
-      return "Yayında";
+      return i18n.t("events:status.published");
     case 2:
-      return "Dolu";
+      return i18n.t("events:status.full");
     case 3:
-      return "Tamamlandı";
+      return i18n.t("events:status.completed");
     case 4:
-      return "İptal";
+      return i18n.t("events:status.cancelled");
     default:
-      return "Etkinlik";
+      return i18n.t("events:fallback.event");
   }
 }
 
 export function participantStatusLabel(status: number): string {
   switch (status) {
     case 0:
-      return "Onay bekliyor";
+      return i18n.t("events:participantStatus.pending");
     case 1:
-      return "Onaylandı";
+      return i18n.t("events:participantStatus.approved");
     case 2:
-      return "Reddedildi";
+      return i18n.t("events:participantStatus.rejected");
     case 3:
-      return "Ayrıldı";
+      return i18n.t("events:participantStatus.left");
     case 4:
-      return "Katıldı";
+      return i18n.t("events:participantStatus.attended");
     case 5:
-      return "Gelmedi";
+      return i18n.t("events:participantStatus.noShow");
     case 6:
-      return "Davet gönderildi";
+      return i18n.t("events:participantStatus.invited");
     default:
       return "";
   }

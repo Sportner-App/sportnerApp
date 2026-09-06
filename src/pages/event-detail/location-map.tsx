@@ -8,6 +8,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { DirectionsSheet, MapPin } from "@/components";
 import { DARK_MAP_STYLE } from "@/constants/map";
@@ -16,6 +17,7 @@ import { isGooglePlacesEnabled } from "@/services/location-service";
 import type { EventDetail } from "@/types/events";
 import type { DirectionsTarget } from "@/utils/open-directions";
 import { lightImpact } from "@/utils/haptics";
+import { noLocationLabel } from "@/utils/events";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -30,7 +32,7 @@ function locationPresentation(address: string) {
     .filter(Boolean);
 
   if (parts.length === 0) {
-    return { title: "Konum yok", detail: undefined };
+    return { title: noLocationLabel(), detail: undefined };
   }
 
   return {
@@ -40,6 +42,7 @@ function locationPresentation(address: string) {
 }
 
 export function LocationMap({ event }: LocationMapProps) {
+  const { t } = useTranslation("eventDetail");
   const useGoogleMaps = isGooglePlacesEnabled();
   const [sheetVisible, setSheetVisible] = useState(false);
   const { title: primaryLocation, detail: secondaryAddress } =
@@ -67,7 +70,7 @@ export function LocationMap({ event }: LocationMapProps) {
           <Text
             style={[typeStyles.label, { color: themeColors.text.secondary }]}
           >
-            Konum
+            {t("location.heading")}
           </Text>
           <AnimatedPressable
             hitSlop={8}
@@ -88,7 +91,7 @@ export function LocationMap({ event }: LocationMapProps) {
               className="font-body text-xs"
               style={{ color: themeColors.text.primary }}
             >
-              Yol tarifi
+              {t("location.directions")}
             </Text>
             <FontAwesome6
               name="diamond-turn-right"

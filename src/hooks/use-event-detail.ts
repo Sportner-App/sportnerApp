@@ -1,5 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useSession, useToast } from "@/contexts";
 import {
@@ -25,6 +26,7 @@ import {
 import { errorNotification, successNotification } from "@/utils/haptics";
 
 export function useEventDetail(id: string | undefined) {
+  const { t } = useTranslation("eventDetail");
   const { user } = useSession();
   const { showToast } = useToast();
 
@@ -56,7 +58,7 @@ export function useEventDetail(id: string | undefined) {
         setEvent(await getEventById(id));
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Etkinlik detayı yüklenemedi.",
+          err instanceof Error ? err.message : t("toast.detailLoadFailed"),
         );
         setEvent(null);
       } finally {
@@ -64,7 +66,7 @@ export function useEventDetail(id: string | undefined) {
         setIsRefreshing(false);
       }
     },
-    [id],
+    [id, t],
   );
 
   const refresh = useCallback(() => load("refresh"), [load]);
@@ -129,7 +131,7 @@ export function useEventDetail(id: string | undefined) {
     if (actionError) {
       showToast({
         type: "error",
-        title: "İşlem başarısız",
+        title: t("toast.actionFailedTitle"),
         description: actionError.message,
       });
       return false;
@@ -157,7 +159,7 @@ export function useEventDetail(id: string | undefined) {
         errorNotification();
         showToast({
           type: "error",
-          title: "Katılım başarısız",
+          title: t("toast.joinFailedTitle"),
           description: joinError.message,
         });
         return;
@@ -170,15 +172,15 @@ export function useEventDetail(id: string | undefined) {
       showToast({
         type: "success",
         title: data?.joinedWaitlist
-          ? "Bekleme listesine alındın"
+          ? t("toast.joinedWaitlistTitle")
           : pending
-            ? "Başvurun alındı"
-            : "Katıldın",
+            ? t("toast.applicationReceivedTitle")
+            : t("toast.joinedTitle"),
         description: data?.joinedWaitlist
-          ? "Yer açılınca bilgilendirileceksin."
+          ? t("toast.joinedWaitlistDescription")
           : pending
-            ? "Organizatör onaylayınca katılacaksın."
-            : "Etkinlik detayları güncellendi. İyi eğlenceler!",
+            ? t("toast.applicationReceivedDescription")
+            : t("toast.joinedDescription"),
       });
       successNotification();
       await refresh();
@@ -195,8 +197,8 @@ export function useEventDetail(id: string | undefined) {
     if (hasEventEnded(event)) {
       showToast({
         type: "error",
-        title: "Ayrılamazsın",
-        description: "Biten etkinlikten ayrılamazsın.",
+        title: t("toast.cannotLeaveTitle"),
+        description: t("toast.cannotLeaveEndedDescription"),
       });
       return;
     }
@@ -209,15 +211,15 @@ export function useEventDetail(id: string | undefined) {
       const ok = await runAction(
         () => cancelParticipation(event.id),
         waitlisted
-          ? "Listeden çıktın"
+          ? t("toast.leftWaitlistTitle")
           : pending
-            ? "Başvurun geri çekildi"
-            : "Ayrıldın",
+            ? t("toast.applicationWithdrawnTitle")
+            : t("toast.leftTitle"),
         waitlisted
-          ? "Bekleme listesinden çıktın."
+          ? t("toast.leftWaitlistDescription")
           : pending
-            ? "Organizatör artık başvurunu görmeyecek."
-            : "Katılımın iptal edildi.",
+            ? t("toast.applicationWithdrawnDescription")
+            : t("toast.leftDescription"),
       );
       if (ok) {
         successNotification();
@@ -239,8 +241,10 @@ export function useEventDetail(id: string | undefined) {
           accept
             ? acceptEventInvitation(event.id)
             : declineEventInvitation(event.id),
-        accept ? "Davet kabul edildi" : "Davet reddedildi",
-        accept ? "Etkinliğin katılımcıları arasındasın." : undefined,
+        accept
+          ? t("toast.invitationAcceptedTitle")
+          : t("toast.invitationDeclinedTitle"),
+        accept ? t("toast.invitationAcceptedDescription") : undefined,
       );
       ok ? successNotification() : errorNotification();
     } finally {
@@ -266,7 +270,7 @@ export function useEventDetail(id: string | undefined) {
       ? withUser(
           userId,
           () => approveParticipant(event.id, userId),
-          "Katılımcı onaylandı",
+          t("toast.participantApprovedTitle"),
         )
       : Promise.resolve(false);
 
@@ -275,7 +279,7 @@ export function useEventDetail(id: string | undefined) {
       ? withUser(
           userId,
           () => rejectParticipant(event.id, userId),
-          "Başvuru reddedildi",
+          t("toast.applicationRejectedTitle"),
         )
       : Promise.resolve(false);
 
@@ -284,7 +288,7 @@ export function useEventDetail(id: string | undefined) {
       ? withUser(
           userId,
           () => promoteFromWaitlist(event.id, userId),
-          "Bekleme listesinden alındı",
+          t("toast.promotedFromWaitlistTitle"),
         )
       : Promise.resolve();
 
@@ -293,7 +297,7 @@ export function useEventDetail(id: string | undefined) {
       ? withUser(
           userId,
           () => confirmAttendance(event.id, userId),
-          "Geldi olarak işaretlendi. Şimdi puanlayabilirsin.",
+          t("toast.markedAttendedTitle"),
         )
       : Promise.resolve();
 
@@ -302,7 +306,7 @@ export function useEventDetail(id: string | undefined) {
       ? withUser(
           userId,
           () => markNoShow(event.id, userId),
-          "Gelmedi işaretlendi",
+          t("toast.markedAbsentTitle"),
         )
       : Promise.resolve();
 
@@ -314,8 +318,8 @@ export function useEventDetail(id: string | undefined) {
     try {
       await runAction(
         () => cancelEvent(event.id),
-        "Etkinlik iptal edildi",
-        "Katılımcılar bilgilendirilecek.",
+        t("toast.eventCancelledTitle"),
+        t("toast.eventCancelledDescription"),
       );
     } finally {
       setIsMutating(false);
@@ -330,8 +334,8 @@ export function useEventDetail(id: string | undefined) {
     try {
       await runAction(
         () => completeEvent(event.id),
-        "Etkinlik tamamlandı",
-        "Önce yoklama al, sonra gelenleri puanla. Yorumlar profillerinde görünür.",
+        t("toast.eventCompletedTitle"),
+        t("toast.eventCompletedDescription"),
       );
     } finally {
       setIsMutating(false);

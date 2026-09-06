@@ -6,6 +6,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { themeColors } from "@/constants/theme";
 import { lightImpact } from "@/utils/haptics";
@@ -21,6 +22,7 @@ export function PendingRequestsHeaderAction({
   count,
   onPress,
 }: PendingRequestsEntryProps) {
+  const { t } = useTranslation("eventDetail");
   const pressScale = useSharedValue(1);
   const countScale = useSharedValue(1);
   const previousCount = useRef(count);
@@ -47,7 +49,7 @@ export function PendingRequestsHeaderAction({
   return (
     <AnimatedPressable
       accessibilityRole="button"
-      accessibilityLabel={`${count} bekleyen katılım isteği`}
+      accessibilityLabel={t("pendingEntry.accessibility", { count })}
       hitSlop={8}
       onPress={() => {
         lightImpact();
@@ -91,6 +93,7 @@ export function PendingRequestsBanner({
   count,
   onPress,
 }: PendingRequestsEntryProps) {
+  const { t } = useTranslation("eventDetail");
   const pressScale = useSharedValue(1);
   const pressStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pressScale.value }],
@@ -116,8 +119,8 @@ export function PendingRequestsBanner({
         <FontAwesome6 name="user-group" size={12} color="#ccff00" />
       </View>
       <Text className="flex-1 font-body text-sm text-text-primary">
-        <Text className="font-mono text-brand-primary">{count}</Text> katılım
-        isteği bekliyor
+        <Text className="font-mono text-brand-primary">{count}</Text>{" "}
+        {t("pendingEntry.bannerText")}
       </Text>
       <FontAwesome6 name="chevron-right" size={12} color="#64748b" />
     </AnimatedPressable>

@@ -12,6 +12,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { Avatar, BottomSheet, Button } from "@/components";
 import { themeColors } from "@/constants/theme";
@@ -41,6 +42,7 @@ export function PendingRequestsSheet({
   onReject,
   onOpenUser,
 }: PendingRequestsSheetProps) {
+  const { t } = useTranslation("eventDetail");
   const [busyKind, setBusyKind] = useState<"approve" | "reject" | null>(null);
   const [exiting, setExiting] = useState<EventParticipant[]>([]);
 
@@ -104,8 +106,8 @@ export function PendingRequestsSheet({
       tone="light"
       visible={visible}
       onClose={onClose}
-      title="Katılım İstekleri"
-      subtitle="Etkinliğine katılmak isteyenleri değerlendir."
+      title={t("pendingSheet.title")}
+      subtitle={t("pendingSheet.subtitle")}
     >
       <ScrollView
         className="max-h-[420px]"
@@ -187,6 +189,8 @@ function RequestRow({
   onApprove: () => void;
   onReject: () => void;
 }) {
+  const { t } = useTranslation("eventDetail");
+
   return (
     <View className="gap-3 rounded-2xl border border-border-default bg-surface-primary p-3.5">
       <Pressable
@@ -201,7 +205,7 @@ function RequestRow({
         />
         <View className="flex-1">
           <Text className="font-body text-sm font-semibold text-text-primary">
-            @{person.username || "sporcu"}
+            @{person.username || t("events:fallback.athleteHandle")}
           </Text>
         </View>
       </Pressable>
@@ -210,7 +214,7 @@ function RequestRow({
         <View className="flex-1">
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Katılım isteğini reddet"
+            accessibilityLabel={t("pendingSheet.rejectAccessibility")}
             disabled={busy}
             onPress={onReject}
             className="min-h-[44px] items-center justify-center rounded-2xl border border-border-strong bg-surface-secondary px-4 active:opacity-75"
@@ -219,14 +223,14 @@ function RequestRow({
               <ActivityIndicator color={themeColors.text.secondary} />
             ) : (
               <Text className="font-body-bold text-sm text-text-primary">
-                Reddet
+                {t("pendingSheet.reject")}
               </Text>
             )}
           </Pressable>
         </View>
         <View className="flex-1">
           <Button
-            label="Onayla"
+            label={t("pendingSheet.approve")}
             size="sm"
             glow="subtle"
             pressScale={0.96}
@@ -242,6 +246,7 @@ function RequestRow({
 }
 
 function EmptyState() {
+  const { t } = useTranslation("eventDetail");
   const progress = useSharedValue(0);
 
   useEffect(() => {
@@ -256,10 +261,10 @@ function EmptyState() {
   return (
     <Animated.View style={style} className="items-center gap-2 px-4 py-10">
       <Text className="text-center font-body text-sm font-semibold text-text-primary">
-        ✓ Tüm istekleri değerlendirdin
+        {t("pendingSheet.emptyTitle")}
       </Text>
       <Text className="text-center font-body text-xs text-text-secondary">
-        Şimdilik bekleyen başka katılım isteği yok.
+        {t("pendingSheet.emptySubtitle")}
       </Text>
     </Animated.View>
   );

@@ -12,10 +12,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BottomSheet, Button } from "@/components";
-import {
-  ONBOARDING_COPY,
-  ONBOARDING_SKILL_OPTIONS,
-} from "@/constants/onboarding";
+import { ONBOARDING_COPY, useSkillLevelOptions } from "@/constants/onboarding";
 import type { useOnboarding } from "@/hooks/use-onboarding";
 import type { OnboardingSportDraft } from "@/types/onboarding";
 import type { Sport } from "@/types/sports";
@@ -26,13 +23,6 @@ type Form = ReturnType<typeof useOnboarding>;
 const GRID_GAP = 10;
 const GRID_HORIZONTAL_PADDING = 16;
 const GRID_COLUMNS = 3;
-
-function skillShortLabel(level: number) {
-  return (
-    ONBOARDING_SKILL_OPTIONS.find((option) => option.level === level)
-      ?.shortLabel ?? "—"
-  );
-}
 
 function SportTile({
   sport,
@@ -314,6 +304,11 @@ function SelectedSportChip({
   onPress: () => void;
   onRemove: () => void;
 }) {
+  const skillOptions = useSkillLevelOptions();
+  const skillShortLabel =
+    skillOptions.find((option) => option.level === draft.skillLevel)
+      ?.shortLabel ?? "—";
+
   return (
     <Pressable
       onPress={onPress}
@@ -333,7 +328,7 @@ function SelectedSportChip({
       </Text>
       <View className="rounded-full bg-white/10 px-1.5 py-0.5">
         <Text className="font-mono text-[10px] text-brand-neutral">
-          {skillShortLabel(draft.skillLevel)}
+          {skillShortLabel}
         </Text>
       </View>
       {isPrimary ? (
@@ -347,6 +342,7 @@ function SelectedSportChip({
 }
 
 function SportConfigSheet({ form }: { form: Form }) {
+  const ONBOARDING_SKILL_OPTIONS = useSkillLevelOptions();
   const draft = form.editingDraft;
   const visible = Boolean(draft);
   const isPrimary = draft ? form.primarySportId === draft.sportId : false;

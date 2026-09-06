@@ -1,9 +1,14 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
-import { DURATION_OPTIONS } from "@/constants/events";
-import { SKILL_LEVEL_LABELS, skillKeyFromCode } from "@/constants/profile";
-import { formatEventFee, parseFeeAmount } from "@/utils/events";
+import { useDurationOptions } from "@/constants/events";
+import { skillKeyFromCode, useSkillLevelLabels } from "@/constants/profile";
+import {
+  currentDateLocale,
+  formatEventFee,
+  parseFeeAmount,
+} from "@/utils/events";
 import { sportAccentToken, themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { CreateEventFormValues } from "@/types/events";
@@ -15,11 +20,12 @@ type EventCreateSummaryProps = {
 };
 
 function formatSummaryDate(date: Date) {
-  const day = date.toLocaleDateString("tr-TR", {
+  const locale = currentDateLocale();
+  const day = date.toLocaleDateString(locale, {
     day: "numeric",
     month: "short",
   });
-  const time = date.toLocaleTimeString("tr-TR", {
+  const time = date.toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -62,6 +68,9 @@ export function EventCreateSummary({
   values,
   sportOptions,
 }: EventCreateSummaryProps) {
+  const { t } = useTranslation("eventCreate");
+  const SKILL_LEVEL_LABELS = useSkillLevelLabels();
+  const DURATION_OPTIONS = useDurationOptions();
   const sport = sportOptions.find((option) => option.key === values.sportSlug);
   const sportToken = sportAccentToken(values.sportSlug);
   const accent = sportToken?.accent ?? themeColors.brand.primary;
@@ -71,18 +80,20 @@ export function EventCreateSummary({
   const duration =
     DURATION_OPTIONS.find((option) => option.minutes === values.durationMinutes)
       ?.label ??
-    (values.durationMinutes > 0 ? `${values.durationMinutes} dk` : null);
+    (values.durationMinutes > 0
+      ? t("duration.minutesShort", { count: values.durationMinutes })
+      : null);
   const dateLabel = formatSummaryDate(values.eventDate);
   const playerCount = Number(values.maxPlayers);
   const playersLabel = Number.isFinite(playerCount)
-    ? `${playerCount} kişi`
+    ? t("summary.playersLabel", { count: playerCount })
     : null;
   const schedule = [dateLabel, duration].filter(Boolean).join("   •   ");
 
   return (
     <View>
       <Text className="mb-2 font-body-bold text-[13px] text-text-secondary">
-        Etkinlik Özeti
+        {t("summary.heading")}
       </Text>
 
       <View className="rounded-[24px] border border-border-default bg-surface-primary px-4 py-4">
@@ -130,11 +141,24 @@ export function EventCreateSummary({
               </SummaryRow>
             ) : null}
             <SummaryRow icon="id-card" accent={accent}>
-              {`${values.minParticipantAge}–${values.maxParticipantAge} yaş`}
+              {t("summary.ageRange", {
+                min: values.minParticipantAge,
+                max: values.maxParticipantAge,
+              })}
             </SummaryRow>
             {values.isRecurring ? (
               <SummaryRow icon="repeat" accent={accent}>
-                {`${values.recurrenceCount}'li seri · ${values.recurrenceIntervalWeeks === 1 ? "her hafta" : `${values.recurrenceIntervalWeeks} haftada bir`} · sırayla açılır`}
+                {[
+                  t("recurring.summarySeries", {
+                    count: values.recurrenceCount,
+                  }),
+                  values.recurrenceIntervalWeeks === 1
+                    ? t("recurring.summaryWeekly")
+                    : t("recurring.summaryEveryNWeeks", {
+                        weeks: values.recurrenceIntervalWeeks,
+                      }),
+                  t("recurring.summaryAutoOpens"),
+                ].join(" · ")}
               </SummaryRow>
             ) : null}
             {values.skillLevel != null ? (

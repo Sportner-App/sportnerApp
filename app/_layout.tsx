@@ -2,6 +2,7 @@ import { colors } from "@/constants/colors";
 import { FEATURE_FLAGS } from "@/constants/feature-flags";
 import { AnimatedSplashScreen } from "@/components/animated-splash-screen";
 import { AppProviders } from "@/contexts";
+import { LanguagePreferenceProvider } from "@/contexts/language-preference-provider";
 import {
   ThemePreferenceProvider,
   useThemePreference,
@@ -70,9 +71,11 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   return (
-    <ThemePreferenceProvider>
-      <ThemedRootLayoutNav />
-    </ThemePreferenceProvider>
+    <LanguagePreferenceProvider>
+      <ThemePreferenceProvider>
+        <ThemedRootLayoutNav />
+      </ThemePreferenceProvider>
+    </LanguagePreferenceProvider>
   );
 }
 

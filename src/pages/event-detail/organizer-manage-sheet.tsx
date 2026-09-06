@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 import { Avatar, BottomSheet, Button, SegmentedTabs } from "@/components";
 import {
@@ -28,28 +30,32 @@ type OrganizerManageSheetProps = {
   onRateUser: (userId: string) => void;
 };
 
-function tabCopy(tab: OrganizerManageTab, count: number) {
+function tabCopy(
+  t: TFunction<"eventDetail">,
+  tab: OrganizerManageTab,
+  count: number,
+) {
   switch (tab) {
     case "requests":
       return {
-        title: "Katılım istekleri",
+        title: t("manageSheet.requestsTitle"),
         subtitle:
           count > 0
-            ? `${count} kişi onay bekliyor. Onayladığın kişiler katılımcılara eklenir.`
-            : "Yanıtlanacak istek kalmadı.",
+            ? t("manageSheet.requestsSubtitlePending", { count })
+            : t("manageSheet.requestsSubtitleEmpty"),
       };
     case "waitlist":
       return {
-        title: "Bekleme listesi",
+        title: t("manageSheet.waitlistTitle"),
         subtitle:
           count > 0
-            ? `${count} kişi yer açılmasını bekliyor.`
-            : "Bekleme listesi boş.",
+            ? t("manageSheet.waitlistSubtitlePending", { count })
+            : t("manageSheet.waitlistSubtitleEmpty"),
       };
     case "attendance":
       return {
-        title: "Yoklama",
-        subtitle: "Kim geldi, kim gelmedi — sonra gelenleri puanlayabilirsin.",
+        title: t("manageSheet.attendanceTitle"),
+        subtitle: t("manageSheet.attendanceSubtitle"),
       };
   }
 }
@@ -69,6 +75,7 @@ export function OrganizerManageSheet({
   onOpenUser,
   onRateUser,
 }: OrganizerManageSheetProps) {
+  const { t } = useTranslation("eventDetail");
   const [tab, setTab] = useState<OrganizerManageTab>(initialTab);
 
   const pending = event.participants.filter(
@@ -92,7 +99,10 @@ export function OrganizerManageSheet({
     if (pending.length > 0 || tab === "requests") {
       items.push({
         key: "requests",
-        label: pending.length > 0 ? `İstekler (${pending.length})` : "İstekler",
+        label:
+          pending.length > 0
+            ? t("manageSheet.requestsTabWithCount", { count: pending.length })
+            : t("manageSheet.requestsTab"),
       });
     }
 
@@ -101,17 +111,19 @@ export function OrganizerManageSheet({
         key: "waitlist",
         label:
           event.waitlist.length > 0
-            ? `Bekleme (${event.waitlist.length})`
-            : "Bekleme",
+            ? t("manageSheet.waitlistTabWithCount", {
+                count: event.waitlist.length,
+              })
+            : t("manageSheet.waitlistTab"),
       });
     }
 
     if (canTakeAttendance) {
-      items.push({ key: "attendance", label: "Yoklama" });
+      items.push({ key: "attendance", label: t("manageSheet.attendanceTab") });
     }
 
     return items;
-  }, [canTakeAttendance, event.waitlist.length, pending.length, tab]);
+  }, [canTakeAttendance, event.waitlist.length, pending.length, t, tab]);
 
   useEffect(() => {
     if (visible) {
@@ -125,7 +137,7 @@ export function OrganizerManageSheet({
       : tab === "waitlist"
         ? event.waitlist.length
         : approved.length;
-  const copy = tabCopy(tab, count);
+  const copy = tabCopy(t, tab, count);
 
   return (
     <BottomSheet
@@ -224,8 +236,10 @@ function RequestList({
   onApprove: (userId: string) => void;
   onReject: (userId: string) => void;
 }) {
+  const { t } = useTranslation("eventDetail");
+
   if (people.length === 0) {
-    return <EmptyState text="Onay bekleyen kimse yok." />;
+    return <EmptyState text={t("manageSheet.noPendingRequests")} />;
   }
 
   return (
@@ -239,7 +253,7 @@ function RequestList({
             className="gap-3 rounded-2xl border border-border-default bg-surface-primary p-3.5"
           >
             <PersonHeader
-              name={`@${person.username || "sporcu"}`}
+              name={`@${person.username || t("events:fallback.athleteHandle")}`}
               profileImageUrl={person.avatarUrl}
               detail={participantStatusLabel(person.status)}
               onPress={() => onOpenUser(userId)}
@@ -247,7 +261,7 @@ function RequestList({
             <View className="flex-row gap-2">
               <View className="flex-1">
                 <Button
-                  label="Onayla"
+                  label={t("manageSheet.approve")}
                   size="sm"
                   haptic="success"
                   isLoading={busy}
@@ -257,7 +271,7 @@ function RequestList({
               </View>
               <View className="flex-1">
                 <Button
-                  label="Reddet"
+                  label={t("manageSheet.reject")}
                   variant="secondary"
                   size="sm"
                   haptic="light"
@@ -284,8 +298,10 @@ function WaitlistList({
   onOpenUser: (userId: string) => void;
   onPromote: (userId: string) => void;
 }) {
+  const { t } = useTranslation("eventDetail");
+
   if (entries.length === 0) {
-    return <EmptyState text="Bekleme listesi boş." />;
+    return <EmptyState text={t("manageSheet.emptyWaitlist")} />;
   }
 
   return (
@@ -298,17 +314,17 @@ function WaitlistList({
             className="gap-3 rounded-2xl border border-border-default bg-surface-primary p-3.5"
           >
             <PersonHeader
-              name={`@${entry.username || "sporcu"}`}
+              name={`@${entry.username || t("events:fallback.athleteHandle")}`}
               profileImageUrl={entry.avatarUrl}
               detail={
                 entry.username
                   ? `#${entry.position} · @${entry.username}`
-                  : `#${entry.position} sırada`
+                  : `#${entry.position} ${t("manageSheet.positionSuffix")}`
               }
               onPress={() => onOpenUser(entry.userId)}
             />
             <Button
-              label="Listeye al"
+              label={t("manageSheet.promote")}
               size="sm"
               haptic="success"
               isLoading={busy}
@@ -337,8 +353,10 @@ function AttendanceList({
   onAbsent: (userId: string) => void;
   onRateUser: (userId: string) => void;
 }) {
+  const { t } = useTranslation("eventDetail");
+
   if (people.length === 0) {
-    return <EmptyState text="Yoklama alınacak katılımcı yok." />;
+    return <EmptyState text={t("manageSheet.noAttendance")} />;
   }
 
   return (
@@ -352,7 +370,7 @@ function AttendanceList({
             className="gap-3 rounded-2xl border border-border-default bg-surface-primary p-3.5"
           >
             <PersonHeader
-              name={`@${person.username || "sporcu"}`}
+              name={`@${person.username || t("events:fallback.athleteHandle")}`}
               profileImageUrl={person.avatarUrl}
               detail={participantStatusLabel(person.status)}
               onPress={() => onOpenUser(userId)}
@@ -361,7 +379,7 @@ function AttendanceList({
               <View className="flex-row gap-2">
                 <View className="flex-1">
                   <Button
-                    label="Geldi"
+                    label={t("manageSheet.attended")}
                     size="sm"
                     haptic="success"
                     isLoading={busy}
@@ -371,7 +389,7 @@ function AttendanceList({
                 </View>
                 <View className="flex-1">
                   <Button
-                    label="Gelmedi"
+                    label={t("manageSheet.absent")}
                     variant="secondary"
                     size="sm"
                     haptic="light"
@@ -383,7 +401,7 @@ function AttendanceList({
             ) : null}
             {person.status === PARTICIPANT_STATUS.attended ? (
               <Button
-                label="Puanla"
+                label={t("manageSheet.rate")}
                 size="sm"
                 haptic="light"
                 onPress={() => onRateUser(userId)}

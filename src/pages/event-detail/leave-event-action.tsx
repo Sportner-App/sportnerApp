@@ -6,6 +6,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { BottomSheet, Button } from "@/components";
 import { lightImpact } from "@/utils/haptics";
@@ -18,6 +19,7 @@ type LeaveEventActionProps = {
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function LeaveEventAction({ isLeaving, onLeave }: LeaveEventActionProps) {
+  const { t } = useTranslation("eventDetail");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const scale = useSharedValue(1);
   const pressStyle = useAnimatedStyle(() => ({
@@ -57,7 +59,7 @@ export function LeaveEventAction({ isLeaving, onLeave }: LeaveEventActionProps) 
       >
         <FontAwesome6 name="arrow-right-from-bracket" size={12} color="#ef4444" />
         <Text className="font-body text-sm text-[#ef4444]">
-          {isLeaving ? "Ayrılıyor..." : "Etkinlikten Ayrıl"}
+          {isLeaving ? t("leave.leaving") : t("leave.action")}
         </Text>
       </AnimatedPressable>
 
@@ -68,12 +70,12 @@ export function LeaveEventAction({ isLeaving, onLeave }: LeaveEventActionProps) 
             setConfirmOpen(false);
           }
         }}
-        title="Etkinlikten ayrılmak istiyor musun?"
-        subtitle="Katılımcı listesinden çıkarılacaksın."
+        title={t("leave.confirmTitle")}
+        subtitle={t("leave.confirmSubtitle")}
       >
         <View className="mb-1">
           <Button
-            label="Etkinlikten Ayrıl"
+            label={t("leave.action")}
             variant="secondary"
             size="md"
             pressScale={0.98}

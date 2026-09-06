@@ -1,0 +1,13 @@
+{
+  "events": "Events",
+  "discover": "Discover",
+  "activity": "My Events",
+  "profile": "Profile",
+  "create": "Create event",
+  "createShort": "Event",
+  "requireAuth": {
+    "create": "You need to sign in to create an event.",
+    "activity": "You need to sign in to see your events.",
+    "profile": "You need to sign in to see your profile."
+  }
+}

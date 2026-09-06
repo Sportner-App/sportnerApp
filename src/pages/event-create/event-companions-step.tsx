@@ -1,5 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
 import { themeColors } from "@/constants/theme";
@@ -36,6 +37,7 @@ export function EventCompanionsStep({
   onRemoveGuest,
   onToggleFriend,
 }: Props) {
+  const { t } = useTranslation("eventCreate");
   const reserved = guests.length + selectedFriendIds.length;
 
   return (
@@ -44,10 +46,10 @@ export function EventCompanionsStep({
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="font-body-bold text-sm text-text-primary">
-              {remainingSlots} kişilik yer açık
+              {t("companions.slotsAvailable", { count: remainingSlots })}
             </Text>
             <Text className="mt-1 font-body text-xs text-text-secondary">
-              1 organizatör + {reserved} yanında gelen
+              {t("companions.reservedBreakdown", { count: reserved })}
             </Text>
           </View>
           <Text className="font-mono-bold text-lg text-brand-primary">
@@ -60,10 +62,10 @@ export function EventCompanionsStep({
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="font-body-bold text-sm text-text-primary">
-              Anonim misafirler
+              {t("companions.guestsTitle")}
             </Text>
             <Text className="mt-0.5 font-body text-xs text-text-tertiary">
-              Hesabı olmayan kişiler; ad ve soyad zorunludur.
+              {t("companions.guestsSubtitle")}
             </Text>
           </View>
           <Pressable
@@ -94,7 +96,7 @@ export function EventCompanionsStep({
                   />
                 </View>
                 <Text className="font-body-bold text-xs text-text-secondary">
-                  Misafir {index + 1}
+                  {t("companions.guestLabel", { number: index + 1 })}
                 </Text>
               </View>
               <Pressable
@@ -110,7 +112,7 @@ export function EventCompanionsStep({
             </View>
             <View className="flex-row gap-2">
               <GuestInput
-                placeholder="Ad"
+                placeholder={t("companions.guestFirstName")}
                 value={guest.firstName}
                 hasError={!guest.firstName.trim()}
                 onChangeText={(value) =>
@@ -118,7 +120,7 @@ export function EventCompanionsStep({
                 }
               />
               <GuestInput
-                placeholder="Soyad"
+                placeholder={t("companions.guestLastName")}
                 value={guest.lastName}
                 hasError={!guest.lastName.trim()}
                 onChangeText={(value) =>
@@ -128,7 +130,7 @@ export function EventCompanionsStep({
             </View>
             {!guest.firstName.trim() || !guest.lastName.trim() ? (
               <Text className="font-body text-[11px] text-destructive">
-                Misafirin adı ve soyadı zorunludur.
+                {t("companions.guestRequiredError")}
               </Text>
             ) : null}
           </View>
@@ -138,20 +140,20 @@ export function EventCompanionsStep({
       <View className="gap-3">
         <View>
           <Text className="font-body-bold text-sm text-text-primary">
-            Arkadaşlarına davet gönder
+            {t("companions.friendsTitle")}
           </Text>
           <Text className="mt-0.5 font-body text-xs text-text-tertiary">
-            Seçtiğin kişiler kabul ettikten sonra katılımcı olur.
+            {t("companions.friendsSubtitle")}
           </Text>
         </View>
 
         {isFriendsLoading ? (
           <Text className="py-4 text-center font-body text-sm text-text-secondary">
-            Arkadaşlar yükleniyor…
+            {t("companions.friendsLoading")}
           </Text>
         ) : friends.length === 0 ? (
           <Text className="rounded-2xl border border-border-default bg-surface-primary px-4 py-5 text-center font-body text-sm text-text-secondary">
-            Ekleyebileceğin kabul edilmiş arkadaş bulunamadı.
+            {t("companions.friendsEmpty")}
           </Text>
         ) : (
           <ScrollView
@@ -182,7 +184,7 @@ export function EventCompanionsStep({
                     />
                     <View className="flex-1">
                       <Text className="font-body-bold text-sm text-text-primary">
-                        @{friend.username || "sporcu"}
+                        @{friend.username || t("events:fallback.athleteHandle")}
                       </Text>
                     </View>
                     <View

@@ -29,3 +29,7 @@ export {
   ThemePreferenceProvider,
   useThemePreference,
 } from "./theme-preference-provider";
+export {
+  LanguagePreferenceProvider,
+  useLanguagePreference,
+} from "./language-preference-provider";

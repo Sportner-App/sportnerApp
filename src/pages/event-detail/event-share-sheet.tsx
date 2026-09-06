@@ -6,11 +6,13 @@ import { useRef, useState } from "react";
 import { Pressable, Share, Text, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import ViewShot, { captureRef } from "react-native-view-shot";
+import { useTranslation } from "react-i18next";
 
 import { BottomSheet } from "@/components";
 import { sportAccentToken, themeColors } from "@/constants/theme";
 import { useToast } from "@/contexts";
 import type { EventDetail } from "@/types/events";
+import { currentDateLocale } from "@/utils/events";
 
 type ShareFormat = "story" | "post";
 
@@ -23,6 +25,7 @@ export function EventShareSheet({
   event: EventDetail;
   onClose: () => void;
 }) {
+  const { t } = useTranslation("eventDetail");
   const storyRef = useRef<View>(null);
   const postRef = useRef<View>(null);
   const [busy, setBusy] = useState<ShareFormat | "link" | null>(null);
@@ -37,7 +40,7 @@ export function EventShareSheet({
     try {
       const available = await Sharing.isAvailableAsync();
       if (!available) {
-        throw new Error("Bu cihazda görsel paylaşımı kullanılamıyor.");
+        throw new Error(t("share.unavailable"));
       }
 
       const ref = format === "story" ? storyRef : postRef;
@@ -55,15 +58,15 @@ export function EventShareSheet({
         UTI: "public.png",
         dialogTitle:
           format === "story"
-            ? "Hikâye görselini paylaş"
-            : "Gönderi görselini paylaş",
+            ? t("share.storyDialogTitle")
+            : t("share.postDialogTitle"),
       });
     } catch (error) {
       showToast({
         type: "error",
-        title: "Paylaşılamadı",
+        title: t("share.failedTitle"),
         description:
-          error instanceof Error ? error.message : "Tekrar deneyebilirsin.",
+          error instanceof Error ? error.message : t("share.tryAgainGeneric"),
       });
     } finally {
       setBusy(null);
@@ -76,15 +79,15 @@ export function EventShareSheet({
     try {
       await Share.share({
         title: event.title,
-        message: `${event.title} etkinliğine göz at: ${eventUrl}`,
+        message: t("share.shareMessage", { title: event.title, url: eventUrl }),
         url: eventUrl,
       });
     } catch (error) {
       showToast({
         type: "error",
-        title: "Bağlantı paylaşılamadı",
+        title: t("share.linkFailedTitle"),
         description:
-          error instanceof Error ? error.message : "Tekrar deneyebilirsin.",
+          error instanceof Error ? error.message : t("share.tryAgainGeneric"),
       });
     } finally {
       setBusy(null);
@@ -95,30 +98,30 @@ export function EventShareSheet({
     <BottomSheet
       visible={visible}
       onClose={onClose}
-      title="Etkinliği paylaş"
-      subtitle="Hazır Sportner görselini seç veya etkinlik bağlantısını gönder."
+      title={t("share.title")}
+      subtitle={t("share.subtitle")}
     >
       <View className="gap-3">
         <ShareOption
           icon="instagram"
-          title="Instagram Hikâyesi"
-          description="9:16 hazır hikâye görseli"
+          title={t("share.instagramStory")}
+          description={t("share.instagramStoryDescription")}
           loading={busy === "story"}
           disabled={busy != null}
           onPress={() => void shareArtwork("story")}
         />
         <ShareOption
           icon="image"
-          title="Instagram Gönderisi"
-          description="4:5 dikey gönderi görseli"
+          title={t("share.instagramPost")}
+          description={t("share.instagramPostDescription")}
           loading={busy === "post"}
           disabled={busy != null}
           onPress={() => void shareArtwork("post")}
         />
         <ShareOption
           icon="link"
-          title="Bağlantıyı paylaş"
-          description="WhatsApp, Mesajlar ve diğer uygulamalar"
+          title={t("share.linkOption")}
+          description={t("share.linkOptionDescription")}
           loading={busy === "link"}
           disabled={busy != null}
           onPress={() => void shareLink()}
@@ -160,6 +163,8 @@ function ShareOption({
   disabled: boolean;
   onPress: () => void;
 }) {
+  const { t } = useTranslation("eventDetail");
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -177,7 +182,7 @@ function ShareOption({
       </View>
       <View className="min-w-0 flex-1 gap-0.5">
         <Text className="font-body-bold text-[15px] text-text-primary">
-          {loading ? "Hazırlanıyor…" : title}
+          {loading ? t("share.preparing") : title}
         </Text>
         <Text className="font-body text-xs text-text-tertiary">
           {description}
@@ -201,13 +206,17 @@ function EventShareArtwork({
   eventUrl: string;
   format: ShareFormat;
 }) {
+  const { t } = useTranslation("eventDetail");
   const width = 360;
   const height = format === "story" ? 640 : 450;
   const accent = sportAccentToken(event.sport)?.accent ?? "#ccff00";
   const capacity = event.maxParticipants
-    ? `${event.participantCount}/${event.maxParticipants} katılımcı`
-    : `${event.participantCount} katılımcı`;
-  const date = new Intl.DateTimeFormat("tr-TR", {
+    ? t("share.capacityWithMax", {
+        count: event.participantCount,
+        max: event.maxParticipants,
+      })
+    : t("share.capacityUnlimited", { count: event.participantCount });
+  const date = new Intl.DateTimeFormat(currentDateLocale(), {
     day: "numeric",
     month: "long",
     hour: "2-digit",
@@ -277,7 +286,7 @@ function EventShareArtwork({
               letterSpacing: 1.2,
             }}
           >
-            {event.sportName.toLocaleUpperCase("tr-TR")}
+            {event.sportName.toLocaleUpperCase(currentDateLocale())}
           </Text>
         </View>
       </View>
@@ -301,7 +310,10 @@ function EventShareArtwork({
           <ArtworkInfo icon="users" text={capacity} accent={accent} />
           <ArtworkInfo
             icon="id-card"
-            text={`${event.minParticipantAge}–${event.maxParticipantAge} yaş`}
+            text={t("primaryInfo.ageRange", {
+              min: event.minParticipantAge,
+              max: event.maxParticipantAge,
+            })}
             accent={accent}
           />
         </View>
@@ -323,7 +335,7 @@ function EventShareArtwork({
               fontSize: 18,
             }}
           >
-            Sportner’da katıl
+            {t("share.artworkJoin")}
           </Text>
           <Text
             style={{
@@ -332,7 +344,7 @@ function EventShareArtwork({
               fontSize: 11,
             }}
           >
-            QR kodu tara ve etkinliği aç
+            {t("share.artworkScanHint")}
           </Text>
         </View>
         <View

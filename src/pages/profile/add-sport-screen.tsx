@@ -4,7 +4,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 import { AppScreen, Button, ScreenHeader } from "@/components";
-import { ONBOARDING_SKILL_OPTIONS } from "@/constants/onboarding";
+import { useSkillLevelOptions } from "@/constants/onboarding";
 import { useToast } from "@/contexts";
 import { useProfile } from "@/hooks/use-profile";
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -18,6 +18,7 @@ export function AddSportScreen() {
   const router = useRouter();
   const { showToast } = useToast();
   const { profile, refresh } = useProfile();
+  const ONBOARDING_SKILL_OPTIONS = useSkillLevelOptions();
   const [query, setQuery] = useState("");
   const [sports, setSports] = useState<Sport[]>([]);
   const [selected, setSelected] = useState<

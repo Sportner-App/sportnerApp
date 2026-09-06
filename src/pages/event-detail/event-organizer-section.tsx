@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
 import { themeColors, typeStyles } from "@/constants/theme";
@@ -21,6 +22,7 @@ export function EventOrganizerSection({
   onOpenUser,
   onChat,
 }: EventOrganizerSectionProps) {
+  const { t } = useTranslation("eventDetail");
   const profile = event.participants.find(
     (item) => item.userId === event.organizerUserId,
   );
@@ -41,7 +43,7 @@ export function EventOrganizerSection({
       className="gap-md"
     >
       <Text style={[typeStyles.label, { color: themeColors.text.secondary }]}>
-        Etkinlik Sahibi
+        {t("organizerSection.heading")}
       </Text>
 
       <View className="flex-row items-center gap-3">
@@ -70,14 +72,14 @@ export function EventOrganizerSection({
             className="font-body-bold text-[15px]"
             style={{ color: themeColors.text.primary }}
           >
-            @{username || "sporcu"}
+            @{username || t("events:fallback.athleteHandle")}
           </Text>
         </Pressable>
 
         {showChat ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Sohbete git"
+            accessibilityLabel={t("organizerSection.chatAccessibility")}
             hitSlop={8}
             onPress={() => {
               lightImpact();

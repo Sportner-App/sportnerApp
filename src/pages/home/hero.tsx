@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
+import { useTranslation } from "react-i18next";
 
 import { shadows, themeColors } from "@/constants/theme";
 import { lightImpact } from "@/utils/haptics";
@@ -13,6 +14,9 @@ type HeroProps = {
 const HERO_IMAGE = require("../../../assets/images/sportnerhero.png");
 
 export function Hero({ onCreatePress }: HeroProps) {
+  const { t } = useTranslation("home");
+  const { t: tTabs } = useTranslation("tabs");
+
   return (
     <Animated.View
       entering={FadeInDown.duration(520).delay(100)}
@@ -33,19 +37,22 @@ export function Hero({ onCreatePress }: HeroProps) {
               numberOfLines={1}
               className="font-display text-[20px] leading-6 text-text-inverse"
             >
-              Harekete <Text className="text-brand-primary">geç!</Text>
+              {t("hero.titlePrefix")}
+              <Text className="text-brand-primary">
+                {t("hero.titleHighlight")}
+              </Text>
             </Text>
             <Text
               numberOfLines={1}
               className="mt-1 font-body text-[13px] leading-4 text-white/75"
             >
-              Yakınında seni bekleyen etkinlikleri keşfet.
+              {t("hero.subtitle")}
             </Text>
           </View>
 
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Etkinlik oluştur"
+            accessibilityLabel={tTabs("create")}
             onPress={() => {
               lightImpact();
               onCreatePress();
@@ -61,7 +68,7 @@ export function Hero({ onCreatePress }: HeroProps) {
               className="font-body-bold text-[13px]"
               style={{ color: themeColors.text.onPrimary }}
             >
-              Oluştur
+              {t("hero.createLabel")}
             </Text>
           </Pressable>
         </View>

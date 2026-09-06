@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as AppleAuthentication from "expo-apple-authentication";
 import * as Haptics from "expo-haptics";
+import { useTranslation } from "react-i18next";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -24,7 +25,7 @@ import {
   SegmentedTabs,
   SelectField,
 } from "@/components";
-import { AUTH_COPY, AUTH_MODE_OPTIONS, GENDER_OPTIONS } from "@/constants/auth";
+import { useAuthCopy } from "@/constants/auth";
 import { useAuthForm } from "@/hooks/use-auth-form";
 import { useSocialAuth } from "@/hooks/use-social-auth";
 import type { AuthMode } from "@/types/auth";
@@ -84,6 +85,8 @@ function authExiting(shift: number) {
 }
 
 export function AuthScreen() {
+  const { t } = useTranslation("auth");
+  const { AUTH_MODE_OPTIONS, GENDER_OPTIONS, AUTH_COPY } = useAuthCopy();
   const form = useAuthForm();
   const social = useSocialAuth();
   const copy = AUTH_COPY[form.mode];
@@ -168,7 +171,7 @@ export function AuthScreen() {
                   <>
                     <Input
                       icon="user"
-                      placeholder="Ad"
+                      placeholder={t("fields.firstName")}
                       value={form.firstName}
                       onChangeText={form.setFirstName}
                       autoCapitalize="words"
@@ -178,7 +181,7 @@ export function AuthScreen() {
                     />
                     <Input
                       icon="user"
-                      placeholder="Soyad (opsiyonel)"
+                      placeholder={t("fields.lastNameOptional")}
                       value={form.lastName}
                       onChangeText={form.setLastName}
                       autoCapitalize="words"
@@ -188,8 +191,8 @@ export function AuthScreen() {
                     />
                     <Input
                       icon="calendar-days"
-                      label="Doğum tarihi"
-                      placeholder="GG.AA.YYYY"
+                      label={t("fields.birthDate")}
+                      placeholder={t("fields.birthDatePlaceholder")}
                       value={form.birthDate}
                       onChangeText={form.setBirthDate}
                       keyboardType="number-pad"
@@ -198,8 +201,8 @@ export function AuthScreen() {
                     />
                     <View>
                       <SelectField
-                        label="Cinsiyet"
-                        placeholder="Cinsiyet seç"
+                        label={t("fields.gender")}
+                        placeholder={t("fields.genderPlaceholder")}
                         icon="venus-mars"
                         options={GENDER_OPTIONS}
                         value={form.gender}
@@ -216,7 +219,7 @@ export function AuthScreen() {
 
                 <Input
                   icon="at"
-                  placeholder="Kullanıcı adı"
+                  placeholder={t("fields.username")}
                   value={form.username}
                   onChangeText={form.setUsername}
                   autoCapitalize="none"
@@ -229,7 +232,7 @@ export function AuthScreen() {
                 <Input
                   icon="lock"
                   isPassword
-                  placeholder="Şifre"
+                  placeholder={t("fields.password")}
                   value={form.password}
                   onChangeText={form.setPassword}
                   autoCapitalize="none"
@@ -262,14 +265,16 @@ export function AuthScreen() {
 
             <View className="mt-5 flex-row items-center gap-3">
               <View className="h-px flex-1 bg-border-default" />
-              <Text className="font-body text-xs text-brand-neutral">veya</Text>
+              <Text className="font-body text-xs text-brand-neutral">
+                {t("common:or")}
+              </Text>
               <View className="h-px flex-1 bg-border-default" />
             </View>
 
             <View className="mt-4 gap-3">
               <SocialAuthButton
                 provider="google"
-                label="Google ile devam et"
+                label={t("social.google")}
                 isLoading={social.loadingProvider === "google"}
                 disabled={social.loadingProvider !== null}
                 onPress={social.signInWithGoogle}
@@ -277,7 +282,7 @@ export function AuthScreen() {
               {isAppleAvailable ? (
                 <SocialAuthButton
                   provider="apple"
-                  label="Apple ile devam et"
+                  label={t("social.apple")}
                   isLoading={social.loadingProvider === "apple"}
                   disabled={social.loadingProvider !== null}
                   onPress={social.signInWithApple}

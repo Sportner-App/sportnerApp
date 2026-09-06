@@ -1,5 +1,7 @@
 import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components";
 import { shadows } from "@/constants/theme";
@@ -40,15 +42,19 @@ type BarContent = {
   secondaryAction?: () => void;
 };
 
-function occupancyLabel(event: EventDetail) {
+function occupancyLabel(t: TFunction<"eventDetail">, event: EventDetail) {
   if (event.maxParticipants == null) {
-    return `${event.participantCount} katılımcı`;
+    return t("primaryInfo.countLabel", { count: event.participantCount });
   }
 
-  return `${event.participantCount} / ${event.maxParticipants} katılımcı`;
+  return t("primaryInfo.countLabelWithMax", {
+    count: event.participantCount,
+    max: event.maxParticipants,
+  });
 }
 
 function resolveBar({
+  t,
   event,
   isJoining,
   isFull,
@@ -59,6 +65,7 @@ function resolveBar({
   onAcceptInvitation,
   onDeclineInvitation,
 }: {
+  t: TFunction<"eventDetail">;
   event: EventDetail;
   isJoining: boolean;
   isFull: boolean;
@@ -83,8 +90,8 @@ function resolveBar({
 
   if (isOrganizer) {
     return {
-      statusTitle: occupancyLabel(event),
-      actionLabel: ended ? "Sohbeti gör" : "Sohbete Git",
+      statusTitle: occupancyLabel(t, event),
+      actionLabel: ended ? t("join.chatDone") : t("join.chatGo"),
       action: canChat ? onChat : undefined,
       variant: ended ? "secondary" : "primary",
     };
@@ -92,8 +99,8 @@ function resolveBar({
 
   if (hasApprovedParticipation(event.myParticipationStatus)) {
     return {
-      statusTitle: ended ? "Etkinlik bitti" : "✓ Katılıyorsun",
-      actionLabel: ended ? "Sohbeti gör" : "Sohbete Git",
+      statusTitle: ended ? t("join.eventEnded") : t("join.joined"),
+      actionLabel: ended ? t("join.chatDone") : t("join.chatGo"),
       action: canChat ? onChat : undefined,
       variant: ended ? "secondary" : "primary",
     };
@@ -101,10 +108,10 @@ function resolveBar({
 
   if (hasEventInvitation(event.myParticipationStatus)) {
     return {
-      statusTitle: `${event.hostName} seni davet etti`,
-      actionLabel: "Kabul Et",
+      statusTitle: t("join.invitedBy", { name: event.hostName }),
+      actionLabel: t("join.accept"),
       action: onAcceptInvitation,
-      secondaryActionLabel: "Reddet",
+      secondaryActionLabel: t("join.decline"),
       secondaryAction: onDeclineInvitation,
       variant: "primary",
       loading: isRespondingInvitation,
@@ -113,16 +120,16 @@ function resolveBar({
 
   if (hasPendingParticipation(event.myParticipationStatus)) {
     return {
-      statusTitle: "Başvurun gönderildi",
-      actionLabel: "Onay bekliyor",
+      statusTitle: t("join.applicationSent"),
+      actionLabel: t("join.awaitingApproval"),
       variant: "secondary",
     };
   }
 
   if (event.isOnWaitlist) {
     return {
-      statusTitle: isFull ? "Etkinlik dolu" : occupancyLabel(event),
-      actionLabel: "Bekleme listesindesin",
+      statusTitle: isFull ? t("join.full") : occupancyLabel(t, event),
+      actionLabel: t("join.onWaitlist"),
       variant: "secondary",
     };
   }
@@ -131,17 +138,17 @@ function resolveBar({
     return {
       statusTitle:
         event.maxParticipants == null
-          ? `${event.participantCount} katılımcı`
-          : occupancyLabel(event),
-      actionLabel: "Katılım kapalı",
+          ? t("primaryInfo.countLabel", { count: event.participantCount })
+          : occupancyLabel(t, event),
+      actionLabel: t("join.closed"),
       variant: "secondary",
     };
   }
 
   if (isFull) {
     return {
-      statusTitle: "Etkinlik dolu",
-      actionLabel: "Bekleme Listesine Katıl",
+      statusTitle: t("join.full"),
+      actionLabel: t("join.joinWaitlist"),
       action: onJoin,
       variant: "primary",
       loading: isJoining,
@@ -149,11 +156,11 @@ function resolveBar({
   }
 
   return {
-    statusTitle: spotsLeft == null ? "∞" : String(spotsLeft),
+    statusTitle: spotsLeft == null ? t("join.spotsInfinite") : String(spotsLeft),
     statusSubtitle: event.isPaid
-      ? `yer kaldı · ${formatEventFee(true, event.feeAmount)}`
-      : "yer kaldı",
-    actionLabel: "Katıl",
+      ? `${t("join.spotsLeftSuffix")} · ${formatEventFee(true, event.feeAmount)}`
+      : t("join.spotsLeftSuffix"),
+    actionLabel: t("join.join"),
     action: onJoin,
     variant: "primary",
     loading: isJoining,
@@ -171,8 +178,10 @@ export function JoinBar({
   onAcceptInvitation,
   onDeclineInvitation,
 }: JoinBarProps) {
+  const { t } = useTranslation("eventDetail");
   const insets = useSafeAreaInsets();
   const bar = resolveBar({
+    t,
     event,
     isJoining,
     isFull,

@@ -1,0 +1,45 @@
+{
+  "badge": {
+    "today": "TODAY",
+    "tomorrow": "TOMORROW",
+    "inDays": "IN {{count}} DAYS"
+  },
+  "dateLabel": {
+    "today": "Today",
+    "tomorrow": "Tomorrow"
+  },
+  "weekdaysShort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  "duration": {
+    "minutes": "{{count}} min",
+    "hours": "{{count}} h",
+    "hoursAndMinutes": "{{hours}} h {{minutes}} min"
+  },
+  "fee": {
+    "free": "Free"
+  },
+  "fallback": {
+    "athlete": "Athlete",
+    "athleteHandle": "athlete",
+    "organizer": "Organizer",
+    "unnamedGuest": "Unnamed guest",
+    "noLocation": "No location",
+    "noDescription": "No description added.",
+    "event": "Event"
+  },
+  "status": {
+    "draft": "Draft",
+    "published": "Published",
+    "full": "Full",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "participantStatus": {
+    "pending": "Awaiting approval",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "left": "Left",
+    "attended": "Attended",
+    "noShow": "No-show",
+    "invited": "Invitation sent"
+  }
+}

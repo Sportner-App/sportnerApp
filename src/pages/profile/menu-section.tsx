@@ -1,9 +1,10 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components";
-import { PROFILE_COPY, PROFILE_MENU_GROUPS } from "@/constants/profile";
+import { useProfileMenuGroups } from "@/constants/profile";
 
 type MenuSectionProps = {
   onItemPress: (key: string) => void;
@@ -16,12 +17,15 @@ export function MenuSection({
   onLogout,
   isSigningOut,
 }: MenuSectionProps) {
+  const { t } = useTranslation("settings");
+  const menuGroups = useProfileMenuGroups();
+
   return (
     <Animated.View
       entering={FadeInDown.duration(420).delay(140)}
       className="gap-7"
     >
-      {PROFILE_MENU_GROUPS.map((group) => (
+      {menuGroups.map((group) => (
         <View key={group.key} className="gap-3">
           <Text className="font-display text-lg text-text-primary">
             {group.title}
@@ -51,7 +55,7 @@ export function MenuSection({
       ))}
 
       <Button
-        label={PROFILE_COPY.logout}
+        label={t("logout")}
         variant="danger"
         icon="right-from-bracket"
         isLoading={isSigningOut}

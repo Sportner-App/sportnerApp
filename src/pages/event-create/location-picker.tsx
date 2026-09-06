@@ -14,6 +14,7 @@ import MapView, {
   type Region,
 } from "react-native-maps";
 import Animated, { FadeIn, FadeInDown, FadeOut } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { MapPin } from "@/components";
 import { DARK_MAP_STYLE, MAP_INITIAL_REGION } from "@/constants/map";
@@ -37,6 +38,7 @@ export function LocationPicker({
   onSelect,
   compact = false,
 }: LocationPickerProps) {
+  const { t } = useTranslation("eventCreate");
   const mapRef = useRef<MapView>(null);
   const {
     query,
@@ -98,7 +100,7 @@ export function LocationPicker({
       className="z-10 gap-2"
     >
       <Text className="font-body-bold text-[13px] text-text-secondary">
-        Konum
+        {t("location.label")}
       </Text>
 
       <View className="overflow-hidden rounded-[28px] border border-border-default bg-surface-primary">
@@ -113,7 +115,7 @@ export function LocationPicker({
             <TextInput
               value={query}
               onChangeText={setQuery}
-              placeholder="Konum ara veya haritadan seç"
+              placeholder={t("location.searchPlaceholder")}
               placeholderTextColor={themeColors.text.tertiary}
               className="flex-1 font-body text-base text-text-primary"
               autoCorrect={false}
@@ -226,9 +228,7 @@ export function LocationPicker({
                 className="flex-1 font-body text-xs text-text-secondary"
                 numberOfLines={2}
               >
-                {hasSelection
-                  ? addressText
-                  : "Haritaya dokun veya yukarıdan ara"}
+                {hasSelection ? addressText : t("location.emptyHint")}
               </Text>
             </View>
           </View>

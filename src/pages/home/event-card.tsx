@@ -14,9 +14,10 @@ import Svg, {
   Rect,
   Stop,
 } from "react-native-svg";
+import { useTranslation } from "react-i18next";
 
 import { resolveEventBadgeThemes } from "@/constants/badge-colors";
-import { SKILL_LEVEL_LABELS, skillKeyFromCode } from "@/constants/profile";
+import { skillKeyFromCode, useSkillLevelLabels } from "@/constants/profile";
 import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
 import {
   radius,
@@ -27,9 +28,12 @@ import {
 import type { IconName } from "@/types/components";
 import type { EventSummary } from "@/types/events";
 import {
+  currentDateLocale,
   formatDurationLabel,
   formatEventFee,
   formatEventTime,
+  isEventToday,
+  noLocationLabel,
   relativeEventBadge,
 } from "@/utils/events";
 
@@ -51,6 +55,8 @@ export function EventCard({
   onPress,
   animateEntrance = true,
 }: EventCardProps) {
+  const { t } = useTranslation("home");
+  const SKILL_LEVEL_LABELS = useSkillLevelLabels();
   const [cardSize, setCardSize] = useState({ width: 0, height: 0 });
   const scale = useSharedValue(1);
   const pressStyle = useAnimatedStyle(() => ({
@@ -69,10 +75,10 @@ export function EventCard({
   const duration =
     event.durationMinutes > 0 ? formatDurationLabel(event.durationMinutes) : "";
   const badge = relativeEventBadge(event.eventDate);
-  const sportLabel = event.sportName.trim().toLocaleUpperCase("tr-TR");
-  const title = event.title.trim() || "Etkinlik";
+  const sportLabel = event.sportName.trim().toLocaleUpperCase(currentDateLocale());
+  const title = event.title.trim() || t("eventCard.untitled");
   const place = event.location.trim();
-  const showPlace = place.length > 0 && place !== "Konum yok";
+  const showPlace = place.length > 0 && place !== noLocationLabel();
   const photo = resolveEventPhoto(event.sportCoverImageUrl);
   const accent = sportAccentToken(event.sport);
   const sportColor = accent?.accent ?? themeColors.text.secondary;
@@ -83,31 +89,38 @@ export function EventCard({
   const badgeThemes = resolveEventBadgeThemes({
     sportAccent: sportColor,
     isPaid: event.isPaid,
-    urgency: badge === "BUGÜN" ? "today" : "upcoming",
+    urgency: isEventToday(event.eventDate) ? "today" : "upcoming",
   });
 
   const remainingLabel = unlimited
-    ? "Sınırsız"
+    ? t("eventCard.unlimited")
     : isFull
-      ? "Etkinlik dolu"
-      : `${spotsLeft} yer kaldı`;
+      ? t("eventCard.full")
+      : t("eventCard.spotsLeft", { count: spotsLeft ?? 0 });
 
   const countLabel = unlimited ? `${occupied}` : `${occupied} / ${max}`;
 
   const whenSpoken = badge
-    ? [badge.toLocaleLowerCase("tr-TR"), time ? `saat ${time}` : null]
+    ? [
+        badge.toLocaleLowerCase(currentDateLocale()),
+        time ? t("eventCard.atTime", { time }) : null,
+      ]
         .filter(Boolean)
         .join(" ")
     : event.dateLabel.trim() || null;
 
   const accessibilityLabel = [
-    sportLabel ? `${sportLabel} etkinliği` : "Etkinlik",
+    sportLabel
+      ? t("eventCard.accessibility.sportEvent", { sport: sportLabel })
+      : t("eventCard.accessibility.defaultEvent"),
     title,
     whenSpoken,
     showPlace ? place : null,
     [time, duration].filter(Boolean).join(" "),
-    `${occupied} katılımcı`,
-    unlimited ? "sınırsız kapasite" : `kapasite ${max} kişi`,
+    t("eventCard.accessibility.participantCount", { count: occupied }),
+    unlimited
+      ? t("eventCard.accessibility.unlimitedCapacity")
+      : t("eventCard.accessibility.capacity", { count: max }),
     remainingLabel,
   ]
     .filter(Boolean)

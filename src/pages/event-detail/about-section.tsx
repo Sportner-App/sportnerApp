@@ -1,27 +1,30 @@
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { themeColors, typeStyles } from "@/constants/theme";
 import type { EventDetail } from "@/types/events";
+import { noDescriptionLabel } from "@/utils/events";
 
 type AboutSectionProps = {
   event: EventDetail;
 };
 
-const EMPTY_DESCRIPTION = "Açıklama eklenmemiş.";
 const COLLAPSED_LINES = 4;
 
 export function AboutSection({ event }: AboutSectionProps) {
+  const { t } = useTranslation("eventDetail");
   const [expanded, setExpanded] = useState(false);
   const description = event.description.trim();
-  const isEmpty = description.length === 0 || description === EMPTY_DESCRIPTION;
+  const emptyDescription = noDescriptionLabel();
+  const isEmpty = description.length === 0 || description === emptyDescription;
   const isLong = !isEmpty && description.length > 180;
 
   return (
     <Animated.View entering={FadeInDown.duration(400).delay(160)} className="gap-md">
       <Text style={[typeStyles.label, { color: themeColors.text.secondary }]}>
-        Etkinlik Hakkında
+        {t("about.heading")}
       </Text>
 
       {isEmpty ? (
@@ -29,7 +32,7 @@ export function AboutSection({ event }: AboutSectionProps) {
           className="font-body text-[15px] leading-6"
           style={{ color: themeColors.text.secondary }}
         >
-          {EMPTY_DESCRIPTION}
+          {emptyDescription}
         </Text>
       ) : (
         <View className="gap-sm">
@@ -46,7 +49,7 @@ export function AboutSection({ event }: AboutSectionProps) {
                 className="font-body-bold text-[13px]"
                 style={{ color: themeColors.text.secondary }}
               >
-                {expanded ? "Daha az göster" : "Daha fazla göster"}
+                {expanded ? t("about.showLess") : t("about.showMore")}
               </Text>
             </Pressable>
           ) : null}

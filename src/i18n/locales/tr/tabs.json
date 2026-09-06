@@ -1,0 +1,13 @@
+{
+  "events": "Etkinlikler",
+  "discover": "Keşfet",
+  "activity": "Etkinliklerim",
+  "profile": "Profil",
+  "create": "Etkinlik oluştur",
+  "createShort": "Etkinlik",
+  "requireAuth": {
+    "create": "Etkinlik oluşturmak için giriş yapmalısın.",
+    "activity": "Etkinliklerini görmek için giriş yapmalısın.",
+    "profile": "Profilini görmek için giriş yapmalısın."
+  }
+}

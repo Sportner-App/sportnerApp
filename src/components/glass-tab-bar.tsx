@@ -3,6 +3,7 @@ import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Platform,
   Pressable,
@@ -30,24 +31,28 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 function TabButton({
   label,
+  createShortLabel,
   icon,
   focused,
   isAction,
+  isProfile,
   avatarUrl,
   avatarName,
   onPress,
   tourTargetRef,
 }: {
   label: string;
+  /** Aksiyon (create) butonunun içindeki kısa etiket. */
+  createShortLabel: string;
   icon: (typeof TAB_ITEMS)[number]["icon"];
   focused: boolean;
   isAction?: boolean;
+  isProfile: boolean;
   avatarUrl?: string | null;
   avatarName?: string | null;
   onPress: () => void;
   tourTargetRef?: (node: ViewType | null) => void;
 }) {
-  const isProfile = label === "Profil";
   const scale = useSharedValue(1);
   const glow = useSharedValue(0);
   const animatedStyle = useAnimatedStyle(() => ({
@@ -111,7 +116,7 @@ function TabButton({
               className="font-body-bold text-[8px] leading-[9px]"
               style={{ color: themeColors.text.onPrimary }}
             >
-              Etkinlik
+              {createShortLabel}
             </Text>
           </View>
         </AnimatedPressable>
@@ -189,6 +194,7 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const { registerTarget } = useAppTour();
   const { isAuthenticated, requireAuth } = useRequireAuth();
+  const { t } = useTranslation("tabs");
 
   useEffect(() => {
     let active = true;
@@ -257,10 +263,12 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
               return (
                 <TabButton
                   key={item.key}
-                  label={item.label}
+                  label={t(item.labelKey)}
+                  createShortLabel={t("createShort")}
                   icon={item.icon}
                   focused={focused}
                   isAction={item.isAction}
+                  isProfile={item.key === "profile"}
                   avatarUrl={item.key === "profile" ? avatarUrl : undefined}
                   avatarName={item.key === "profile" ? avatarName : undefined}
                   tourTargetRef={
@@ -272,12 +280,7 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
                   }
                   onPress={() => {
                     if (item.isAction) {
-                      if (
-                        !requireAuth(
-                          "Etkinlik oluşturmak için giriş yapmalısın.",
-                        )
-                      )
-                        return;
+                      if (!requireAuth(t("requireAuth.create"))) return;
                       router.push("/events/create");
                       return;
                     }
@@ -285,9 +288,11 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
                     if (
                       (item.key === "activity" || item.key === "profile") &&
                       !requireAuth(
-                        item.key === "activity"
-                          ? "Etkinliklerini görmek için giriş yapmalısın."
-                          : "Profilini görmek için giriş yapmalısın.",
+                        t(
+                          item.key === "activity"
+                            ? "requireAuth.activity"
+                            : "requireAuth.profile",
+                        ),
                       )
                     )
                       return;

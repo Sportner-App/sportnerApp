@@ -1,0 +1,57 @@
+{
+  "appearance": {
+    "title": "Appearance",
+    "description": "Choose how Sportner looks. The System option automatically follows your phone's theme changes.",
+    "options": {
+      "system": {
+        "label": "System",
+        "description": "Follows your phone's display setting"
+      },
+      "light": {
+        "label": "Light",
+        "description": "Always uses the light theme"
+      },
+      "dark": {
+        "label": "Dark",
+        "description": "Always uses the dark theme"
+      }
+    }
+  },
+  "language": {
+    "title": "Language",
+    "description": "Choose the app language. The System option follows your phone's language setting.",
+    "options": {
+      "system": {
+        "label": "System",
+        "description": "Follows your phone's language setting"
+      },
+      "tr": {
+        "label": "Türkçe",
+        "description": "Always use Turkish"
+      },
+      "en": {
+        "label": "English",
+        "description": "Always use English"
+      }
+    }
+  },
+  "menu": {
+    "settingsGroupTitle": "Settings",
+    "editProfile": "Edit profile",
+    "notifications": "Notifications",
+    "notificationSettings": "Notification settings",
+    "appearance": "Appearance",
+    "language": "Language",
+    "privacy": "Privacy",
+    "feedback": "Send feedback",
+    "help": "Help",
+    "appTour": "Replay app tour"
+  },
+  "social": {
+    "friends": "Friends",
+    "feed": "Feed",
+    "badges": "Badges",
+    "albums": "Albums"
+  },
+  "logout": "Log out"
+}

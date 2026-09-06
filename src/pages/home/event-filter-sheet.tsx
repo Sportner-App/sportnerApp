@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { BottomSheet, Button, SelectField } from "@/components";
-import { GENDER_OPTIONS } from "@/constants/auth";
-import { ONBOARDING_SKILL_OPTIONS } from "@/constants/onboarding";
+import { useGenderOptions } from "@/constants/auth";
+import { useSkillLevelOptions } from "@/constants/onboarding";
 import {
   DEFAULT_EVENT_FILTERS,
   type EventListFilters,
@@ -31,7 +32,11 @@ export function EventFilterSheet({
   organizations = [],
   sports = [],
 }: EventFilterSheetProps) {
+  const { t } = useTranslation("home");
+  const { t: tCommon } = useTranslation("common");
   const [draft, setDraft] = useState(filters);
+  const GENDER_OPTIONS = useGenderOptions();
+  const SKILL_OPTIONS = useSkillLevelOptions();
   const {
     options: cityOptions,
     isLoading: isCitiesLoading,
@@ -40,16 +45,16 @@ export function EventFilterSheet({
   const locationOptions = [
     {
       key: "",
-      label: "Tüm şehirler",
-      description: "Konuma göre filtreleme yapma",
+      label: t("filterSheet.location.allLabel"),
+      description: t("filterSheet.location.allDescription"),
     },
     ...cityOptions,
   ];
   const organizationOptions = [
     {
       key: "",
-      label: "Tüm organizasyonlar",
-      description: "Organizasyona göre filtreleme yapma",
+      label: t("filterSheet.organization.allLabel"),
+      description: t("filterSheet.organization.allDescription"),
     },
     ...organizations.map((organization) => ({
       key: organization.id,
@@ -59,8 +64,8 @@ export function EventFilterSheet({
   const sportOptions = [
     {
       key: "",
-      label: "Tüm sporlar",
-      description: "Branşa göre filtreleme yapma",
+      label: t("filterSheet.sport.allLabel"),
+      description: t("filterSheet.sport.allDescription"),
     },
     ...sports.map((sport) => ({
       key: sport.id,
@@ -89,14 +94,18 @@ export function EventFilterSheet({
     <BottomSheet
       visible={visible}
       onClose={onClose}
-      title="Etkinlik filtreleri"
-      subtitle="Konum, yaş, ücret, seviye ve organizatör cinsiyetine göre daralt."
+      title={t("filterSheet.title")}
+      subtitle={t("filterSheet.subtitle")}
       showCancel={false}
     >
       <View className="gap-5">
         <SelectField
-          label="Konum"
-          placeholder={isCitiesLoading ? "Şehirler yükleniyor..." : "Şehir seç"}
+          label={t("filterSheet.location.label")}
+          placeholder={
+            isCitiesLoading
+              ? t("filterSheet.location.loading")
+              : t("filterSheet.location.placeholder")
+          }
           icon="location-dot"
           options={locationOptions}
           value={draft.city ?? ""}
@@ -105,15 +114,15 @@ export function EventFilterSheet({
           }
           disabled={isCitiesLoading || Boolean(citiesError)}
           searchable
-          searchPlaceholder="Şehir ara"
-          sheetTitle="Konum seç"
-          sheetSubtitle="Etkinliğin bulunduğu şehri seç"
+          searchPlaceholder={t("filterSheet.location.searchPlaceholder")}
+          sheetTitle={t("filterSheet.location.sheetTitle")}
+          sheetSubtitle={t("filterSheet.location.sheetSubtitle")}
         />
 
         {sports.length > 0 ? (
           <SelectField
-            label="Spor"
-            placeholder="Spor seç"
+            label={t("filterSheet.sport.label")}
+            placeholder={t("filterSheet.sport.placeholder")}
             icon="shapes"
             options={sportOptions}
             value={draft.sportId ?? ""}
@@ -124,18 +133,18 @@ export function EventFilterSheet({
               }))
             }
             searchable
-            searchPlaceholder="Spor ara"
-            sheetTitle="Spor seç"
-            sheetSubtitle="Tek bir branşa göre daralt"
+            searchPlaceholder={t("filterSheet.sport.searchPlaceholder")}
+            sheetTitle={t("filterSheet.sport.sheetTitle")}
+            sheetSubtitle={t("filterSheet.sport.sheetSubtitle")}
             groups={sportGroups}
-            allGroupLabel="Tüm kategoriler"
+            allGroupLabel={t("filterSheet.sport.allGroupLabel")}
           />
         ) : null}
 
         {organizations.length > 1 ? (
           <SelectField
-            label="Organizasyon"
-            placeholder="Organizasyon seç"
+            label={t("filterSheet.organization.label")}
+            placeholder={t("filterSheet.organization.placeholder")}
             icon="building"
             options={organizationOptions}
             value={draft.organizationId ?? ""}
@@ -146,9 +155,9 @@ export function EventFilterSheet({
               }))
             }
             searchable
-            searchPlaceholder="Organizasyon ara"
-            sheetTitle="Organizasyon seç"
-            sheetSubtitle="Hangi organizasyonun etkinliklerini görmek istersin?"
+            searchPlaceholder={t("filterSheet.organization.searchPlaceholder")}
+            sheetTitle={t("filterSheet.organization.sheetTitle")}
+            sheetSubtitle={t("filterSheet.organization.sheetSubtitle")}
           />
         ) : null}
 
@@ -162,25 +171,25 @@ export function EventFilterSheet({
 
         <View className="gap-2">
           <Text className="font-body-bold text-[13px] text-text-secondary">
-            Ücret
+            {t("filterSheet.fee.label")}
           </Text>
           <View className="flex-row flex-wrap gap-2">
             <GenderOption
-              label="Tümü"
+              label={tCommon("all")}
               selected={draft.isPaid == null}
               onPress={() =>
                 setDraft((current) => ({ ...current, isPaid: null }))
               }
             />
             <GenderOption
-              label="Ücretsiz"
+              label={t("filterSheet.fee.free")}
               selected={draft.isPaid === false}
               onPress={() =>
                 setDraft((current) => ({ ...current, isPaid: false }))
               }
             />
             <GenderOption
-              label="Ücretli"
+              label={t("filterSheet.fee.paid")}
               selected={draft.isPaid === true}
               onPress={() =>
                 setDraft((current) => ({ ...current, isPaid: true }))
@@ -191,17 +200,17 @@ export function EventFilterSheet({
 
         <View className="gap-2">
           <Text className="font-body-bold text-[13px] text-text-secondary">
-            Seviye
+            {t("filterSheet.skillLabel")}
           </Text>
           <View className="flex-row flex-wrap gap-2">
             <GenderOption
-              label="Tümü"
+              label={tCommon("all")}
               selected={draft.skillLevel == null}
               onPress={() =>
                 setDraft((current) => ({ ...current, skillLevel: null }))
               }
             />
-            {ONBOARDING_SKILL_OPTIONS.map((option) => (
+            {SKILL_OPTIONS.map((option) => (
               <GenderOption
                 key={option.key}
                 label={option.label}
@@ -219,11 +228,11 @@ export function EventFilterSheet({
 
         <View className="gap-2">
           <Text className="font-body-bold text-[13px] text-text-secondary">
-            Organizatör cinsiyeti
+            {t("filterSheet.organizerGenderLabel")}
           </Text>
           <View className="flex-row flex-wrap gap-2">
             <GenderOption
-              label="Tümü"
+              label={tCommon("all")}
               selected={draft.gender == null}
               onPress={() =>
                 setDraft((current) => ({ ...current, gender: null }))
@@ -248,14 +257,14 @@ export function EventFilterSheet({
         <View className="flex-row gap-3">
           <View className="flex-1">
             <Button
-              label="Temizle"
+              label={tCommon("clear")}
               variant="secondary"
               onPress={() => setDraft(DEFAULT_EVENT_FILTERS)}
             />
           </View>
           <View className="flex-1">
             <Button
-              label="Uygula"
+              label={tCommon("apply")}
               onPress={() => {
                 onApply(draft);
                 onClose();

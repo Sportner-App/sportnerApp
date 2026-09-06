@@ -52,6 +52,7 @@
           "locationWhenInUsePermission": "Etkinlikleri sana en yakından uzağa sıralamak ve haritada konumunu göstermek için kullanılır."
         }
       ],
+      "expo-localization",
       [
         "expo-splash-screen",
         {

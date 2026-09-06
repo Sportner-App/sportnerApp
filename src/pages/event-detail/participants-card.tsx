@@ -5,6 +5,8 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
 import type { EventDetail, EventParticipant } from "@/types/events";
@@ -23,22 +25,29 @@ function givenName(name: string) {
   return name.trim().split(/\s+/)[0] || name;
 }
 
-function socialContext(people: EventParticipant[]) {
+function socialContext(
+  t: TFunction<"eventDetail">,
+  people: EventParticipant[],
+) {
   if (people.length === 0) {
     return null;
   }
 
   const first = givenName(people[0].name);
   if (people.length === 1) {
-    return `${first} katılıyor`;
+    return t("participants.socialOne", { name: first });
   }
 
   const second = givenName(people[1].name);
   if (people.length === 2) {
-    return `${first} ve ${second} katılıyor`;
+    return t("participants.socialTwo", { first, second });
   }
 
-  return `${first}, ${second} ve ${people.length - 2} kişi daha`;
+  return t("participants.socialMany", {
+    first,
+    second,
+    count: people.length - 2,
+  });
 }
 
 export function ParticipantsCard({
@@ -46,6 +55,7 @@ export function ParticipantsCard({
   onOpenUser,
   onOpenReviews,
 }: ParticipantsCardProps) {
+  const { t } = useTranslation("eventDetail");
   const current = event.participants.filter((item) =>
     isCurrentParticipant(item.status),
   );
@@ -60,7 +70,7 @@ export function ParticipantsCard({
     event.maxParticipants == null || event.maxParticipants <= 0
       ? 0
       : Math.min(rosterCount / event.maxParticipants, 1);
-  const context = socialContext(current);
+  const context = socialContext(t, current);
 
   return (
     <Animated.View
@@ -69,7 +79,7 @@ export function ParticipantsCard({
     >
       <View className="flex-row items-center justify-between">
         <Text className="font-display text-base text-text-primary">
-          Katılımcılar
+          {t("participants.heading")}
         </Text>
         <Text className="font-mono text-xs text-brand-primary">
           {capacityLabel}
@@ -125,7 +135,7 @@ export function ParticipantsCard({
           className="items-center rounded-2xl border border-border-default py-2.5"
         >
           <Text className="font-body text-xs font-semibold text-text-primary">
-            Değerlendirmeler
+            {t("participants.reviews")}
           </Text>
         </Pressable>
       ) : null}

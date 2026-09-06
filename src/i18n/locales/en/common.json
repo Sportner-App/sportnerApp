@@ -1,0 +1,13 @@
+{
+  "retry": "Try Again",
+  "cancel": "Cancel",
+  "save": "Save",
+  "or": "or",
+  "close": "Close",
+  "signInRequiredTitle": "You need to sign in",
+  "signInRequiredDefaultReason": "You need to sign in for this action.",
+  "back": "Back",
+  "all": "All",
+  "clear": "Clear",
+  "apply": "Apply"
+}

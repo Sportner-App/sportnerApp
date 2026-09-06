@@ -1,0 +1,105 @@
+{
+  "hero": {
+    "titlePrefix": "Harekete ",
+    "titleHighlight": "geç!",
+    "subtitle": "Yakınında seni bekleyen etkinlikleri keşfet.",
+    "createLabel": "Oluştur"
+  },
+  "sportFilter": {
+    "all": "Tümü"
+  },
+  "viewMode": {
+    "list": "Liste görünümü",
+    "map": "Harita görünümü"
+  },
+  "filters": {
+    "clearAccessibility": "Filtreleri temizle",
+    "accessibility": "Filtreler"
+  },
+  "scope": {
+    "all": "Genel",
+    "friends": "Arkadaşlarım",
+    "organizations": "Organizasyonlarım"
+  },
+  "requireAuth": {
+    "friends": "Arkadaşlarının etkinliklerini görmek için giriş yapmalısın.",
+    "organizations": "Organizasyonlarının etkinliklerini görmek için giriş yapmalısın."
+  },
+  "contextLabel": {
+    "organizationsFallback": "Organizasyonlarının etkinlikleri",
+    "friendsWithCity": "{{city}} · Arkadaşlarının etkinlikleri",
+    "friends": "Arkadaşlarının düzenlediği etkinlikler",
+    "cityEvents": "{{city}} etkinlikleri",
+    "allCities": "Tüm şehirlerdeki etkinlikler"
+  },
+  "resultCount": "{{count}} etkinlik bulundu",
+  "loadingEvents": "Etkinlikler yükleniyor",
+  "loadFailed": "Etkinlikler yüklenemedi.",
+  "empty": {
+    "organizations": "Organizasyonlarının henüz yaklaşan bir etkinliği yok.",
+    "friends": "Arkadaşların henüz yaklaşan bir etkinlik oluşturmamış.",
+    "default": "Bu filtrelere uygun yaklaşan etkinlik yok."
+  },
+  "map": {
+    "noResults": "Bu filtrelere uygun konumlu etkinlik yok.",
+    "currentLocationTitle": "Mevcut konumun",
+    "recenterAccessibility": "Konumuma odaklan",
+    "enableLocationAccessibility": "Konum iznini aç",
+    "openPreviewAccessibility": "{{title}} detayına git",
+    "closePreviewAccessibility": "Önizlemeyi kapat"
+  },
+  "eventCard": {
+    "untitled": "Etkinlik",
+    "unlimited": "Sınırsız",
+    "full": "Etkinlik dolu",
+    "spotsLeft": "{{count}} yer kaldı",
+    "atTime": "saat {{time}}",
+    "accessibility": {
+      "sportEvent": "{{sport}} etkinliği",
+      "defaultEvent": "Etkinlik",
+      "participantCount": "{{count}} katılımcı",
+      "unlimitedCapacity": "sınırsız kapasite",
+      "capacity": "kapasite {{count}} kişi"
+    }
+  },
+  "filterSheet": {
+    "title": "Etkinlik filtreleri",
+    "subtitle": "Konum, yaş, ücret, seviye ve organizatör cinsiyetine göre daralt.",
+    "location": {
+      "label": "Konum",
+      "loading": "Şehirler yükleniyor...",
+      "placeholder": "Şehir seç",
+      "sheetTitle": "Konum seç",
+      "sheetSubtitle": "Etkinliğin bulunduğu şehri seç",
+      "searchPlaceholder": "Şehir ara",
+      "allLabel": "Tüm şehirler",
+      "allDescription": "Konuma göre filtreleme yapma"
+    },
+    "sport": {
+      "label": "Spor",
+      "placeholder": "Spor seç",
+      "sheetTitle": "Spor seç",
+      "sheetSubtitle": "Tek bir branşa göre daralt",
+      "searchPlaceholder": "Spor ara",
+      "allGroupLabel": "Tüm kategoriler",
+      "allLabel": "Tüm sporlar",
+      "allDescription": "Branşa göre filtreleme yapma"
+    },
+    "organization": {
+      "label": "Organizasyon",
+      "placeholder": "Organizasyon seç",
+      "sheetTitle": "Organizasyon seç",
+      "sheetSubtitle": "Hangi organizasyonun etkinliklerini görmek istersin?",
+      "searchPlaceholder": "Organizasyon ara",
+      "allLabel": "Tüm organizasyonlar",
+      "allDescription": "Organizasyona göre filtreleme yapma"
+    },
+    "fee": {
+      "label": "Ücret",
+      "free": "Ücretsiz",
+      "paid": "Ücretli"
+    },
+    "skillLabel": "Seviye",
+    "organizerGenderLabel": "Organizatör cinsiyeti"
+  }
+}

@@ -1,5 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, Text, View } from "react-native";
+import { Trans, useTranslation } from "react-i18next";
 
 import { SelectField } from "@/components";
 import { themeColors } from "@/constants/theme";
@@ -26,6 +27,8 @@ export function OrganizationSelectStep({
   onOrganizationChange,
   disabled = false,
 }: OrganizationSelectStepProps) {
+  const { t } = useTranslation("eventCreate");
+
   if (isLocked) {
     return (
       <View className="mt-7 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary p-4">
@@ -37,11 +40,16 @@ export function OrganizationSelectStep({
           />
         </View>
         <Text className="flex-1 font-body text-sm text-text-secondary">
-          Bu etkinlik{" "}
-          <Text className="font-body-bold text-text-primary">
-            {lockedOrganizationName ?? "organizasyonun"}
-          </Text>{" "}
-          organizasyonuna bağlı olarak oluşturuluyor.
+          <Trans
+            t={t}
+            i18nKey="organization.lockedText"
+            values={{
+              name: lockedOrganizationName ?? t("organization.lockedFallbackName"),
+            }}
+            components={{
+              bold: <Text className="font-body-bold text-text-primary" />,
+            }}
+          />
         </Text>
       </View>
     );
@@ -54,7 +62,7 @@ export function OrganizationSelectStep({
   return (
     <View className="mt-7 gap-3">
       <Text className="font-body-bold text-[13px] text-text-secondary">
-        Bu etkinlik bir organizasyona mı bağlı?
+        {t("organization.intentQuestion")}
       </Text>
       <View className="flex-row flex-wrap gap-2">
         <Pressable
@@ -73,7 +81,7 @@ export function OrganizationSelectStep({
                 : "text-text-secondary"
             }`}
           >
-            Bireysel etkinlik
+            {t("organization.individual")}
           </Text>
         </Pressable>
         <Pressable
@@ -92,17 +100,17 @@ export function OrganizationSelectStep({
                 : "text-text-secondary"
             }`}
           >
-            Organizasyon etkinliği
+            {t("organization.organizationEvent")}
           </Text>
         </Pressable>
       </View>
 
       {wantsOrganizationEvent ? (
         <SelectField
-          label="Organizasyon"
-          placeholder="Organizasyon seç"
-          sheetTitle="Organizasyon seç"
-          sheetSubtitle="Etkinliği hangi organizasyon adına oluşturuyorsun?"
+          label={t("organization.label")}
+          placeholder={t("organization.placeholder")}
+          sheetTitle={t("organization.sheetTitle")}
+          sheetSubtitle={t("organization.sheetSubtitle")}
           icon="building"
           value={organizationId ?? ""}
           onChange={onOrganizationChange}

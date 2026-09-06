@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useAuth, useFirstLaunch, useToast } from "@/contexts";
 
@@ -8,21 +9,22 @@ export function useRequireAuth() {
   const { isAuthenticated } = useAuth();
   const { enterAuthWithoutCompleting } = useFirstLaunch();
   const { showToast } = useToast();
+  const { t } = useTranslation("common");
 
   const requireAuth = useCallback(
-    (reason = "Bu işlem için giriş yapmalısın.") => {
+    (reason?: string) => {
       if (isAuthenticated) return true;
 
       showToast({
         type: "info",
-        title: "Giriş yapman gerekiyor",
-        description: reason,
+        title: t("signInRequiredTitle"),
+        description: reason ?? t("signInRequiredDefaultReason"),
       });
       enterAuthWithoutCompleting();
       router.push("/(auth)/login");
       return false;
     },
-    [enterAuthWithoutCompleting, isAuthenticated, router, showToast],
+    [enterAuthWithoutCompleting, isAuthenticated, router, showToast, t],
   );
 
   return { isAuthenticated, requireAuth };

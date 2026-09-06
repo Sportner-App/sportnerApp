@@ -7,6 +7,7 @@ import MapView, {
   PROVIDER_GOOGLE,
   type Region,
 } from "react-native-maps";
+import { useTranslation } from "react-i18next";
 
 import { DARK_MAP_STYLE, MAP_INITIAL_REGION } from "@/constants/map";
 import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
@@ -15,7 +16,11 @@ import type { UserCoordinates, UserLocationStatus } from "@/hooks/use-user-locat
 import { isGooglePlacesEnabled } from "@/services/location-service";
 import type { IconName } from "@/types/components";
 import type { EventSummary } from "@/types/events";
-import { formatEventTime, relativeEventBadge } from "@/utils/events";
+import {
+  currentDateLocale,
+  formatEventTime,
+  relativeEventBadge,
+} from "@/utils/events";
 
 type EventsMapProps = {
   events: EventSummary[];
@@ -73,6 +78,7 @@ export function EventsMap({
   locationStatus = "idle",
   onRequestLocation,
 }: EventsMapProps) {
+  const { t } = useTranslation("home");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const useGoogleMaps = isGooglePlacesEnabled();
   const mapRef = useRef<MapView>(null);
@@ -134,7 +140,7 @@ export function EventsMap({
             coordinate={userLocation}
             anchor={{ x: 0.5, y: 0.5 }}
             zIndex={1}
-            title="Mevcut konumun"
+            title={t("map.currentLocationTitle")}
             tracksViewChanges={false}
           >
             <CurrentLocationPin />
@@ -179,7 +185,7 @@ export function EventsMap({
             color={themeColors.text.tertiary}
           />
           <Text className="flex-1 font-body text-xs text-text-secondary">
-            Bu filtrelere uygun konumlu etkinlik yok.
+            {t("map.noResults")}
           </Text>
         </View>
       ) : null}
@@ -188,7 +194,9 @@ export function EventsMap({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={
-            userLocation ? "Konumuma odaklan" : "Konum iznini aç"
+            userLocation
+              ? t("map.recenterAccessibility")
+              : t("map.enableLocationAccessibility")
           }
           onPress={centerOnUser}
           disabled={locationStatus === "loading"}
@@ -278,13 +286,16 @@ function EventMapPreviewCard({
   onClose: () => void;
   onPress: () => void;
 }) {
+  const { t } = useTranslation("home");
   const [photoFailed, setPhotoFailed] = useState(false);
   const photo = resolveEventPhoto(event.sportCoverImageUrl);
   const badge = relativeEventBadge(event.eventDate);
   const time = formatEventTime(event.eventDate);
   const whenLabel = [badge, time].filter(Boolean).join(" · ");
   const place = event.location.trim();
-  const sportLabel = event.sportName.trim().toLocaleUpperCase("tr-TR");
+  const sportLabel = event.sportName
+    .trim()
+    .toLocaleUpperCase(currentDateLocale());
 
   return (
     <Animated.View
@@ -294,7 +305,9 @@ function EventMapPreviewCard({
     >
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`${event.title} detayına git`}
+        accessibilityLabel={t("map.openPreviewAccessibility", {
+          title: event.title,
+        })}
         onPress={onPress}
         className="h-[136px] overflow-hidden rounded-[22px] border border-border-default active:opacity-90"
       >
@@ -326,7 +339,7 @@ function EventMapPreviewCard({
                   numberOfLines={1}
                   className="font-display text-[17px] text-white"
                 >
-                  {event.title.trim() || "Etkinlik"}
+                  {event.title.trim() || t("eventCard.untitled")}
                 </Text>
                 {place ? (
                   <View className="flex-row items-center gap-1.5">
@@ -360,7 +373,7 @@ function EventMapPreviewCard({
 
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Önizlemeyi kapat"
+        accessibilityLabel={t("map.closePreviewAccessibility")}
         onPress={onClose}
         hitSlop={8}
         className="absolute -top-3 -right-1 h-7 w-7 items-center justify-center rounded-full border border-border-default bg-background-primary active:opacity-80"

@@ -1,0 +1,13 @@
+{
+  "retry": "Tekrar Dene",
+  "cancel": "Vazgeç",
+  "save": "Kaydet",
+  "or": "veya",
+  "close": "Kapat",
+  "signInRequiredTitle": "Giriş yapman gerekiyor",
+  "signInRequiredDefaultReason": "Bu işlem için giriş yapmalısın.",
+  "back": "Geri",
+  "all": "Tümü",
+  "clear": "Temizle",
+  "apply": "Uygula"
+}

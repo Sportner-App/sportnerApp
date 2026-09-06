@@ -1,5 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { getEvents } from "@/services/events-service";
@@ -42,6 +43,7 @@ export function useEvents(
   initialOrganizationId: string | null = null,
   origin: EventFeedOrigin = null,
 ) {
+  const { t } = useTranslation("home");
   const [events, setEvents] = useState<EventSummary[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -117,7 +119,7 @@ export function useEvents(
         setPage(result.page);
         setHasNext(result.hasNext);
       } catch (err) {
-        setError(getApiErrorMessage(err, "Etkinlikler yüklenemedi."));
+        setError(getApiErrorMessage(err, t("loadFailed")));
         if (mode !== "more") {
           setEvents([]);
           setTotalCount(0);
@@ -129,7 +131,7 @@ export function useEvents(
         setIsLoadingMore(false);
       }
     },
-    [],
+    [t],
   );
 
   // Ekran her odaklandığında (ör. etkinlik oluşturma/düzenlemeden geri
@@ -177,7 +179,7 @@ export function useEvents(
             return;
           }
 
-          setError(getApiErrorMessage(err, "Etkinlikler yüklenemedi."));
+          setError(getApiErrorMessage(err, t("loadFailed")));
           setIsLoading(false);
         }
       })();

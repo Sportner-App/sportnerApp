@@ -1,6 +1,7 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AUTH_BYPASS } from "@/constants/env";
 import { useAuth, useFirstLaunch, useSession, useToast } from "@/contexts";
@@ -38,6 +39,7 @@ function toApiBirthDate(value: string) {
 
 export function useSocialAuth() {
   const router = useRouter();
+  const { t } = useTranslation("auth");
   const { signInWithGoogle, signInWithApple, completeExternalRegistration } =
     useAuth();
   const { markOnboardingSeen } = useFirstLaunch();
@@ -74,7 +76,7 @@ export function useSocialAuth() {
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         showToast({
           type: "error",
-          title: "Giriş başarısız",
+          title: t("socialToast.loginFailedTitle"),
           description: result.error.message,
         });
         return;
@@ -92,7 +94,7 @@ export function useSocialAuth() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Giriş başarısız",
+        title: t("socialToast.loginFailedTitle"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -107,25 +109,24 @@ export function useSocialAuth() {
     if (!/^[a-zA-Z0-9._]{3,30}$/.test(normalizedUsername)) {
       showToast({
         type: "error",
-        title: "Kullanıcı adını kontrol et",
-        description:
-          "3–30 karakter; yalnızca harf, rakam, . ve _ kullanabilirsin.",
+        title: t("socialToast.usernameCheckTitle"),
+        description: t("socialToast.usernameCheckDescription"),
       });
       return;
     }
     if (!firstName.trim()) {
       showToast({
         type: "error",
-        title: "Ad gerekli",
-        description: "Adını kontrol edip tekrar dene.",
+        title: t("socialToast.firstNameRequiredTitle"),
+        description: t("socialToast.firstNameRequiredDescription"),
       });
       return;
     }
     if (!apiBirthDate) {
       showToast({
         type: "error",
-        title: "Doğum tarihini kontrol et",
-        description: "GG.AA.YYYY formatında ve en az 13 yaşında olmalısın.",
+        title: t("socialToast.birthDateCheckTitle"),
+        description: t("socialToast.birthDateCheckDescription"),
       });
       return;
     }
@@ -142,7 +143,7 @@ export function useSocialAuth() {
       if (result.error) {
         showToast({
           type: "error",
-          title: "Kayıt tamamlanamadı",
+          title: t("socialToast.registrationFailedTitle"),
           description: result.error.message,
         });
         return;

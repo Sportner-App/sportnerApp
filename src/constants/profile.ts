@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import type {
   ProfileMenuGroup,
   ProfileMenuItem,
@@ -16,30 +18,44 @@ export const PROFILE_SOCIAL_ACTIONS = PROFILE_SOCIAL_ACTION_ITEMS.filter(
   (item) => item.key !== "albums" || FEATURE_FLAGS.albums,
 );
 
-export const PROFILE_MENU_GROUPS: ProfileMenuGroup[] = [
-  {
-    key: "account",
-    title: "Ayarlar",
-    items: [
-      { key: "edit", label: "Profili düzenle", icon: "user-pen" },
-      { key: "notifications", label: "Bildirimler", icon: "bell" },
-      {
-        key: "notification-settings",
-        label: "Bildirim ayarları",
-        icon: "sliders",
-      },
-      { key: "appearance", label: "Görünüm", icon: "circle-half-stroke" },
-      { key: "privacy", label: "Gizlilik", icon: "shield-halved" },
-      { key: "feedback", label: "Öneri gönder", icon: "lightbulb" },
-      { key: "help", label: "Yardım", icon: "circle-question" },
-      {
-        key: "app-tour",
-        label: "Uygulama turunu yeniden göster",
-        icon: "route",
-      },
-    ],
-  },
-];
+/**
+ * Profil menüsü — dil değiştiğinde etiketler yeniden çözülsün diye hook.
+ * Menünün yönlendirdiği ekranların çoğu henüz kendi başına çevrilmedi;
+ * bu yalnızca menü satırlarını kapsıyor.
+ */
+export function useProfileMenuGroups(): ProfileMenuGroup[] {
+  const { t } = useTranslation("settings");
+
+  return [
+    {
+      key: "account",
+      title: t("menu.settingsGroupTitle"),
+      items: [
+        { key: "edit", label: t("menu.editProfile"), icon: "user-pen" },
+        { key: "notifications", label: t("menu.notifications"), icon: "bell" },
+        {
+          key: "notification-settings",
+          label: t("menu.notificationSettings"),
+          icon: "sliders",
+        },
+        {
+          key: "appearance",
+          label: t("menu.appearance"),
+          icon: "circle-half-stroke",
+        },
+        { key: "language", label: t("menu.language"), icon: "globe" },
+        { key: "privacy", label: t("menu.privacy"), icon: "shield-halved" },
+        { key: "feedback", label: t("menu.feedback"), icon: "lightbulb" },
+        { key: "help", label: t("menu.help"), icon: "circle-question" },
+        {
+          key: "app-tour",
+          label: t("menu.appTour"),
+          icon: "route",
+        },
+      ],
+    },
+  ];
+}
 
 export const PROFILE_COPY = {
   header: "PROFİL",
@@ -49,7 +65,6 @@ export const PROFILE_COPY = {
   statsTitle: "Özet",
   socialTitle: "Sosyal",
   menuTitle: "Hesap",
-  logout: "Çıkış yap",
   edit: "Profili düzenle",
   guestName: "Sporcu",
   emptySports: "Henüz spor eklemedin. Dokunarak ekle.",
@@ -72,13 +87,18 @@ export function skillKeyFromCode(code: number): SkillLevelKey {
   return SKILL_BY_CODE[code] ?? "beginner";
 }
 
-export const SKILL_LEVEL_LABELS: Record<SkillLevelKey, string> = {
-  beginner: "Başlangıç",
-  intermediate: "Orta",
-  advanced: "İleri",
-  expert: "Uzman",
-  professional: "Profesyonel",
-};
+/** Seviye etiketleri — dil değiştiğinde yeniden çözülsün diye hook. */
+export function useSkillLevelLabels(): Record<SkillLevelKey, string> {
+  const { t } = useTranslation("skills");
+
+  return {
+    beginner: t("beginner"),
+    intermediate: t("intermediate"),
+    advanced: t("advanced"),
+    expert: t("expert"),
+    professional: t("professional"),
+  };
+}
 
 export const SKILL_LEVEL_STYLES: Record<
   SkillLevelKey,

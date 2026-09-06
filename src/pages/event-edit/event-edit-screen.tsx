@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -9,7 +10,7 @@ import {
   ScreenHeader,
   SelectField,
 } from "@/components";
-import { CREATE_EVENT_LIMITS, DURATION_OPTIONS } from "@/constants/events";
+import { CREATE_EVENT_LIMITS, useDurationOptions } from "@/constants/events";
 import { useToast } from "@/contexts";
 import { useEventDetail } from "@/hooks/use-event-detail";
 import { LocationPicker } from "@/pages/event-create/location-picker";
@@ -21,13 +22,15 @@ import {
   updateEventLocation,
   updateEventSchedule,
 } from "@/services/events-service";
-import { parseFeeAmount } from "@/utils/events";
+import { noDescriptionLabel, parseFeeAmount } from "@/utils/events";
 
 export function EventEditScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation("eventDetail");
   const { showToast } = useToast();
   const { event, isLoading } = useEventDetail(id);
+  const DURATION_OPTIONS = useDurationOptions();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -47,7 +50,7 @@ export function EventEditScreen() {
     }
     setTitle(event.title);
     setDescription(
-      event.description === "Açıklama eklenmemiş." ? "" : event.description,
+      event.description === noDescriptionLabel() ? "" : event.description,
     );
     setEventDate(new Date(event.eventDate));
     setDurationMinutes(event.durationMinutes);
@@ -71,8 +74,8 @@ export function EventEditScreen() {
       if (fee == null || fee <= 0 || fee > CREATE_EVENT_LIMITS.feeAmountMax) {
         showToast({
           type: "error",
-          title: "Fiyat gerekli",
-          description: "Ücretli etkinlik için 0'dan büyük bir fiyat gir.",
+          title: t("edit.priceRequiredTitle"),
+          description: t("edit.priceRequiredDescription"),
         });
         return;
       }
@@ -105,7 +108,7 @@ export function EventEditScreen() {
       if (failed?.error) {
         showToast({
           type: "error",
-          title: "Kaydedilemedi",
+          title: t("edit.saveFailedTitle"),
           description: failed.error.message,
         });
         return;
@@ -113,8 +116,8 @@ export function EventEditScreen() {
 
       showToast({
         type: "success",
-        title: "Güncellendi",
-        description: "Etkinlik bilgileri kaydedildi.",
+        title: t("edit.savedTitle"),
+        description: t("edit.savedDescription"),
       });
       router.back();
     } finally {
@@ -125,11 +128,11 @@ export function EventEditScreen() {
   return (
     <AppScreen
       keyboardAvoiding
-      header={<ScreenHeader title="DÜZENLE" showBack />}
+      header={<ScreenHeader title={t("edit.headerTitle")} showBack />}
       contentClassName="gap-5 px-6 pt-2"
       footer={
         <SubmitBar
-          label="Kaydet"
+          label={t("edit.save")}
           disabled={!title.trim() || isLoading}
           isLoading={isSaving}
           onSubmit={save}
@@ -138,21 +141,21 @@ export function EventEditScreen() {
     >
       <View className="gap-1.5">
         <Text className="font-display text-3xl text-text-primary">
-          Etkinliği düzenle
+          {t("edit.heading")}
         </Text>
         <Text className="font-body text-sm text-brand-neutral">
-          Başlık, zaman, konum, kapasite ve ücreti güncelle.
+          {t("edit.subtitle")}
         </Text>
       </View>
 
       <Input
-        label="Başlık"
+        label={t("edit.titleLabel")}
         value={title}
         onChangeText={setTitle}
         maxLength={CREATE_EVENT_LIMITS.titleMax}
       />
       <Input
-        label="Açıklama"
+        label={t("edit.descriptionLabel")}
         value={description}
         onChangeText={setDescription}
         multiline
@@ -161,12 +164,12 @@ export function EventEditScreen() {
         style={{ minHeight: 110, paddingTop: 14 }}
       />
       <DateField
-        label="Tarih & Saat"
+        label={t("edit.dateTimeLabel")}
         value={eventDate}
         onChange={setEventDate}
       />
       <SelectField
-        label="Süre"
+        label={t("edit.durationLabel")}
         value={String(durationMinutes)}
         onChange={(key) => {
           const option = DURATION_OPTIONS.find((item) => item.key === key);
@@ -180,17 +183,17 @@ export function EventEditScreen() {
         }))}
       />
       <Input
-        label="Oyuncu sayısı"
+        label={t("edit.playerCountLabel")}
         value={maxPlayers}
         onChangeText={setMaxPlayers}
         keyboardType="number-pad"
       />
       <View className="gap-2">
         <Text className="font-body-bold text-[13px] text-text-secondary">
-          Ücret
+          {t("edit.feeLabel")}
         </Text>
         <Text className="font-body text-xs text-text-tertiary">
-          Uygulama üzerinden ödeme alınmaz.
+          {t("edit.feeDisclaimer")}
         </Text>
         <View className="flex-row flex-wrap gap-2">
           <Pressable
@@ -209,7 +212,7 @@ export function EventEditScreen() {
                 !isPaid ? "text-background-primary" : "text-text-secondary"
               }`}
             >
-              Ücretsiz
+              {t("edit.free")}
             </Text>
           </Pressable>
           <Pressable
@@ -225,19 +228,19 @@ export function EventEditScreen() {
                 isPaid ? "text-background-primary" : "text-text-secondary"
               }`}
             >
-              Ücretli
+              {t("edit.paid")}
             </Text>
           </Pressable>
         </View>
         {isPaid ? (
           <Input
-            label="Fiyat"
-            placeholder="Örn. 150"
+            label={t("edit.priceLabel")}
+            placeholder={t("edit.pricePlaceholder")}
             icon="coins"
             value={feeAmountText}
             onChangeText={setFeeAmountText}
             keyboardType="decimal-pad"
-            helperText="Türk lirası. Katılımcı etkinlikte öder."
+            helperText={t("edit.priceHelper")}
           />
         ) : null}
       </View>

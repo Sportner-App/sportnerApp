@@ -1,49 +1,44 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { AppScreen, ScreenHeader } from "@/components";
 import { themeColors } from "@/constants/theme";
 import type { ThemePreference } from "@/constants/theme-palettes";
 import { useThemePreference } from "@/contexts";
 
-const OPTIONS: {
-  key: ThemePreference;
-  label: string;
-  description: string;
-  icon: "mobile-screen" | "sun" | "moon";
-}[] = [
-  {
-    key: "system",
-    label: "Sistem",
-    description: "Telefonunun görünüm ayarını takip eder",
-    icon: "mobile-screen",
-  },
-  {
-    key: "light",
-    label: "Açık",
-    description: "Her zaman açık temayı kullanır",
-    icon: "sun",
-  },
-  {
-    key: "dark",
-    label: "Koyu",
-    description: "Her zaman koyu temayı kullanır",
-    icon: "moon",
-  },
-];
+const ICONS_BY_KEY: Record<ThemePreference, "mobile-screen" | "sun" | "moon"> = {
+  system: "mobile-screen",
+  light: "sun",
+  dark: "moon",
+};
 
 export function AppearanceScreen() {
+  const { t } = useTranslation("settings");
   const { preference, setPreference } = useThemePreference();
+
+  const OPTIONS: {
+    key: ThemePreference;
+    label: string;
+    description: string;
+    icon: "mobile-screen" | "sun" | "moon";
+  }[] = (["system", "light", "dark"] as const).map((key) => ({
+    key,
+    label: t(`appearance.options.${key}.label`),
+    description: t(`appearance.options.${key}.description`),
+    icon: ICONS_BY_KEY[key],
+  }));
 
   return (
     <AppScreen
       tone="light"
-      header={<ScreenHeader title="Görünüm" showBack tone="light" />}
+      header={
+        <ScreenHeader title={t("appearance.title")} showBack tone="light" />
+      }
       contentClassName="px-5 pt-4"
     >
       <Text className="mb-3 font-body text-sm leading-5 text-text-secondary">
-        Sportner’ın görünümünü seç. Sistem seçeneği telefonundaki tema
-        değişikliklerini otomatik uygular.
+        {t("appearance.description")}
       </Text>
       <View className="overflow-hidden rounded-[24px] border border-border-default bg-surface-primary">
         {OPTIONS.map((option, index) => {

@@ -73,6 +73,7 @@ export function ProfileScreen() {
       notifications: "/notifications",
       "notification-settings": "/profile/notification-settings",
       appearance: "/profile/appearance",
+      language: "/profile/language",
       privacy: "/profile/privacy",
       feedback: "/feedback",
       help: "/help",

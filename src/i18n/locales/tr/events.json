@@ -1,0 +1,45 @@
+{
+  "badge": {
+    "today": "BUGÜN",
+    "tomorrow": "YARIN",
+    "inDays": "{{count}} GÜN SONRA"
+  },
+  "dateLabel": {
+    "today": "Bugün",
+    "tomorrow": "Yarın"
+  },
+  "weekdaysShort": ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"],
+  "duration": {
+    "minutes": "{{count}} dk",
+    "hours": "{{count}} sa",
+    "hoursAndMinutes": "{{hours}} sa {{minutes}} dk"
+  },
+  "fee": {
+    "free": "Ücretsiz"
+  },
+  "fallback": {
+    "athlete": "Sporcu",
+    "athleteHandle": "sporcu",
+    "organizer": "Organizatör",
+    "unnamedGuest": "İsimsiz misafir",
+    "noLocation": "Konum yok",
+    "noDescription": "Açıklama eklenmemiş.",
+    "event": "Etkinlik"
+  },
+  "status": {
+    "draft": "Taslak",
+    "published": "Yayında",
+    "full": "Dolu",
+    "completed": "Tamamlandı",
+    "cancelled": "İptal"
+  },
+  "participantStatus": {
+    "pending": "Onay bekliyor",
+    "approved": "Onaylandı",
+    "rejected": "Reddedildi",
+    "left": "Ayrıldı",
+    "attended": "Katıldı",
+    "noShow": "Gelmedi",
+    "invited": "Davet gönderildi"
+  }
+}

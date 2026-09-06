@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -31,6 +32,7 @@ import { OrganizerPanel } from "./organizer-panel";
 import { PendingRequestsSheet } from "./pending-requests-sheet";
 
 export function EventDetailScreen() {
+  const { t } = useTranslation("eventDetail");
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const detail = useEventDetail(id);
@@ -89,14 +91,10 @@ export function EventDetailScreen() {
             isFull={detail.isFull}
             isOrganizer={detail.isOrganizer}
             onJoin={() =>
-              requireAuth("Etkinliğe katılmak için giriş yapmalısın.") &&
-              void detail.join()
+              requireAuth(t("requireAuth.join")) && void detail.join()
             }
             onLeave={detail.leave}
-            onChat={() =>
-              requireAuth("Etkinlik sohbetine girmek için giriş yapmalısın.") &&
-              openChat()
-            }
+            onChat={() => requireAuth(t("requireAuth.chat")) && openChat()}
             isRespondingInvitation={detail.isRespondingInvitation}
             onAcceptInvitation={detail.acceptInvitation}
             onDeclineInvitation={detail.declineInvitation}
@@ -107,7 +105,7 @@ export function EventDetailScreen() {
       <StatusBar style="light" />
       {detail.isLoading ? (
         <View className="flex-1 items-center justify-center pb-16">
-          <SportLoader size={148} label="Detaylar yükleniyor" />
+          <SportLoader size={148} label={t("loading")} />
         </View>
       ) : !detail.event ? (
         <View className="items-center gap-4 rounded-xlarge bg-surface-primary px-6 py-16">
@@ -117,10 +115,10 @@ export function EventDetailScreen() {
             color={themeColors.text.secondary}
           />
           <Text className="font-body text-sm text-text-secondary">
-            Etkinlik bulunamadı veya kaldırılmış.
+            {t("notFound")}
           </Text>
           <Button
-            label="Geri Dön"
+            label={t("goBack")}
             variant="outline"
             size="sm"
             onPress={() => router.back()}
@@ -232,7 +230,7 @@ export function EventDetailScreen() {
             {!detail.isOrganizer && detail.canCancel ? (
               <View className="mt-lg">
                 <Button
-                  label="Etkinliği kapat"
+                  label={t("closeEvent")}
                   variant="danger"
                   onPress={detail.cancel}
                   isLoading={detail.isMutating}
@@ -244,7 +242,7 @@ export function EventDetailScreen() {
             {!detail.isOrganizer && isAuthenticated ? (
               <View className="mt-sm">
                 <Button
-                  label="Şikayet et"
+                  label={t("report")}
                   variant="ghost"
                   size="sm"
                   onPress={() =>

@@ -4,8 +4,8 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 
 import {
   PROFILE_COPY,
-  SKILL_LEVEL_LABELS,
   skillKeyFromCode,
+  useSkillLevelLabels,
 } from "@/constants/profile";
 import type { UserProfile } from "@/types/profile";
 import { sportIconForSlug } from "@/utils/events";
@@ -17,6 +17,7 @@ type SportsSectionProps = {
 };
 
 export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
+  const SKILL_LEVEL_LABELS = useSkillLevelLabels();
   const sports = [...profile.sports].sort(
     (a, b) => Number(b.isPrimary) - Number(a.isPrimary),
   );

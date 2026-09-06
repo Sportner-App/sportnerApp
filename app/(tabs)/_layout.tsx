@@ -1,4 +1,5 @@
 import { Redirect, Tabs } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 import { AppTourOverlay, GlassTabBar } from "@/components";
 import { AUTH_BYPASS } from "@/constants/env";
@@ -7,6 +8,7 @@ import { AppTourProvider, useAuth, useFirstLaunch } from "@/contexts";
 import { getStartupDestination, STARTUP_HREF } from "@/utils/startup";
 
 export default function TabsLayout() {
+  const { t } = useTranslation("tabs");
   const { isReady, isAuthenticated, isOnboarded } = useAuth();
   const {
     isReady: isFirstLaunchReady,
@@ -42,13 +44,13 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Etkinlikler",
+            title: t("events"),
             sceneStyle: { backgroundColor: themeColors.background.primary },
           }}
         />
-        <Tabs.Screen name="discover" options={{ title: "Keşfet" }} />
-        <Tabs.Screen name="activity" options={{ title: "Etkinliklerim" }} />
-        <Tabs.Screen name="profile" options={{ title: "Profil" }} />
+        <Tabs.Screen name="discover" options={{ title: t("discover") }} />
+        <Tabs.Screen name="activity" options={{ title: t("activity") }} />
+        <Tabs.Screen name="profile" options={{ title: t("profile") }} />
       </Tabs>
       <AppTourOverlay />
     </AppTourProvider>

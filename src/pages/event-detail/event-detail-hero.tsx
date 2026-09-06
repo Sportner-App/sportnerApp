@@ -5,6 +5,8 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
+import { useTranslation } from "react-i18next";
+
 import { resolveEventBadgeThemes } from "@/constants/badge-colors";
 import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
 import {
@@ -15,7 +17,11 @@ import {
 } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { EventDetail } from "@/types/events";
-import { relativeEventBadge } from "@/utils/events";
+import {
+  currentDateLocale,
+  isEventToday,
+  relativeEventBadge,
+} from "@/utils/events";
 
 import { PendingRequestsHeaderAction } from "./pending-requests-entry";
 
@@ -37,6 +43,7 @@ export function EventDetailHero({
   pendingCount = 0,
   onPendingPress,
 }: EventDetailHeroProps) {
+  const { t } = useTranslation("eventDetail");
   const insets = useSafeAreaInsets();
   const [size, setSize] = useState({ width: 0, height: 0 });
   const photo = resolveEventPhoto(event.sportCoverImageUrl);
@@ -44,12 +51,14 @@ export function EventDetailHero({
   const sportColor = accent?.accent ?? themeColors.text.secondary;
   const sportSoft = accent?.soft ?? themeColors.surface.secondary;
   const onAccent = accent?.onAccent ?? themeColors.text.inverse;
-  const sportLabel = event.sportName.trim().toLocaleUpperCase("tr-TR");
+  const sportLabel = event.sportName
+    .trim()
+    .toLocaleUpperCase(currentDateLocale());
   const dateBadge = relativeEventBadge(event.eventDate);
   const badgeThemes = resolveEventBadgeThemes({
     sportAccent: sportColor,
     isPaid: event.isPaid,
-    urgency: dateBadge === "BUGÜN" ? "today" : "upcoming",
+    urgency: isEventToday(event.eventDate) ? "today" : "upcoming",
   });
   const showPending = pendingCount > 0 && onPendingPress;
 
@@ -90,7 +99,7 @@ export function EventDetailHero({
         >
           <View className="flex-row items-start justify-between">
             <GlassControl
-              accessibilityLabel="Geri"
+              accessibilityLabel={t("common:back")}
               icon="arrow-left"
               onPress={onBack}
             />
@@ -102,7 +111,7 @@ export function EventDetailHero({
                 />
               ) : null}
               <GlassControl
-                accessibilityLabel="Etkinliği paylaş"
+                accessibilityLabel={t("share.title")}
                 icon="arrow-up-from-bracket"
                 onPress={onShare}
               />

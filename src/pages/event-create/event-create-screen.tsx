@@ -8,6 +8,7 @@ import Animated, {
   type EntryAnimationsValues,
   type ExitAnimationsValues,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -17,11 +18,11 @@ import {
   SelectField,
 } from "@/components";
 import {
-  CREATE_EVENT_COPY,
   CREATE_EVENT_LIMITS,
-  CREATE_EVENT_STEPS,
+  useCreateEventCopy,
+  useCreateEventSteps,
 } from "@/constants/events";
-import { ONBOARDING_SKILL_OPTIONS } from "@/constants/onboarding";
+import { useSkillLevelOptions } from "@/constants/onboarding";
 import { useCreateEvent } from "@/hooks/use-create-event";
 
 import { EventCreateProgress } from "./event-create-progress";
@@ -81,6 +82,10 @@ function stepExiting(direction: { value: number }) {
 }
 
 export function EventCreateScreen() {
+  const { t } = useTranslation("eventCreate");
+  const CREATE_EVENT_COPY = useCreateEventCopy();
+  const CREATE_EVENT_STEPS = useCreateEventSteps();
+  const ONBOARDING_SKILL_OPTIONS = useSkillLevelOptions();
   const { organizationId: routeOrganizationId } = useLocalSearchParams<{
     organizationId?: string;
   }>();
@@ -166,6 +171,7 @@ export function EventCreateScreen() {
         ) : currentStep === 2 ? (
           <SubmitBar
             label={CREATE_EVENT_COPY.continue}
+            backLabel={CREATE_EVENT_COPY.back}
             showIcon={false}
             disabled={!isStep2Valid || isSubmitting}
             isLoading={false}
@@ -177,6 +183,7 @@ export function EventCreateScreen() {
         ) : currentStep === 3 ? (
           <SubmitBar
             label={CREATE_EVENT_COPY.continue}
+            backLabel={CREATE_EVENT_COPY.back}
             showIcon={false}
             disabled={!canSubmit || isSubmitting}
             isLoading={false}
@@ -189,9 +196,10 @@ export function EventCreateScreen() {
           <SubmitBar
             label={
               guests.length === 0 && selectedFriendIds.length === 0
-                ? "Atla ve Yayınla"
+                ? t("skipAndPublish")
                 : CREATE_EVENT_COPY.submit
             }
+            backLabel={CREATE_EVENT_COPY.back}
             disabled={!canSubmit}
             isLoading={isSubmitting}
             loadingLabel={CREATE_EVENT_COPY.publishing}
@@ -235,15 +243,15 @@ export function EventCreateScreen() {
 
             <View className="mt-7">
               <SelectField
-                label="Spor"
+                label={t("sport.label")}
                 placeholder={
-                  isSportsLoading ? "Sporlar yükleniyor…" : "Spor seç"
+                  isSportsLoading ? t("sport.loading") : t("sport.placeholder")
                 }
-                sheetTitle="Spor seç"
-                sheetSubtitle="Etkinliğin sporunu belirle"
+                sheetTitle={t("sport.sheetTitle")}
+                sheetSubtitle={t("sport.sheetSubtitle")}
                 sheetVariant="grid"
                 searchable
-                searchPlaceholder="Spor ara…"
+                searchPlaceholder={t("sport.searchPlaceholder")}
                 value={values.sportSlug}
                 onChange={(sportSlug) => update("sportSlug", sportSlug)}
                 options={sportOptions.map((sport) => ({
@@ -254,15 +262,15 @@ export function EventCreateScreen() {
                   groupKey: sport.groupKey,
                 }))}
                 groups={sportGroups}
-                allGroupLabel="Tüm kategoriler"
+                allGroupLabel={t("sport.allGroupLabel")}
                 disabled={isSportsLoading || isSubmitting}
               />
             </View>
 
             <View className="mt-4 gap-4">
               <Input
-                label="Başlık"
-                placeholder="Örn. Akşam Halı Saha"
+                label={t("title.label")}
+                placeholder={t("title.placeholder")}
                 icon="pen"
                 value={values.title}
                 onChangeText={(title) => update("title", title)}
@@ -273,14 +281,14 @@ export function EventCreateScreen() {
               <View>
                 <View className="mb-2 flex-row items-baseline gap-2">
                   <Text className="font-body text-sm text-text-secondary">
-                    Açıklama
+                    {t("description.label")}
                   </Text>
                   <Text className="rounded-pill bg-surface-secondary px-2 py-0.5 font-body text-[10px] text-text-tertiary">
-                    Opsiyonel
+                    {t("description.optional")}
                   </Text>
                 </View>
                 <Input
-                  placeholder="Ne oynuyoruz, ne getirmeli? (opsiyonel)"
+                  placeholder={t("description.placeholder")}
                   icon="align-left"
                   value={values.description}
                   onChangeText={(description) =>
@@ -311,7 +319,7 @@ export function EventCreateScreen() {
 
             <View className="mt-4 gap-4">
               <DateField
-                label="Tarih & Saat"
+                label={t("dateTime.label")}
                 value={values.eventDate}
                 onChange={(eventDate) => update("eventDate", eventDate)}
                 minimumDate={new Date()}
@@ -335,11 +343,10 @@ export function EventCreateScreen() {
                 >
                   <View className="flex-1 pr-4">
                     <Text className="font-body-bold text-sm text-text-primary">
-                      Tekrarlayan etkinlik
+                      {t("recurring.toggleTitle")}
                     </Text>
                     <Text className="mt-1 font-body text-xs leading-5 text-text-tertiary">
-                      Şimdi yalnızca ilk etkinlik yayınlanır; sıradaki her
-                      etkinlik bir önceki bittiğinde otomatik açılır.
+                      {t("recurring.toggleDescription")}
                     </Text>
                   </View>
                   <View
@@ -355,14 +362,14 @@ export function EventCreateScreen() {
                   <View className="mt-4 gap-4 border-t border-border-default pt-4">
                     <View>
                       <Text className="mb-2 font-body-bold text-xs text-text-secondary">
-                        Tekrar sıklığı
+                        {t("recurring.frequencyLabel")}
                       </Text>
                       <View className="flex-row gap-2">
                         {(
                           [
-                            { value: 1, label: "Her hafta" },
-                            { value: 2, label: "2 haftada bir" },
-                            { value: 4, label: "4 haftada bir" },
+                            { value: 1, label: t("recurring.everyWeek") },
+                            { value: 2, label: t("recurring.every2Weeks") },
+                            { value: 4, label: t("recurring.every4Weeks") },
                           ] as const
                         ).map((option) => (
                           <Pressable
@@ -384,10 +391,10 @@ export function EventCreateScreen() {
                     <View className="flex-row items-center justify-between">
                       <View>
                         <Text className="font-body-bold text-sm text-text-primary">
-                          Tekrar sayısı
+                          {t("recurring.countLabel")}
                         </Text>
                         <Text className="mt-1 font-body text-xs text-text-tertiary">
-                          İlk etkinlik dahil, sırayla açılır
+                          {t("recurring.countHint")}
                         </Text>
                       </View>
                       <View className="flex-row items-center gap-3">
@@ -453,11 +460,10 @@ export function EventCreateScreen() {
 
             <View className="mt-6 gap-2">
               <Text className="font-body-bold text-[13px] text-text-secondary">
-                Ücret
+                {t("fee.label")}
               </Text>
               <Text className="font-body text-xs text-text-tertiary">
-                Uygulama üzerinden ödeme alınmaz. Ücret varsa katılımcı
-                etkinlikte öder.
+                {t("fee.disclaimer")}
               </Text>
               <View className="flex-row flex-wrap gap-2">
                 <Pressable
@@ -478,7 +484,7 @@ export function EventCreateScreen() {
                         : "text-text-secondary"
                     }`}
                   >
-                    Ücretsiz
+                    {t("events:fee.free")}
                   </Text>
                 </Pressable>
                 <Pressable
@@ -496,14 +502,14 @@ export function EventCreateScreen() {
                         : "text-text-secondary"
                     }`}
                   >
-                    Ücretli
+                    {t("fee.paid")}
                   </Text>
                 </Pressable>
               </View>
               {values.isPaid ? (
                 <Input
-                  label="Fiyat"
-                  placeholder="Örn. 150"
+                  label={t("fee.priceLabel")}
+                  placeholder={t("fee.pricePlaceholder")}
                   icon="coins"
                   value={values.feeAmountText}
                   onChangeText={(feeAmountText) =>
@@ -511,17 +517,17 @@ export function EventCreateScreen() {
                   }
                   keyboardType="decimal-pad"
                   editable={!isSubmitting}
-                  helperText="Türk lirası. Uygulama tahsilat yapmaz."
+                  helperText={t("fee.priceHelper")}
                 />
               ) : null}
             </View>
 
             <View className="mt-6 gap-2">
               <Text className="font-body-bold text-[13px] text-text-secondary">
-                Seviye
+                {t("skill.label")}
               </Text>
               <Text className="font-body text-xs text-text-tertiary">
-                İsteğe bağlı. Katılımı kilitlemez, sadece bilgi.
+                {t("skill.disclaimer")}
               </Text>
               <View className="flex-row flex-wrap gap-2">
                 <Pressable
@@ -539,7 +545,7 @@ export function EventCreateScreen() {
                         : "text-text-secondary"
                     }`}
                   >
-                    Belirtme
+                    {t("skill.none")}
                   </Text>
                 </Pressable>
                 {ONBOARDING_SKILL_OPTIONS.map((option) => {

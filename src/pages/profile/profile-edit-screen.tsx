@@ -11,7 +11,7 @@ import {
   SportLoader,
 } from "@/components";
 import { useToast } from "@/contexts";
-import { GENDER_OPTIONS } from "@/constants/auth";
+import { useGenderOptions } from "@/constants/auth";
 import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
 import { useProfile } from "@/hooks/use-profile";
 import { useCities } from "@/hooks/use-cities";
@@ -36,6 +36,7 @@ import {
 export function ProfileEditScreen() {
   const router = useRouter();
   const { showToast } = useToast();
+  const GENDER_OPTIONS = useGenderOptions();
   const { profile, isLoading, refresh } = useProfile();
   const { chooseSource, sourceSheet } = useMediaSourceChoice();
   const [username, setUsername] = useState("");

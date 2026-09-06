@@ -1,0 +1,145 @@
+{
+  "header": "YENİ ETKİNLİK",
+  "steps": {
+    "1": { "title": "Etkinliğini oluştur", "subtitle": "Sporunu seç ve etkinliğini anlat." },
+    "2": { "title": "Planını yap", "subtitle": "Nerede, ne zaman ve ne kadar süreceğini belirle." },
+    "3": { "title": "Takımını kur", "subtitle": "Kaç kişinin katılabileceğini belirle." },
+    "4": { "title": "Yanına kim geliyor?", "subtitle": "Misafir veya arkadaş ekleyebilirsin. Bu adımı atlayabilirsin." }
+  },
+  "submit": "Etkinliği Yayınla",
+  "publishing": "Yayınlanıyor...",
+  "continue": "Devam Et",
+  "back": "Geri",
+  "skipAndPublish": "Atla ve Yayınla",
+  "progress": {
+    "details": "Detaylar",
+    "plan": "Plan",
+    "capacity": "Kapasite",
+    "roster": "Kadro"
+  },
+  "sport": {
+    "label": "Spor",
+    "loading": "Sporlar yükleniyor…",
+    "placeholder": "Spor seç",
+    "sheetTitle": "Spor seç",
+    "sheetSubtitle": "Etkinliğin sporunu belirle",
+    "searchPlaceholder": "Spor ara…",
+    "allGroupLabel": "Tüm kategoriler"
+  },
+  "title": {
+    "label": "Başlık",
+    "placeholder": "Örn. Akşam Halı Saha"
+  },
+  "description": {
+    "label": "Açıklama",
+    "optional": "Opsiyonel",
+    "placeholder": "Ne oynuyoruz, ne getirmeli? (opsiyonel)"
+  },
+  "location": {
+    "label": "Konum",
+    "searchPlaceholder": "Konum ara veya haritadan seç",
+    "emptyHint": "Haritaya dokun veya yukarıdan ara",
+    "mapUnavailable": "Harita bu ortamda kullanılamıyor."
+  },
+  "dateTime": {
+    "label": "Tarih & Saat"
+  },
+  "duration": {
+    "label": "Süre",
+    "sheetTitle": "Etkinlik süresi",
+    "sheetSubtitle": "Saat ve dakikayı kaydırarak seç",
+    "hourSuffix": "saat",
+    "minuteSuffix": "dk",
+    "chooseHint": "Süre seçmelisin",
+    "confirm": "Süreyi Ayarla",
+    "minutesShort": "{{count}} dakika",
+    "hoursShort": "{{count}} saat",
+    "hoursAndMinutesShort": "{{hours}} saat {{minutes}} dakika"
+  },
+  "recurring": {
+    "toggleTitle": "Tekrarlayan etkinlik",
+    "toggleDescription": "Şimdi yalnızca ilk etkinlik yayınlanır; sıradaki her etkinlik bir önceki bittiğinde otomatik açılır.",
+    "frequencyLabel": "Tekrar sıklığı",
+    "everyWeek": "Her hafta",
+    "every2Weeks": "2 haftada bir",
+    "every4Weeks": "4 haftada bir",
+    "countLabel": "Tekrar sayısı",
+    "countHint": "İlk etkinlik dahil, sırayla açılır",
+    "summarySeries": "{{count}}'li seri",
+    "summaryWeekly": "her hafta",
+    "summaryEveryNWeeks": "{{weeks}} haftada bir",
+    "summaryAutoOpens": "sırayla açılır"
+  },
+  "organization": {
+    "lockedText": "Bu etkinlik <bold>{{name}}</bold> organizasyonuna bağlı olarak oluşturuluyor.",
+    "lockedFallbackName": "organizasyonun",
+    "intentQuestion": "Bu etkinlik bir organizasyona mı bağlı?",
+    "individual": "Bireysel etkinlik",
+    "organizationEvent": "Organizasyon etkinliği",
+    "label": "Organizasyon",
+    "placeholder": "Organizasyon seç",
+    "sheetTitle": "Organizasyon seç",
+    "sheetSubtitle": "Etkinliği hangi organizasyon adına oluşturuyorsun?"
+  },
+  "players": {
+    "capacityLabel": "Katılımcı Kapasitesi",
+    "unit": "kişi",
+    "hint": "Butonları kullanabilir veya sayıya dokunup kapasiteyi yazabilirsin.\nSen de katılımcı olarak sayılırsın.",
+    "accessibilityLabel": "Katılımcı kapasitesi"
+  },
+  "ageRange": {
+    "label": "Katılım yaş aralığı",
+    "hint": "Tutamaçları sürükleyerek ayarla",
+    "unit": "yaş",
+    "minAccessibility": "Minimum katılım yaşı",
+    "maxAccessibility": "Maksimum katılım yaşı"
+  },
+  "fee": {
+    "label": "Ücret",
+    "disclaimer": "Uygulama üzerinden ödeme alınmaz. Ücret varsa katılımcı etkinlikte öder.",
+    "paid": "Ücretli",
+    "priceLabel": "Fiyat",
+    "pricePlaceholder": "Örn. 150",
+    "priceHelper": "Türk lirası. Uygulama tahsilat yapmaz."
+  },
+  "skill": {
+    "label": "Seviye",
+    "disclaimer": "İsteğe bağlı. Katılımı kilitlemez, sadece bilgi.",
+    "none": "Belirtme"
+  },
+  "summary": {
+    "heading": "Etkinlik Özeti",
+    "playersLabel": "{{count}} kişi",
+    "ageRange": "{{min}}–{{max}} yaş"
+  },
+  "companions": {
+    "slotsAvailable": "{{count}} kişilik yer açık",
+    "reservedBreakdown": "1 organizatör + {{count}} yanında gelen",
+    "guestsTitle": "Anonim misafirler",
+    "guestsSubtitle": "Hesabı olmayan kişiler; ad ve soyad zorunludur.",
+    "guestLabel": "Misafir {{number}}",
+    "guestFirstName": "Ad",
+    "guestLastName": "Soyad",
+    "guestRequiredError": "Misafirin adı ve soyadı zorunludur.",
+    "friendsTitle": "Arkadaşlarına davet gönder",
+    "friendsSubtitle": "Seçtiğin kişiler kabul ettikten sonra katılımcı olur.",
+    "friendsLoading": "Arkadaşlar yükleniyor…",
+    "friendsEmpty": "Ekleyebileceğin kabul edilmiş arkadaş bulunamadı."
+  },
+  "toast": {
+    "sportNotFoundTitle": "Spor bulunamadı",
+    "sportNotFoundDescription": "Spor listesi yüklenemedi. Biraz sonra tekrar dene.",
+    "publishFailedTitle": "Etkinlik yayınlanamadı",
+    "tryAgain": "Tekrar dene.",
+    "draftSavedTitle": "Yayınlanamadı",
+    "draftSavedDescription": "Etkinlik taslak olarak kaydedildi. Detaydan tekrar dene.",
+    "seriesStartedTitle": "Seri başlatıldı",
+    "publishedTitle": "Etkinlik yayınlandı",
+    "invitesFailedTitle": "Etkinlik yayınlandı, davetler gönderilemedi",
+    "seriesDescription": "Serinin ilk etkinliği yayında. Kalan {{count}} etkinlik, bir öncekisi bittikçe otomatik açılacak.",
+    "friendInviteSent": "Arkadaşlarına etkinlik daveti gönderildi.",
+    "waitingForPlayers": "Oyuncular seni bekliyor.",
+    "invitesFailedDescription": "{{reason}} Davetleri etkinlik detayından tekrar gönderebilirsin.",
+    "invitesGenericFailure": "Davetler gönderilemedi."
+  }
+}

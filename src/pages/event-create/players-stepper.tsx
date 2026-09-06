@@ -6,6 +6,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { CREATE_EVENT_LIMITS } from "@/constants/events";
 import { themeColors } from "@/constants/theme";
@@ -23,6 +24,7 @@ const COUNT_MS = 60;
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
+  const { t } = useTranslation("eventCreate");
   const parsedValue = Number(value);
   const count =
     Number.isFinite(parsedValue) && value !== "" ? parsedValue : MIN;
@@ -74,7 +76,7 @@ export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
   return (
     <View className="rounded-[28px] border border-border-default bg-surface-primary p-5">
       <Text className="mb-5 text-center font-body-bold text-[13px] text-text-secondary">
-        Katılımcı Kapasitesi
+        {t("players.capacityLabel")}
       </Text>
       <View className="flex-row items-center justify-between">
         <AnimatedPressable
@@ -102,7 +104,7 @@ export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
         <View className="items-center">
           <Animated.View style={countStyle}>
             <TextInput
-              accessibilityLabel="Katılımcı kapasitesi"
+              accessibilityLabel={t("players.accessibilityLabel")}
               value={value}
               onChangeText={typeCount}
               onBlur={finishEditing}
@@ -117,7 +119,9 @@ export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
               cursorColor={themeColors.brand.primary}
             />
           </Animated.View>
-          <Text className="font-body text-sm text-text-secondary">kişi</Text>
+          <Text className="font-body text-sm text-text-secondary">
+            {t("players.unit")}
+          </Text>
         </View>
 
         <AnimatedPressable
@@ -144,8 +148,7 @@ export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
       </View>
 
       <Text className="mt-5 text-center font-body text-xs text-text-tertiary">
-        Butonları kullanabilir veya sayıya dokunup kapasiteyi yazabilirsin.
-        {"\n"}Sen de katılımcı olarak sayılırsın.
+        {t("players.hint")}
       </Text>
     </View>
   );

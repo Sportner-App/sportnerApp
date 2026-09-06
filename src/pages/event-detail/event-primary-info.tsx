@@ -1,9 +1,10 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
-import { SKILL_LEVEL_LABELS, skillKeyFromCode } from "@/constants/profile";
+import { skillKeyFromCode, useSkillLevelLabels } from "@/constants/profile";
 import { sportAccentToken, themeColors, typeStyles } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { EventDetail, EventParticipant } from "@/types/events";
@@ -12,6 +13,7 @@ import {
   formatEventFee,
   formatEventTime,
   isCurrentParticipant,
+  noLocationLabel,
 } from "@/utils/events";
 import { lightImpact } from "@/utils/haptics";
 
@@ -28,14 +30,16 @@ export function EventPrimaryInfo({
   onOpenParticipants,
   onOpenReviews,
 }: EventPrimaryInfoProps) {
-  const title = event.title.trim() || "Etkinlik";
+  const { t } = useTranslation("eventDetail");
+  const SKILL_LEVEL_LABELS = useSkillLevelLabels();
+  const title = event.title.trim() || t("events:fallback.event");
   const time = formatEventTime(event.eventDate);
   const duration =
     event.durationMinutes > 0
       ? event.durationLabel || formatDurationLabel(event.durationMinutes)
       : "";
   const place = event.location.trim();
-  const showPlace = place.length > 0 && place !== "Konum yok";
+  const showPlace = place.length > 0 && place !== noLocationLabel();
 
   return (
     <Animated.View
@@ -58,7 +62,10 @@ export function EventPrimaryInfo({
         {showPlace || time || duration ? <MetaDot /> : null}
         <MetaPiece
           icon="id-card"
-          label={`${event.minParticipantAge}–${event.maxParticipantAge} yaş`}
+          label={t("primaryInfo.ageRange", {
+            min: event.minParticipantAge,
+            max: event.maxParticipantAge,
+          })}
         />
         {event.skillLevel != null ? (
           <>
@@ -90,7 +97,7 @@ export function EventPrimaryInfo({
           className="font-body text-[12px] leading-5"
           style={{ color: themeColors.text.tertiary }}
         >
-          Uygulama üzerinden ödeme alınmaz. Ücret etkinlikte ödenir.
+          {t("primaryInfo.paymentDisclaimer")}
         </Text>
       ) : null}
 
@@ -136,6 +143,7 @@ export function EventCapacitySummary({
   onOpenParticipants,
   onOpenReviews,
 }: EventPrimaryInfoProps) {
+  const { t } = useTranslation("eventDetail");
   const max = event.maxParticipants;
   const occupied = Math.max(event.participantCount, 0);
   const unlimited = max == null;
@@ -154,14 +162,14 @@ export function EventCapacitySummary({
   const sportColor = accent?.accent ?? themeColors.text.secondary;
 
   const remainingLabel = unlimited
-    ? "Sınırsız"
+    ? t("primaryInfo.unlimited")
     : isFull
-      ? "Etkinlik dolu"
-      : `${spotsLeft} yer kaldı`;
+      ? t("primaryInfo.full")
+      : t("primaryInfo.spotsLeft", { count: spotsLeft ?? 0 });
 
   const countLabel = unlimited
-    ? `${occupied} kişi`
-    : `${occupied} / ${max} kişi`;
+    ? t("primaryInfo.countLabel", { count: occupied })
+    : t("primaryInfo.countLabelWithMax", { count: occupied, max });
 
   return (
     <View className="mt-sm gap-sm">
@@ -263,7 +271,7 @@ export function EventCapacitySummary({
             className="font-body-bold text-[10px]"
             style={{ color: sportColor }}
           >
-            {guestCount} misafir
+            {t("primaryInfo.guestCount", { count: guestCount })}
           </Text>
         </View>
       ) : null}
@@ -274,7 +282,7 @@ export function EventCapacitySummary({
             className="font-body text-caption"
             style={{ color: themeColors.text.secondary }}
           >
-            Değerlendirmeler
+            {t("primaryInfo.reviews")}
           </Text>
         </Pressable>
       ) : null}

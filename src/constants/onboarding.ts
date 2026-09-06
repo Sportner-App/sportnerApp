@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import type { IconName } from "@/types/components";
 import type { SkillLevelKey } from "@/types/profile";
 
@@ -37,18 +39,25 @@ export const ONBOARDING_COPY = {
   },
 } as const;
 
-export const ONBOARDING_SKILL_OPTIONS: {
+export type OnboardingSkillOption = {
   key: string;
   label: string;
   shortLabel: string;
   level: number;
   skillKey: SkillLevelKey;
-}[] = [
-  { key: "0", label: "Başlangıç", shortLabel: "Baş.", level: 0, skillKey: "beginner" },
-  { key: "1", label: "Orta", shortLabel: "Orta", level: 1, skillKey: "intermediate" },
-  { key: "2", label: "İleri", shortLabel: "İleri", level: 2, skillKey: "advanced" },
-  { key: "3", label: "Uzman", shortLabel: "Uzman", level: 3, skillKey: "expert" },
-  { key: "4", label: "Profesyonel", shortLabel: "Pro", level: 4, skillKey: "professional" },
-];
+};
+
+/** Seviye seçenekleri — dil değiştiğinde yeniden çözülsün diye hook. */
+export function useSkillLevelOptions(): OnboardingSkillOption[] {
+  const { t } = useTranslation("skills");
+
+  return [
+    { key: "0", label: t("beginner"), shortLabel: t("beginnerShort"), level: 0, skillKey: "beginner" },
+    { key: "1", label: t("intermediate"), shortLabel: t("intermediateShort"), level: 1, skillKey: "intermediate" },
+    { key: "2", label: t("advanced"), shortLabel: t("advancedShort"), level: 2, skillKey: "advanced" },
+    { key: "3", label: t("expert"), shortLabel: t("expertShort"), level: 3, skillKey: "expert" },
+    { key: "4", label: t("professional"), shortLabel: t("professionalShort"), level: 4, skillKey: "professional" },
+  ];
+}
 
 /** Katalog büyüdükçe filtrelemeyi kolaylaştıran gruplar (slug bazlı). */

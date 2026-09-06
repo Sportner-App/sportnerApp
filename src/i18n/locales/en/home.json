@@ -1,0 +1,105 @@
+{
+  "hero": {
+    "titlePrefix": "Get ",
+    "titleHighlight": "moving!",
+    "subtitle": "Discover events waiting for you nearby.",
+    "createLabel": "Create"
+  },
+  "sportFilter": {
+    "all": "All"
+  },
+  "viewMode": {
+    "list": "List view",
+    "map": "Map view"
+  },
+  "filters": {
+    "clearAccessibility": "Clear filters",
+    "accessibility": "Filters"
+  },
+  "scope": {
+    "all": "General",
+    "friends": "My friends",
+    "organizations": "My organizations"
+  },
+  "requireAuth": {
+    "friends": "You need to sign in to see your friends' events.",
+    "organizations": "You need to sign in to see your organizations' events."
+  },
+  "contextLabel": {
+    "organizationsFallback": "Your organizations' events",
+    "friendsWithCity": "{{city}} · Your friends' events",
+    "friends": "Events organized by your friends",
+    "cityEvents": "Events in {{city}}",
+    "allCities": "Events in all cities"
+  },
+  "resultCount": "{{count}} events found",
+  "loadingEvents": "Loading events",
+  "loadFailed": "Events couldn't load.",
+  "empty": {
+    "organizations": "Your organizations don't have any upcoming events yet.",
+    "friends": "Your friends haven't created any upcoming events yet.",
+    "default": "No upcoming events match these filters."
+  },
+  "map": {
+    "noResults": "No located events match these filters.",
+    "currentLocationTitle": "Your current location",
+    "recenterAccessibility": "Focus on my location",
+    "enableLocationAccessibility": "Turn on location access",
+    "openPreviewAccessibility": "Go to {{title}} details",
+    "closePreviewAccessibility": "Close preview"
+  },
+  "eventCard": {
+    "untitled": "Event",
+    "unlimited": "Unlimited",
+    "full": "Event full",
+    "spotsLeft": "{{count}} spots left",
+    "atTime": "at {{time}}",
+    "accessibility": {
+      "sportEvent": "{{sport}} event",
+      "defaultEvent": "Event",
+      "participantCount": "{{count}} participants",
+      "unlimitedCapacity": "unlimited capacity",
+      "capacity": "capacity {{count}} people"
+    }
+  },
+  "filterSheet": {
+    "title": "Event filters",
+    "subtitle": "Narrow down by location, age, fee, level and organizer gender.",
+    "location": {
+      "label": "Location",
+      "loading": "Loading cities...",
+      "placeholder": "Select city",
+      "sheetTitle": "Select location",
+      "sheetSubtitle": "Choose the event's city",
+      "searchPlaceholder": "Search city",
+      "allLabel": "All cities",
+      "allDescription": "Don't filter by location"
+    },
+    "sport": {
+      "label": "Sport",
+      "placeholder": "Select sport",
+      "sheetTitle": "Select sport",
+      "sheetSubtitle": "Narrow down to a single sport",
+      "searchPlaceholder": "Search sport",
+      "allGroupLabel": "All categories",
+      "allLabel": "All sports",
+      "allDescription": "Don't filter by sport"
+    },
+    "organization": {
+      "label": "Organization",
+      "placeholder": "Select organization",
+      "sheetTitle": "Select organization",
+      "sheetSubtitle": "Whose organization's events do you want to see?",
+      "searchPlaceholder": "Search organization",
+      "allLabel": "All organizations",
+      "allDescription": "Don't filter by organization"
+    },
+    "fee": {
+      "label": "Fee",
+      "free": "Free",
+      "paid": "Paid"
+    },
+    "skillLabel": "Level",
+    "organizerGenderLabel": "Organizer gender"
+  }
+}

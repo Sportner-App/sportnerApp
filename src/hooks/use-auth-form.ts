@@ -1,6 +1,8 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 import { AUTH_BYPASS } from "@/constants/env";
 import { useAuth, useFirstLaunch, useSession, useToast } from "@/contexts";
@@ -20,6 +22,7 @@ type AuthFieldErrors = {
 const EMPTY_FIELD_ERRORS: AuthFieldErrors = {};
 
 function getAuthFieldErrors(
+  t: TFunction<"auth">,
   isLogin: boolean,
   username: string,
   password: string,
@@ -34,45 +37,48 @@ function getAuthFieldErrors(
   const trimmedLastName = lastName.trim();
 
   if (!trimmedUsername) {
-    errors.username = "Kullanıcı adı gerekli.";
+    errors.username = t("validation.usernameRequired");
   } else if (trimmedUsername.length > 30) {
-    errors.username = "Kullanıcı adı en fazla 30 karakter olabilir.";
+    errors.username = t("validation.usernameTooLong", { max: 30 });
   } else if (!isLogin && trimmedUsername.length < 3) {
-    errors.username = "Kullanıcı adı en az 3 karakter olmalı.";
+    errors.username = t("validation.usernameTooShort", { min: 3 });
   } else if (!isLogin && !USERNAME_PATTERN.test(trimmedUsername)) {
-    errors.username = "Kullanıcı adı yalnızca harf, rakam, . ve _ içerebilir.";
+    errors.username = t("validation.usernameInvalidChars");
   }
 
   if (!password) {
-    errors.password = "Şifre gerekli.";
+    errors.password = t("validation.passwordRequired");
   } else if (password.length > 128) {
-    errors.password = "Şifre çok uzun.";
+    errors.password = t("validation.passwordTooLong");
   } else if (!isLogin && password.length < 8) {
-    errors.password = "Şifre en az 8 karakter olmalı.";
+    errors.password = t("validation.passwordTooShort", { min: 8 });
   }
 
   if (!isLogin) {
     if (!trimmedFirstName) {
-      errors.firstName = "Ad gerekli.";
+      errors.firstName = t("validation.firstNameRequired");
     } else if (trimmedFirstName.length > 50) {
-      errors.firstName = "Ad en fazla 50 karakter olabilir.";
+      errors.firstName = t("validation.firstNameTooLong", { max: 50 });
     }
 
     if (trimmedLastName.length > 50) {
-      errors.lastName = "Soyad en fazla 50 karakter olabilir.";
+      errors.lastName = t("validation.lastNameTooLong", { max: 50 });
     }
 
     if (!gender) {
-      errors.gender = "Cinsiyet seçimi gerekli.";
+      errors.gender = t("validation.genderRequired");
     }
 
     const parsedBirthDate = parseBirthDate(birthDate);
     if (!birthDate.trim()) {
-      errors.birthDate = "Doğum tarihi gerekli.";
+      errors.birthDate = t("validation.birthDateRequired");
     } else if (!parsedBirthDate) {
-      errors.birthDate = "Tarihi GG.AA.YYYY formatında gir.";
+      errors.birthDate = t("validation.birthDateInvalidFormat");
     } else if (!isAllowedBirthDate(parsedBirthDate)) {
-      errors.birthDate = "Yaş 13 ile 120 arasında olmalı.";
+      errors.birthDate = t("validation.birthDateOutOfRange", {
+        min: 13,
+        max: 120,
+      });
     }
   }
 
@@ -123,6 +129,7 @@ function formatBirthDateInput(value: string) {
 
 export function useAuthForm() {
   const router = useRouter();
+  const { t } = useTranslation("auth");
   const { login, register, isReady } = useAuth();
   const { markOnboardingSeen } = useFirstLaunch();
   const { refreshSession } = useSession();
@@ -190,6 +197,7 @@ export function useAuthForm() {
     () =>
       hasAttemptedSubmit
         ? getAuthFieldErrors(
+            t,
             isLogin,
             username,
             password,
@@ -207,6 +215,7 @@ export function useAuthForm() {
       isLogin,
       lastName,
       password,
+      t,
       username,
     ],
   );
@@ -254,7 +263,9 @@ export function useAuthForm() {
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         showToast({
           type: "error",
-          title: isLogin ? "Giriş başarısız" : "Kayıt başarısız",
+          title: isLogin
+            ? t("toast.loginFailedTitle")
+            : t("toast.registerFailedTitle"),
           description: response.error.message,
         });
         return;
@@ -263,10 +274,12 @@ export function useAuthForm() {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       showToast({
         type: "success",
-        title: isLogin ? "Giriş başarılı" : "Hesabın oluşturuldu",
+        title: isLogin
+          ? t("toast.loginSuccessTitle")
+          : t("toast.registerSuccessTitle"),
         description: response.data.isOnboardingCompleted
-          ? "Hoş geldin!"
-          : "Hadi profilini tamamlayalım.",
+          ? t("toast.welcomeBack")
+          : t("toast.completeProfile"),
       });
 
       await markOnboardingSeen();

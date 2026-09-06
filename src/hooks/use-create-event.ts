@@ -1,6 +1,7 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   CREATE_EVENT_LIMITS,
@@ -49,6 +50,7 @@ function toSportOptions(sports: Sport[]): SportOption[] {
 
 export function useCreateEvent(initialOrganizationId?: string) {
   const router = useRouter();
+  const { t } = useTranslation("eventCreate");
   const { showToast } = useToast();
   const isOrganizationLocked = Boolean(initialOrganizationId);
   const [organizationId, setOrganizationId] = useState<string | undefined>(
@@ -350,8 +352,8 @@ export function useCreateEvent(initialOrganizationId?: string) {
     if (!sportId) {
       showToast({
         type: "error",
-        title: "Spor bulunamadı",
-        description: "Spor listesi yüklenemedi. Biraz sonra tekrar dene.",
+        title: t("toast.sportNotFoundTitle"),
+        description: t("toast.sportNotFoundDescription"),
       });
       return;
     }
@@ -389,8 +391,8 @@ export function useCreateEvent(initialOrganizationId?: string) {
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         showToast({
           type: "error",
-          title: "Etkinlik yayınlanamadı",
-          description: error?.message ?? "Tekrar dene.",
+          title: t("toast.publishFailedTitle"),
+          description: error?.message ?? t("toast.tryAgain"),
         });
         return;
       }
@@ -399,10 +401,8 @@ export function useCreateEvent(initialOrganizationId?: string) {
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         showToast({
           type: "error",
-          title: "Yayınlanamadı",
-          description:
-            error?.message ??
-            "Etkinlik taslak olarak kaydedildi. Detaydan tekrar dene.",
+          title: t("toast.draftSavedTitle"),
+          description: error?.message ?? t("toast.draftSavedDescription"),
         });
         await assignIfNeeded(data.id);
         router.replace(`/events/${data.id}`);
@@ -420,18 +420,20 @@ export function useCreateEvent(initialOrganizationId?: string) {
         type: assignment.ok ? "success" : "error",
         title: assignment.ok
           ? values.isRecurring
-            ? "Seri başlatıldı"
-            : "Etkinlik yayınlandı"
-          : "Etkinlik yayınlandı, davetler gönderilemedi",
+            ? t("toast.seriesStartedTitle")
+            : t("toast.publishedTitle")
+          : t("toast.invitesFailedTitle"),
         description: assignment.ok
           ? values.isRecurring
-            ? `Serinin ilk etkinliği yayında. Kalan ${
-                values.recurrenceCount - 1
-              } etkinlik, bir öncekisi bittikçe otomatik açılacak.`
+            ? t("toast.seriesDescription", {
+                count: values.recurrenceCount - 1,
+              })
             : selectedFriendIds.length > 0
-              ? "Arkadaşlarına etkinlik daveti gönderildi."
-              : "Oyuncular seni bekliyor."
-          : `${assignment.reason} Davetleri etkinlik detayından tekrar gönderebilirsin.`,
+              ? t("toast.friendInviteSent")
+              : t("toast.waitingForPlayers")
+          : t("toast.invitesFailedDescription", {
+              reason: assignment.reason,
+            }),
       });
 
       router.replace(`/events/${data.id}`);
@@ -472,7 +474,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
         ok: false,
         reason: getApiErrorMessage(
           assignError,
-          "Davetler gönderilemedi.",
+          t("toast.invitesGenericFailure"),
         ),
       };
     }

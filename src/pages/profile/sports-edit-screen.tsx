@@ -2,8 +2,8 @@ import { useRouter } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
 import { AppScreen, Button, ScreenHeader, SportLoader } from "@/components";
-import { ONBOARDING_SKILL_OPTIONS } from "@/constants/onboarding";
-import { SKILL_LEVEL_LABELS, skillKeyFromCode } from "@/constants/profile";
+import { useSkillLevelOptions } from "@/constants/onboarding";
+import { skillKeyFromCode, useSkillLevelLabels } from "@/constants/profile";
 import { useToast } from "@/contexts";
 import { useProfile } from "@/hooks/use-profile";
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -19,6 +19,8 @@ export function SportsEditScreen() {
   const router = useRouter();
   const { profile, isLoading, refresh } = useProfile();
   const { showToast } = useToast();
+  const SKILL_LEVEL_LABELS = useSkillLevelLabels();
+  const ONBOARDING_SKILL_OPTIONS = useSkillLevelOptions();
 
   const run = async (action: () => Promise<void>, title: string) => {
     try {

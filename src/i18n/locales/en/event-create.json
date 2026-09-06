@@ -1,0 +1,145 @@
+{
+  "header": "NEW EVENT",
+  "steps": {
+    "1": { "title": "Create your event", "subtitle": "Pick your sport and describe your event." },
+    "2": { "title": "Plan it out", "subtitle": "Decide where, when and how long it will last." },
+    "3": { "title": "Build your team", "subtitle": "Decide how many people can join." },
+    "4": { "title": "Who's coming with you?", "subtitle": "You can add guests or friends. You can skip this step." }
+  },
+  "submit": "Publish Event",
+  "publishing": "Publishing...",
+  "continue": "Continue",
+  "back": "Back",
+  "skipAndPublish": "Skip and Publish",
+  "progress": {
+    "details": "Details",
+    "plan": "Plan",
+    "capacity": "Capacity",
+    "roster": "Roster"
+  },
+  "sport": {
+    "label": "Sport",
+    "loading": "Loading sports…",
+    "placeholder": "Select sport",
+    "sheetTitle": "Select sport",
+    "sheetSubtitle": "Choose the event's sport",
+    "searchPlaceholder": "Search sport…",
+    "allGroupLabel": "All categories"
+  },
+  "title": {
+    "label": "Title",
+    "placeholder": "E.g. Evening 5-a-side"
+  },
+  "description": {
+    "label": "Description",
+    "optional": "Optional",
+    "placeholder": "What are we playing, what should people bring? (optional)"
+  },
+  "location": {
+    "label": "Location",
+    "searchPlaceholder": "Search a location or pick on the map",
+    "emptyHint": "Tap the map or search above",
+    "mapUnavailable": "The map isn't available in this environment."
+  },
+  "dateTime": {
+    "label": "Date & Time"
+  },
+  "duration": {
+    "label": "Duration",
+    "sheetTitle": "Event duration",
+    "sheetSubtitle": "Scroll to pick the hour and minute",
+    "hourSuffix": "h",
+    "minuteSuffix": "min",
+    "chooseHint": "You need to pick a duration",
+    "confirm": "Set Duration",
+    "minutesShort": "{{count}} min",
+    "hoursShort": "{{count}} h",
+    "hoursAndMinutesShort": "{{hours}} h {{minutes}} min"
+  },
+  "recurring": {
+    "toggleTitle": "Recurring event",
+    "toggleDescription": "Only the first event is published now; each following event opens automatically once the previous one ends.",
+    "frequencyLabel": "Repeat frequency",
+    "everyWeek": "Every week",
+    "every2Weeks": "Every 2 weeks",
+    "every4Weeks": "Every 4 weeks",
+    "countLabel": "Number of occurrences",
+    "countHint": "Includes the first event, opens in sequence",
+    "summarySeries": "{{count}}-event series",
+    "summaryWeekly": "every week",
+    "summaryEveryNWeeks": "every {{weeks}} weeks",
+    "summaryAutoOpens": "opens in sequence"
+  },
+  "organization": {
+    "lockedText": "This event is being created under <bold>{{name}}</bold>.",
+    "lockedFallbackName": "your organization",
+    "intentQuestion": "Is this event tied to an organization?",
+    "individual": "Individual event",
+    "organizationEvent": "Organization event",
+    "label": "Organization",
+    "placeholder": "Select organization",
+    "sheetTitle": "Select organization",
+    "sheetSubtitle": "Which organization is this event for?"
+  },
+  "players": {
+    "capacityLabel": "Participant Capacity",
+    "unit": "people",
+    "hint": "You can use the buttons or tap the number to type the capacity directly.\nYou count as a participant too.",
+    "accessibilityLabel": "Participant capacity"
+  },
+  "ageRange": {
+    "label": "Participant age range",
+    "hint": "Drag the handles to adjust",
+    "unit": "yrs",
+    "minAccessibility": "Minimum participant age",
+    "maxAccessibility": "Maximum participant age"
+  },
+  "fee": {
+    "label": "Fee",
+    "disclaimer": "Payment isn't collected through the app. If there's a fee, participants pay at the event.",
+    "paid": "Paid",
+    "priceLabel": "Price",
+    "pricePlaceholder": "E.g. 150",
+    "priceHelper": "Turkish lira. The app doesn't collect payment."
+  },
+  "skill": {
+    "label": "Level",
+    "disclaimer": "Optional. Doesn't gate participation, informational only.",
+    "none": "Don't specify"
+  },
+  "summary": {
+    "heading": "Event Summary",
+    "playersLabel": "{{count}} people",
+    "ageRange": "{{min}}–{{max}} yrs"
+  },
+  "companions": {
+    "slotsAvailable": "{{count}} spots open",
+    "reservedBreakdown": "1 organizer + {{count}} companions",
+    "guestsTitle": "Anonymous guests",
+    "guestsSubtitle": "People without an account; first and last name are required.",
+    "guestLabel": "Guest {{number}}",
+    "guestFirstName": "First name",
+    "guestLastName": "Last name",
+    "guestRequiredError": "The guest's first and last name are required.",
+    "friendsTitle": "Invite friends",
+    "friendsSubtitle": "Selected people become participants once they accept.",
+    "friendsLoading": "Loading friends…",
+    "friendsEmpty": "No accepted friends found that you can add."
+  },
+  "toast": {
+    "sportNotFoundTitle": "Sport not found",
+    "sportNotFoundDescription": "The sports list couldn't load. Try again shortly.",
+    "publishFailedTitle": "Event couldn't be published",
+    "tryAgain": "Try again.",
+    "draftSavedTitle": "Couldn't publish",
+    "draftSavedDescription": "The event was saved as a draft. Try again from the details page.",
+    "seriesStartedTitle": "Series started",
+    "publishedTitle": "Event published",
+    "invitesFailedTitle": "Event published, invites couldn't be sent",
+    "seriesDescription": "The series' first event is live. The remaining {{count}} events will open automatically as each one ends.",
+    "friendInviteSent": "Invitation sent to your friends.",
+    "waitingForPlayers": "Players are waiting for you.",
+    "invitesFailedDescription": "{{reason}} You can resend invites from the event details.",
+    "invitesGenericFailure": "Invites couldn't be sent."
+  }
+}

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { Avatar, Button, Input } from "@/components";
 import { useToast } from "@/contexts";
@@ -30,6 +31,7 @@ export function EventQnASection({
   isOrganizer,
   onOpenUser,
 }: EventQnASectionProps) {
+  const { t } = useTranslation("eventDetail");
   const { showToast } = useToast();
   const [items, setItems] = useState<ApiEventQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,13 +49,13 @@ export function EventQnASection({
     } catch (error) {
       showToast({
         type: "error",
-        title: "Sorular yüklenemedi",
+        title: t("qna.loadFailedTitle"),
         description: getApiErrorMessage(error),
       });
     } finally {
       setIsLoading(false);
     }
-  }, [event.id, showToast]);
+  }, [event.id, showToast, t]);
 
   useEffect(() => {
     void load();
@@ -77,10 +79,10 @@ export function EventQnASection({
     } catch (error) {
       showToast({
         type: "error",
-        title: "Soru gönderilemedi",
+        title: t("qna.askFailedTitle"),
         description:
           isApiError(error) && error.status === 429
-            ? "Çok sık soru soruyorsun. Biraz bekle."
+            ? t("qna.askRateLimited")
             : getApiErrorMessage(error),
       });
     } finally {
@@ -116,7 +118,7 @@ export function EventQnASection({
     } catch (error) {
       showToast({
         type: "error",
-        title: "Yanıt gönderilemedi",
+        title: t("qna.replyFailedTitle"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -128,28 +130,26 @@ export function EventQnASection({
     <Animated.View entering={FadeInDown.duration(400).delay(180)} className="gap-md">
       <View className="flex-row items-end justify-between">
         <Text style={[typeStyles.label, { color: themeColors.text.secondary }]}>
-          Sorular
+          {t("qna.heading")}
         </Text>
         {items.length > 0 ? (
           <Text className="font-body text-[12px] text-text-tertiary">
-            {items.length} soru
+            {t("qna.countLabel", { count: items.length })}
           </Text>
         ) : null}
       </View>
 
       <Text className="font-body text-[13px] leading-5 text-text-secondary">
-        Katılmadan önce etkinlik sahibine sor. Cevaplar herkese açık.
+        {t("qna.intro")}
       </Text>
 
       {isLoading ? (
         <Text className="font-body text-[13px] text-text-tertiary">
-          Sorular yükleniyor…
+          {t("qna.loading")}
         </Text>
       ) : items.length === 0 ? (
         <Text className="font-body text-[14px] text-text-secondary">
-          {ended
-            ? "Bu etkinlikte soru sorulmamış."
-            : "Henüz soru yok. İlk soruyu sen sor."}
+          {ended ? t("qna.emptyEnded") : t("qna.emptyOpen")}
         </Text>
       ) : (
         <View className="gap-4">
@@ -171,18 +171,18 @@ export function EventQnASection({
       {canAsk ? (
         <View className="gap-2">
           <Input
-            label="Sorun"
+            label={t("qna.askLabel")}
             value={draft}
             onChangeText={setDraft}
             multiline
             maxLength={MAX_LENGTH}
-            placeholder="Park yeri var mı, raket getirmeli miyim…"
+            placeholder={t("qna.askPlaceholder")}
             helperText={`${draft.trim().length}/${MAX_LENGTH}`}
             style={{ minHeight: 88, paddingTop: 10, paddingBottom: 10 }}
             textAlignVertical="top"
           />
           <Button
-            label="Soru sor"
+            label={t("qna.ask")}
             size="sm"
             disabled={draft.trim().length < MIN_LENGTH}
             isLoading={saving && !replyingTo}
@@ -193,7 +193,7 @@ export function EventQnASection({
 
       {ended ? (
         <Text className="font-body text-[12px] text-text-tertiary">
-          Etkinlik bittiği için yeni soru veya yanıt yazılamaz.
+          {t("qna.endedNotice")}
         </Text>
       ) : null}
 
@@ -201,12 +201,16 @@ export function EventQnASection({
         <View className="gap-2 rounded-2xl border border-border-default bg-background-secondary px-3 py-3">
           <View className="flex-row items-center justify-between">
             <Text className="flex-1 font-body text-[12px] text-text-secondary">
-              {replyingTo.username || replyingTo.firstName || "Sporcu"} kişisine
-              yanıt
+              {t("qna.replyingTo", {
+                name:
+                  replyingTo.username ||
+                  replyingTo.firstName ||
+                  t("events:fallback.athlete"),
+              })}
             </Text>
             <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>
               <Text className="font-body-bold text-[12px] text-text-secondary">
-                Vazgeç
+                {t("qna.cancelReply")}
               </Text>
             </Pressable>
           </View>
@@ -215,12 +219,12 @@ export function EventQnASection({
             onChangeText={setReplyDraft}
             multiline
             maxLength={MAX_LENGTH}
-            placeholder="Yanıtını yaz…"
+            placeholder={t("qna.replyPlaceholder")}
             style={{ minHeight: 72, paddingTop: 10, paddingBottom: 10 }}
             textAlignVertical="top"
           />
           <Button
-            label={isOrganizer ? "Cevapla" : "Yanıtla"}
+            label={isOrganizer ? t("qna.replyOrganizer") : t("qna.replyParticipant")}
             size="sm"
             disabled={replyDraft.trim().length < MIN_LENGTH}
             isLoading={saving && Boolean(replyingTo)}
@@ -276,13 +280,17 @@ function QnARow({
   onOpenUser: (userId: string) => void;
   onReply: (item: ApiEventQuestion) => void;
 }) {
-  const name = item.username?.trim() || item.firstName?.trim() || "Sporcu";
+  const { t } = useTranslation("eventDetail");
+  const name =
+    item.username?.trim() ||
+    item.firstName?.trim() ||
+    t("events:fallback.athlete");
   const mention = item.replyToUsername?.trim();
   const badge =
     item.authorRole === EVENT_QNA_ROLE.organizer
-      ? { label: "Etkinlik sahibi", tone: "owner" as const }
+      ? { label: t("qna.roleOwner"), tone: "owner" as const }
       : item.authorRole === EVENT_QNA_ROLE.participant
-        ? { label: "Katılımcı", tone: "member" as const }
+        ? { label: t("qna.roleMember"), tone: "member" as const }
         : null;
 
   return (
@@ -335,7 +343,7 @@ function QnARow({
             className="self-start py-0.5"
           >
             <Text className="font-body text-[12px] font-semibold text-text-secondary">
-              Yanıtla
+              {t("qna.reply")}
             </Text>
           </Pressable>
         ) : null}
