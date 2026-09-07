@@ -16,7 +16,7 @@ export function useFirstLaunch() {
   const context = useContext(FirstLaunchContext);
 
   if (!context) {
-    throw new Error("useFirstLaunch FirstLaunchProvider içinde kullanılmalı.");
+    throw new Error("useFirstLaunch must be used within FirstLaunchProvider.");
   }
 
   return context;

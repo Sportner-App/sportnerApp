@@ -1,0 +1,22 @@
+{
+  "title": "KATILIMCILAR",
+  "loading": "Katılımcılar yükleniyor",
+  "count": "{{count}} katılımcı",
+  "empty": "Henüz katılımcı yok.",
+  "loadFailed": "Katılımcılar yüklenemedi.",
+  "guestParticipant": "Misafir katılımcı",
+  "removeAccessibility": "{{name}} adlı katılımcıyı çıkar",
+  "removalSheet": {
+    "title": "Katılımcıyı çıkar",
+    "subtitle": "{{name}} için çıkarma sebebini seç.",
+    "noteLabel": "Açıklama (opsiyonel)",
+    "notePlaceholder": "Eklemek istediğin ayrıntılar",
+    "cancel": "Vazgeç",
+    "confirm": "Çıkar"
+  },
+  "toasts": {
+    "removeFailedTitle": "Katılımcı çıkarılamadı",
+    "removedTitle": "Katılımcı çıkarıldı",
+    "removedDescription": "Seçilen sebep analiz için kaydedildi."
+  }
+}

@@ -1,40 +1,17 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 
 import { Button, SegmentedTabs, SportLoader, TabPage } from "@/components";
-import { type ActivityTab, useActivity } from "@/hooks/use-activity";
+import { useActivityCopy } from "@/constants/activity";
+import { useActivity } from "@/hooks/use-activity";
 import { EventCard } from "@/pages/home/event-card";
-
-const TABS: { key: ActivityTab; label: string }[] = [
-  { key: "upcoming", label: "Devam eden" },
-  { key: "past", label: "Geçmiş" },
-  { key: "organized", label: "Düzenlediklerim" },
-];
-
-const EMPTY_COPY: Record<
-  ActivityTab,
-  { message: string; action: string; href: "/events/create" | "/(tabs)" }
-> = {
-  upcoming: {
-    message: "Şu an devam eden veya yaklaşan bir katılımın yok.",
-    action: "Etkinlikleri Gör",
-    href: "/(tabs)",
-  },
-  past: {
-    message: "Henüz geçmiş bir etkinliğin yok.",
-    action: "Etkinlikleri Gör",
-    href: "/(tabs)",
-  },
-  organized: {
-    message: "Henüz düzenlediğin bir etkinlik yok.",
-    action: "Etkinlik Oluştur",
-    href: "/events/create",
-  },
-};
 
 export function ActivityScreen() {
   const router = useRouter();
+  const { t } = useTranslation("common");
+  const copy = useActivityCopy();
   const {
     tab,
     setTab,
@@ -48,7 +25,7 @@ export function ActivityScreen() {
     loadMore,
   } = useActivity();
 
-  const empty = EMPTY_COPY[tab];
+  const empty = copy.emptyCopy[tab];
 
   return (
     <TabPage
@@ -58,18 +35,18 @@ export function ActivityScreen() {
     >
       <View className="gap-2">
         <Text className="font-display text-3xl text-text-primary">
-          Etkinliklerim
+          {copy.title}
         </Text>
         <Text className="font-body text-sm text-brand-neutral">
-          Devam edenler, geçmiştekiler ve düzenlediklerin.
+          {copy.subtitle}
         </Text>
       </View>
 
-      <SegmentedTabs options={TABS} value={tab} onChange={setTab} />
+      <SegmentedTabs options={copy.tabs} value={tab} onChange={setTab} />
 
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={148} label="Etkinlikler yükleniyor" />
+          <SportLoader size={148} label={copy.loading} />
         </View>
       ) : error && events.length === 0 ? (
         <View className="items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
@@ -78,7 +55,7 @@ export function ActivityScreen() {
             {error}
           </Text>
           <Button
-            label="Tekrar Dene"
+            label={t("retry")}
             variant="outline"
             size="sm"
             onPress={refresh}
@@ -100,7 +77,7 @@ export function ActivityScreen() {
       ) : (
         <View className="gap-3">
           <Text className="font-mono text-xs text-brand-neutral">
-            {totalCount} etkinlik
+            {copy.eventCount(totalCount)}
           </Text>
           {events.map((event, index) => (
             <EventCard
@@ -112,7 +89,7 @@ export function ActivityScreen() {
           ))}
           {isLoadingMore ? (
             <View className="items-center py-5">
-              <SportLoader size={64} label="Etkinlikler yükleniyor" />
+              <SportLoader size={64} label={copy.loadingMore} />
             </View>
           ) : null}
         </View>

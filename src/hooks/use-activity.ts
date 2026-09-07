@@ -1,6 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useRef, useState } from "react";
 
+import i18n from "@/i18n";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
   getMyOrganizedEvents,
@@ -72,7 +73,7 @@ export function useActivity() {
       setPast(applyActivityScope(history, "past"));
       setOrganized(hosted);
     } catch (err) {
-      setError(getApiErrorMessage(err, "Etkinlikler yüklenemedi."));
+      setError(getApiErrorMessage(err, i18n.t("activity:errors.loadFailed")));
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -126,7 +127,7 @@ export function useActivity() {
         totalCount: prev.totalCount + next.items.length,
       }));
     } catch (err) {
-      setError(getApiErrorMessage(err, "Daha fazla yüklenemedi."));
+      setError(getApiErrorMessage(err, i18n.t("activity:errors.loadMoreFailed")));
     } finally {
       setIsLoadingMore(false);
     }

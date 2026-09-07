@@ -1,0 +1,18 @@
+{
+  "title": "BADGES",
+  "loading": "Loading",
+  "sections": {
+    "earned": "Your badges",
+    "progress": "Progress",
+    "quests": "Quests"
+  },
+  "empty": {
+    "badges": "You haven't earned any badges yet.",
+    "quests": "No active quests."
+  },
+  "progressBody": "{{percent}}% · {{current}}/{{target}}",
+  "questBody": "{{description}} · {{percent}}%",
+  "toasts": {
+    "loadFailedTitle": "Could not load"
+  }
+}

@@ -1,12 +1,14 @@
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
-  ONBOARDING_COPY,
   ONBOARDING_SEARCH_DEBOUNCE_MS,
   ONBOARDING_SEARCH_MIN_CHARS,
+  useOnboardingCopy,
 } from "@/constants/onboarding";
 import { useSession, useToast } from "@/contexts";
+import i18n from "@/i18n";
 import { useCities } from "@/hooks/use-cities";
 import { apiClient } from "@/lib/api/client";
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -63,7 +65,7 @@ function suggestUsername(firstName?: string, lastName?: string) {
 
   const suffix = Math.floor(1000 + Math.random() * 9000);
 
-  return `${base || "sporcu"}${suffix}`;
+  return `${base || i18n.t("events:fallback.athleteHandle")}${suffix}`;
 }
 
 function parseBirthDate(value: string): Date | null {
@@ -112,6 +114,8 @@ export function useOnboarding() {
   const router = useRouter();
   const { refreshSession, user } = useSession();
   const { showToast } = useToast();
+  const { t } = useTranslation("onboarding");
+  const ONBOARDING_COPY = useOnboardingCopy();
 
   // Username and birth date are completed before a social-auth session is created.
   // Starting from the sports step also avoids briefly rendering a duplicate identity
@@ -180,7 +184,7 @@ export function useOnboarding() {
           }
           showToast({
             type: "error",
-            title: "Sporlar yüklenemedi",
+            title: t("sports.loadFailed"),
             description: getApiErrorMessage(error),
           });
         } finally {
@@ -194,7 +198,7 @@ export function useOnboarding() {
     return () => {
       clearTimeout(timer);
     };
-  }, [query, showToast]);
+  }, [query, showToast, t]);
 
   const canContinueSports = selected.length > 0 && Boolean(primarySportId);
 
@@ -259,8 +263,8 @@ export function useOnboarding() {
     if (!canContinueSports) {
       showToast({
         type: "error",
-        title: "Spor gerekli",
-        description: "En az bir spor seç ve birincil sporunu belirle.",
+        title: ONBOARDING_COPY.toasts.sportRequiredTitle,
+        description: ONBOARDING_COPY.toasts.sportRequiredDescription,
       });
       return;
     }
@@ -274,7 +278,7 @@ export function useOnboarding() {
     if (picked === "denied") {
       showToast({
         type: "error",
-        title: "İzin gerekli",
+        title: ONBOARDING_COPY.toasts.permissionRequired,
         description: mediaDeniedMessage(source),
       });
       return;
@@ -290,8 +294,8 @@ export function useOnboarding() {
     if (picked === "denied") {
       showToast({
         type: "error",
-        title: "İzin gerekli",
-        description: "Video seçmek için galeri izni vermelisin.",
+        title: ONBOARDING_COPY.toasts.permissionRequired,
+        description: ONBOARDING_COPY.toasts.videoPermissionRequired,
       });
       return;
     }
@@ -318,28 +322,27 @@ export function useOnboarding() {
     const errors: IdentityFieldErrors = {};
 
     if (!trimmedUsername) {
-      errors.username = "Kullanıcı adı gerekli.";
+      errors.username = t("identity.validation.usernameRequired");
     } else if (trimmedUsername.length < 3) {
-      errors.username = "Kullanıcı adı en az 3 karakter olmalı.";
+      errors.username = t("identity.validation.usernameMinLength");
     } else if (trimmedUsername.length > 30) {
-      errors.username = "Kullanıcı adı en fazla 30 karakter olabilir.";
+      errors.username = t("identity.validation.usernameMaxLength");
     } else if (!USERNAME_PATTERN.test(trimmedUsername)) {
-      errors.username =
-        "Kullanıcı adı yalnızca harf, rakam, . ve _ içerebilir.";
+      errors.username = t("identity.validation.usernamePattern");
     }
 
     if (!trimmedFirstName) {
-      errors.firstName = "Ad gerekli.";
+      errors.firstName = t("identity.validation.firstNameRequired");
     } else if (trimmedFirstName.length > 50) {
-      errors.firstName = "Ad en fazla 50 karakter olabilir.";
+      errors.firstName = t("identity.validation.firstNameMaxLength");
     }
 
     if (!birthDateState.trim()) {
-      errors.birthDate = "Doğum tarihi gerekli.";
+      errors.birthDate = t("identity.validation.birthDateRequired");
     } else if (!parsedBirthDate) {
-      errors.birthDate = "Tarihi GG.AA.YYYY formatında gir.";
+      errors.birthDate = t("identity.validation.birthDateFormat");
     } else if (!isAllowedBirthDate(parsedBirthDate)) {
-      errors.birthDate = "Yaş 13 ile 120 arasında olmalı.";
+      errors.birthDate = t("identity.validation.birthDateRange");
     }
 
     setIdentityFieldErrors(errors);
@@ -376,8 +379,8 @@ export function useOnboarding() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Kaydedilemedi",
-        description: getApiErrorMessage(error, "Bilgiler kaydedilemedi."),
+        title: t("identity.saveFailed"),
+        description: getApiErrorMessage(error, t("identity.saveFailedDescription")),
       });
     } finally {
       setIsIdentitySubmitting(false);
@@ -392,8 +395,8 @@ export function useOnboarding() {
     if (!avatar && !user?.avatarUrl) {
       showToast({
         type: "error",
-        title: "Profil fotoğrafı gerekli",
-        description: "Devam etmek için bir profil fotoğrafı seçmelisin.",
+        title: ONBOARDING_COPY.toasts.photoRequiredTitle,
+        description: ONBOARDING_COPY.toasts.photoRequiredDescription,
       });
       return;
     }
@@ -433,7 +436,7 @@ export function useOnboarding() {
       if (error) {
         showToast({
           type: "error",
-          title: "Tamamlanamadı",
+          title: ONBOARDING_COPY.toasts.completeFailedTitle,
           description: error.message,
         });
         return;
@@ -452,7 +455,7 @@ export function useOnboarding() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Tamamlanamadı",
+        title: ONBOARDING_COPY.toasts.completeFailedTitle,
         description: getApiErrorMessage(
           error,
           ONBOARDING_COPY.toasts.saveFailed,

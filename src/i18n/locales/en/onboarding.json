@@ -1,0 +1,89 @@
+{
+  "eyebrow": "PROFILE SETUP",
+  "sports": {
+    "title": "Pick your sports.",
+    "subtitle": "Search, select, set your level. At least one sport and a primary are required.",
+    "submit": "Continue",
+    "searchPlaceholder": "Search sports…",
+    "searchHint": "Type at least 2 characters to search",
+    "selectedEmpty": "No sports selected yet",
+    "stepLabel": "1 / 2",
+    "selectedCount_one": "1 sport selected",
+    "selectedCount_other": "{{count}} sports selected",
+    "primaryBadge": "PRIMARY",
+    "tapForLevel": "TAP TO SET LEVEL",
+    "selectedHint": "Pick sports from the grid — they'll show up here.",
+    "noResults": "No matching sports. Try a different search or group.",
+    "loading": "Loading sports…",
+    "loadFailed": "Could not load sports"
+  },
+  "configSheet": {
+    "subtitle": "Choose your level and optionally set as primary.",
+    "levelLabel": "Level",
+    "primaryTitle": "Primary sport",
+    "primaryDescription": "Featured on your profile and in recommendations.",
+    "confirm": "Done"
+  },
+  "details": {
+    "title": "Let's get\nto know you.",
+    "subtitle": "Photo, intro video, city, and bio are optional — you can add them later.",
+    "submit": "Finish",
+    "skip": "Skip and finish",
+    "stepLabel": "2 / 2",
+    "backAccessibility": "Back to sport selection",
+    "bioLabel": "Bio",
+    "bioPlaceholder": "Tell us a bit about yourself (optional)"
+  },
+  "identity": {
+    "title": "Let's get\nto know you.",
+    "subtitle": "We need a few details to set up your profile.",
+    "usernamePlaceholder": "Username",
+    "usernameHelper": "We suggested this — change it if you like",
+    "firstNamePlaceholder": "First name",
+    "lastNamePlaceholder": "Last name (optional)",
+    "birthDateLabel": "Date of birth",
+    "birthDatePlaceholder": "DD.MM.YYYY",
+    "submit": "Continue",
+    "validation": {
+      "usernameRequired": "Username is required.",
+      "usernameMinLength": "Username must be at least 3 characters.",
+      "usernameMaxLength": "Username can be at most 30 characters.",
+      "usernamePattern": "Username can only contain letters, numbers, . and _.",
+      "firstNameRequired": "First name is required.",
+      "firstNameMaxLength": "First name can be at most 50 characters.",
+      "birthDateRequired": "Date of birth is required.",
+      "birthDateFormat": "Enter the date in DD.MM.YYYY format.",
+      "birthDateRange": "Age must be between 13 and 120."
+    },
+    "saveFailed": "Could not save",
+    "saveFailedDescription": "Could not save your information."
+  },
+  "media": {
+    "avatarName": "Profile",
+    "selectPhotoAccessibility": "Select profile photo",
+    "changePhoto": "Change photo",
+    "addPhotoRequired": "Add profile photo (required)",
+    "googlePhotoReady": "Your Google profile photo is ready. You can change it if you like.",
+    "revertToGoogle": "Use Google photo",
+    "remove": "Remove",
+    "introVideoTitle": "Intro video",
+    "introVideoEmpty": "Optional · up to 30 sec"
+  },
+  "toasts": {
+    "successTitle": "You're all set",
+    "successDescription": "Your profile is ready. Have a great match!",
+    "saveFailed": "Setup could not be saved",
+    "completeFailed": "Profile setup could not be completed",
+    "sportRequiredTitle": "Sport required",
+    "sportRequiredDescription": "Select at least one sport and set your primary sport.",
+    "permissionRequired": "Permission required",
+    "videoPermissionRequired": "You need to grant gallery access to select a video.",
+    "photoRequiredTitle": "Profile photo required",
+    "photoRequiredDescription": "Select a profile photo to continue.",
+    "completeFailedTitle": "Could not complete"
+  },
+  "service": {
+    "profileMissing": "Profile not found. Sign out and sign in again with the same account.",
+    "completeFailed": "Profile setup could not be completed"
+  }
+}

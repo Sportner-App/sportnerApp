@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { AppScreen, ScreenHeader, SportLoader } from "@/components";
 import { useToast } from "@/contexts";
@@ -10,6 +11,7 @@ import { getApiErrorMessage } from "@/lib/api/errors";
 import { updateVisibility } from "@/services/profile-service";
 
 export function PrivacyScreen() {
+  const { t } = useTranslation(["profile", "common"]);
   const router = useRouter();
   const { profile, isLoading, refresh } = useProfile();
   const { showToast } = useToast();
@@ -26,12 +28,14 @@ export function PrivacyScreen() {
       await refresh();
       showToast({
         type: "success",
-        title: isProfilePublic ? "Profil açık" : "Profil gizli",
+        title: isProfilePublic
+          ? t("profile:privacy.profilePublic")
+          : t("profile:privacy.profilePrivate"),
       });
     } catch (error) {
       showToast({
         type: "error",
-        title: "Güncellenemedi",
+        title: t("profile:privacy.updateFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -41,31 +45,31 @@ export function PrivacyScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="GİZLİLİK" showBack />}
+      header={<ScreenHeader title={t("profile:privacy.title")} showBack />}
       contentClassName="gap-5 px-6 pt-3"
     >
       {isLoading || !profile ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} />
         </View>
       ) : (
         <>
           <Text className="font-display text-3xl text-text-primary">
-            Gizlilik
+            {t("profile:privacy.heading")}
           </Text>
           <Text className="font-body text-sm text-brand-neutral">
-            Profilinin kimler tarafından görüleceğini seç.
+            {t("profile:privacy.subtitle")}
           </Text>
 
           <Option
-            title="Herkese açık"
-            description="Sporcular profilini ve istatistiklerini görebilir."
+            title={t("profile:privacy.publicTitle")}
+            description={t("profile:privacy.publicDescription")}
             active={profile.isProfilePublic}
             onPress={() => toggle(true)}
           />
           <Option
-            title="Gizli"
-            description="Yalnızca sen ve kısıtlı bağlantılar görür."
+            title={t("profile:privacy.privateTitle")}
+            description={t("profile:privacy.privateDescription")}
             active={!profile.isProfilePublic}
             onPress={() => toggle(false)}
           />
@@ -79,10 +83,10 @@ export function PrivacyScreen() {
             </View>
             <View className="min-w-0 flex-1">
               <Text className="font-body text-base font-semibold text-text-primary">
-                Engellenenler
+                {t("profile:privacy.blockedTitle")}
               </Text>
               <Text className="mt-0.5 font-body text-xs text-brand-neutral">
-                Engellediğin kişileri gör ve engeli kaldır.
+                {t("profile:privacy.blockedDescription")}
               </Text>
             </View>
             <FontAwesome6 name="chevron-right" size={10} color="#6f7d86" />

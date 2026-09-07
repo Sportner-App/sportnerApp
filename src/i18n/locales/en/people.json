@@ -1,0 +1,11 @@
+{
+  "title": "ATHLETES",
+  "loading": "Loading athletes",
+  "loadingMore": "Loading athletes",
+  "loadFailed": "Could not load athletes.",
+  "loadMoreFailed": "Could not load more athletes.",
+  "loadMoreRetry": "{{error}} Tap to try again.",
+  "empty": "No new athletes to discover right now.",
+  "heading": "All athletes",
+  "subtitle": "Discover active, public profiles in the community."
+}

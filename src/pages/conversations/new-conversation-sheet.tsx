@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import { Avatar, BottomSheet, SportLoader } from "@/components";
@@ -10,15 +11,12 @@ import { getApiErrorMessage } from "@/lib/api/errors";
 import { createDirectConversation } from "@/services/messaging-service";
 import { listFriends } from "@/services/social-service";
 import type { ApiFriend } from "@/types/social";
+import { normalizeSearch } from "@/utils/messaging-time";
 
 type NewConversationSheetProps = {
   visible: boolean;
   onClose: () => void;
 };
-
-function normalizeSearch(value: string) {
-  return value.trim().toLocaleLowerCase("tr-TR");
-}
 
 export function NewConversationSheet({
   visible,
@@ -26,6 +24,7 @@ export function NewConversationSheet({
 }: NewConversationSheetProps) {
   const router = useRouter();
   const { showToast } = useToast();
+  const { t } = useTranslation(["messaging", "events"]);
   const [friends, setFriends] = useState<ApiFriend[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -88,7 +87,7 @@ export function NewConversationSheet({
     } catch (error) {
       showToast({
         type: "error",
-        title: "Sohbet başlatılamadı",
+        title: t("messaging:toasts.startFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -100,8 +99,8 @@ export function NewConversationSheet({
     <BottomSheet
       visible={visible}
       onClose={onClose}
-      title="Yeni sohbet"
-      subtitle="Sohbet başlatmak istediğin arkadaşını seç"
+      title={t("messaging:compose.title")}
+      subtitle={t("messaging:compose.subtitle")}
     >
       <View className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-secondary px-4 py-3">
         <FontAwesome6
@@ -112,7 +111,7 @@ export function NewConversationSheet({
         <TextInput
           value={query}
           onChangeText={setQuery}
-          placeholder="Arkadaş ara…"
+          placeholder={t("messaging:compose.searchPlaceholder")}
           placeholderTextColor={themeColors.text.tertiary}
           autoCorrect={false}
           autoCapitalize="none"
@@ -135,7 +134,7 @@ export function NewConversationSheet({
 
       {isLoading ? (
         <View className="items-center py-10">
-          <SportLoader size={96} label="Arkadaşların yükleniyor" />
+          <SportLoader size={96} label={t("messaging:compose.loadingFriends")} />
         </View>
       ) : filtered.length === 0 ? (
         <View className="items-center gap-2 px-4 py-10">
@@ -146,8 +145,8 @@ export function NewConversationSheet({
           />
           <Text className="text-center font-body text-sm text-text-secondary">
             {friends.length === 0
-              ? "Henüz kabul edilmiş bir arkadaşın yok."
-              : "Eşleşen arkadaş bulunamadı."}
+              ? t("messaging:compose.emptyFriends")
+              : t("messaging:compose.noMatch")}
           </Text>
         </View>
       ) : (
@@ -176,7 +175,7 @@ export function NewConversationSheet({
                     numberOfLines={1}
                     className="font-body-bold text-sm text-text-primary"
                   >
-                    @{friend.username || "sporcu"}
+                    @{friend.username || t("events:fallback.athleteHandle")}
                   </Text>
                   {friend.firstName ? (
                     <Text

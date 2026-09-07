@@ -4,6 +4,7 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 
+import i18n from "@/i18n";
 import { apiClient } from "@/lib/api/client";
 
 const DEVICE_IDENTIFIER_KEY = "push_device_identifier";
@@ -46,7 +47,7 @@ export async function registerCurrentDeviceForPush() {
 
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {
-      name: "Sportner Bildirimleri",
+      name: i18n.t("notifications:push.channelName"),
       importance: Notifications.AndroidImportance.HIGH,
       vibrationPattern: [0, 250, 150, 250],
       lightColor: "#CCFF00",
@@ -68,7 +69,7 @@ export async function registerCurrentDeviceForPush() {
     Constants.easConfig?.projectId;
 
   if (!projectId) {
-    throw new Error("EAS projectId bulunamadı; push token alınamadı.");
+    throw new Error(i18n.t("notifications:push.projectIdMissing"));
   }
 
   const pushToken = (await Notifications.getExpoPushTokenAsync({ projectId }))

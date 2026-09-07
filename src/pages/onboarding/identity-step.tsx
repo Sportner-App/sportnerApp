@@ -1,6 +1,7 @@
 import { ScrollView, Text } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { Button, Input } from "@/components";
 import type { useOnboarding } from "@/hooks/use-onboarding";
@@ -10,6 +11,7 @@ type IdentityStepProps = {
 };
 
 export function IdentityStep({ form }: IdentityStepProps) {
+  const { t } = useTranslation("onboarding");
   const insets = useSafeAreaInsets();
 
   return (
@@ -20,10 +22,10 @@ export function IdentityStep({ form }: IdentityStepProps) {
     >
       <Animated.View entering={FadeInDown.duration(420)}>
         <Text className="font-display text-5xl leading-[52px] text-text-primary">
-          Seni{"\n"}tanıyalım.
+          {t("identity.title")}
         </Text>
         <Text className="mt-3 font-body text-base leading-6 text-brand-neutral">
-          Profilini oluşturmak için birkaç bilgiye ihtiyacımız var.
+          {t("identity.subtitle")}
         </Text>
       </Animated.View>
 
@@ -33,19 +35,19 @@ export function IdentityStep({ form }: IdentityStepProps) {
       >
         <Input
           icon="at"
-          placeholder="Kullanıcı adı"
+          placeholder={t("identity.usernamePlaceholder")}
           value={form.username}
           onChangeText={form.setUsername}
           autoCapitalize="none"
           autoCorrect={false}
           autoComplete="username"
           textContentType="username"
-          helperText="Senin için önerdik, istersen değiştirebilirsin"
+          helperText={t("identity.usernameHelper")}
           error={form.identityFieldErrors.username}
         />
         <Input
           icon="user"
-          placeholder="Ad"
+          placeholder={t("identity.firstNamePlaceholder")}
           value={form.firstName}
           onChangeText={form.setFirstName}
           autoCapitalize="words"
@@ -55,7 +57,7 @@ export function IdentityStep({ form }: IdentityStepProps) {
         />
         <Input
           icon="user"
-          placeholder="Soyad (opsiyonel)"
+          placeholder={t("identity.lastNamePlaceholder")}
           value={form.lastName}
           onChangeText={form.setLastName}
           autoCapitalize="words"
@@ -64,8 +66,8 @@ export function IdentityStep({ form }: IdentityStepProps) {
         />
         <Input
           icon="calendar-days"
-          label="Doğum tarihi"
-          placeholder="GG.AA.YYYY"
+          label={t("identity.birthDateLabel")}
+          placeholder={t("identity.birthDatePlaceholder")}
           value={form.identityBirthDate}
           onChangeText={form.setIdentityBirthDate}
           keyboardType="number-pad"
@@ -79,7 +81,7 @@ export function IdentityStep({ form }: IdentityStepProps) {
         className="mt-8"
       >
         <Button
-          label="Devam et"
+          label={t("identity.submit")}
           size="lg"
           isLoading={form.isIdentitySubmitting}
           disabled={form.isIdentitySubmitting}

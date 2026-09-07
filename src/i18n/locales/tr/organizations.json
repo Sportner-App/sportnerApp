@@ -1,0 +1,140 @@
+{
+  "fallback": {
+    "name": "Organizasyon"
+  },
+  "role": {
+    "founder": "Kurucu",
+    "admin": "Yönetici",
+    "member": "Üye"
+  },
+  "status": {
+    "pending": "Onay bekleniyor",
+    "approved": "Üye",
+    "rejected": "Reddedildi",
+    "blocked": "Engellendi",
+    "left": "Ayrıldı"
+  },
+  "memberStatus": {
+    "pending": "Onay bekliyor",
+    "blocked": "Engellendi"
+  },
+  "form": {
+    "nameLabel": "Ad",
+    "descriptionLabel": "Açıklama",
+    "optionalPlaceholder": "İsteğe bağlı",
+    "cityOptionalPlaceholder": "Seç (isteğe bağlı)",
+    "plateCodeDescription": "{{code}} plaka kodu"
+  },
+  "list": {
+    "title": "ORGANİZASYONLAR",
+    "create": "Oluştur",
+    "joinWithCode": "Kod ile katıl",
+    "empty": "Henüz bir organizasyonun yok. Oluştur veya davet koduyla katıl.",
+    "memberCount": "{{count}} üye"
+  },
+  "detail": {
+    "title": "ORGANİZASYON",
+    "notFound": "Organizasyon bulunamadı.",
+    "eventsLoadFailed": "Etkinlikler yüklenemedi",
+    "membersLoadFailed": "Üyeler yüklenemedi",
+    "loadFailed": "Yüklenemedi",
+    "codeCopied": "Kod kopyalandı",
+    "shareFailed": "Paylaşılamadı",
+    "whatsappFailed": "WhatsApp açılamadı",
+    "codeRotated": "Yeni kod oluşturuldu",
+    "codeRotateFailed": "Kod yenilenemedi",
+    "leaveTitle": "Ayrıl",
+    "leaveMessage": "Bu organizasyondan ayrılmak istiyor musun?",
+    "leaveConfirm": "Ayrıl",
+    "left": "Organizasyondan ayrıldın",
+    "leaveFailed": "Ayrılamadın",
+    "pendingTitle": "Onay bekleniyor",
+    "pendingDescription": "Kurucu veya yönetici isteğini onaylayınca etkinlikleri görebilirsin.",
+    "inviteCodeLabel": "Davet kodu",
+    "copyCodeAccessibility": "Davet kodunu kopyala",
+    "copyCodeHint": "Koda dokunarak da kopyalayabilirsin.",
+    "share": "Paylaş",
+    "refreshCode": "Yenile",
+    "eventsTitle": "Etkinlikler",
+    "createEvent": "Oluştur",
+    "noEvents": "Bu organizasyona ait yayınlanmış etkinlik yok.",
+    "viewLinkedEvents": "Organizasyona bağlı etkinlikleri gör",
+    "membersTitle": "Üyeler",
+    "memberCount": "{{count}} üye",
+    "pendingCount": "{{count}} onay bekliyor",
+    "seeAll": "Tümünü gör",
+    "noMembers": "Henüz üye yok.",
+    "moreMembers": "+{{count}} üye daha",
+    "leaveOrganization": "Organizasyondan ayrıl",
+    "editAccessibility": "Organizasyon bilgilerini düzenle",
+    "defaultDescription": "Spor topluluğunu büyüt, üyelerini bir araya getir ve etkinliklerini birlikte yönet.",
+    "statMembers": "Üye",
+    "statEvents": "Etkinlik"
+  },
+  "members": {
+    "title": "ÜYELER",
+    "notFound": "Organizasyon bulunamadı.",
+    "loadFailed": "Yüklenemedi",
+    "actionFailed": "İşlem yapılamadı",
+    "searchPlaceholder": "İsim veya kullanıcı adı ara",
+    "tabMembers": "Üyeler ({{count}})",
+    "tabPending": "Onay ({{count}})",
+    "tabBlocked": "Engelli ({{count}})",
+    "emptySearch": "Aramana uygun üye yok.",
+    "emptyPending": "Onay bekleyen kimse yok.",
+    "emptyBlocked": "Engellenen kimse yok.",
+    "emptyMembers": "Henüz üye yok."
+  },
+  "memberRow": {
+    "approve": "Onayla",
+    "reject": "Reddet",
+    "unblock": "Aç",
+    "makeMember": "Üye yap",
+    "makeAdmin": "Yönetici",
+    "remove": "Çıkar",
+    "block": "Engelle",
+    "removeTitle": "Üyeyi çıkar",
+    "removeMessage": "Kişi organizasyondan çıkarılır. İsterse davet koduyla tekrar başvurabilir.",
+    "blockTitle": "Üyeyi engelle",
+    "blockMessage": "Engellenen kişi davet koduyla tekrar katılamaz. İstersen sonra engeli kaldırırsın."
+  },
+  "join": {
+    "title": "KATIL",
+    "heading": "Davet kodu",
+    "subtitle": "Organizasyon kurucusundan aldığın 8 karakterlik kodu yaz.",
+    "codeLabel": "Kod",
+    "codePlaceholder": "Örn. 4K7N2M9P",
+    "submit": "Katıl",
+    "invalidCodeTitle": "Kod geçersiz",
+    "invalidCodeDescription": "Davet kodu 8 karakter olmalı.",
+    "requestSentTitle": "İstek gönderildi",
+    "requestSentDescription": "Kurucu veya yönetici onaylayınca üye olursun.",
+    "joinFailed": "Katılınamadı"
+  },
+  "create": {
+    "title": "ORGANİZASYON",
+    "heading": "Yeni organizasyon",
+    "subtitle": "Üniversite takımı, salon veya kulüp. Katılım yalnızca davet koduyla.",
+    "namePlaceholder": "Örn. İTÜ Tenis",
+    "submit": "Oluştur",
+    "nameRequiredTitle": "İsim gerekli",
+    "nameRequiredDescription": "Organizasyon için bir ad yaz.",
+    "createdTitle": "Organizasyon kuruldu",
+    "createdDescription": "Davet kodunu üyelerle paylaşabilirsin.",
+    "createFailed": "Oluşturulamadı"
+  },
+  "edit": {
+    "title": "DÜZENLE",
+    "heading": "Organizasyonu düzenle",
+    "loadFailed": "Yüklenemedi",
+    "nameRequired": "İsim gerekli",
+    "updated": "Organizasyon güncellendi",
+    "saveFailed": "Kaydedilemedi"
+  },
+  "invite": {
+    "message": "{{organizationName}} organizasyonuna Sportner'dan katıl",
+    "codeLabel": "Davet kodu:",
+    "howToJoin": "Uygulama: Profil → Organizasyonlar → Kod ile katıl",
+    "shareTitle": "{{organizationName}} davet kodu"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "welcome": {
+    "title": "SPORU\nBİRLİKTE\nYAŞA.",
+    "subtitle": "Yakınındaki sporcuları, etkinlikleri ve topluluğu tek yerde keşfet.",
+    "continue": "Sportner'ı Keşfet",
+    "loginHint": "Zaten hesabın var mı?",
+    "login": "Giriş Yap"
+  },
+  "intro1": {
+    "title": "ETKİNLİĞİNİ\nBUL.",
+    "subtitle": "Yakınındaki etkinlikleri keşfet, sana uygun olanı seç ve katılım isteği gönder.",
+    "next": "Devam Et"
+  },
+  "intro2": {
+    "title": "TAKIMINI\nKUR.",
+    "subtitle": "Etkinlik oluştur, arkadaşlarını davet et ve etkinlik sohbetinden planını birlikte yap.",
+    "next": "Devam Et"
+  },
+  "intro3": {
+    "title": "PAYLAŞ,\nETKİLEŞİME\nGEÇ.",
+    "subtitle": "Spor anlarını paylaş, topluluğu takip et ve sohbetlerle bağlantıda kal.",
+    "next": "Sportner'a Başla"
+  },
+  "skip": "Atla",
+  "progress": {
+    "stepLabel": "Adım {{step}} / 3"
+  },
+  "visuals": {
+    "welcome": {
+      "live": "LIVE",
+      "athletesNearby": "120+ sporcu",
+      "openMatches": "8 açık maç"
+    },
+    "events": {
+      "today": "BUGÜN",
+      "openMatchesCount": "4 açık maç",
+      "venueTurf": "Halı saha",
+      "openBadge": "AÇIK",
+      "spotsRemaining": "2 yer kaldı · bu akşam",
+      "neighborhoodOpen": "Mahallede şimdi açık"
+    },
+    "people": {
+      "eveningMatch": "Akşam maçı",
+      "createdBadge": "OLUŞTU",
+      "invitesSent": "3 davet gönderildi",
+      "eventChat": "ETKİNLİK SOHBETİ",
+      "chatQuestion": "Sahada 20:15'te buluşalım mı?",
+      "chatReply": "Tamamdır, görüşürüz! 🙌"
+    },
+    "community": {
+      "postCaption": "Sabah koşusu tamam! Bugün kimler hareket etti? 🏃",
+      "commentsCount": "8 yorum",
+      "communityActive": "Topluluk hareket halinde"
+    }
+  }
+}

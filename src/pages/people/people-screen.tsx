@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -20,6 +21,7 @@ import type { DiscoverUser } from "@/types/users";
 const PAGE_SIZE = 20;
 
 export function PeopleScreen() {
+  const { t } = useTranslation(["people", "common", "events"]);
   const router = useRouter();
   const [people, setPeople] = useState<DiscoverUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,12 +40,12 @@ export function PeopleScreen() {
       setPage(result.page);
       setHasNext(result.hasNext);
     } catch (reason) {
-      setError(getApiErrorMessage(reason, "Sporcular yüklenemedi."));
+      setError(getApiErrorMessage(reason, t("people:loadFailed")));
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, []);
+  }, [t]);
 
   const loadMore = useCallback(async () => {
     if (!hasNext || isLoading || isRefreshing || isLoadingMore) return;
@@ -65,11 +67,11 @@ export function PeopleScreen() {
       setPage(result.page);
       setHasNext(result.hasNext);
     } catch (reason) {
-      setError(getApiErrorMessage(reason, "Daha fazla sporcu yüklenemedi."));
+      setError(getApiErrorMessage(reason, t("people:loadMoreFailed")));
     } finally {
       setIsLoadingMore(false);
     }
-  }, [hasNext, isLoading, isLoadingMore, isRefreshing, page]);
+  }, [hasNext, isLoading, isLoadingMore, isRefreshing, page, t]);
 
   useEffect(() => {
     void load();
@@ -78,14 +80,14 @@ export function PeopleScreen() {
   return (
     <AppScreen
       tone="light"
-      header={<ScreenHeader title="SPORCULAR" showBack tone="light" />}
+      header={<ScreenHeader title={t("people:title")} showBack tone="light" />}
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       scroll={false}
       contentClassName="pt-3"
     >
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={148} label="Sporcular yükleniyor" />
+          <SportLoader size={148} label={t("people:loading")} />
         </View>
       ) : error && people.length === 0 ? (
         <View className="items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
@@ -93,7 +95,7 @@ export function PeopleScreen() {
             {error}
           </Text>
           <Button
-            label="Tekrar Dene"
+            label={t("common:retry")}
             variant="outline"
             size="sm"
             onPress={() => void load()}
@@ -107,7 +109,7 @@ export function PeopleScreen() {
             color={themeColors.text.tertiary}
           />
           <Text className="text-center font-body text-sm text-text-secondary">
-            Şimdilik keşfedilecek yeni sporcu yok.
+            {t("people:empty")}
           </Text>
         </View>
       ) : (
@@ -125,10 +127,10 @@ export function PeopleScreen() {
           ListHeaderComponent={
             <View className="mb-4">
               <Text className="font-display text-[24px] text-text-primary">
-                Tüm sporcular
+                {t("people:heading")}
               </Text>
               <Text className="mt-0.5 font-body text-xs text-text-secondary">
-                Topluluktaki aktif ve herkese açık profilleri keşfet.
+                {t("people:subtitle")}
               </Text>
             </View>
           }
@@ -146,7 +148,7 @@ export function PeopleScreen() {
           ListFooterComponent={
             isLoadingMore ? (
               <View className="items-center py-5">
-                <SportLoader size={64} label="Sporcular yükleniyor" />
+                <SportLoader size={64} label={t("people:loadingMore")} />
               </View>
             ) : error ? (
               <Pressable
@@ -154,7 +156,7 @@ export function PeopleScreen() {
                 className="items-center py-5 active:opacity-70"
               >
                 <Text className="font-body text-xs text-text-secondary">
-                  {error} Tekrar denemek için dokun.
+                  {t("people:loadMoreRetry", { error })}
                 </Text>
               </Pressable>
             ) : null
@@ -172,6 +174,8 @@ function PersonCard({
   person: DiscoverUser;
   onPress: () => void;
 }) {
+  const { t } = useTranslation("events");
+
   return (
     <Pressable
       onPress={onPress}
@@ -188,7 +192,7 @@ function PersonCard({
           numberOfLines={1}
           className="font-body-bold text-sm text-text-primary"
         >
-          @{person.username || "sporcu"}
+          @{person.username || t("fallback.athleteHandle")}
         </Text>
       </View>
       <View className="max-w-[92px] flex-row items-center gap-1">

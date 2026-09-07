@@ -9,5 +9,16 @@
   "back": "Back",
   "all": "All",
   "clear": "Clear",
-  "apply": "Apply"
+  "apply": "Apply",
+  "loading": "Loading",
+  "notFound": {
+    "title": "Page not found",
+    "description": "The screen you're looking for may have moved or never existed.",
+    "cta": "Back to events"
+  },
+  "other": "Other",
+  "media": {
+    "cameraPermissionDenied": "You need to grant camera access to take a photo.",
+    "galleryPermissionDenied": "You need to grant gallery access to pick a photo."
+  }
 }

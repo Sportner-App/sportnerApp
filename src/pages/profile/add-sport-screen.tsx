@@ -2,11 +2,13 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useTranslation } from "react-i18next";
 
 import { AppScreen, Button, ScreenHeader } from "@/components";
 import { useSkillLevelOptions } from "@/constants/onboarding";
 import { useToast } from "@/contexts";
 import { useProfile } from "@/hooks/use-profile";
+import { getCurrentLocale } from "@/i18n";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { addMySports } from "@/services/onboarding-service";
 import { listSports } from "@/services/sports-service";
@@ -15,6 +17,7 @@ import { sportIconForSlug } from "@/utils/events";
 import { groupSportsByCategory } from "@/utils/sports";
 
 export function AddSportScreen() {
+  const { t } = useTranslation("profile");
   const router = useRouter();
   const { showToast } = useToast();
   const { profile, refresh } = useProfile();
@@ -26,6 +29,7 @@ export function AddSportScreen() {
   >({});
   const [activeSportId, setActiveSportId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const locale = getCurrentLocale();
 
   useEffect(() => {
     void listSports().then(setSports);
@@ -34,12 +38,11 @@ export function AddSportScreen() {
   const currentSportIds = new Set(
     profile?.sports.map((sport) => sport.sportId) ?? [],
   );
+  const normalizedQuery = query.trim().toLocaleLowerCase(locale);
   const filtered = sports.filter(
     (sport) =>
       !currentSportIds.has(sport.id) &&
-      sport.name
-        .toLocaleLowerCase("tr-TR")
-        .includes(query.trim().toLocaleLowerCase("tr-TR")),
+      sport.name.toLocaleLowerCase(locale).includes(normalizedQuery),
   );
   const selectedSports = Object.values(selected);
   const activeSelection = activeSportId ? selected[activeSportId] : undefined;
@@ -87,14 +90,14 @@ export function AddSportScreen() {
         type: "success",
         title:
           selectedSports.length === 1
-            ? "Spor eklendi"
-            : `${selectedSports.length} spor eklendi`,
+            ? t("addSport.addedOne")
+            : t("addSport.addedMany", { count: selectedSports.length }),
       });
       router.back();
     } catch (error) {
       showToast({
         type: "error",
-        title: "Eklenemedi",
+        title: t("addSport.addFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -104,15 +107,15 @@ export function AddSportScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="SPOR EKLE" showBack />}
+      header={<ScreenHeader title={t("addSport.title")} showBack />}
       contentClassName="gap-5 px-5 pt-3"
     >
       <View className="gap-1 px-1">
         <Text className="font-display text-3xl text-text-primary">
-          Seni harekete geçiren ne?
+          {t("addSport.heading")}
         </Text>
         <Text className="font-body text-sm leading-5 text-text-secondary">
-          Sporunu seç, seviyeni belirle ve profilini tamamla.
+          {t("addSport.subtitle")}
         </Text>
       </View>
 
@@ -121,7 +124,7 @@ export function AddSportScreen() {
         <TextInput
           value={query}
           onChangeText={setQuery}
-          placeholder="Spor ara…"
+          placeholder={t("addSport.searchPlaceholder")}
           placeholderTextColor="#64748b"
           className="min-h-[52px] flex-1 font-body text-base text-text-primary"
         />
@@ -137,15 +140,15 @@ export function AddSportScreen() {
           <View className="flex-row items-center justify-between">
             <View>
               <Text className="font-display text-lg text-text-primary">
-                Takımın şekilleniyor
+                {t("addSport.teamBuilding")}
               </Text>
               <Text className="mt-1 font-body text-xs text-text-tertiary">
-                Her spor için seviyeni seç.
+                {t("addSport.selectLevelHint")}
               </Text>
             </View>
             <View className="rounded-full bg-brand-primary px-2.5 py-1">
               <Text className="font-mono-bold text-[10px] text-brand-secondary">
-                {selectedSports.length} SEÇİLDİ
+                {t("addSport.selectedCount", { count: selectedSports.length })}
               </Text>
             </View>
           </View>
@@ -184,7 +187,9 @@ export function AddSportScreen() {
                   <Pressable
                     onPress={() => toggleSport(sport)}
                     hitSlop={6}
-                    accessibilityLabel={`${sport.name} seçimini kaldır`}
+                    accessibilityLabel={t("addSport.removeSelection", {
+                      name: sport.name,
+                    })}
                     className="h-6 w-6 items-center justify-center"
                   >
                     <FontAwesome6 name="xmark" size={11} color="#6f7d86" />
@@ -203,10 +208,12 @@ export function AddSportScreen() {
                   color="#ccff00"
                 />
                 <Text className="font-body text-sm font-semibold text-text-primary">
-                  {activeSelection.sport.name} seviyen
+                  {t("addSport.levelForSport", {
+                    name: activeSelection.sport.name,
+                  })}
                 </Text>
                 <Text className="ml-auto font-body text-[10px] text-text-tertiary">
-                  Değiştirmek için dokun
+                  {t("addSport.tapToChange")}
                 </Text>
               </View>
               <ScrollView
@@ -244,8 +251,8 @@ export function AddSportScreen() {
           <Button
             label={
               saving
-                ? "Ekleniyor…"
-                : `${selectedSports.length} sporu profilime ekle`
+                ? t("addSport.adding")
+                : t("addSport.addToProfile", { count: selectedSports.length })
             }
             disabled={saving}
             isLoading={saving}
@@ -259,10 +266,10 @@ export function AddSportScreen() {
           </View>
           <View className="flex-1">
             <Text className="font-display text-lg text-text-primary">
-              Birden fazla seçebilirsin
+              {t("addSport.multiSelectTitle")}
             </Text>
             <Text className="mt-1 font-body text-xs text-text-tertiary">
-              Spor kartlarına dokun, sonra seviyelerini belirle.
+              {t("addSport.multiSelectHint")}
             </Text>
           </View>
         </View>
@@ -326,7 +333,7 @@ export function AddSportScreen() {
         <View className="items-center gap-2 rounded-[22px] border border-dashed border-border-strong px-5 py-8">
           <FontAwesome6 name="person-running" size={22} color="#ccff00" />
           <Text className="font-body text-sm text-text-secondary">
-            Eklenecek spor bulunamadı.
+            {t("addSport.emptyResults")}
           </Text>
         </View>
       ) : null}

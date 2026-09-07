@@ -104,7 +104,7 @@ export function useThemePreference() {
   const value = useContext(ThemePreferenceContext);
   if (!value)
     throw new Error(
-      "useThemePreference ThemePreferenceProvider içinde kullanılmalı.",
+      "useThemePreference must be used within ThemePreferenceProvider.",
     );
   return value;
 }

@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { apiClient } from "@/lib/api/client";
 import { ApiError, getApiErrorMessage } from "@/lib/api/errors";
 import type {
@@ -8,7 +9,7 @@ import type {
 import { mapMyProfile, mapPublicProfile } from "@/utils/profile";
 
 export class ProfileNotFoundError extends Error {
-  constructor(message = "Profil bulunamadı.") {
+  constructor(message = i18n.t("profile:service.notFound")) {
     super(message);
     this.name = "ProfileNotFoundError";
   }
@@ -29,7 +30,7 @@ export async function getMyProfile(): Promise<UserProfile> {
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
       throw new ProfileNotFoundError(
-        getApiErrorMessage(error, "Profil bulunamadı."),
+        getApiErrorMessage(error, i18n.t("profile:service.notFound")),
       );
     }
 

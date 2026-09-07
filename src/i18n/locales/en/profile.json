@@ -1,0 +1,163 @@
+{
+  "loading": "Loading profile",
+  "loadFailed": "Could not load profile.",
+  "sportsTitle": "Sports",
+  "organizationsTitle": "Organizations",
+  "emptyOrganizations": "You don't have any organizations yet. Tap to add or join.",
+  "emptySports": "You haven't added any sports yet. Tap to add.",
+  "emptySportsPublic": "No sports added yet.",
+  "reviewsTitle": "Reviews",
+  "emptyReviews": "No reviews yet. Feedback from events will appear here.",
+  "notFound": "Profile not found. It may not have been created during registration.",
+  "tabs": {
+    "activity": "Activity",
+    "reviews": "Reviews",
+    "settings": "Settings"
+  },
+  "hero": {
+    "editAccessibility": "Edit profile"
+  },
+  "about": {
+    "emptyBio": "No profile bio added yet.",
+    "friends": "Friends",
+    "badges": "Badges"
+  },
+  "social": {
+    "feed": "Feed",
+    "albums": "Albums"
+  },
+  "stats": {
+    "joined": "Joined",
+    "organized": "Organized",
+    "completed": "Matches",
+    "friends": "Friends"
+  },
+  "sports": {
+    "editAccessibility": "Edit sports",
+    "edit": "Edit",
+    "addAccessibility": "Add or edit sports",
+    "primaryLevel": "Primary sport level",
+    "noSportAdded": "No sport added",
+    "playerRating": "Player rating",
+    "reviewCount": "{{count}} reviews"
+  },
+  "reviews": {
+    "subtitle": "Player feedback from events",
+    "commentCount": "{{count}} reviews",
+    "loading": "Loading reviews…"
+  },
+  "introVideo": {
+    "label": "INTRO VIDEO",
+    "pause": "Pause video",
+    "play": "Play intro video"
+  },
+  "organizations": {
+    "add": "Add",
+    "pending": "Pending"
+  },
+  "edit": {
+    "title": "EDIT",
+    "basicInfoTitle": "Basic info",
+    "basicInfoSubtitle": "Information that defines you on your profile.",
+    "detailsTitle": "Profile details",
+    "detailsSubtitle": "Helps the community get to know you better.",
+    "usernameLabel": "Username",
+    "usernameHelper": "You can use letters, numbers, dots, and underscores.",
+    "usernameAvailableAt": "You can change it again on {{date}}.",
+    "usernameAvailableLater": "later",
+    "firstNameLabel": "First name",
+    "lastNameLabel": "Last name",
+    "birthDateLabel": "Date of birth",
+    "birthDatePlaceholder": "DD.MM.YYYY",
+    "genderLabel": "Gender",
+    "genderPlaceholder": "Select gender",
+    "genderSheetTitle": "Gender",
+    "cityLabel": "City",
+    "cityLoadingPlaceholder": "Loading cities...",
+    "cityPlaceholder": "Select city",
+    "citySearchPlaceholder": "Search city",
+    "citySheetTitle": "Select city",
+    "citySheetSubtitle": "Choose one of 81 provinces in Turkey",
+    "bioLabel": "Short bio",
+    "permissionRequired": "Permission required",
+    "videoPermissionRequired": "You need to grant gallery access to select a video.",
+    "photoUpdated": "Photo updated",
+    "videoUpdated": "Video updated",
+    "uploadFailed": "Upload failed",
+    "photoUploadFailed": "Could not upload photo.",
+    "videoUploadFailed": "Could not upload video.",
+    "firstNameRequired": "First name required",
+    "firstNameRequiredDescription": "Enter your first name to use on your profile.",
+    "cityRequired": "City selection required",
+    "cityRequiredDescription": "Please select a valid city from the list.",
+    "checkInfo": "Check your information",
+    "genderRequired": "Please complete your gender selection.",
+    "saved": "Profile saved",
+    "saveFailed": "Could not save",
+    "saveFailedDescription": "Could not update profile.",
+    "validation": {
+      "usernameMinLength": "Username must be at least 3 characters.",
+      "usernamePattern": "Username can only contain letters, numbers, . and _.",
+      "birthDateFormat": "Enter date of birth in DD.MM.YYYY format.",
+      "birthDateRange": "Age must be between 13 and 120."
+    }
+  },
+  "sportsEdit": {
+    "title": "MY SPORTS",
+    "heading": "Your sports",
+    "subtitle": "Change level, set primary, or remove.",
+    "primaryBadge": "Primary",
+    "makePrimary": "Set as primary",
+    "addSport": "Add new sport",
+    "updateFailed": "Could not update",
+    "sportRemoved": "Sport removed",
+    "levelUpdated": "Level updated",
+    "primarySelected": "Primary sport selected"
+  },
+  "addSport": {
+    "title": "ADD SPORT",
+    "heading": "What gets you moving?",
+    "subtitle": "Pick your sport, set your level, and complete your profile.",
+    "searchPlaceholder": "Search sports…",
+    "teamBuilding": "Your lineup is taking shape",
+    "selectLevelHint": "Select your level for each sport.",
+    "selectedCount": "{{count}} SELECTED",
+    "levelForSport": "Your {{name}} level",
+    "tapToChange": "Tap to change",
+    "adding": "Adding…",
+    "addToProfile": "Add {{count}} sports to my profile",
+    "multiSelectTitle": "You can select multiple",
+    "multiSelectHint": "Tap sport cards, then set their levels.",
+    "removeSelection": "Remove {{name}} selection",
+    "emptyResults": "No sports available to add.",
+    "addFailed": "Could not add",
+    "addedOne": "Sport added",
+    "addedMany": "{{count}} sports added"
+  },
+  "privacy": {
+    "title": "PRIVACY",
+    "heading": "Privacy",
+    "subtitle": "Choose who can see your profile.",
+    "publicTitle": "Public",
+    "publicDescription": "Athletes can see your profile and stats.",
+    "privateTitle": "Private",
+    "privateDescription": "Only you and limited connections can see it.",
+    "blockedTitle": "Blocked",
+    "blockedDescription": "View blocked users and remove blocks.",
+    "profilePublic": "Profile is public",
+    "profilePrivate": "Profile is private",
+    "updateFailed": "Could not update"
+  },
+  "blocked": {
+    "title": "BLOCKED",
+    "description": "Blocked users can't see you and you can't see them. You can unblock anytime.",
+    "empty": "No blocked users.",
+    "loadFailed": "Could not load",
+    "remove": "Remove",
+    "unblockFailed": "Could not remove",
+    "unblocked": "Block removed"
+  },
+  "service": {
+    "notFound": "Profile not found."
+  }
+}

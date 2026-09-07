@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, Pressable, ScrollView, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -28,6 +29,7 @@ import { isCurrentParticipant } from "@/utils/events";
 import { lightImpact } from "@/utils/haptics";
 
 export function EventParticipantsScreen() {
+  const { t } = useTranslation(["eventParticipants", "events"]);
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { user } = useSession();
@@ -59,13 +61,15 @@ export function EventParticipantsScreen() {
         );
         setEvent(detail);
       } catch (loadError) {
-        setError(getApiErrorMessage(loadError, "Katılımcılar yüklenemedi."));
+        setError(
+          getApiErrorMessage(loadError, t("eventParticipants:loadFailed")),
+        );
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
       }
     },
-    [id],
+    [id, t],
   );
 
   useEffect(() => {
@@ -100,7 +104,7 @@ export function EventParticipantsScreen() {
     if (result.error) {
       showToast({
         type: "error",
-        title: "Katılımcı çıkarılamadı",
+        title: t("eventParticipants:toasts.removeFailedTitle"),
         description: result.error.message,
       });
       return;
@@ -111,8 +115,8 @@ export function EventParticipantsScreen() {
     );
     showToast({
       type: "success",
-      title: "Katılımcı çıkarıldı",
-      description: "Seçilen sebep analiz için kaydedildi.",
+      title: t("eventParticipants:toasts.removedTitle"),
+      description: t("eventParticipants:toasts.removedDescription"),
     });
     closeRemoval();
   };
@@ -121,13 +125,19 @@ export function EventParticipantsScreen() {
     <AppScreen
       tone="light"
       scroll={false}
-      header={<ScreenHeader title="KATILIMCILAR" showBack tone="light" />}
+      header={
+        <ScreenHeader
+          title={t("eventParticipants:title")}
+          showBack
+          tone="light"
+        />
+      }
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="flex-1"
     >
       {isLoading ? (
         <View className="flex-1 items-center justify-center pb-16">
-          <SportLoader size={128} label="Katılımcılar yükleniyor" />
+          <SportLoader size={128} label={t("eventParticipants:loading")} />
         </View>
       ) : (
         <FlatList
@@ -144,7 +154,7 @@ export function EventParticipantsScreen() {
           ListHeaderComponent={
             participants.length > 0 ? (
               <Text className="pb-1 font-body text-xs text-text-secondary">
-                {participants.length} katılımcı
+                {t("eventParticipants:count", { count: participants.length })}
               </Text>
             ) : null
           }
@@ -156,7 +166,7 @@ export function EventParticipantsScreen() {
                 color={themeColors.text.secondary}
               />
               <Text className="text-center font-body text-sm text-text-secondary">
-                {error ?? "Henüz katılımcı yok."}
+                {error ?? t("eventParticipants:empty")}
               </Text>
             </View>
           }
@@ -182,10 +192,12 @@ export function EventParticipantsScreen() {
       <BottomSheet
         visible={removalTarget != null}
         onClose={closeRemoval}
-        title="Katılımcıyı çıkar"
+        title={t("eventParticipants:removalSheet.title")}
         subtitle={
           removalTarget
-            ? `${removalTarget.name} için çıkarma sebebini seç.`
+            ? t("eventParticipants:removalSheet.subtitle", {
+                name: removalTarget.name,
+              })
             : undefined
         }
         tone="light"
@@ -219,8 +231,8 @@ export function EventParticipantsScreen() {
             ))}
           </ScrollView>
           <Input
-            label="Açıklama (opsiyonel)"
-            placeholder="Eklemek istediğin ayrıntılar"
+            label={t("eventParticipants:removalSheet.noteLabel")}
+            placeholder={t("eventParticipants:removalSheet.notePlaceholder")}
             value={note}
             onChangeText={setNote}
             maxLength={1000}
@@ -229,7 +241,7 @@ export function EventParticipantsScreen() {
           <View className="mt-2 flex-row gap-3">
             <View className="flex-1">
               <Button
-                label="Vazgeç"
+                label={t("eventParticipants:removalSheet.cancel")}
                 variant="secondary"
                 disabled={isRemoving}
                 onPress={closeRemoval}
@@ -237,7 +249,7 @@ export function EventParticipantsScreen() {
             </View>
             <View className="flex-1">
               <Button
-                label="Çıkar"
+                label={t("eventParticipants:removalSheet.confirm")}
                 variant="danger"
                 disabled={!reasonId || isRemoving}
                 isLoading={isRemoving}
@@ -262,6 +274,7 @@ function ParticipantRow({
   canRemove?: boolean;
   onRemove?: () => void;
 }) {
+  const { t } = useTranslation(["eventParticipants", "events"]);
   const content = (
     <>
       <Avatar
@@ -283,10 +296,10 @@ function ParticipantRow({
           className="mt-0.5 font-body text-xs text-text-secondary"
         >
           {participant.isGuest
-            ? "Misafir katılımcı"
+            ? t("eventParticipants:guestParticipant")
             : participant.username
               ? `@${participant.username}`
-              : "Sporcu"}
+              : t("events:fallback.athlete")}
         </Text>
       </View>
       {onPress ? (
@@ -300,7 +313,9 @@ function ParticipantRow({
         <Pressable
           hitSlop={8}
           accessibilityRole="button"
-          accessibilityLabel={`${participant.name} adlı katılımcıyı çıkar`}
+          accessibilityLabel={t("eventParticipants:removeAccessibility", {
+            name: participant.name,
+          })}
           onPress={() => {
             lightImpact();
             onRemove?.();

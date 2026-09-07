@@ -1,0 +1,21 @@
+{
+  "list": {
+    "title": "ALBUMS",
+    "loading": "Loading",
+    "newAlbumLabel": "New album",
+    "newAlbumPlaceholder": "E.g. Futsal 2026",
+    "create": "Create album",
+    "photoCount": "{{count}} photos"
+  },
+  "detail": {
+    "title": "ALBUM",
+    "loading": "Loading",
+    "addPhoto": "Add photo"
+  },
+  "toasts": {
+    "loadFailedTitle": "Could not load",
+    "openFailedTitle": "Could not open",
+    "uploadFailedTitle": "Could not upload",
+    "permissionRequiredTitle": "Permission required"
+  }
+}

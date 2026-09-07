@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { SelectSheet } from "@/components/select-sheet";
 import { themeColors } from "@/constants/theme";
@@ -8,7 +9,7 @@ import type { SelectFieldProps } from "@/types/components";
 
 export function SelectField<T extends string>({
   label,
-  placeholder = "Seç",
+  placeholder,
   options,
   value,
   onChange,
@@ -22,7 +23,9 @@ export function SelectField<T extends string>({
   groups,
   allGroupLabel,
 }: SelectFieldProps<T>) {
+  const { t } = useTranslation(["components", "common"]);
   const [open, setOpen] = useState(false);
+  const resolvedPlaceholder = placeholder ?? t("components:select.placeholder");
   const selected = options.find((option) => option.key === value);
   const displayIcon = selected?.icon ?? icon;
 
@@ -51,7 +54,7 @@ export function SelectField<T extends string>({
             selected ? "text-text-primary" : "text-text-secondary"
           }`}
         >
-          {selected?.label ?? placeholder}
+          {selected?.label ?? resolvedPlaceholder}
         </Text>
         <FontAwesome6
           name="chevron-down"
@@ -72,7 +75,7 @@ export function SelectField<T extends string>({
         searchable={searchable}
         searchPlaceholder={searchPlaceholder}
         groups={groups}
-        allGroupLabel={allGroupLabel}
+        allGroupLabel={allGroupLabel ?? t("common:all")}
       />
     </View>
   );

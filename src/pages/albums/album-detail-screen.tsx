@@ -1,6 +1,7 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { AppScreen, Button, ScreenHeader, SportLoader } from "@/components";
 import { useToast } from "@/contexts";
@@ -13,6 +14,7 @@ import { mediaDeniedMessage, pickSingleImage } from "@/utils/media-picker";
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:5139";
 
 export function AlbumDetailScreen() {
+  const { t } = useTranslation("albums");
   const { id } = useLocalSearchParams<{ id: string }>();
   const { showToast } = useToast();
   const { chooseSource, sourceSheet } = useMediaSourceChoice();
@@ -26,7 +28,7 @@ export function AlbumDetailScreen() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Açılamadı",
+        title: t("toasts.openFailedTitle"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -53,7 +55,7 @@ export function AlbumDetailScreen() {
     if (picked === "denied") {
       showToast({
         type: "error",
-        title: "İzin gerekli",
+        title: t("toasts.permissionRequiredTitle"),
         description: mediaDeniedMessage(source),
       });
       return;
@@ -68,7 +70,7 @@ export function AlbumDetailScreen() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Yüklenemedi",
+        title: t("toasts.uploadFailedTitle"),
         description: getApiErrorMessage(error),
       });
     }
@@ -76,20 +78,20 @@ export function AlbumDetailScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="ALBÜM" showBack />}
+      header={<ScreenHeader title={t("detail.title")} showBack />}
       footer={sourceSheet}
       contentClassName="gap-4 px-6 pt-3"
     >
       {isLoading || !album ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} label={t("detail.loading")} />
         </View>
       ) : (
         <>
           <Text className="font-display text-2xl text-text-primary">
             {album.title}
           </Text>
-          <Button label="Fotoğraf ekle" onPress={upload} />
+          <Button label={t("detail.addPhoto")} onPress={upload} />
           <View className="flex-row flex-wrap gap-2">
             {album.media.map((item) => (
               <Image

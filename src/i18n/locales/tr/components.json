@@ -1,0 +1,92 @@
+{
+  "splash": {
+    "accessibilityLabel": "Sportner yükleniyor",
+    "tagline": "Spor birleştirir.",
+    "footerHint": "Harekete geç."
+  },
+  "appTour": {
+    "skip": "Atla",
+    "skipAccessibility": "Turu atla",
+    "continue": "Devam Et",
+    "finish": "Turu Bitir",
+    "create": {
+      "eyebrow": "1 / 3",
+      "title": "Etkinliğini oluştur",
+      "body": "Ortadaki Etkinlik butonuyla birkaç adımda etkinlik açabilir, arkadaşlarını davet edebilirsin."
+    },
+    "conversations": {
+      "eyebrow": "2 / 3",
+      "title": "Sohbetlerin hep burada",
+      "body": "Kişisel sohbetlerine ve katıldığın etkinliklerin konuşmalarına bu kısayoldan ulaşabilirsin."
+    },
+    "discover": {
+      "eyebrow": "3 / 3",
+      "title": "Topluluğu keşfet",
+      "body": "Spor paylaşımlarını gör, etkileşime geç ve çevrendeki yeni sporcuları keşfet."
+    }
+  },
+  "avatar": {
+    "defaultName": "Kullanıcı",
+    "expandPhoto": "{{name}} profil fotoğrafını büyüt",
+    "profile": "{{name}} profili"
+  },
+  "avatarPreview": {
+    "closePreview": "Fotoğraf önizlemesini kapat"
+  },
+  "commentThread": {
+    "repliesLoadFailed": "Yanıtlar yüklenemedi",
+    "repliesLoading": "Yanıtlar yükleniyor…",
+    "hideReplies": "Yanıtları gizle",
+    "showReplies": "Yanıtları gör ({{count}})",
+    "reply": "Yanıtla"
+  },
+  "datePicker": {
+    "title": "Tarih & Saat",
+    "subtitle": "Tarih ve saati kaydırarak seç",
+    "tabDate": "Tarih",
+    "tabTime": "Saat",
+    "hourSuffix": "saat",
+    "minuteSuffix": "dk",
+    "pastDateError": "Geçmiş bir tarih ve saat seçemezsin.",
+    "confirm": "Tarihi Ayarla"
+  },
+  "directions": {
+    "title": "Yol tarifi",
+    "subtitle": "Harita uygulaması seç",
+    "apple": {
+      "label": "Apple Haritalar",
+      "description": "Apple Maps ile git"
+    },
+    "google": {
+      "label": "Google Maps",
+      "description": "Google ile yol tarifi"
+    },
+    "yandex": {
+      "label": "Yandex Haritalar",
+      "description": "Yandex ile yol tarifi"
+    }
+  },
+  "mediaSource": {
+    "title": "Fotoğraf ekle",
+    "subtitle": "Kameradan çek veya galeriden seç.",
+    "camera": {
+      "label": "Kamera",
+      "description": "Şimdi yeni bir fotoğraf çek"
+    },
+    "gallery": {
+      "label": "Galeri",
+      "description": "Kayıtlı fotoğraflardan seç"
+    }
+  },
+  "select": {
+    "placeholder": "Seç",
+    "searchPlaceholder": "Ara…",
+    "noResults": "Sonuca uygun seçenek yok."
+  },
+  "tabHeader": {
+    "conversations": "Sohbetlerim",
+    "notifications": "Bildirimler",
+    "conversationsAuthRequired": "Sohbetlerini görmek için giriş yapmalısın.",
+    "notificationsAuthRequired": "Bildirimlerini görmek için giriş yapmalısın."
+  }
+}

@@ -41,5 +41,37 @@
     "attended": "Katıldı",
     "noShow": "Gelmedi",
     "invited": "Davet gönderildi"
+  },
+  "service": {
+    "joinFailed": "Katılım başarısız",
+    "acceptInvitationFailed": "Davet kabul edilemedi",
+    "declineInvitationFailed": "Davet reddedilemedi",
+    "removeParticipantFailed": "Katılımcı çıkarılamadı",
+    "cancelParticipationFailed": "Ayrılma başarısız",
+    "cancelEventFailed": "Etkinlik iptal edilemedi",
+    "completeEventFailed": "Etkinlik tamamlanamadı",
+    "approveFailed": "Onaylanamadı",
+    "rejectFailed": "Reddedilemedi",
+    "promoteWaitlistFailed": "Listeden alınamadı",
+    "attendanceFailed": "Yoklama kaydedilemedi",
+    "updateDetailsFailed": "Etkinlik güncellenemedi",
+    "updateScheduleFailed": "Tarih güncellenemedi",
+    "updateLocationFailed": "Konum güncellenemedi",
+    "updateCapacityFailed": "Kapasite güncellenemedi",
+    "updateFeeFailed": "Ücret bilgisi güncellenemedi",
+    "createFailed": "Etkinlik oluşturulamadı",
+    "createMissingId": "Etkinlik oluşturuldu ama kimlik alınamadı.",
+    "publishFailed": "Etkinlik taslak olarak kaldı; yayınlanamadı.",
+    "validation": {
+      "titleRequired": "Başlık zorunlu.",
+      "titleTooLong": "Başlık en fazla 150 karakter olabilir.",
+      "sportRequired": "Spor seçimi zorunlu.",
+      "durationPositive": "Süre 0'dan büyük olmalı.",
+      "addressRequired": "Adres zorunlu.",
+      "coordinatesInvalid": "Konum koordinatları geçersiz.",
+      "capacityPositive": "Oyuncu sayısı 0'dan büyük olmalı.",
+      "ageRangeInvalid": "Katılım yaş aralığı 13–120 arasında ve sıralı olmalı.",
+      "paidFeeRequired": "Ücretli etkinlik için 0'dan büyük bir fiyat gir."
+    }
   }
 }

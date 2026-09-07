@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Pressable, View, type View as ViewType } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { themeColors } from "@/constants/theme";
 import { useAppTour } from "@/contexts";
@@ -10,6 +11,7 @@ import { hasUnreadNotifications } from "@/services/notifications-service";
 import { BrandMark } from "./brand-mark";
 
 export function TabScreenHeader() {
+  const { t } = useTranslation("components");
   const router = useRouter();
   const [hasUnread, setHasUnread] = useState(false);
   const { registerTarget } = useAppTour();
@@ -42,19 +44,19 @@ export function TabScreenHeader() {
       <View className="flex-row items-center gap-2">
         <HeaderAction
           icon="comments"
-          label="Sohbetlerim"
+          label={t("tabHeader.conversations")}
           tourTargetRef={registerTarget("conversations")}
           onPress={() =>
-            requireAuth("Sohbetlerini görmek için giriş yapmalısın.") &&
+            requireAuth(t("tabHeader.conversationsAuthRequired")) &&
             router.push("/conversations")
           }
         />
         <HeaderAction
           icon="bell"
-          label="Bildirimler"
+          label={t("tabHeader.notifications")}
           showIndicator={hasUnread}
           onPress={() =>
-            requireAuth("Bildirimlerini görmek için giriş yapmalısın.") &&
+            requireAuth(t("tabHeader.notificationsAuthRequired")) &&
             router.push("/notifications")
           }
         />

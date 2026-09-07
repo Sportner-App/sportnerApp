@@ -1,0 +1,11 @@
+{
+  "title": "REPORT",
+  "loading": "Loading",
+  "heading": "Why are you reporting this?",
+  "descriptionLabel": "Description (optional)",
+  "submit": "Send",
+  "toasts": {
+    "receivedTitle": "Report received",
+    "sendFailedTitle": "Could not send"
+  }
+}

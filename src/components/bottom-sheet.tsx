@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dimensions,
   Keyboard,
@@ -207,9 +208,7 @@ export function BottomSheet({
                   onPress={onClose}
                   className="mt-3 items-center rounded-2xl border border-border-default bg-surface-primary py-3.5 active:bg-surface-secondary"
                 >
-                  <Text className="font-body text-sm text-text-secondary">
-                    Vazgeç
-                  </Text>
+                  <CancelLabel />
                 </Pressable>
               ) : null}
             </View>
@@ -217,5 +216,12 @@ export function BottomSheet({
         </Animated.View>
       </KeyboardAvoidingView>
     </Modal>
+  );
+}
+
+function CancelLabel() {
+  const { t } = useTranslation("common");
+  return (
+    <Text className="font-body text-sm text-text-secondary">{t("cancel")}</Text>
   );
 }

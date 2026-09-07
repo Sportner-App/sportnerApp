@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import type { LocationSuggestion, SelectedLocation } from "@/types/location";
 
 const NOMINATIM_BASE_URL = "https://nominatim.openstreetmap.org";
@@ -40,7 +41,7 @@ export async function searchWithNominatim(
   });
 
   if (!response.ok) {
-    throw new Error("Konum araması başarısız.");
+    throw new Error(i18n.t("location:nominatimSearchFailed"));
   }
 
   const results = (await response.json()) as NominatimResult[];
@@ -65,7 +66,7 @@ export async function reverseWithNominatim(
   });
 
   if (!response.ok) {
-    throw new Error("Adres çözümlenemedi.");
+    throw new Error(i18n.t("location:reverseFailed"));
   }
 
   const result = (await response.json()) as NominatimResult;
@@ -87,7 +88,7 @@ function mapNominatimResult(result: NominatimResult): LocationSuggestion {
     address?.suburb ||
     address?.town ||
     address?.city ||
-    "Seçilen konum";
+    i18n.t("location:selectedLocation");
 
   const subtitleParts = [
     address?.suburb || address?.neighbourhood,

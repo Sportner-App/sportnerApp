@@ -8,33 +8,16 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
-import { useAppTour, type AppTourTarget } from "@/contexts/app-tour-context";
+import { useAppTourCopy } from "@/constants/components";
+import { useAppTour } from "@/contexts/app-tour-context";
 
 type TargetRect = { x: number; y: number; width: number; height: number };
 
-const COPY: Record<
-  AppTourTarget,
-  { eyebrow: string; title: string; body: string }
-> = {
-  create: {
-    eyebrow: "1 / 3",
-    title: "Etkinliğini oluştur",
-    body: "Ortadaki Etkinlik butonuyla birkaç adımda etkinlik açabilir, arkadaşlarını davet edebilirsin.",
-  },
-  conversations: {
-    eyebrow: "2 / 3",
-    title: "Sohbetlerin hep burada",
-    body: "Kişisel sohbetlerine ve katıldığın etkinliklerin konuşmalarına bu kısayoldan ulaşabilirsin.",
-  },
-  discover: {
-    eyebrow: "3 / 3",
-    title: "Topluluğu keşfet",
-    body: "Spor paylaşımlarını gör, etkileşime geç ve çevrendeki yeni sporcuları keşfet.",
-  },
-};
-
 export function AppTourOverlay() {
+  const { t } = useTranslation("components");
+  const copyByTarget = useAppTourCopy();
   const { isVisible, target, step, getTarget, next, dismiss } = useAppTour();
   const { width, height } = useWindowDimensions();
   const [rect, setRect] = useState<TargetRect | null>(null);
@@ -52,7 +35,7 @@ export function AppTourOverlay() {
 
   if (!isVisible) return null;
 
-  const copy = COPY[target];
+  const copy = copyByTarget[target];
   const pad = 7;
   const focus = rect
     ? {
@@ -127,11 +110,13 @@ export function AppTourOverlay() {
             </Text>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Turu atla"
+              accessibilityLabel={t("appTour.skipAccessibility")}
               onPress={dismiss}
               hitSlop={8}
             >
-              <Text className="font-body-bold text-sm text-white/60">Atla</Text>
+              <Text className="font-body-bold text-sm text-white/60">
+                {t("appTour.skip")}
+              </Text>
             </Pressable>
           </View>
           <Text className="mt-3 font-display text-2xl text-white">
@@ -146,7 +131,7 @@ export function AppTourOverlay() {
             className="mt-5 flex-row items-center justify-center gap-2 rounded-full bg-brand-primary px-5 py-3.5 active:opacity-80"
           >
             <Text className="font-body-bold text-sm text-brand-secondary">
-              {step === 2 ? "Turu Bitir" : "Devam Et"}
+              {step === 2 ? t("appTour.finish") : t("appTour.continue")}
             </Text>
             <FontAwesome6
               name={step === 2 ? "check" : "arrow-right"}

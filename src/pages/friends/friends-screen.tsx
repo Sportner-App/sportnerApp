@@ -2,6 +2,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -31,6 +32,7 @@ import type {
 type Tab = "friends" | "requests" | "suggestions";
 
 export function FriendsScreen() {
+  const { t } = useTranslation("friends");
   const router = useRouter();
   const { user } = useSession();
   const { showToast } = useToast();
@@ -58,7 +60,7 @@ export function FriendsScreen() {
       } catch (error) {
         showToast({
           type: "error",
-          title: "Yüklenemedi",
+          title: t("toasts.loadFailedTitle"),
           description: getApiErrorMessage(error),
         });
       } finally {
@@ -66,7 +68,7 @@ export function FriendsScreen() {
         setIsRefreshing(false);
       }
     },
-    [showToast],
+    [showToast, t],
   );
 
   useFocusEffect(
@@ -79,7 +81,7 @@ export function FriendsScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="ARKADAŞLAR" showBack />}
+      header={<ScreenHeader title={t("title")} showBack />}
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="gap-4 px-6 pt-3"
       refreshControl={
@@ -91,9 +93,9 @@ export function FriendsScreen() {
     >
       <SegmentedTabs
         options={[
-          { key: "friends", label: "Liste" },
-          { key: "requests", label: "İstekler" },
-          { key: "suggestions", label: "Öneriler" },
+          { key: "friends", label: t("tabs.friends") },
+          { key: "requests", label: t("tabs.requests") },
+          { key: "suggestions", label: t("tabs.suggestions") },
         ]}
         value={tab}
         onChange={setTab}
@@ -101,12 +103,12 @@ export function FriendsScreen() {
 
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} label={t("loading")} />
         </View>
       ) : tab === "friends" ? (
         friends.length === 0 ? (
           <Text className="py-8 text-center font-body text-sm text-brand-neutral">
-            Henüz arkadaşın yok.
+            {t("empty.friends")}
           </Text>
         ) : (
           friends.map((item) => (
@@ -122,7 +124,7 @@ export function FriendsScreen() {
       ) : tab === "requests" ? (
         requests.length === 0 ? (
           <Text className="py-8 text-center font-body text-sm text-brand-neutral">
-            Bekleyen istek yok.
+            {t("empty.requests")}
           </Text>
         ) : (
           requests.map((item) => {
@@ -156,7 +158,7 @@ export function FriendsScreen() {
                   />
                 </View>
                 <Button
-                  label="Kabul"
+                  label={t("actions.accept")}
                   size="sm"
                   onPress={async () => {
                     try {
@@ -165,14 +167,14 @@ export function FriendsScreen() {
                     } catch (error) {
                       showToast({
                         type: "error",
-                        title: "Kabul edilemedi",
+                        title: t("toasts.acceptFailedTitle"),
                         description: getApiErrorMessage(error),
                       });
                     }
                   }}
                 />
                 <Button
-                  label="Reddet"
+                  label={t("actions.reject")}
                   variant="outline"
                   size="sm"
                   onPress={async () => {
@@ -182,7 +184,7 @@ export function FriendsScreen() {
                     } catch (error) {
                       showToast({
                         type: "error",
-                        title: "Reddedilemedi",
+                        title: t("toasts.rejectFailedTitle"),
                         description: getApiErrorMessage(error),
                       });
                     }
@@ -194,7 +196,7 @@ export function FriendsScreen() {
         )
       ) : suggestions.length === 0 ? (
         <Text className="py-8 text-center font-body text-sm text-brand-neutral">
-          Öneri yok.
+          {t("empty.suggestions")}
         </Text>
       ) : (
         suggestions.map((item) => (
@@ -203,7 +205,7 @@ export function FriendsScreen() {
             username={item.username}
             avatarUrl={item.profileImageUrl}
             fallbackName={item.firstName}
-            subtitle={`${item.sharedSportsCount} ortak spor`}
+            subtitle={t("sharedSports", { count: item.sharedSportsCount })}
             onPress={() => router.push(`/users/${item.userId}`)}
           />
         ))

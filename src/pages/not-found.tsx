@@ -1,10 +1,12 @@
 import { Stack, useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 
 import { AppScreen, Button } from "@/components";
 
 export function NotFoundScreen() {
   const router = useRouter();
+  const { t } = useTranslation("common");
 
   return (
     <>
@@ -18,13 +20,13 @@ export function NotFoundScreen() {
           404
         </Text>
         <Text className="text-center font-display text-3xl text-text-primary">
-          Sayfa bulunamadı
+          {t("notFound.title")}
         </Text>
         <Text className="max-w-[280px] text-center font-body text-sm leading-5 text-brand-neutral">
-          Aradığın ekran taşınmış veya hiç var olmamış olabilir.
+          {t("notFound.description")}
         </Text>
         <Button
-          label="Etkinlikler Sayfasına Dön"
+          label={t("notFound.cta")}
           size="md"
           onPress={() => router.replace("/(tabs)")}
         />

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { AppScreen, Button, Input, ScreenHeader } from "@/components";
 import { useToast } from "@/contexts";
@@ -11,6 +12,7 @@ const MIN_LENGTH = 10;
 const MAX_LENGTH = 2000;
 
 export function FeedbackScreen() {
+  const { t } = useTranslation("feedback");
   const { showToast } = useToast();
   const [content, setContent] = useState("");
   const [saving, setSaving] = useState(false);
@@ -32,16 +34,17 @@ export function FeedbackScreen() {
       setContent("");
       showToast({
         type: "success",
-        title: "Öneriniz alındı",
-        description: "Teşekkürler, mesajına bakacağız.",
+        title: t("toasts.receivedTitle"),
+        description: t("toasts.receivedDescription"),
       });
     } catch (error) {
       showToast({
         type: "error",
-        title: "Gönderilemedi",
-        description: isApiError(error) && error.status === 429
-          ? "Çok sık gönderdin. Birkaç dakika sonra tekrar dene."
-          : getApiErrorMessage(error, "Öneri gönderilemedi."),
+        title: t("toasts.sendFailedTitle"),
+        description:
+          isApiError(error) && error.status === 429
+            ? t("toasts.rateLimited")
+            : getApiErrorMessage(error, t("toasts.sendFailedDescription")),
       });
     } finally {
       setSaving(false);
@@ -51,30 +54,28 @@ export function FeedbackScreen() {
   return (
     <AppScreen
       keyboardAvoiding
-      header={<ScreenHeader title="ÖNERİ" showBack />}
+      header={<ScreenHeader title={t("title")} showBack />}
       contentClassName="gap-4 px-6 pt-3"
     >
       <View className="gap-2">
         <Text className="font-display text-3xl text-white">
-          Bir önerin mi var?
+          {t("heading")}
         </Text>
         <Text className="font-body text-sm leading-5 text-brand-neutral">
-          Beğendiğin, takıldığın veya eklenmesini istediğin bir şey varsa yaz.
-          Mail atmana gerek yok, buradan bize ulaşır.
+          {t("subtitle")}
         </Text>
       </View>
 
       {sent ? (
         <View className="items-center gap-3 rounded-[28px] border border-brand-primary/30 bg-brand-primary/10 px-6 py-10">
           <Text className="font-body-bold text-base text-text-primary">
-            Öneriniz alındı
+            {t("success.title")}
           </Text>
           <Text className="text-center font-body text-sm leading-5 text-text-tertiary">
-            Mesajın kaydedildi. Yeni bir şey daha aklına gelirse tekrar
-            yazabilirsin.
+            {t("success.description")}
           </Text>
           <Button
-            label="Yeni öneri yaz"
+            label={t("success.cta")}
             variant="outline"
             size="sm"
             onPress={() => setSent(false)}
@@ -83,7 +84,7 @@ export function FeedbackScreen() {
       ) : (
         <>
           <Input
-            label="Önerin"
+            label={t("fieldLabel")}
             value={content}
             onChangeText={setContent}
             multiline
@@ -91,16 +92,20 @@ export function FeedbackScreen() {
             textAlignVertical="top"
             maxLength={MAX_LENGTH}
             style={{ minHeight: 140, paddingTop: 12, paddingBottom: 12 }}
-            placeholder="Uygulamada şunu ekleseniz / şurada takıldım…"
-            helperText={`${trimmed.length}/${MAX_LENGTH} · en az ${MIN_LENGTH} karakter`}
+            placeholder={t("placeholder")}
+            helperText={t("helperText", {
+              current: trimmed.length,
+              max: MAX_LENGTH,
+              min: MIN_LENGTH,
+            })}
             error={
               trimmed.length > 0 && trimmed.length < MIN_LENGTH
-                ? `En az ${MIN_LENGTH} karakter yaz.`
+                ? t("minLengthError", { min: MIN_LENGTH })
                 : undefined
             }
           />
           <Button
-            label="Gönder"
+            label={t("submit")}
             disabled={!canSubmit}
             isLoading={saving}
             onPress={() => void handleSubmit()}

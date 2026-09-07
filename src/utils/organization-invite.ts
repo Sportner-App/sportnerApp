@@ -1,11 +1,17 @@
 import * as Linking from "expo-linking";
 import { Platform, Share } from "react-native";
 
+import i18n from "@/i18n";
+
 export function buildOrganizationJoinUrl(inviteCode: string) {
   return Linking.createURL("/organizations/join", {
     scheme: "sportner",
     queryParams: { inviteCode },
   });
+}
+
+function inviteShareTitle(organizationName: string) {
+  return i18n.t("organizations:invite.shareTitle", { organizationName });
 }
 
 /** WhatsApp'ta kodun kolay seçilmesi için kod ayrı satırda. */
@@ -16,12 +22,12 @@ export function buildOrganizationInviteShareMessage(
   const joinUrl = buildOrganizationJoinUrl(inviteCode);
 
   return [
-    `${organizationName} organizasyonuna Sportner'dan katıl`,
+    i18n.t("organizations:invite.message", { organizationName }),
     "",
-    "Davet kodu:",
+    i18n.t("organizations:invite.codeLabel"),
     inviteCode,
     "",
-    "Uygulama: Profil → Organizasyonlar → Kod ile katıl",
+    i18n.t("organizations:invite.howToJoin"),
     joinUrl,
   ].join("\n");
 }
@@ -32,11 +38,10 @@ export async function shareOrganizationInvite(
 ) {
   const message = buildOrganizationInviteShareMessage(organizationName, inviteCode);
   const joinUrl = buildOrganizationJoinUrl(inviteCode);
+  const title = inviteShareTitle(organizationName);
 
   await Share.share(
-    Platform.OS === "ios"
-      ? { message, url: joinUrl, title: `${organizationName} davet kodu` }
-      : { message, title: `${organizationName} davet kodu` },
+    Platform.OS === "ios" ? { message, url: joinUrl, title } : { message, title },
   );
 }
 
@@ -61,5 +66,5 @@ export async function shareOrganizationInviteViaWhatsApp(
     return;
   }
 
-  await Share.share({ message, title: `${organizationName} davet kodu` });
+  await Share.share({ message, title: inviteShareTitle(organizationName) });
 }

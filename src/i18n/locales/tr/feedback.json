@@ -1,0 +1,22 @@
+{
+  "title": "ÖNERİ",
+  "heading": "Bir önerin mi var?",
+  "subtitle": "Beğendiğin, takıldığın veya eklenmesini istediğin bir şey varsa yaz. Mail atmana gerek yok, buradan bize ulaşır.",
+  "fieldLabel": "Önerin",
+  "placeholder": "Uygulamada şunu ekleseniz / şurada takıldım…",
+  "helperText": "{{current}}/{{max}} · en az {{min}} karakter",
+  "minLengthError": "En az {{min}} karakter yaz.",
+  "submit": "Gönder",
+  "success": {
+    "title": "Öneriniz alındı",
+    "description": "Mesajın kaydedildi. Yeni bir şey daha aklına gelirse tekrar yazabilirsin.",
+    "cta": "Yeni öneri yaz"
+  },
+  "toasts": {
+    "receivedTitle": "Öneriniz alındı",
+    "receivedDescription": "Teşekkürler, mesajına bakacağız.",
+    "sendFailedTitle": "Gönderilemedi",
+    "sendFailedDescription": "Öneri gönderilemedi.",
+    "rateLimited": "Çok sık gönderdin. Birkaç dakika sonra tekrar dene."
+  }
+}

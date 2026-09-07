@@ -1,8 +1,10 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { ActivityIndicator, Alert, Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { UserIdentity } from "@/components";
 import { themeColors } from "@/constants/theme";
+import i18n, { getCurrentLocale } from "@/i18n";
 import {
   ORGANIZATION_ROLE,
   ORGANIZATION_STATUS,
@@ -13,7 +15,7 @@ import {
 } from "@/types/organizations";
 
 function normalizeSearch(value: string) {
-  return value.trim().toLocaleLowerCase("tr-TR");
+  return value.trim().toLocaleLowerCase(getCurrentLocale());
 }
 
 export function memberMatchesSearch(
@@ -36,10 +38,10 @@ export function memberMatchesSearch(
 
 export function memberStatusMeta(member: ApiOrganizationMember) {
   if (member.status === ORGANIZATION_STATUS.pending) {
-    return "Onay bekliyor";
+    return i18n.t("organizations:memberStatus.pending");
   }
   if (member.status === ORGANIZATION_STATUS.blocked) {
-    return "Engellendi";
+    return i18n.t("organizations:memberStatus.blocked");
   }
   return organizationRoleLabel(member.role);
 }
@@ -134,6 +136,7 @@ export function OrganizationMemberRow({
   onBlock,
   onUnblock,
 }: OrganizationMemberRowProps) {
+  const { t } = useTranslation(["organizations", "common"]);
   const busy = busyUserId === member.userId;
   const isPending = member.status === ORGANIZATION_STATUS.pending;
   const isBlocked = member.status === ORGANIZATION_STATUS.blocked;
@@ -155,7 +158,7 @@ export function OrganizationMemberRow({
         {isPending ? (
           <>
             <MemberActionChip
-              label="Onayla"
+              label={t("organizations:memberRow.approve")}
               icon="check"
               tone="primary"
               disabled={busy}
@@ -163,7 +166,7 @@ export function OrganizationMemberRow({
               onPress={() => onApprove?.()}
             />
             <MemberActionChip
-              label="Reddet"
+              label={t("organizations:memberRow.reject")}
               icon="xmark"
               disabled={busy}
               onPress={() => onReject?.()}
@@ -173,7 +176,7 @@ export function OrganizationMemberRow({
 
         {isBlocked ? (
           <MemberActionChip
-            label="Aç"
+            label={t("organizations:memberRow.unblock")}
             icon="lock-open"
             disabled={busy}
             loading={busy}
@@ -184,7 +187,9 @@ export function OrganizationMemberRow({
         {canToggleAdmin ? (
           <MemberActionChip
             label={
-              member.role === ORGANIZATION_ROLE.admin ? "Üye yap" : "Yönetici"
+              member.role === ORGANIZATION_ROLE.admin
+                ? t("organizations:memberRow.makeMember")
+                : t("organizations:memberRow.makeAdmin")
             }
             icon="user-shield"
             tone="primary"
@@ -196,17 +201,17 @@ export function OrganizationMemberRow({
         {canModerate ? (
           <>
             <MemberActionChip
-              label="Çıkar"
+              label={t("organizations:memberRow.remove")}
               icon="user-minus"
               disabled={busy}
               onPress={() =>
                 Alert.alert(
-                  "Üyeyi çıkar",
-                  "Kişi organizasyondan çıkarılır. İsterse davet koduyla tekrar başvurabilir.",
+                  t("organizations:memberRow.removeTitle"),
+                  t("organizations:memberRow.removeMessage"),
                   [
-                    { text: "Vazgeç", style: "cancel" },
+                    { text: t("common:cancel"), style: "cancel" },
                     {
-                      text: "Çıkar",
+                      text: t("organizations:memberRow.remove"),
                       style: "destructive",
                       onPress: () => onRemove?.(),
                     },
@@ -215,18 +220,18 @@ export function OrganizationMemberRow({
               }
             />
             <MemberActionChip
-              label="Engelle"
+              label={t("organizations:memberRow.block")}
               icon="ban"
               tone="danger"
               disabled={busy}
               onPress={() =>
                 Alert.alert(
-                  "Üyeyi engelle",
-                  "Engellenen kişi davet koduyla tekrar katılamaz. İstersen sonra engeli kaldırırsın.",
+                  t("organizations:memberRow.blockTitle"),
+                  t("organizations:memberRow.blockMessage"),
                   [
-                    { text: "Vazgeç", style: "cancel" },
+                    { text: t("common:cancel"), style: "cancel" },
                     {
-                      text: "Engelle",
+                      text: t("organizations:memberRow.block"),
                       style: "destructive",
                       onPress: () => onBlock?.(),
                     },

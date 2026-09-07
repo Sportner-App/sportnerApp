@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect } from "react";
 import { Text, useWindowDimensions, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -77,6 +78,7 @@ function CapacityBar() {
 
 export function IntroEventsVisual() {
   const { height } = useWindowDimensions();
+  const { t } = useTranslation("firstLaunch");
   const compact = height < 720;
 
   return (
@@ -90,10 +92,12 @@ export function IntroEventsVisual() {
         <View className="flex-row items-center gap-2">
           <View className="h-1.5 w-1.5 rounded-full bg-brand-primary" />
           <Text className="font-mono text-[11px] tracking-[2px] text-white/70">
-            BUGÜN
+            {t("visuals.events.today")}
           </Text>
         </View>
-        <Text className="font-body text-xs text-brand-neutral">4 açık maç</Text>
+        <Text className="font-body text-xs text-brand-neutral">
+          {t("visuals.events.openMatchesCount")}
+        </Text>
       </Animated.View>
 
       <Animated.View
@@ -106,7 +110,7 @@ export function IntroEventsVisual() {
               20:30
             </Text>
             <Text className="mt-2 font-body text-lg font-semibold text-white">
-              Halı saha
+              {t("visuals.events.venueTurf")}
             </Text>
             <Text className="mt-1 font-body text-sm text-brand-neutral">
               Kadıköy · Futbol
@@ -115,7 +119,7 @@ export function IntroEventsVisual() {
           <View className="items-end gap-2">
             <View className="rounded-full bg-brand-primary px-2.5 py-1">
               <Text className="font-mono text-[10px] text-brand-secondary">
-                AÇIK
+                {t("visuals.events.openBadge")}
               </Text>
             </View>
             <View className="h-11 w-11 items-center justify-center rounded-2xl border border-brand-primary/25 bg-brand-primary/10">
@@ -129,7 +133,7 @@ export function IntroEventsVisual() {
           <Text className="font-mono text-xs text-brand-primary">3 / 5</Text>
         </View>
         <Text className="mt-2 font-body text-xs text-brand-neutral">
-          2 yer kaldı · bu akşam
+          {t("visuals.events.spotsRemaining")}
         </Text>
       </Animated.View>
 
@@ -147,7 +151,7 @@ export function IntroEventsVisual() {
       >
         <FontAwesome6 name="bolt" size={11} color="#ccff00" />
         <Text className="font-body text-sm text-brand-primary">
-          Mahallede şimdi açık
+          {t("visuals.events.neighborhoodOpen")}
         </Text>
       </Animated.View>
     </View>

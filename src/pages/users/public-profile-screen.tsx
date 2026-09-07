@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -39,12 +40,8 @@ import { useRequireAuth } from "@/hooks/use-require-auth";
 type FriendAction = "send" | "accept" | "reject" | "block" | "message" | null;
 type ProfileTab = "activity" | "reviews";
 
-const PROFILE_TABS = [
-  { key: "activity", label: "Aktivite" },
-  { key: "reviews", label: "Yorumlar" },
-] satisfies { key: ProfileTab; label: string }[];
-
 export function PublicProfileScreen() {
+  const { t } = useTranslation("users");
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { user } = useSession();
@@ -57,6 +54,14 @@ export function PublicProfileScreen() {
   const [friendAction, setFriendAction] = useState<FriendAction>(null);
   const [blockConfirmOpen, setBlockConfirmOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>("activity");
+
+  const profileTabs = useMemo(
+    () => [
+      { key: "activity" as const, label: t("publicProfile.tabs.activity") },
+      { key: "reviews" as const, label: t("publicProfile.tabs.reviews") },
+    ],
+    [t],
+  );
 
   useEffect(() => {
     if (!id) {
@@ -78,12 +83,12 @@ export function PublicProfileScreen() {
       .catch((error) =>
         showToast({
           type: "error",
-          title: "Profil yok",
+          title: t("publicProfile.toasts.notFoundTitle"),
           description: getApiErrorMessage(error),
         }),
       )
       .finally(() => setIsLoading(false));
-  }, [id, isAuthenticated, showToast]);
+  }, [id, isAuthenticated, showToast, t]);
 
   const isMe = Boolean(
     user?.id && profile && sameUserId(user.id, profile.userId),
@@ -106,8 +111,7 @@ export function PublicProfileScreen() {
   };
 
   const handleSend = async () => {
-    if (!requireAuth("Arkadaşlık isteği göndermek için giriş yapmalısın."))
-      return;
+    if (!requireAuth(t("publicProfile.auth.sendFriendRequest"))) return;
     if (!profile) {
       return;
     }
@@ -124,7 +128,10 @@ export function PublicProfileScreen() {
         },
       );
       successNotification();
-      showToast({ type: "success", title: "İstek gönderildi" });
+      showToast({
+        type: "success",
+        title: t("publicProfile.toasts.requestSentTitle"),
+      });
     } catch (error) {
       const existing =
         isApiError(error) && error.status === 409
@@ -141,7 +148,7 @@ export function PublicProfileScreen() {
       errorNotification();
       showToast({
         type: "error",
-        title: "Gönderilemedi",
+        title: t("publicProfile.toasts.sendFailedTitle"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -164,12 +171,15 @@ export function PublicProfileScreen() {
         },
       );
       successNotification();
-      showToast({ type: "success", title: "Arkadaş eklendi" });
+      showToast({
+        type: "success",
+        title: t("publicProfile.toasts.friendAddedTitle"),
+      });
     } catch (error) {
       errorNotification();
       showToast({
         type: "error",
-        title: "Kabul edilemedi",
+        title: t("publicProfile.toasts.acceptFailedTitle"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -186,12 +196,15 @@ export function PublicProfileScreen() {
     try {
       await rejectFriendRequest(friendship.friendshipId);
       setFriendship(null);
-      showToast({ type: "success", title: "İstek reddedildi" });
+      showToast({
+        type: "success",
+        title: t("publicProfile.toasts.requestDeclinedTitle"),
+      });
     } catch (error) {
       errorNotification();
       showToast({
         type: "error",
-        title: "Reddedilemedi",
+        title: t("publicProfile.toasts.rejectFailedTitle"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -212,7 +225,7 @@ export function PublicProfileScreen() {
       errorNotification();
       showToast({
         type: "error",
-        title: "Sohbet açılamadı",
+        title: t("publicProfile.toasts.chatFailedTitle"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -230,13 +243,16 @@ export function PublicProfileScreen() {
       await blockUser(profile.userId);
       successNotification();
       setBlockConfirmOpen(false);
-      showToast({ type: "success", title: "Kullanıcı engellendi" });
+      showToast({
+        type: "success",
+        title: t("publicProfile.toasts.blockedTitle"),
+      });
       router.back();
     } catch (error) {
       errorNotification();
       showToast({
         type: "error",
-        title: "Engellenemedi",
+        title: t("publicProfile.toasts.blockFailedTitle"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -246,16 +262,16 @@ export function PublicProfileScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="PROFİL" showBack />}
+      header={<ScreenHeader title={t("publicProfile.title")} showBack />}
       contentClassName="gap-6 px-5 pt-3"
     >
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={140} label="Profil yükleniyor" />
+          <SportLoader size={140} label={t("publicProfile.loading")} />
         </View>
       ) : !profile ? (
         <Text className="text-center font-body text-sm text-brand-neutral">
-          Profil bulunamadı.
+          {t("publicProfile.notFound")}
         </Text>
       ) : (
         <>
@@ -266,7 +282,7 @@ export function PublicProfileScreen() {
               <View className="flex-row gap-2">
                 <View className="flex-1">
                   <Button
-                    label="Kabul et"
+                    label={t("publicProfile.actions.accept")}
                     size="sm"
                     isLoading={friendAction === "accept"}
                     disabled={friendAction === "reject"}
@@ -275,7 +291,7 @@ export function PublicProfileScreen() {
                 </View>
                 <View className="flex-1">
                   <Button
-                    label="Reddet"
+                    label={t("publicProfile.actions.reject")}
                     variant="outline"
                     size="sm"
                     isLoading={friendAction === "reject"}
@@ -292,7 +308,7 @@ export function PublicProfileScreen() {
                   <View className="flex-1">
                     {isAccepted ? (
                       <Button
-                        label="Mesaj gönder"
+                        label={t("publicProfile.actions.message")}
                         size="sm"
                         isLoading={friendAction === "message"}
                         disabled={
@@ -302,14 +318,14 @@ export function PublicProfileScreen() {
                       />
                     ) : isOutgoingPending ? (
                       <Button
-                        label="İstek gönderildi"
+                        label={t("publicProfile.actions.requestSent")}
                         variant="secondary"
                         size="sm"
                         disabled
                       />
                     ) : (
                       <Button
-                        label="Arkadaş ekle"
+                        label={t("publicProfile.actions.addFriend")}
                         size="sm"
                         isLoading={friendAction === "send"}
                         onPress={() => void handleSend()}
@@ -323,7 +339,7 @@ export function PublicProfileScreen() {
 
           <SportsSection profile={profile} />
           <SegmentedTabs
-            options={PROFILE_TABS}
+            options={profileTabs}
             value={activeTab}
             onChange={setActiveTab}
           />
@@ -353,16 +369,11 @@ export function PublicProfileScreen() {
           {!isMe ? (
             <View className="gap-2">
               <Button
-                label="Şikayet et"
+                label={t("publicProfile.actions.report")}
                 variant="outline"
                 size="sm"
                 onPress={() => {
-                  if (
-                    !requireAuth(
-                      "Bir kullanıcıyı şikayet etmek için giriş yapmalısın.",
-                    )
-                  )
-                    return;
+                  if (!requireAuth(t("publicProfile.auth.reportUser"))) return;
                   router.push({
                     pathname: "/report",
                     params: { entityType: "0", entityId: profile.userId },
@@ -370,7 +381,7 @@ export function PublicProfileScreen() {
                 }}
               />
               <Button
-                label="Engelle"
+                label={t("publicProfile.actions.block")}
                 variant="ghost"
                 size="sm"
                 disabled={friendAction === "block"}
@@ -386,11 +397,11 @@ export function PublicProfileScreen() {
                 setBlockConfirmOpen(false);
               }
             }}
-            title="Bu kişiyi engellemek istiyor musun?"
-            subtitle="Birbirinizi listelerde ve profilde göremezsiniz. İstediğin zaman Gizlilik’ten engeli kaldırabilirsin."
+            title={t("publicProfile.blockSheet.title")}
+            subtitle={t("publicProfile.blockSheet.subtitle")}
           >
             <Button
-              label="Engelle"
+              label={t("publicProfile.blockSheet.confirm")}
               variant="danger"
               isLoading={friendAction === "block"}
               disabled={friendAction === "block"}

@@ -1,0 +1,24 @@
+{
+  "title": "FRIENDS",
+  "loading": "Loading",
+  "tabs": {
+    "friends": "List",
+    "requests": "Requests",
+    "suggestions": "Suggestions"
+  },
+  "empty": {
+    "friends": "You don't have any friends yet.",
+    "requests": "No pending requests.",
+    "suggestions": "No suggestions."
+  },
+  "actions": {
+    "accept": "Accept",
+    "reject": "Decline"
+  },
+  "sharedSports": "{{count}} shared sports",
+  "toasts": {
+    "loadFailedTitle": "Could not load",
+    "acceptFailedTitle": "Could not accept",
+    "rejectFailedTitle": "Could not decline"
+  }
+}

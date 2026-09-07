@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -25,6 +26,7 @@ export function CommentThread({
   onAuthorPress,
   variant = "feed",
 }: CommentThreadProps) {
+  const { t } = useTranslation("components");
   const { showToast } = useToast();
   const [repliesByRoot, setRepliesByRoot] = useState<
     Record<string, ApiComment[]>
@@ -41,7 +43,7 @@ export function CommentThread({
     } catch (error) {
       showToast({
         type: "error",
-        title: "Yanıtlar yüklenemedi",
+        title: t("commentThread.repliesLoadFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -123,10 +125,10 @@ export function CommentThread({
                   }`}
                 >
                   {loadingRootId === comment.id
-                    ? "Yanıtlar yükleniyor…"
+                    ? t("commentThread.repliesLoading")
                     : isOpen
-                      ? "Yanıtları gizle"
-                      : `Yanıtları gör (${count})`}
+                      ? t("commentThread.hideReplies")
+                      : t("commentThread.showReplies", { count })}
                 </Text>
               </Pressable>
             ) : null}
@@ -164,8 +166,10 @@ function CommentRow({
   onReply: (comment: ApiComment) => void;
   onAuthorPress?: (userId: string) => void;
 }) {
+  const { t } = useTranslation(["components", "events"]);
   const mention = comment.replyToUsername?.trim();
-  const username = comment.username?.trim() || "sporcu";
+  const username =
+    comment.username?.trim() || t("events:fallback.athleteHandle");
   const isDetail = variant === "detail";
   const nameColor = isDetail ? "text-white" : "text-text-primary";
   const bodyColor = isDetail ? "text-white" : "text-text-primary";
@@ -208,7 +212,7 @@ function CommentRow({
           className="mt-0.5 self-start py-0.5"
         >
           <Text className={`font-body text-[11px] font-semibold ${actionColor}`}>
-            Yanıtla
+            {t("components:commentThread.reply")}
           </Text>
         </Pressable>
       </View>

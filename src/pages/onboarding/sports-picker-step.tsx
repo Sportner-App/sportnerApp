@@ -10,9 +10,10 @@ import {
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { BottomSheet, Button } from "@/components";
-import { ONBOARDING_COPY, useSkillLevelOptions } from "@/constants/onboarding";
+import { useOnboardingCopy, useSkillLevelOptions } from "@/constants/onboarding";
 import type { useOnboarding } from "@/hooks/use-onboarding";
 import type { OnboardingSportDraft } from "@/types/onboarding";
 import type { Sport } from "@/types/sports";
@@ -30,12 +31,14 @@ function SportTile({
   isPrimary,
   onPress,
   width,
+  primaryBadge,
 }: {
   sport: Sport;
   isSelected: boolean;
   isPrimary: boolean;
   onPress: () => void;
   width: number;
+  primaryBadge: string;
 }) {
   return (
     <Pressable
@@ -68,7 +71,7 @@ function SportTile({
         <View className="mt-1.5 flex-row items-center gap-1">
           <FontAwesome6 name="star" size={9} color="#ccff00" />
           <Text className="font-mono text-[9px] tracking-wide text-brand-primary">
-            BİRİNCİL
+            {primaryBadge}
           </Text>
         </View>
       ) : isSelected ? (
@@ -81,9 +84,12 @@ function SportTile({
 }
 
 export function SportsPickerStep({ form }: { form: Form }) {
+  const { t } = useTranslation(["onboarding", "common"]);
+  const ONBOARDING_COPY = useOnboardingCopy();
+  const copy = ONBOARDING_COPY.sports;
+  const configCopy = ONBOARDING_COPY.configSheet;
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
-  const copy = ONBOARDING_COPY.sports;
 
   const tileWidth = useMemo(() => {
     const available =
@@ -154,7 +160,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
           contentContainerClassName="gap-2 px-5 pb-3"
         >
           {[
-            { key: "all", label: "Tümü" },
+            { key: "all", label: t("common:all") },
             ...form.sportCategories.map((category) => ({
               key: category.id,
               label: category.name,
@@ -187,7 +193,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
       <View className="min-h-0 flex-1 px-4">
         {form.isSportsLoading ? (
           <Text className="mt-6 px-1 font-body text-sm text-brand-neutral">
-            Sporlar yükleniyor…
+            {copy.loading}
           </Text>
         ) : (
           <ScrollView
@@ -209,7 +215,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
                   color="#64748b"
                 />
                 <Text className="mt-3 text-center font-body text-sm text-brand-neutral">
-                  Sonuca uygun spor yok. Aramayı veya grubu değiştir.
+                  {copy.noResults}
                 </Text>
               </View>
             ) : (
@@ -218,6 +224,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
                   key={sport.id}
                   sport={sport}
                   width={tileWidth}
+                  primaryBadge={copy.primaryBadge}
                   isSelected={selectedMap.has(sport.id)}
                   isPrimary={form.primarySportId === sport.id}
                   onPress={() => form.toggleSport(sport)}
@@ -240,7 +247,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
           </Text>
           {form.selected.length > 0 ? (
             <Text className="font-mono text-[10px] tracking-wide text-brand-primary/80">
-              SEVİYE İÇİN DOKUN
+              {copy.tapForLevel}
             </Text>
           ) : null}
         </View>
@@ -272,7 +279,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
         ) : (
           <View className="mb-3 h-11 justify-center rounded-2xl border border-dashed border-border-default px-3">
             <Text className="font-body text-xs text-brand-neutral/80">
-              Grid’den spor seç — seçtiklerin burada toplanır.
+              {copy.selectedHint}
             </Text>
           </View>
         )}
@@ -286,7 +293,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
         />
       </View>
 
-      <SportConfigSheet form={form} />
+      <SportConfigSheet form={form} configCopy={configCopy} />
     </View>
   );
 }
@@ -341,7 +348,13 @@ function SelectedSportChip({
   );
 }
 
-function SportConfigSheet({ form }: { form: Form }) {
+function SportConfigSheet({
+  form,
+  configCopy,
+}: {
+  form: Form;
+  configCopy: ReturnType<typeof useOnboardingCopy>["configSheet"];
+}) {
   const ONBOARDING_SKILL_OPTIONS = useSkillLevelOptions();
   const draft = form.editingDraft;
   const visible = Boolean(draft);
@@ -351,14 +364,16 @@ function SportConfigSheet({ form }: { form: Form }) {
     <BottomSheet
       visible={visible}
       onClose={() => form.setEditingSportId(null)}
-      title={draft?.sportName ?? "Spor"}
-      subtitle="Seviyeni seç ve istersen birincil yap."
+      title={draft?.sportName ?? ""}
+      subtitle={configCopy.subtitle}
       showCancel={false}
     >
       {draft ? (
         <View className="gap-4">
           <View className="gap-2">
-            <Text className="font-body text-sm text-brand-neutral">Seviye</Text>
+            <Text className="font-body text-sm text-brand-neutral">
+              {configCopy.levelLabel}
+            </Text>
             <View className="flex-row flex-wrap gap-2">
               {ONBOARDING_SKILL_OPTIONS.map((option) => {
                 const active = draft.skillLevel === option.level;
@@ -402,10 +417,10 @@ function SportConfigSheet({ form }: { form: Form }) {
             />
             <View className="flex-1">
               <Text className="font-body text-sm font-semibold text-text-primary">
-                Birincil spor
+                {configCopy.primaryTitle}
               </Text>
               <Text className="mt-0.5 font-body text-xs text-brand-neutral">
-                Profilinde ve önerilerde öne çıkar.
+                {configCopy.primaryDescription}
               </Text>
             </View>
             {isPrimary ? (
@@ -413,7 +428,10 @@ function SportConfigSheet({ form }: { form: Form }) {
             ) : null}
           </Pressable>
 
-          <Button label="Tamam" onPress={() => form.setEditingSportId(null)} />
+          <Button
+            label={configCopy.confirm}
+            onPress={() => form.setEditingSportId(null)}
+          />
         </View>
       ) : null}
     </BottomSheet>

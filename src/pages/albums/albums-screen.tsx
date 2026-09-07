@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -15,6 +16,7 @@ import { createAlbum, listMyAlbums } from "@/services/albums-service";
 import type { ApiAlbum } from "@/types/social";
 
 export function AlbumsScreen() {
+  const { t } = useTranslation("albums");
   const router = useRouter();
   const { showToast } = useToast();
   const [albums, setAlbums] = useState<ApiAlbum[]>([]);
@@ -27,7 +29,7 @@ export function AlbumsScreen() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Yüklenemedi",
+        title: t("toasts.loadFailedTitle"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -42,23 +44,23 @@ export function AlbumsScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="ALBÜMLER" showBack />}
+      header={<ScreenHeader title={t("list.title")} showBack />}
       contentClassName="gap-4 px-6 pt-3"
     >
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} label={t("list.loading")} />
         </View>
       ) : (
         <>
           <Input
-            label="Yeni albüm"
+            label={t("list.newAlbumLabel")}
             value={title}
             onChangeText={setTitle}
-            placeholder="Örn. Halı saha 2026"
+            placeholder={t("list.newAlbumPlaceholder")}
           />
           <Button
-            label="Albüm oluştur"
+            label={t("list.create")}
             disabled={!title.trim()}
             onPress={async () => {
               await createAlbum(title.trim());
@@ -76,7 +78,7 @@ export function AlbumsScreen() {
                 {album.title}
               </Text>
               <Text className="font-body text-xs text-brand-neutral">
-                {album.mediaCount} fotoğraf
+                {t("list.photoCount", { count: album.mediaCount })}
               </Text>
             </Pressable>
           ))}

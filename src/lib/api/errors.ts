@@ -1,20 +1,13 @@
 import axios from "axios";
 
+import i18n from "@/i18n";
 import type { ApiErrorPayload } from "@/types/api";
 
-const STATUS_MESSAGES: Record<number, string> = {
-  400: "Gönderilen bilgiler geçersiz.",
-  401: "Oturum süreniz doldu. Lütfen tekrar giriş yapın.",
-  403: "Bu işlem için yetkiniz bulunmuyor.",
-  404: "İstenen kayıt bulunamadı.",
-  408: "İstek zaman aşımına uğradı.",
-  409: "İşlem mevcut verilerle çakışıyor.",
-  422: "Gönderilen bilgiler işlenemedi.",
-  429: "Çok fazla istek gönderildi. Lütfen biraz bekleyin.",
-  500: "Sunucuda beklenmeyen bir hata oluştu.",
-  502: "Sunucuya şu anda ulaşılamıyor.",
-  503: "Servis geçici olarak kullanılamıyor.",
-};
+function getStatusMessage(status: number) {
+  return i18n.t(`api:status.${status}`, {
+    defaultValue: i18n.t("api:requestFailed"),
+  });
+}
 
 function getValidationMessage(errors: ApiErrorPayload["errors"]) {
   if (!errors) {
@@ -43,11 +36,11 @@ function getResponseMessage(data: unknown, status?: number) {
       payload.error ||
       validationMessage ||
       payload.title ||
-      (status ? STATUS_MESSAGES[status] : undefined)
+      (status ? getStatusMessage(status) : undefined)
     );
   }
 
-  return status ? STATUS_MESSAGES[status] : undefined;
+  return status ? getStatusMessage(status) : undefined;
 }
 
 export class ApiError extends Error {
@@ -92,8 +85,8 @@ export function normalizeApiError(error: unknown): ApiError {
       data && typeof data === "object" ? (data as ApiErrorPayload) : undefined;
     const isNetworkError = !error.response;
     const message = isNetworkError
-      ? "Sunucuya bağlanılamadı. İnternet bağlantınızı kontrol edin."
-      : getResponseMessage(data, status) || "İstek tamamlanamadı.";
+      ? i18n.t("api:networkError")
+      : getResponseMessage(data, status) || i18n.t("api:requestFailed");
 
     const nestedCode = Array.isArray(payload?.errors)
       ? (payload.errors as Array<{ code?: string }>).find((item) => item.code)
@@ -115,7 +108,7 @@ export function normalizeApiError(error: unknown): ApiError {
   }
 
   return new ApiError({
-    message: "Beklenmeyen bir hata oluştu.",
+    message: i18n.t("api:unexpectedError"),
     details: error,
   });
 }
@@ -126,7 +119,7 @@ export function isApiError(error: unknown): error is ApiError {
 
 export function getApiErrorMessage(
   error: unknown,
-  fallback = "İşlem tamamlanamadı.",
+  fallback = i18n.t("api:actionFailed"),
 ) {
   return normalizeApiError(error).message || fallback;
 }

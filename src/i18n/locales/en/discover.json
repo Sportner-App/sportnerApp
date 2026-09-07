@@ -1,0 +1,31 @@
+{
+  "loading": "Loading discover",
+  "loadFailed": "Could not load discover.",
+  "hero": {
+    "eyebrow": "COMMUNITY",
+    "postCount": "· {{count}} posts",
+    "title": "Share the <highlight>movement.</highlight>",
+    "subtitle": "Bring your sports moment to the community.",
+    "createLabel": "Share post",
+    "createA11y": "Share post"
+  },
+  "people": {
+    "title": "Discover new athletes",
+    "seeAll": "See all"
+  },
+  "section": {
+    "title": "Capture the moment",
+    "subtitle": "Latest from the community",
+    "postCount": "{{count}} POSTS"
+  },
+  "empty": {
+    "message": "No shares yet. Be the first to add a photo.",
+    "cta": "Share photo"
+  },
+  "auth": {
+    "createPost": "You need to sign in to share a post.",
+    "like": "You need to sign in to like posts.",
+    "comment": "You need to sign in to comment.",
+    "reply": "You need to sign in to reply."
+  }
+}

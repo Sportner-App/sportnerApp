@@ -1,13 +1,15 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, Text, View } from "react-native";
 
 import { DatePickerSheet } from "@/components/date-picker-sheet";
 import { themeColors } from "@/constants/theme";
+import { getCurrentLocale } from "@/i18n";
 import type { DateFieldProps } from "@/types/components";
 
 function formatEventDate(date: Date) {
-  return date.toLocaleString("tr-TR", {
+  return date.toLocaleString(getCurrentLocale(), {
     weekday: "short",
     day: "numeric",
     month: "short",
@@ -17,17 +19,19 @@ function formatEventDate(date: Date) {
 }
 
 export function DateField({
-  label = "Tarih & Saat",
+  label,
   value,
   onChange,
   minimumDate,
 }: DateFieldProps) {
+  const { t } = useTranslation("eventCreate");
   const [open, setOpen] = useState(false);
+  const resolvedLabel = label ?? t("dateTime.label");
 
   return (
     <View className="gap-2">
       <Text className="font-body-bold text-[13px] text-text-secondary">
-        {label}
+        {resolvedLabel}
       </Text>
 
       <Pressable

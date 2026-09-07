@@ -1,11 +1,12 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Button, SegmentedTabs, SportLoader, TabPage } from "@/components";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 
-import { PROFILE_COPY } from "@/constants/profile";
+import { useProfileCopy, useProfileTabs } from "@/constants/profile";
 import { useAppTour } from "@/contexts";
 import { useProfile } from "@/hooks/use-profile";
 import { listUserReviews } from "@/services/reviews-service";
@@ -22,13 +23,10 @@ import { StatsSection } from "./stats-section";
 
 type ProfileTab = "activity" | "reviews" | "settings";
 
-const PROFILE_TABS = [
-  { key: "activity", label: "Aktivite" },
-  { key: "reviews", label: "Yorumlar" },
-  { key: "settings", label: "Ayarlar" },
-] satisfies { key: ProfileTab; label: string }[];
-
 export function ProfileScreen() {
+  const { t } = useTranslation(["profile", "common"]);
+  const PROFILE_COPY = useProfileCopy();
+  const PROFILE_TABS = useProfileTabs();
   const router = useRouter();
   const { startTour } = useAppTour();
   const {
@@ -88,7 +86,7 @@ export function ProfileScreen() {
     <TabPage refreshing={isRefreshing} onRefresh={refresh}>
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={148} label="Profil yükleniyor" />
+          <SportLoader size={148} label={t("profile:loading")} />
         </View>
       ) : !profile ? (
         <View className="items-center gap-4 rounded-3xl border border-border-default bg-surface-primary px-6 py-16">
@@ -101,7 +99,7 @@ export function ProfileScreen() {
             {error ?? PROFILE_COPY.notFound}
           </Text>
           <Button
-            label="Tekrar Dene"
+            label={t("common:retry")}
             variant="outline"
             size="sm"
             onPress={refresh}

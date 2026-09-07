@@ -1,0 +1,30 @@
+{
+  "title": "Etkinliklerim",
+  "subtitle": "Devam edenler, geçmiştekiler ve düzenlediklerin.",
+  "loading": "Etkinlikler yükleniyor",
+  "loadingMore": "Etkinlikler yükleniyor",
+  "eventCount": "{{count}} etkinlik",
+  "tabs": {
+    "upcoming": "Devam eden",
+    "past": "Geçmiş",
+    "organized": "Düzenlediklerim"
+  },
+  "empty": {
+    "upcoming": {
+      "message": "Şu an devam eden veya yaklaşan bir katılımın yok.",
+      "action": "Etkinlikleri Gör"
+    },
+    "past": {
+      "message": "Henüz geçmiş bir etkinliğin yok.",
+      "action": "Etkinlikleri Gör"
+    },
+    "organized": {
+      "message": "Henüz düzenlediğin bir etkinlik yok.",
+      "action": "Etkinlik Oluştur"
+    }
+  },
+  "errors": {
+    "loadFailed": "Etkinlikler yüklenemedi.",
+    "loadMoreFailed": "Daha fazla yüklenemedi."
+  }
+}

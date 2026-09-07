@@ -1,6 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useRef, useState } from "react";
 
+import i18n from "@/i18n";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { explorePeople } from "@/services/events-service";
 import {
@@ -40,7 +41,9 @@ export function useDiscover() {
         setPeople(peopleResult.value);
       }
     } catch (err) {
-      setError(getApiErrorMessage(err, "Keşfet yüklenemedi."));
+      setError(
+        getApiErrorMessage(err, i18n.t("discover:loadFailed")),
+      );
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -92,7 +95,7 @@ export function useDiscover() {
     async (post: ApiPost, content: string): Promise<ApiComment> => {
       const comment = await createComment(post.id, content);
       if (!comment) {
-        throw new Error("Yorum gönderilemedi.");
+        throw new Error(i18n.t("social:toasts.commentFailed"));
       }
       patchPost(post.id, { commentCount: post.commentCount + 1 });
       return comment;
@@ -108,7 +111,7 @@ export function useDiscover() {
     ): Promise<ApiComment> => {
       const reply = await createReply(post.id, parentCommentId, content);
       if (!reply) {
-        throw new Error("Yanıt gönderilemedi.");
+        throw new Error(i18n.t("social:toasts.replyFailed"));
       }
       patchPost(post.id, { commentCount: post.commentCount + 1 });
       return reply;

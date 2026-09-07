@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -18,6 +19,7 @@ import {
 } from "@/types/organizations";
 
 export function OrganizationsListScreen() {
+  const { t } = useTranslation("organizations");
   const router = useRouter();
   const { items, isLoading, isRefreshing, error, refresh } = useMyOrganizations();
 
@@ -25,7 +27,7 @@ export function OrganizationsListScreen() {
     <AppScreen
       header={
         <ScreenHeader
-          title="ORGANİZASYONLAR"
+          title={t("list.title")}
           showBack
           right={
             <Pressable
@@ -47,14 +49,14 @@ export function OrganizationsListScreen() {
       <View className="flex-row gap-2">
         <View className="flex-1">
           <Button
-            label="Oluştur"
+            label={t("list.create")}
             size="sm"
             onPress={() => router.push("/organizations/create")}
           />
         </View>
         <View className="flex-1">
           <Button
-            label="Kod ile katıl"
+            label={t("list.joinWithCode")}
             variant="outline"
             size="sm"
             onPress={() => router.push("/organizations/join")}
@@ -64,7 +66,7 @@ export function OrganizationsListScreen() {
 
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} />
         </View>
       ) : error ? (
         <Text className="py-8 text-center font-body text-sm text-brand-neutral">
@@ -72,7 +74,7 @@ export function OrganizationsListScreen() {
         </Text>
       ) : items.length === 0 ? (
         <Text className="py-8 text-center font-body text-sm text-brand-neutral">
-          Henüz bir organizasyonun yok. Oluştur veya davet koduyla katıl.
+          {t("list.empty")}
         </Text>
       ) : (
         items.map((item) => (
@@ -98,7 +100,7 @@ export function OrganizationsListScreen() {
             >
               {item.status === ORGANIZATION_STATUS.pending
                 ? organizationStatusLabel(item.status)
-                : `${item.approvedMemberCount} üye`}
+                : t("list.memberCount", { count: item.approvedMemberCount })}
             </Text>
           </Pressable>
         ))

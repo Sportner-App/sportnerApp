@@ -41,5 +41,37 @@
     "attended": "Attended",
     "noShow": "No-show",
     "invited": "Invitation sent"
+  },
+  "service": {
+    "joinFailed": "Could not join",
+    "acceptInvitationFailed": "Could not accept invitation",
+    "declineInvitationFailed": "Could not decline invitation",
+    "removeParticipantFailed": "Could not remove participant",
+    "cancelParticipationFailed": "Could not leave",
+    "cancelEventFailed": "Could not cancel event",
+    "completeEventFailed": "Could not complete event",
+    "approveFailed": "Could not approve",
+    "rejectFailed": "Could not reject",
+    "promoteWaitlistFailed": "Could not promote from waitlist",
+    "attendanceFailed": "Could not record attendance",
+    "updateDetailsFailed": "Could not update event",
+    "updateScheduleFailed": "Could not update schedule",
+    "updateLocationFailed": "Could not update location",
+    "updateCapacityFailed": "Could not update capacity",
+    "updateFeeFailed": "Could not update fee",
+    "createFailed": "Could not create event",
+    "createMissingId": "Event was created but its ID could not be retrieved.",
+    "publishFailed": "Event stayed as a draft; it could not be published.",
+    "validation": {
+      "titleRequired": "Title is required.",
+      "titleTooLong": "Title can be at most 150 characters.",
+      "sportRequired": "Sport selection is required.",
+      "durationPositive": "Duration must be greater than 0.",
+      "addressRequired": "Address is required.",
+      "coordinatesInvalid": "Location coordinates are invalid.",
+      "capacityPositive": "Player count must be greater than 0.",
+      "ageRangeInvalid": "Participant age range must be between 13–120 and in order.",
+      "paidFeeRequired": "Enter a price greater than 0 for a paid event."
+    }
   }
 }

@@ -1,0 +1,67 @@
+{
+  "header": {
+    "title": "MY CHATS",
+    "defaultTitle": "CHAT"
+  },
+  "screen": {
+    "title": "Your messages"
+  },
+  "tabs": {
+    "events": "Event",
+    "friends": "Friends"
+  },
+  "tabsCopy": {
+    "events": {
+      "subtitle": "Group chats for events you've joined.",
+      "emptyTitle": "No event chats yet",
+      "emptyBody": "When you join an event, its chat will appear here."
+    },
+    "friends": {
+      "subtitle": "One-on-one chats with your friends.",
+      "emptyTitle": "No friend chats yet",
+      "emptyBody": "Start a chat from a friend's profile with Send message."
+    }
+  },
+  "loading": "Loading chats",
+  "loadFailed": "Could not load chats.",
+  "newChat": "Start new chat",
+  "newChatA11y": "Start new chat",
+  "row": {
+    "eventFallback": "Event chat",
+    "chatFallback": "Chat",
+    "openA11y": "Open {{title}} chat",
+    "closed": "Closed",
+    "noMessages": "No messages yet"
+  },
+  "compose": {
+    "title": "New chat",
+    "subtitle": "Choose a friend to start chatting with",
+    "searchPlaceholder": "Search friends…",
+    "loadingFriends": "Loading friends",
+    "emptyFriends": "You don't have any accepted friends yet.",
+    "noMatch": "No matching friends found."
+  },
+  "toasts": {
+    "openFailed": "Could not open chat",
+    "openFailedFallback": "No chat available yet.",
+    "startFailed": "Could not start chat",
+    "sendFailed": "Could not send",
+    "closedTitle": "Chat closed",
+    "closedDescription": "The event has ended, so you can no longer send messages."
+  },
+  "chat": {
+    "placeholder": "Write a message…",
+    "send": "Send",
+    "closedFooter": "The event has ended. The chat is closed, but you can read the history.",
+    "emptyClosed": "No messages in this event chat.",
+    "emptyOpen": "Send the first message."
+  },
+  "message": {
+    "you": "You",
+    "deleted": "Message deleted",
+    "media": "Media",
+    "retryA11y": "Resend message",
+    "failed": "Failed to send · Try again",
+    "sending": "Sending…"
+  }
+}

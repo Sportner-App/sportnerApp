@@ -1,9 +1,11 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import { AppScreen, ScreenHeader } from "@/components";
 import { useSession, useToast } from "@/contexts";
+import { getCurrentLocale } from "@/i18n";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { connectEventChat } from "@/lib/signalr";
 import {
@@ -55,6 +57,7 @@ export function EventChatScreen({
   const router = useRouter();
   const { user } = useSession();
   const { showToast } = useToast();
+  const { t } = useTranslation("messaging");
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversation, setConversation] = useState<ApiConversation | null>(
     null,
@@ -155,8 +158,11 @@ export function EventChatScreen({
       } catch (error) {
         showToast({
           type: "error",
-          title: "Sohbet açılamadı",
-          description: getApiErrorMessage(error, "Henüz sohbet yok."),
+          title: t("toasts.openFailed"),
+          description: getApiErrorMessage(
+            error,
+            t("toasts.openFailedFallback"),
+          ),
         });
       }
     })();
@@ -165,7 +171,7 @@ export function EventChatScreen({
       disposed = true;
       void connection?.stop();
     };
-  }, [directConversationId, id, showToast]);
+  }, [directConversationId, id, showToast, t]);
 
   const sorted = useMemo(
     () =>
@@ -182,11 +188,13 @@ export function EventChatScreen({
         (member) => member.userId !== user?.id,
       );
       const name = peer?.firstName || peer?.username || conversation.title;
-      return (name || "SOHBET").toLocaleUpperCase("tr-TR");
+      return (name || t("header.defaultTitle")).toLocaleUpperCase(
+        getCurrentLocale(),
+      );
     }
 
-    return conversation?.title || "SOHBET";
-  }, [conversation, user?.id]);
+    return conversation?.title || t("header.defaultTitle");
+  }, [conversation, t, user?.id]);
 
   const isClosed =
     conversation?.isClosed === true &&
@@ -252,9 +260,9 @@ export function EventChatScreen({
 
       showToast({
         type: "error",
-        title: closed ? "Sohbet kapandı" : "Gönderilemedi",
+        title: closed ? t("toasts.closedTitle") : t("toasts.sendFailed"),
         description: closed
-          ? "Etkinlik bittiği için artık mesaj gönderilemez."
+          ? t("toasts.closedDescription")
           : getApiErrorMessage(error),
       });
     }
@@ -307,7 +315,7 @@ export function EventChatScreen({
         isClosed ? (
           <View className="border-t border-border-default px-6 py-4">
             <Text className="text-center font-body text-sm leading-5 text-brand-neutral">
-              Etkinlik bitti. Sohbet kapandı, geçmişi okuyabilirsin.
+              {t("chat.closedFooter")}
             </Text>
           </View>
         ) : (
@@ -318,7 +326,7 @@ export function EventChatScreen({
                 draftRef.current = value;
                 setDraft(value);
               }}
-              placeholder="Mesaj yaz…"
+              placeholder={t("chat.placeholder")}
               placeholderTextColor="#64748b"
               textAlignVertical="center"
               hitSlop={8}
@@ -343,7 +351,7 @@ export function EventChatScreen({
               }`}
             >
               <Text className="font-body font-semibold text-brand-secondary">
-                Gönder
+                {t("chat.send")}
               </Text>
             </Pressable>
           </View>
@@ -353,8 +361,8 @@ export function EventChatScreen({
       {sorted.length === 0 ? (
         <Text className="py-10 text-center font-body text-sm text-brand-neutral">
           {isClosed
-            ? "Bu etkinlik sohbetinde mesaj yok."
-            : "İlk mesajı sen yaz."}
+            ? t("chat.emptyClosed")
+            : t("chat.emptyOpen")}
         </Text>
       ) : (
         sorted.map((message, index) => {

@@ -8,8 +8,10 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { themeColors } from "@/constants/theme";
+import { getCurrentLocale } from "@/i18n";
 import type { IconName } from "@/types/components";
 import { resolveMediaUrl } from "@/utils/media-url";
 
@@ -46,6 +48,7 @@ export function Avatar({
   style,
   accessibilityLabel,
 }: AvatarProps) {
+  const { t } = useTranslation("components");
   const [imageFailed, setImageFailed] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const resolvedUri = uri ? resolveMediaUrl(uri) : null;
@@ -104,11 +107,12 @@ export function Avatar({
     onPress?.();
   };
 
+  const displayName = name?.trim() || t("avatar.defaultName");
   const resolvedAccessibilityLabel =
     accessibilityLabel ??
     (canPreview
-      ? `${name || "Kullanıcı"} profil fotoğrafını büyüt`
-      : `${name || "Kullanıcı"} profili`);
+      ? t("avatar.expandPhoto", { name: displayName })
+      : t("avatar.profile", { name: displayName }));
 
   if (!isInteractive) {
     return <View style={containerStyle}>{content}</View>;
@@ -161,5 +165,5 @@ function initials(value?: string | null) {
     }
   }
 
-  return result.join("").toLocaleUpperCase("tr-TR") || "S";
+  return result.join("").toLocaleUpperCase(getCurrentLocale()) || "S";
 }

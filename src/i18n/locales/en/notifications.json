@@ -1,0 +1,66 @@
+{
+  "title": "NOTIFICATIONS",
+  "markAllRead": "Mark all read",
+  "loading": "Loading notifications",
+  "empty": "No new notifications.",
+  "loadFailed": "Could not load",
+  "settings": {
+    "title": "NOTIFICATION SETTINGS",
+    "inApp": "In-app",
+    "push": "Push notification",
+    "saveFailed": "Could not save",
+    "typeFallback": "Type {{type}}"
+  },
+  "copy": {
+    "namedUser": "{{username}} {{action}}",
+    "anonymousUser": "A user {{action}}"
+  },
+  "actions": {
+    "0": "sent you a friend request",
+    "1": "accepted your friend request",
+    "2": "invited you to an event",
+    "3": "approved your request",
+    "4": "declined your request",
+    "6": "cancelled the event",
+    "7": "liked your photo",
+    "8": "commented on your photo",
+    "9": "replied to your comment",
+    "11": "sent you a message",
+    "14": "asked a question about your event",
+    "15": "replied to your question",
+    "16": "requested to join the organization",
+    "17": "approved your organization join request",
+    "18": "declined your organization join request",
+    "19": "updated your organization role",
+    "20": "removed you from the organization",
+    "21": "blocked you from the organization"
+  },
+  "settingsLabels": {
+    "0": "Friend request",
+    "1": "Friend accepted",
+    "2": "Event invitation",
+    "3": "Request approved",
+    "4": "Request declined",
+    "5": "Event reminder",
+    "6": "Event cancelled",
+    "7": "Post liked",
+    "8": "Post comment",
+    "9": "Comment reply",
+    "10": "Badge earned",
+    "11": "New message",
+    "12": "System",
+    "13": "Quest completed",
+    "14": "Event question",
+    "15": "Question reply",
+    "16": "Organization join request",
+    "17": "Organization join approved",
+    "18": "Organization join declined",
+    "19": "Organization role changed",
+    "20": "Removed from organization",
+    "21": "Blocked from organization"
+  },
+  "push": {
+    "channelName": "Sportner Notifications",
+    "projectIdMissing": "EAS projectId not found; push token could not be retrieved."
+  }
+}

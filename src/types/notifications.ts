@@ -1,3 +1,5 @@
+import i18n from "@/i18n";
+
 export type ApiNotification = {
   id: string;
   notificationType: number;
@@ -55,65 +57,58 @@ export const NOTIFICATION_TYPE = {
   organizationMemberBlocked: 21,
 } as const;
 
-const NAMED_ACTIONS: Partial<Record<number, string>> = {
-  [NOTIFICATION_TYPE.friendRequest]: "arkadaşlık isteği gönderdi",
-  [NOTIFICATION_TYPE.friendAccepted]: "arkadaşlık isteğini kabul etti",
-  [NOTIFICATION_TYPE.eventInvitation]: "seni etkinliğe davet etti",
-  [NOTIFICATION_TYPE.eventRequestApproved]: "başvurunu onayladı",
-  [NOTIFICATION_TYPE.eventRequestRejected]: "başvurunu reddetti",
-  [NOTIFICATION_TYPE.eventCancelled]: "etkinliği iptal etti",
-  [NOTIFICATION_TYPE.postLiked]: "fotoğrafını beğendi",
-  [NOTIFICATION_TYPE.postCommented]: "fotoğrafına yorum yaptı",
-  [NOTIFICATION_TYPE.commentReplied]: "yorumuna yanıt verdi",
-  [NOTIFICATION_TYPE.newMessage]: "mesaj gönderdi",
-  [NOTIFICATION_TYPE.eventQuestionAsked]: "etkinliğine soru sordu",
-  [NOTIFICATION_TYPE.eventQuestionReplied]: "soruna yanıt verdi",
-  [NOTIFICATION_TYPE.organizationJoinRequested]: "organizasyona katılmak istiyor",
-  [NOTIFICATION_TYPE.organizationJoinApproved]: "organizasyon katılımını onayladı",
-  [NOTIFICATION_TYPE.organizationJoinRejected]: "organizasyon katılımını reddetti",
-  [NOTIFICATION_TYPE.organizationRoleChanged]: "organizasyon rolünü güncelledi",
-  [NOTIFICATION_TYPE.organizationMemberRemoved]: "seni organizasyondan çıkardı",
-  [NOTIFICATION_TYPE.organizationMemberBlocked]: "seni organizasyondan engelledi",
-};
+const NAMED_ACTION_TYPES = new Set<number>([
+  NOTIFICATION_TYPE.friendRequest,
+  NOTIFICATION_TYPE.friendAccepted,
+  NOTIFICATION_TYPE.eventInvitation,
+  NOTIFICATION_TYPE.eventRequestApproved,
+  NOTIFICATION_TYPE.eventRequestRejected,
+  NOTIFICATION_TYPE.eventCancelled,
+  NOTIFICATION_TYPE.postLiked,
+  NOTIFICATION_TYPE.postCommented,
+  NOTIFICATION_TYPE.commentReplied,
+  NOTIFICATION_TYPE.newMessage,
+  NOTIFICATION_TYPE.eventQuestionAsked,
+  NOTIFICATION_TYPE.eventQuestionReplied,
+  NOTIFICATION_TYPE.organizationJoinRequested,
+  NOTIFICATION_TYPE.organizationJoinApproved,
+  NOTIFICATION_TYPE.organizationJoinRejected,
+  NOTIFICATION_TYPE.organizationRoleChanged,
+  NOTIFICATION_TYPE.organizationMemberRemoved,
+  NOTIFICATION_TYPE.organizationMemberBlocked,
+]);
+
+function namedAction(type: number): string | undefined {
+  if (!NAMED_ACTION_TYPES.has(type)) {
+    return undefined;
+  }
+  const key = `notifications:actions.${type}`;
+  const action = i18n.t(key);
+  return action === key ? undefined : action;
+}
 
 export function notificationCopy(item: ApiNotification) {
-  if (item.title.includes("kullanıcısı")) {
+  const actor = item.actorUsername?.trim();
+  if (actor && item.title.includes(actor)) {
     return { title: item.title, body: item.body };
   }
 
-  const action = NAMED_ACTIONS[item.notificationType];
+  const action = namedAction(item.notificationType);
   if (!action) {
     return { title: item.title, body: item.body };
   }
 
-  const who = item.actorUsername?.trim();
-  const title = who
-    ? `${who} kullanıcısı ${action}`
-    : `Bir kullanıcı ${action}`;
+  const title = actor
+    ? i18n.t("notifications:copy.namedUser", { username: actor, action })
+    : i18n.t("notifications:copy.anonymousUser", { action });
   return { title, body: item.body };
 }
 
-export const NOTIFICATION_SETTING_LABELS: Record<number, string> = {
-  0: "Arkadaşlık isteği",
-  1: "Arkadaşlık kabul",
-  2: "Etkinlik daveti",
-  3: "Katılım onaylandı",
-  4: "Katılım reddedildi",
-  5: "Etkinlik hatırlatması",
-  6: "Etkinlik iptali",
-  7: "Gönderi beğenisi",
-  8: "Gönderi yorumu",
-  9: "Yorum yanıtı",
-  10: "Rozet kazandın",
-  11: "Yeni mesaj",
-  12: "Sistem",
-  13: "Görev tamamlandı",
-  14: "Etkinlik sorusu",
-  15: "Soru yanıtı",
-  16: "Organizasyon katılım isteği",
-  17: "Organizasyon katılımı onaylandı",
-  18: "Organizasyon katılımı reddedildi",
-  19: "Organizasyon rolü değişti",
-  20: "Organizasyondan çıkarıldın",
-  21: "Organizasyondan engellendin",
-};
+export function notificationSettingLabel(type: number): string {
+  const key = `notifications:settingsLabels.${type}`;
+  const label = i18n.t(key);
+  if (label !== key) {
+    return label;
+  }
+  return i18n.t("notifications:settings.typeFallback", { type });
+}

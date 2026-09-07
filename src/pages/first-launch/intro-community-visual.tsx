@@ -1,10 +1,13 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import Animated from "react-native-reanimated";
 
 import { heroFadeScale, heroFadeUp } from "./hero-enter";
 
 export function IntroCommunityVisual() {
+  const { t } = useTranslation(["firstLaunch", "events"]);
+
   return (
     <View>
       <View className="absolute -left-8 top-6 h-40 w-40 rounded-full bg-brand-primary/8" />
@@ -19,7 +22,7 @@ export function IntroCommunityVisual() {
           <View className="flex-1">
             <Text className="font-body-bold text-sm text-white">Deniz Er</Text>
             <Text className="font-body text-xs text-brand-neutral">
-              Koşu · 12 dk
+              Koşu · {t("events:duration.minutes", { count: 12 })}
             </Text>
           </View>
           <FontAwesome6 name="ellipsis" size={14} color="#6f7d86" />
@@ -34,7 +37,7 @@ export function IntroCommunityVisual() {
           </View>
         </View>
         <Text className="px-4 pt-3 font-body text-sm leading-5 text-white">
-          Sabah koşusu tamam! Bugün kimler hareket etti? 🏃
+          {t("firstLaunch:visuals.community.postCaption")}
         </Text>
         <View className="flex-row items-center gap-5 px-4 py-4">
           <Animated.View
@@ -46,7 +49,9 @@ export function IntroCommunityVisual() {
           </Animated.View>
           <View className="flex-row items-center gap-1.5">
             <FontAwesome6 name="comment" size={14} color="#9aa7af" />
-            <Text className="font-body text-xs text-white/65">8 yorum</Text>
+            <Text className="font-body text-xs text-white/65">
+              {t("firstLaunch:visuals.community.commentsCount")}
+            </Text>
           </View>
           <View className="ml-auto">
             <FontAwesome6 name="paper-plane" size={14} color="#9aa7af" />
@@ -59,7 +64,7 @@ export function IntroCommunityVisual() {
       >
         <FontAwesome6 name="users" size={11} color="#ccff00" />
         <Text className="font-body text-sm text-brand-primary">
-          Topluluk hareket halinde
+          {t("firstLaunch:visuals.community.communityActive")}
         </Text>
       </Animated.View>
     </View>

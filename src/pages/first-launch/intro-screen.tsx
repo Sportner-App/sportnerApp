@@ -11,7 +11,7 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 
-import { FIRST_LAUNCH_COPY } from "@/constants/first-launch";
+import { useFirstLaunchCopy } from "@/constants/first-launch";
 import { useFirstLaunch } from "@/contexts/first-launch-context";
 
 import { FirstLaunchScaffold } from "./first-launch-scaffold";
@@ -118,7 +118,9 @@ function IntroSlide({
   onNext,
   onFinish,
 }: IntroSlideProps) {
+  const FIRST_LAUNCH_COPY = useFirstLaunchCopy();
   const copy = FIRST_LAUNCH_COPY[`intro${step}`];
+  const skipLabel = FIRST_LAUNCH_COPY.skip;
   const isLastStep = step === 3;
   const pageOffset = (step - 1) * width;
   const visual =
@@ -177,7 +179,7 @@ function IntroSlide({
           primaryLabel={copy.next}
           onPrimary={isLastStep ? onFinish : onNext}
           primaryLoading={isLastStep ? isFinishing : undefined}
-          secondaryLabel="Atla"
+          secondaryLabel={skipLabel}
           onSecondary={onFinish}
           secondaryLoading={isFinishing}
           primaryHaptic={isLastStep ? "success" : "light"}

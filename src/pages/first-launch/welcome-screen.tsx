@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 
-import { FIRST_LAUNCH_COPY } from "@/constants/first-launch";
+import { useFirstLaunchCopy } from "@/constants/first-launch";
 import { useFirstLaunch } from "@/contexts/first-launch-context";
 
 import { FirstLaunchScaffold } from "./first-launch-scaffold";
@@ -9,6 +10,7 @@ import { WelcomeVisual } from "./welcome-visual";
 export function WelcomeScreen() {
   const router = useRouter();
   const { enterAuthWithoutCompleting } = useFirstLaunch();
+  const FIRST_LAUNCH_COPY = useFirstLaunchCopy();
   const copy = FIRST_LAUNCH_COPY.welcome;
 
   return (

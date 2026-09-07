@@ -53,5 +53,11 @@
     "badges": "Rozetler",
     "albums": "Albümler"
   },
-  "logout": "Çıkış yap"
+  "logout": "Çıkış yap",
+  "logoutToasts": {
+    "failed": "Çıkış yapılamadı",
+    "success": "Çıkış yapıldı",
+    "bypassDescription": "Auth bypass açık; login ekranına yönlendirildin.",
+    "farewell": "Görüşmek üzere!"
+  }
 }

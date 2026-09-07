@@ -8,10 +8,12 @@ import {
   Text,
   View,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { BottomSheet } from "@/components/bottom-sheet";
 import { Button } from "@/components/button";
 import { themeColors } from "@/constants/theme";
+import { getCurrentLocale } from "@/i18n";
 import type { DatePickerSheetProps } from "@/types/components";
 
 type PickerMode = "date" | "time";
@@ -29,23 +31,31 @@ const MINUTES: WheelItem[] = Array.from({ length: 60 }, (_, value) => ({
   value,
   label: String(value).padStart(2, "0"),
 }));
-const MONTHS: WheelItem[] = Array.from({ length: 12 }, (_, value) => ({
-  value,
-  label: new Date(2026, value, 1).toLocaleDateString("tr-TR", {
-    month: "short",
-  }),
-}));
+
+function buildMonthItems(locale: string): WheelItem[] {
+  return Array.from({ length: 12 }, (_, value) => ({
+    value,
+    label: new Date(2026, value, 1).toLocaleDateString(locale, {
+      month: "short",
+    }),
+  }));
+}
 
 export function DatePickerSheet({
   visible,
   onClose,
   value,
   onChange,
-  title = "Tarih & Saat",
+  title,
   minimumDate,
 }: DatePickerSheetProps) {
+  const { t } = useTranslation(["components", "common"]);
+  const locale = getCurrentLocale();
   const [draft, setDraft] = useState(value);
   const [mode, setMode] = useState<PickerMode>("date");
+
+  const months = useMemo(() => buildMonthItems(locale), [locale]);
+  const resolvedTitle = title ?? t("datePicker.title");
 
   useEffect(() => {
     if (visible) {
@@ -128,8 +138,8 @@ export function DatePickerSheet({
     <BottomSheet
       visible={visible}
       onClose={onClose}
-      title={title}
-      subtitle="Tarih ve saati kaydırarak seç"
+      title={resolvedTitle}
+      subtitle={t("datePicker.subtitle")}
       showCancel={false}
     >
       <View className="mb-3 flex-row rounded-2xl border border-border-default bg-surface-primary p-1">
@@ -148,7 +158,9 @@ export function DatePickerSheet({
                   active ? "text-background-primary" : "text-text-secondary"
                 }`}
               >
-                {item === "date" ? "Tarih" : "Saat"}
+                {item === "date"
+                  ? t("datePicker.tabDate")
+                  : t("datePicker.tabTime")}
               </Text>
             </Pressable>
           );
@@ -167,7 +179,7 @@ export function DatePickerSheet({
                 onSelect={(next) => updateDatePart("day", next)}
               />
               <PickerWheel
-                items={MONTHS}
+                items={months}
                 selected={draft.getMonth()}
                 visible={visible}
                 onSelect={(next) => updateDatePart("month", next)}
@@ -184,14 +196,14 @@ export function DatePickerSheet({
               <PickerWheel
                 items={HOURS}
                 selected={draft.getHours()}
-                suffix="saat"
+                suffix={t("datePicker.hourSuffix")}
                 visible={visible}
                 onSelect={(next) => updateTimePart("hour", next)}
               />
               <PickerWheel
                 items={MINUTES}
                 selected={draft.getMinutes()}
-                suffix="dk"
+                suffix={t("datePicker.minuteSuffix")}
                 visible={visible}
                 onSelect={(next) => updateTimePart("minute", next)}
               />
@@ -203,11 +215,11 @@ export function DatePickerSheet({
 
       <View className="mb-3 items-center">
         <Text className="font-body-bold text-sm text-brand-primary">
-          {formatDraft(draft)}
+          {formatDraft(draft, locale)}
         </Text>
         {!isValid ? (
           <Text className="mt-1 font-body text-xs text-warning">
-            Geçmiş bir tarih ve saat seçemezsin.
+            {t("datePicker.pastDateError")}
           </Text>
         ) : null}
       </View>
@@ -219,13 +231,13 @@ export function DatePickerSheet({
             className="min-h-[52px] items-center justify-center rounded-2xl border border-border-default bg-surface-primary active:bg-surface-secondary"
           >
             <Text className="font-body-bold text-sm text-text-secondary">
-              Vazgeç
+              {t("common:cancel")}
             </Text>
           </Pressable>
         </View>
         <View className="flex-1">
           <Button
-            label="Tarihi Ayarla"
+            label={t("datePicker.confirm")}
             disabled={!isValid}
             haptic="light"
             onPress={confirm}
@@ -366,8 +378,8 @@ function WheelFades() {
   );
 }
 
-function formatDraft(date: Date) {
-  return date.toLocaleString("tr-TR", {
+function formatDraft(date: Date, locale: string) {
+  return date.toLocaleString(locale, {
     weekday: "short",
     day: "numeric",
     month: "long",

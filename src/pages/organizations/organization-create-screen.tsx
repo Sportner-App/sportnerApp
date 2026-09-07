@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { AppScreen, Button, Input, ScreenHeader, SelectField } from "@/components";
 import { useToast } from "@/contexts";
@@ -10,6 +11,7 @@ import { createOrganization } from "@/services/organizations-service";
 import type { SelectOption } from "@/types/components";
 
 export function OrganizationCreateScreen() {
+  const { t } = useTranslation(["organizations", "profile", "common"]);
   const router = useRouter();
   const { showToast } = useToast();
   const { cities, isLoading: citiesLoading } = useCities();
@@ -23,9 +25,11 @@ export function OrganizationCreateScreen() {
       cities.map((city) => ({
         key: city.id,
         label: city.name,
-        description: `${String(city.plateCode).padStart(2, "0")} plaka kodu`,
+        description: t("organizations:form.plateCodeDescription", {
+          code: String(city.plateCode).padStart(2, "0"),
+        }),
       })),
-    [cities],
+    [cities, t],
   );
 
   const submit = async () => {
@@ -33,8 +37,8 @@ export function OrganizationCreateScreen() {
     if (!trimmed) {
       showToast({
         type: "error",
-        title: "İsim gerekli",
-        description: "Organizasyon için bir ad yaz.",
+        title: t("organizations:create.nameRequiredTitle"),
+        description: t("organizations:create.nameRequiredDescription"),
       });
       return;
     }
@@ -48,8 +52,8 @@ export function OrganizationCreateScreen() {
       });
       showToast({
         type: "success",
-        title: "Organizasyon kuruldu",
-        description: "Davet kodunu üyelerle paylaşabilirsin.",
+        title: t("organizations:create.createdTitle"),
+        description: t("organizations:create.createdDescription"),
       });
       if (created?.id) {
         router.replace(`/organizations/${created.id}`);
@@ -59,7 +63,7 @@ export function OrganizationCreateScreen() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Oluşturulamadı",
+        title: t("organizations:create.createFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -69,45 +73,49 @@ export function OrganizationCreateScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="ORGANİZASYON" showBack />}
+      header={<ScreenHeader title={t("organizations:create.title")} showBack />}
       contentClassName="gap-4 px-6 pt-3"
     >
       <Text className="font-display text-3xl text-text-primary">
-        Yeni organizasyon
+        {t("organizations:create.heading")}
       </Text>
       <Text className="font-body text-sm text-text-secondary">
-        Üniversite takımı, salon veya kulüp. Katılım yalnızca davet koduyla.
+        {t("organizations:create.subtitle")}
       </Text>
 
       <Input
-        label="Ad"
+        label={t("organizations:form.nameLabel")}
         value={name}
         onChangeText={setName}
-        placeholder="Örn. İTÜ Tenis"
+        placeholder={t("organizations:create.namePlaceholder")}
         maxLength={80}
       />
       <Input
-        label="Açıklama"
+        label={t("organizations:form.descriptionLabel")}
         value={description}
         onChangeText={setDescription}
-        placeholder="İsteğe bağlı"
+        placeholder={t("organizations:form.optionalPlaceholder")}
         maxLength={1000}
         multiline
       />
       <SelectField
-        label="Şehir"
-        placeholder={citiesLoading ? "Yükleniyor" : "Seç (isteğe bağlı)"}
+        label={t("profile:edit.cityLabel")}
+        placeholder={
+          citiesLoading
+            ? t("profile:edit.cityLoadingPlaceholder")
+            : t("organizations:form.cityOptionalPlaceholder")
+        }
         options={cityOptions}
         value={cityId ?? ""}
         onChange={setCityId}
-        sheetTitle="Şehir"
+        sheetTitle={t("profile:edit.citySheetTitle")}
         searchable
-        searchPlaceholder="Şehir ara"
+        searchPlaceholder={t("profile:edit.citySearchPlaceholder")}
       />
 
       <View className="pt-2">
         <Button
-          label="Oluştur"
+          label={t("organizations:create.submit")}
           onPress={submit}
           isLoading={isSubmitting}
           disabled={isSubmitting}

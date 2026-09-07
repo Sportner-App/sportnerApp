@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { radius, themeColors } from "@/constants/theme";
 
@@ -26,6 +27,7 @@ export function AvatarPhotoPreview({
   name,
   onClose,
 }: AvatarPhotoPreviewProps) {
+  const { t } = useTranslation(["components", "common"]);
   const insets = useSafeAreaInsets();
 
   return (
@@ -42,7 +44,7 @@ export function AvatarPhotoPreview({
       >
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Fotoğraf önizlemesini kapat"
+          accessibilityLabel={t("components:avatarPreview.closePreview")}
           className="absolute inset-0"
           onPress={onClose}
         />
@@ -53,7 +55,7 @@ export function AvatarPhotoPreview({
         >
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Kapat"
+            accessibilityLabel={t("common:close")}
             hitSlop={12}
             onPress={onClose}
             className="absolute right-4 z-10 h-10 w-10 items-center justify-center rounded-full"

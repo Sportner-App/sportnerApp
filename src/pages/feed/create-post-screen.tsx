@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Image, Pressable, Text, View } from "react-native";
 
 import { AppScreen, Button, Input, ScreenHeader } from "@/components";
@@ -17,6 +18,7 @@ import {
 export function CreatePostScreen() {
   const router = useRouter();
   const { showToast } = useToast();
+  const { t } = useTranslation(["feed", "social"]);
   const { chooseSource, sourceSheet } = useMediaSourceChoice();
   const [content, setContent] = useState("");
   const [photos, setPhotos] = useState<PickedMedia[]>([]);
@@ -34,7 +36,7 @@ export function CreatePostScreen() {
     if (picked === "denied") {
       showToast({
         type: "error",
-        title: "İzin gerekli",
+        title: t("social:toasts.permissionRequired"),
         description: mediaDeniedMessage(source),
       });
       return;
@@ -64,9 +66,9 @@ export function CreatePostScreen() {
     try {
       const post = await createPost(content, photos);
       if (!post?.id) {
-        throw new Error("Gönderi oluşturulamadı.");
+        throw new Error(t("feed:create.toasts.createFailedDescription"));
       }
-      showToast({ type: "success", title: "Paylaşıldı" });
+      showToast({ type: "success", title: t("feed:create.toasts.created") });
       if (router.canGoBack()) {
         router.back();
       } else {
@@ -75,7 +77,7 @@ export function CreatePostScreen() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Paylaşılamadı",
+        title: t("feed:create.toasts.createFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -86,12 +88,12 @@ export function CreatePostScreen() {
   return (
     <AppScreen
       keyboardAvoiding
-      header={<ScreenHeader title="YENİ GÖNDERİ" showBack />}
+      header={<ScreenHeader title={t("feed:create.header")} showBack />}
       footer={sourceSheet}
       contentClassName="gap-4 px-6 pt-3"
     >
       <Text className="font-display text-2xl text-text-primary">
-        Fotoğrafını paylaş
+        {t("feed:create.title")}
       </Text>
       <Input
         value={content}
@@ -100,7 +102,7 @@ export function CreatePostScreen() {
         numberOfLines={5}
         textAlignVertical="top"
         style={{ minHeight: 120, paddingTop: 14 }}
-        placeholder="Antrenman, maç, anı…"
+        placeholder={t("feed:create.placeholder")}
       />
 
       <Pressable
@@ -112,12 +114,12 @@ export function CreatePostScreen() {
         </View>
         <View className="flex-1">
           <Text className="font-body text-sm font-semibold text-text-primary">
-            Fotoğraf ekle
+            {t("feed:create.addPhoto")}
           </Text>
           <Text className="font-body text-xs text-brand-neutral">
             {photos.length > 0
-              ? `${photos.length} fotoğraf seçildi`
-              : "Kameradan çek veya galeriden seç · en fazla 10"}
+              ? t("feed:create.photosSelected", { count: photos.length })
+              : t("feed:create.photoHint")}
           </Text>
         </View>
         <FontAwesome6 name="plus" size={12} color="#64748b" />
@@ -148,7 +150,7 @@ export function CreatePostScreen() {
       ) : null}
 
       <Button
-        label="Paylaş"
+        label={t("feed:create.share")}
         disabled={!canShare}
         isLoading={saving}
         onPress={() => void submit()}

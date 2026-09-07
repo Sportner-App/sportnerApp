@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import Animated, {
   Easing,
   FadeIn,
@@ -34,6 +35,7 @@ const HOLD_MS = 1650;
 const EXIT_MS = 460;
 
 export function AnimatedSplashScreen({ onFinish }: AnimatedSplashScreenProps) {
+  const { t } = useTranslation("components");
   const exit = useSharedValue(0);
   const ringScale = useSharedValue(0.72);
   const ringOpacity = useSharedValue(0.45);
@@ -115,7 +117,7 @@ export function AnimatedSplashScreen({ onFinish }: AnimatedSplashScreenProps) {
     <Animated.View
       style={[styles.root, screenStyle]}
       accessibilityRole="progressbar"
-      accessibilityLabel="Sportner yükleniyor"
+      accessibilityLabel={t("splash.accessibilityLabel")}
     >
       <StatusBar style="light" />
 
@@ -202,9 +204,9 @@ export function AnimatedSplashScreen({ onFinish }: AnimatedSplashScreenProps) {
       </View>
 
       <Animated.View entering={FadeIn.duration(480).delay(360)} style={styles.footer}>
-        <Text style={styles.tagline}>Spor birleştirir.</Text>
+        <Text style={styles.tagline}>{t("splash.tagline")}</Text>
         <View style={styles.footerRule} />
-        <Text style={styles.footerHint}>Harekete geç.</Text>
+        <Text style={styles.footerHint}>{t("splash.footerHint")}</Text>
       </Animated.View>
     </Animated.View>
   );

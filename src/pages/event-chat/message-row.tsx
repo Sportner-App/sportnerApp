@@ -1,7 +1,9 @@
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
 import type { ChatMessage } from "@/types/messaging";
+import { formatMessageTime } from "@/utils/messaging-time";
 
 type MessageRowProps = {
   message: ChatMessage;
@@ -12,19 +14,6 @@ type MessageRowProps = {
   onRetry?: () => void;
 };
 
-function formatMessageTime(iso: string) {
-  const date = new Date(iso);
-
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  return date.toLocaleTimeString("tr-TR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
 export function MessageRow({
   message,
   mine,
@@ -32,15 +21,21 @@ export function MessageRow({
   onOpenSender,
   onRetry,
 }: MessageRowProps) {
+  const { t } = useTranslation(["messaging", "events"]);
   const isPending = mine && message.status === "sending";
   const isFailed = mine && message.status === "failed";
   const senderName =
-    message.senderUsername || message.senderFirstName || "Sporcu";
-  const name = mine ? "Sen" : `@${message.senderUsername || "sporcu"}`;
+    message.senderUsername ||
+    message.senderFirstName ||
+    t("events:fallback.athlete");
+  const name = mine
+    ? t("messaging:message.you")
+    : `@${message.senderUsername || t("events:fallback.athleteHandle")}`;
 
   const body = message.isRedacted
-    ? "Mesaj silindi"
-    : message.content || (message.mediaUrl ? "Medya" : "");
+    ? t("messaging:message.deleted")
+    : message.content ||
+      (message.mediaUrl ? t("messaging:message.media") : "");
 
   const avatar = showSender ? (
     <Avatar
@@ -82,18 +77,20 @@ export function MessageRow({
         {isFailed ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Mesajı yeniden gönder"
+            accessibilityLabel={t("messaging:message.retryA11y")}
             onPress={onRetry}
             hitSlop={8}
             className="mt-1 active:opacity-70"
           >
             <Text className="font-mono text-[10px] text-destructive">
-              Gönderilemedi · Tekrar dene
+              {t("messaging:message.failed")}
             </Text>
           </Pressable>
         ) : (
           <Text className="mt-1 font-mono text-[10px] text-brand-neutral">
-            {isPending ? "Gönderiliyor…" : formatMessageTime(message.createdAt)}
+            {isPending
+              ? t("messaging:message.sending")
+              : formatMessageTime(message.createdAt)}
           </Text>
         )}
       </View>

@@ -1,0 +1,19 @@
+{
+  "status": {
+    "400": "Gönderilen bilgiler geçersiz.",
+    "401": "Oturum süreniz doldu. Lütfen tekrar giriş yapın.",
+    "403": "Bu işlem için yetkiniz bulunmuyor.",
+    "404": "İstenen kayıt bulunamadı.",
+    "408": "İstek zaman aşımına uğradı.",
+    "409": "İşlem mevcut verilerle çakışıyor.",
+    "422": "Gönderilen bilgiler işlenemedi.",
+    "429": "Çok fazla istek gönderildi. Lütfen biraz bekleyin.",
+    "500": "Sunucuda beklenmeyen bir hata oluştu.",
+    "502": "Sunucuya şu anda ulaşılamıyor.",
+    "503": "Servis geçici olarak kullanılamıyor."
+  },
+  "networkError": "Sunucuya bağlanılamadı. İnternet bağlantınızı kontrol edin.",
+  "requestFailed": "İstek tamamlanamadı.",
+  "unexpectedError": "Beklenmeyen bir hata oluştu.",
+  "actionFailed": "İşlem tamamlanamadı."
+}

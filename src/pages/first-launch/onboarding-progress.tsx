@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -26,6 +27,7 @@ function xForStep(step: 1 | 2 | 3) {
 }
 
 export function OnboardingProgress({ step }: OnboardingProgressProps) {
+  const { t } = useTranslation("firstLaunch");
   const translateX = useSharedValue(xForStep(lastProgressStep));
 
   useEffect(() => {
@@ -41,7 +43,7 @@ export function OnboardingProgress({ step }: OnboardingProgressProps) {
     <View
       accessible
       accessibilityRole="none"
-      accessibilityLabel={`Adım ${step} / 3`}
+      accessibilityLabel={t("progress.stepLabel", { step })}
       className="items-center py-1"
     >
       <View style={{ width: TRACK, height: HEIGHT }}>

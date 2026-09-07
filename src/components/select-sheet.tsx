@@ -13,14 +13,16 @@ import {
 
 import { BottomSheet } from "@/components/bottom-sheet";
 import { sportAccentToken, themeColors } from "@/constants/theme";
+import { getCurrentLocale } from "@/i18n";
 import type { SelectOption, SelectSheetProps } from "@/types/components";
+import { useTranslation } from "react-i18next";
 
 const GRID_COLUMNS = 3;
 const GRID_GAP = 10;
 const SHEET_HORIZONTAL_PADDING = 20;
 
 function normalizeSearch(value: string) {
-  return value.trim().toLocaleLowerCase("tr-TR");
+  return value.trim().toLocaleLowerCase(getCurrentLocale());
 }
 
 function filterOptions<T extends string>(
@@ -52,10 +54,14 @@ export function SelectSheet<T extends string>({
   onChange,
   variant = "list",
   searchable = false,
-  searchPlaceholder = "Ara…",
+  searchPlaceholder,
   groups,
-  allGroupLabel = "Tümü",
+  allGroupLabel,
 }: SelectSheetProps<T>) {
+  const { t } = useTranslation(["components", "common"]);
+  const resolvedSearchPlaceholder =
+    searchPlaceholder ?? t("components:select.searchPlaceholder");
+  const resolvedAllGroupLabel = allGroupLabel ?? t("common:all");
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const [query, setQuery] = useState("");
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
@@ -132,7 +138,7 @@ export function SelectSheet<T extends string>({
           <TextInput
             value={query}
             onChangeText={setQuery}
-            placeholder={searchPlaceholder}
+            placeholder={resolvedSearchPlaceholder}
             placeholderTextColor={themeColors.text.tertiary}
             autoCorrect={false}
             autoCapitalize="none"
@@ -162,7 +168,7 @@ export function SelectSheet<T extends string>({
           contentContainerClassName="gap-2 pb-3 pr-4"
         >
           <GroupChip
-            label={allGroupLabel}
+            label={resolvedAllGroupLabel}
             isActive={activeGroup === null}
             onPress={() => setActiveGroup(null)}
           />
@@ -195,7 +201,7 @@ export function SelectSheet<T extends string>({
               color={themeColors.text.tertiary}
             />
             <Text className="mt-3 text-center font-body text-sm text-text-secondary">
-              Sonuca uygun seçenek yok.
+              {t("components:select.noResults")}
             </Text>
           </View>
         ) : variant === "grid" ? (

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pressable, Switch, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { AppScreen, ScreenHeader, SportLoader } from "@/components";
 import { useToast } from "@/contexts";
@@ -9,10 +10,11 @@ import {
   updateNotificationSetting,
 } from "@/services/notifications-service";
 import type { ApiNotificationSetting } from "@/types/notifications";
-import { NOTIFICATION_SETTING_LABELS } from "@/types/notifications";
+import { notificationSettingLabel } from "@/types/notifications";
 
 export function NotificationSettingsScreen() {
   const { showToast } = useToast();
+  const { t } = useTranslation(["notifications", "common"]);
   const [settings, setSettings] = useState<ApiNotificationSetting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -22,12 +24,12 @@ export function NotificationSettingsScreen() {
       .catch((error) =>
         showToast({
           type: "error",
-          title: "Yüklenemedi",
+          title: t("notifications:loadFailed"),
           description: getApiErrorMessage(error),
         }),
       )
       .finally(() => setIsLoading(false));
-  }, [showToast]);
+  }, [showToast, t]);
 
   const toggle = async (
     item: ApiNotificationSetting,
@@ -49,7 +51,7 @@ export function NotificationSettingsScreen() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Kaydedilemedi",
+        title: t("notifications:settings.saveFailed"),
         description: getApiErrorMessage(error),
       });
     }
@@ -57,12 +59,14 @@ export function NotificationSettingsScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="BİLDİRİM AYARLARI" showBack />}
+      header={
+        <ScreenHeader title={t("notifications:settings.title")} showBack />
+      }
       contentClassName="gap-3 px-6 pt-3"
     >
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} label={t("common:loading")} />
         </View>
       ) : (
         settings.map((item) => (
@@ -71,16 +75,15 @@ export function NotificationSettingsScreen() {
             className="gap-3 rounded-3xl border border-border-default bg-surface-primary p-4"
           >
             <Text className="font-body text-sm font-semibold text-text-primary">
-              {NOTIFICATION_SETTING_LABELS[item.notificationType] ??
-                `Tür ${item.notificationType}`}
+              {notificationSettingLabel(item.notificationType)}
             </Text>
             <Row
-              label="Uygulama içi"
+              label={t("notifications:settings.inApp")}
               value={item.inAppEnabled}
               onChange={(value) => toggle(item, "inAppEnabled", value)}
             />
             <Row
-              label="Cihaz bildirimi"
+              label={t("notifications:settings.push")}
               value={item.pushEnabled}
               onChange={(value) => toggle(item, "pushEnabled", value)}
             />

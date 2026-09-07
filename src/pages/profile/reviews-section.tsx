@@ -1,8 +1,10 @@
 import { Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { UserIdentity } from "@/components";
-import { PROFILE_COPY } from "@/constants/profile";
+import { useProfileCopy } from "@/constants/profile";
+import { getCurrentLocale } from "@/i18n";
 import type { ApiReview } from "@/types/reviews";
 
 type ReviewsSectionProps = {
@@ -18,7 +20,7 @@ function formatReviewDate(value: string) {
     return "";
   }
 
-  return date.toLocaleDateString("tr-TR", {
+  return date.toLocaleDateString(getCurrentLocale(), {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -31,6 +33,10 @@ export function ReviewsSection({
   averageRating = 0,
   totalReviews,
 }: ReviewsSectionProps) {
+  const { t } = useTranslation("profile");
+  const PROFILE_COPY = useProfileCopy();
+  const count = totalReviews ?? reviews.length;
+
   return (
     <Animated.View
       entering={FadeInDown.duration(380).delay(110)}
@@ -42,7 +48,7 @@ export function ReviewsSection({
             {PROFILE_COPY.reviewsTitle}
           </Text>
           <Text className="mt-1 font-body text-[11px] text-text-tertiary">
-            Etkinliklerden gelen oyuncu geri bildirimleri
+            {t("reviews.subtitle")}
           </Text>
         </View>
         <View className="items-end">
@@ -53,14 +59,14 @@ export function ReviewsSection({
             <Text className="text-sm text-brand-primary">★</Text>
           </View>
           <Text className="font-body text-[9px] text-text-tertiary">
-            {totalReviews ?? reviews.length} yorum
+            {t("reviews.commentCount", { count })}
           </Text>
         </View>
       </View>
 
       {isLoading ? (
         <Text className="font-body text-sm text-text-secondary">
-          Değerlendirmeler yükleniyor…
+          {t("reviews.loading")}
         </Text>
       ) : reviews.length === 0 ? (
         <Text className="font-body text-sm text-text-secondary">

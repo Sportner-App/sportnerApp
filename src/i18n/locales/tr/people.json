@@ -1,0 +1,11 @@
+{
+  "title": "SPORCULAR",
+  "loading": "Sporcular yükleniyor",
+  "loadingMore": "Sporcular yükleniyor",
+  "loadFailed": "Sporcular yüklenemedi.",
+  "loadMoreFailed": "Daha fazla sporcu yüklenemedi.",
+  "loadMoreRetry": "{{error}} Tekrar denemek için dokun.",
+  "empty": "Şimdilik keşfedilecek yeni sporcu yok.",
+  "heading": "Tüm sporcular",
+  "subtitle": "Topluluktaki aktif ve herkese açık profilleri keşfet."
+}

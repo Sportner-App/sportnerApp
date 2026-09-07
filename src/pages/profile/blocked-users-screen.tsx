@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -16,6 +17,7 @@ import { listBlockedUsers, unblockUser } from "@/services/social-service";
 import type { ApiBlockedUser } from "@/types/social";
 
 export function BlockedUsersScreen() {
+  const { t } = useTranslation("profile");
   const { showToast } = useToast();
   const [items, setItems] = useState<ApiBlockedUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -32,7 +34,7 @@ export function BlockedUsersScreen() {
       } catch (error) {
         showToast({
           type: "error",
-          title: "Yüklenemedi",
+          title: t("blocked.loadFailed"),
           description: getApiErrorMessage(error),
         });
       } finally {
@@ -40,7 +42,7 @@ export function BlockedUsersScreen() {
         setIsRefreshing(false);
       }
     },
-    [showToast],
+    [showToast, t],
   );
 
   useEffect(() => {
@@ -52,11 +54,11 @@ export function BlockedUsersScreen() {
     try {
       await unblockUser(userId);
       setItems((current) => current.filter((item) => item.userId !== userId));
-      showToast({ type: "success", title: "Engel kaldırıldı" });
+      showToast({ type: "success", title: t("blocked.unblocked") });
     } catch (error) {
       showToast({
         type: "error",
-        title: "Kaldırılamadı",
+        title: t("blocked.unblockFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -66,7 +68,7 @@ export function BlockedUsersScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="ENGELLENENLER" showBack />}
+      header={<ScreenHeader title={t("blocked.title")} showBack />}
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="gap-4 px-6 pt-3"
       refreshControl={
@@ -77,17 +79,16 @@ export function BlockedUsersScreen() {
       }
     >
       <Text className="font-body text-sm text-brand-neutral">
-        Engellediğin kişiler seni ve sen onları göremez. İstediğin zaman engeli
-        kaldırabilirsin.
+        {t("blocked.description")}
       </Text>
 
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} />
         </View>
       ) : items.length === 0 ? (
         <Text className="py-8 text-center font-body text-sm text-brand-neutral">
-          Engellenen kimse yok.
+          {t("blocked.empty")}
         </Text>
       ) : (
         items.map((item) => (
@@ -103,7 +104,7 @@ export function BlockedUsersScreen() {
               />
             </View>
             <Button
-              label="Kaldır"
+              label={t("blocked.remove")}
               variant="outline"
               size="sm"
               isLoading={unblockingId === item.userId}

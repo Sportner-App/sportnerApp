@@ -64,7 +64,7 @@ export function useLanguagePreference() {
   const value = useContext(LanguagePreferenceContext);
   if (!value) {
     throw new Error(
-      "useLanguagePreference LanguagePreferenceProvider içinde kullanılmalı.",
+      "useLanguagePreference must be used within LanguagePreferenceProvider.",
     );
   }
   return value;

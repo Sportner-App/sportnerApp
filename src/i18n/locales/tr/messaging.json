@@ -1,0 +1,67 @@
+{
+  "header": {
+    "title": "SOHBETLERİM",
+    "defaultTitle": "SOHBET"
+  },
+  "screen": {
+    "title": "Mesajların"
+  },
+  "tabs": {
+    "events": "Etkinlik",
+    "friends": "Arkadaşlar"
+  },
+  "tabsCopy": {
+    "events": {
+      "subtitle": "Katıldığın etkinliklerin grup sohbetleri.",
+      "emptyTitle": "Henüz etkinlik sohbetin yok",
+      "emptyBody": "Bir etkinliğe katıldığında sohbet burada görünecek."
+    },
+    "friends": {
+      "subtitle": "Arkadaşlarınla birebir yazışmaların.",
+      "emptyTitle": "Henüz arkadaş sohbetin yok",
+      "emptyBody": "Bir arkadaşının profilinden Mesaj gönder diyerek sohbet başlatabilirsin."
+    }
+  },
+  "loading": "Sohbetler yükleniyor",
+  "loadFailed": "Sohbetler yüklenemedi.",
+  "newChat": "Yeni sohbet başlat",
+  "newChatA11y": "Yeni sohbet başlat",
+  "row": {
+    "eventFallback": "Etkinlik sohbeti",
+    "chatFallback": "Sohbet",
+    "openA11y": "{{title}} sohbetini aç",
+    "closed": "Kapandı",
+    "noMessages": "Henüz mesaj yok"
+  },
+  "compose": {
+    "title": "Yeni sohbet",
+    "subtitle": "Sohbet başlatmak istediğin arkadaşını seç",
+    "searchPlaceholder": "Arkadaş ara…",
+    "loadingFriends": "Arkadaşların yükleniyor",
+    "emptyFriends": "Henüz kabul edilmiş bir arkadaşın yok.",
+    "noMatch": "Eşleşen arkadaş bulunamadı."
+  },
+  "toasts": {
+    "openFailed": "Sohbet açılamadı",
+    "openFailedFallback": "Henüz sohbet yok.",
+    "startFailed": "Sohbet başlatılamadı",
+    "sendFailed": "Gönderilemedi",
+    "closedTitle": "Sohbet kapandı",
+    "closedDescription": "Etkinlik bittiği için artık mesaj gönderilemez."
+  },
+  "chat": {
+    "placeholder": "Mesaj yaz…",
+    "send": "Gönder",
+    "closedFooter": "Etkinlik bitti. Sohbet kapandı, geçmişi okuyabilirsin.",
+    "emptyClosed": "Bu etkinlik sohbetinde mesaj yok.",
+    "emptyOpen": "İlk mesajı sen yaz."
+  },
+  "message": {
+    "you": "Sen",
+    "deleted": "Mesaj silindi",
+    "media": "Medya",
+    "retryA11y": "Mesajı yeniden gönder",
+    "failed": "Gönderilemedi · Tekrar dene",
+    "sending": "Gönderiliyor…"
+  }
+}

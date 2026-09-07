@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, Text, View } from "react-native";
 
 import {
@@ -12,6 +13,7 @@ import {
   SegmentedTabs,
   SportLoader,
 } from "@/components";
+import { useConversationsTabCopy } from "@/constants/messaging";
 import { themeColors } from "@/constants/theme";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { listMyConversations } from "@/services/messaging-service";
@@ -19,37 +21,16 @@ import {
   CONVERSATION_TYPE,
   type ApiConversationListItem,
 } from "@/types/messaging";
+import { formatConversationTime } from "@/utils/messaging-time";
 
 import { NewConversationSheet } from "./new-conversation-sheet";
 
 type InboxTab = "events" | "friends";
 
-const TAB_COPY: Record<
-  InboxTab,
-  {
-    subtitle: string;
-    emptyTitle: string;
-    emptyBody: string;
-    icon: "calendar-days" | "user-group";
-  }
-> = {
-  events: {
-    subtitle: "Katıldığın etkinliklerin grup sohbetleri.",
-    emptyTitle: "Henüz etkinlik sohbetin yok",
-    emptyBody: "Bir etkinliğe katıldığında sohbet burada görünecek.",
-    icon: "calendar-days",
-  },
-  friends: {
-    subtitle: "Arkadaşlarınla birebir yazışmaların.",
-    emptyTitle: "Henüz arkadaş sohbetin yok",
-    emptyBody:
-      "Bir arkadaşının profilinden Mesaj gönder diyerek sohbet başlatabilirsin.",
-    icon: "user-group",
-  },
-};
-
 export function ConversationsScreen() {
   const router = useRouter();
+  const { t } = useTranslation(["messaging", "common"]);
+  const TAB_COPY = useConversationsTabCopy();
   const [tab, setTab] = useState<InboxTab>("events");
   const [eventItems, setEventItems] = useState<ApiConversationListItem[]>([]);
   const [friendItems, setFriendItems] = useState<ApiConversationListItem[]>([]);
@@ -69,12 +50,12 @@ export function ConversationsScreen() {
       setEventItems(events.items);
       setFriendItems(friends.items);
     } catch (loadError) {
-      setError(getApiErrorMessage(loadError, "Sohbetler yüklenemedi."));
+      setError(getApiErrorMessage(loadError, t("messaging:loadFailed")));
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, []);
+  }, [t]);
 
   useFocusEffect(
     useCallback(() => {
@@ -89,13 +70,13 @@ export function ConversationsScreen() {
     <AppScreen
       header={
         <ScreenHeader
-          title="SOHBETLERİM"
+          title={t("messaging:header.title")}
           showBack
           right={
             tab === "friends" ? (
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Yeni sohbet başlat"
+                accessibilityLabel={t("messaging:newChatA11y")}
                 hitSlop={8}
                 onPress={() => setComposeOpen(true)}
                 className="h-9 w-9 items-center justify-center rounded-full border border-border-default bg-surface-primary active:opacity-70"
@@ -121,7 +102,7 @@ export function ConversationsScreen() {
     >
       <View className="gap-1 pb-2">
         <Text className="font-display text-[28px] text-text-primary">
-          Mesajların
+          {t("messaging:screen.title")}
         </Text>
         <Text className="font-body text-sm leading-5 text-text-tertiary">
           {copy.subtitle}
@@ -130,8 +111,8 @@ export function ConversationsScreen() {
 
       <SegmentedTabs
         options={[
-          { key: "events", label: "Etkinlik" },
-          { key: "friends", label: "Arkadaşlar" },
+          { key: "events", label: t("messaging:tabs.events") },
+          { key: "friends", label: t("messaging:tabs.friends") },
         ]}
         value={tab}
         onChange={setTab}
@@ -139,7 +120,7 @@ export function ConversationsScreen() {
 
       {isLoading ? (
         <View className="items-center py-3xl">
-          <SportLoader size={132} label="Sohbetler yükleniyor" />
+          <SportLoader size={132} label={t("messaging:loading")} />
         </View>
       ) : error ? (
         <View className="items-center gap-4 rounded-[28px] border border-border-default bg-surface-primary px-6 py-10">
@@ -156,7 +137,7 @@ export function ConversationsScreen() {
             className="rounded-full bg-brand-primary px-5 py-3 active:opacity-75"
           >
             <Text className="font-body-bold text-sm text-text-on-primary">
-              Tekrar dene
+              {t("common:retry")}
             </Text>
           </Pressable>
         </View>
@@ -181,7 +162,7 @@ export function ConversationsScreen() {
               className="mt-1 rounded-full bg-brand-primary px-5 py-3 active:opacity-75"
             >
               <Text className="font-body-bold text-sm text-text-on-primary">
-                Yeni sohbet başlat
+                {t("messaging:newChat")}
               </Text>
             </Pressable>
           ) : null}
@@ -211,15 +192,19 @@ function ConversationRow({
   item: ApiConversationListItem;
   onPress: () => void;
 }) {
+  const { t } = useTranslation("messaging");
   const isEvent = item.type === CONVERSATION_TYPE.event;
   const title = isEvent
-    ? item.title || "Etkinlik sohbeti"
-    : item.peerFirstName || item.peerUsername || item.title || "Sohbet";
+    ? item.title || t("messaging:row.eventFallback")
+    : item.peerFirstName ||
+      item.peerUsername ||
+      item.title ||
+      t("messaging:row.chatFallback");
 
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${title} sohbetini aç`}
+      accessibilityLabel={t("messaging:row.openA11y", { title })}
       onPress={onPress}
       className="flex-row items-center gap-3 rounded-[24px] border border-border-default bg-surface-primary px-4 py-4 active:opacity-75"
     >
@@ -251,7 +236,7 @@ function ConversationRow({
           {isEvent && item.isClosed ? (
             <View className="rounded-full bg-white/10 px-2 py-0.5">
               <Text className="font-mono text-[9px] uppercase tracking-wide text-text-tertiary">
-                Kapandı
+                {t("messaging:row.closed")}
               </Text>
             </View>
           ) : null}
@@ -268,7 +253,7 @@ function ConversationRow({
               item.unreadCount > 0 ? "text-text-primary" : "text-text-tertiary"
             }`}
           >
-            {item.lastMessagePreview || "Henüz mesaj yok"}
+            {item.lastMessagePreview || t("messaging:row.noMessages")}
           </Text>
           {item.unreadCount > 0 ? (
             <View className="min-w-5 items-center justify-center rounded-full bg-brand-primary px-1.5 py-0.5">
@@ -287,15 +272,4 @@ function ConversationRow({
       />
     </Pressable>
   );
-}
-
-function formatConversationTime(value: string) {
-  const date = new Date(value);
-  const now = new Date();
-  const sameDay = date.toDateString() === now.toDateString();
-  return new Intl.DateTimeFormat("tr-TR", {
-    ...(sameDay
-      ? { hour: "2-digit", minute: "2-digit" }
-      : { day: "2-digit", month: "short" }),
-  }).format(date);
 }

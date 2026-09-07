@@ -3,6 +3,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -48,6 +49,7 @@ function resolveMembersTab(value: string | string[] | undefined): MembersTab {
 }
 
 export function OrganizationMembersScreen() {
+  const { t } = useTranslation("organizations");
   const router = useRouter();
   const { user } = useSession();
   const { showToast } = useToast();
@@ -97,7 +99,7 @@ export function OrganizationMembersScreen() {
       } catch (error) {
         showToast({
           type: "error",
-          title: "Yüklenemedi",
+          title: t("members.loadFailed"),
           description: getApiErrorMessage(error),
         });
       } finally {
@@ -105,7 +107,7 @@ export function OrganizationMembersScreen() {
         setIsRefreshing(false);
       }
     },
-    [organizationId, showToast],
+    [organizationId, showToast, t],
   );
 
   useFocusEffect(
@@ -125,7 +127,7 @@ export function OrganizationMembersScreen() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "İşlem yapılamadı",
+        title: t("members.actionFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -146,13 +148,22 @@ export function OrganizationMembersScreen() {
 
   const tabOptions = useMemo((): Array<{ key: MembersTab; label: string }> => {
     const options: Array<{ key: MembersTab; label: string }> = [
-      { key: "members", label: `Üyeler (${approvedMembers.length})` },
+      {
+        key: "members",
+        label: t("members.tabMembers", { count: approvedMembers.length }),
+      },
     ];
 
     if (organization?.canManageMembers) {
       options.push(
-        { key: "pending", label: `Onay (${pendingMembers.length})` },
-        { key: "blocked", label: `Engelli (${blockedMembers.length})` },
+        {
+          key: "pending",
+          label: t("members.tabPending", { count: pendingMembers.length }),
+        },
+        {
+          key: "blocked",
+          label: t("members.tabBlocked", { count: blockedMembers.length }),
+        },
       );
     }
 
@@ -162,6 +173,7 @@ export function OrganizationMembersScreen() {
     blockedMembers.length,
     organization?.canManageMembers,
     pendingMembers.length,
+    t,
   ]);
 
   const visibleMembers = useMemo(() => {
@@ -177,9 +189,9 @@ export function OrganizationMembersScreen() {
 
   if (!organizationId) {
     return (
-      <AppScreen header={<ScreenHeader title="ÜYELER" showBack />}>
+      <AppScreen header={<ScreenHeader title={t("members.title")} showBack />}>
         <Text className="py-8 text-center font-body text-sm text-brand-neutral">
-          Organizasyon bulunamadı.
+          {t("members.notFound")}
         </Text>
       </AppScreen>
     );
@@ -187,7 +199,7 @@ export function OrganizationMembersScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="ÜYELER" showBack />}
+      header={<ScreenHeader title={t("members.title")} showBack />}
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="gap-4 px-6 pt-3"
       refreshControl={
@@ -216,7 +228,7 @@ export function OrganizationMembersScreen() {
         <TextInput
           value={query}
           onChangeText={setQuery}
-          placeholder="İsim veya kullanıcı adı ara"
+          placeholder={t("members.searchPlaceholder")}
           placeholderTextColor={themeColors.text.tertiary}
           autoCorrect={false}
           autoCapitalize="none"
@@ -235,21 +247,21 @@ export function OrganizationMembersScreen() {
 
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} />
         </View>
       ) : !organization ? (
         <Text className="py-8 text-center font-body text-sm text-brand-neutral">
-          Organizasyon bulunamadı.
+          {t("members.notFound")}
         </Text>
       ) : visibleMembers.length === 0 ? (
         <Text className="py-8 text-center font-body text-sm text-brand-neutral">
           {query.trim()
-            ? "Aramana uygun üye yok."
+            ? t("members.emptySearch")
             : tab === "pending"
-              ? "Onay bekleyen kimse yok."
+              ? t("members.emptyPending")
               : tab === "blocked"
-                ? "Engellenen kimse yok."
-                : "Henüz üye yok."}
+                ? t("members.emptyBlocked")
+                : t("members.emptyMembers")}
         </Text>
       ) : (
         visibleMembers.map((member) => (

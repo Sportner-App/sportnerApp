@@ -1,0 +1,23 @@
+{
+  "title": "YARDIM",
+  "heading": "Sık sorulanlar",
+  "faq": [
+    {
+      "q": "Etkinliğe nasıl katılırım?",
+      "a": "Etkinlik detayında Katıl'a bas. Organizatör onaylarsa sohbete girebilirsin."
+    },
+    {
+      "q": "Neden ayrılabiliyorum?",
+      "a": "Yayındaki etkinlikten Ayrıl ile çıkabilirsin. Biten veya iptal edilen etkinlikten ayrılamazsın."
+    },
+    {
+      "q": "Bildirimler gerçek telefona düşer mi?",
+      "a": "Uygulama içi bildirimler çalışır. Cihaz bildirimi henüz sunucu tarafında kapalı."
+    }
+  ],
+  "feedback": {
+    "title": "Bir önerin mi var?",
+    "description": "Takıldığın bir yer veya eklenmesini istediğin bir özellik varsa bize yaz.",
+    "cta": "Öneri gönder"
+  }
+}

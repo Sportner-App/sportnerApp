@@ -9,5 +9,16 @@
   "back": "Geri",
   "all": "Tümü",
   "clear": "Temizle",
-  "apply": "Uygula"
+  "apply": "Uygula",
+  "loading": "Yükleniyor",
+  "notFound": {
+    "title": "Sayfa bulunamadı",
+    "description": "Aradığın ekran taşınmış veya hiç var olmamış olabilir.",
+    "cta": "Etkinlikler Sayfasına Dön"
+  },
+  "other": "Diğer",
+  "media": {
+    "cameraPermissionDenied": "Fotoğraf çekmek için kamera izni vermelisin.",
+    "galleryPermissionDenied": "Fotoğraf seçmek için galeri izni vermelisin."
+  }
 }

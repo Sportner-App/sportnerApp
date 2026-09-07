@@ -1,35 +1,23 @@
 import { useRouter } from "expo-router";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { AppScreen, Button, ScreenHeader } from "@/components";
 
-const FAQ = [
-  {
-    q: "Etkinliğe nasıl katılırım?",
-    a: "Etkinlik detayında Katıl’a bas. Organizatör onaylarsa sohbete girebilirsin.",
-  },
-  {
-    q: "Neden ayrılabiliyorum?",
-    a: "Yayındaki etkinlikten Ayrıl ile çıkabilirsin. Biten veya iptal edilen etkinlikten ayrılamazsın.",
-  },
-  {
-    q: "Bildirimler gerçek telefona düşer mi?",
-    a: "Uygulama içi bildirimler çalışır. Cihaz bildirimi henüz sunucu tarafında kapalı.",
-  },
-];
-
 export function HelpScreen() {
   const router = useRouter();
+  const { t } = useTranslation("help");
+  const faq = t("faq", { returnObjects: true }) as Array<{ q: string; a: string }>;
 
   return (
     <AppScreen
-      header={<ScreenHeader title="YARDIM" showBack />}
+      header={<ScreenHeader title={t("title")} showBack />}
       contentClassName="gap-4 px-6 pt-3"
     >
       <Text className="font-display text-3xl text-text-primary">
-        Sık sorulanlar
+        {t("heading")}
       </Text>
-      {FAQ.map((item) => (
+      {faq.map((item) => (
         <View
           key={item.q}
           className="rounded-3xl border border-border-default bg-surface-primary p-4"
@@ -45,14 +33,13 @@ export function HelpScreen() {
 
       <View className="gap-3 rounded-3xl border border-white/10 bg-brand-surface/90 p-4">
         <Text className="font-body text-sm font-semibold text-white">
-          Bir önerin mi var?
+          {t("feedback.title")}
         </Text>
         <Text className="font-body text-sm text-brand-neutral">
-          Takıldığın bir yer veya eklenmesini istediğin bir özellik varsa bize
-          yaz.
+          {t("feedback.description")}
         </Text>
         <Button
-          label="Öneri gönder"
+          label={t("feedback.cta")}
           variant="outline"
           size="sm"
           onPress={() => router.push("/feedback")}

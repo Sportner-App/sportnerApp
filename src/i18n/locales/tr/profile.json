@@ -1,0 +1,163 @@
+{
+  "loading": "Profil yükleniyor",
+  "loadFailed": "Profil yüklenemedi.",
+  "sportsTitle": "Sporlar",
+  "organizationsTitle": "Organizasyonlar",
+  "emptyOrganizations": "Henüz organizasyonun yok. Dokunarak ekle veya katıl.",
+  "emptySports": "Henüz spor eklemedin. Dokunarak ekle.",
+  "emptySportsPublic": "Henüz spor eklenmemiş.",
+  "reviewsTitle": "Değerlendirmeler",
+  "emptyReviews": "Henüz değerlendirme yok. Etkinlik sonrası gelen yorumlar burada görünür.",
+  "notFound": "Profil bulunamadı. Kayıt sırasında profil oluşmamış olabilir.",
+  "tabs": {
+    "activity": "Aktivite",
+    "reviews": "Yorumlar",
+    "settings": "Ayarlar"
+  },
+  "hero": {
+    "editAccessibility": "Profili düzenle"
+  },
+  "about": {
+    "emptyBio": "Henüz profil açıklaması eklenmemiş.",
+    "friends": "Arkadaşlar",
+    "badges": "Rozetler"
+  },
+  "social": {
+    "feed": "Akış",
+    "albums": "Albümler"
+  },
+  "stats": {
+    "joined": "Katılım",
+    "organized": "Düzenlenen",
+    "completed": "Maç",
+    "friends": "Arkadaş"
+  },
+  "sports": {
+    "editAccessibility": "Sporları düzenle",
+    "edit": "Düzenle",
+    "addAccessibility": "Spor ekle veya düzenle",
+    "primaryLevel": "Ana spor seviyesi",
+    "noSportAdded": "Spor eklenmedi",
+    "playerRating": "Oyuncu puanı",
+    "reviewCount": "{{count}} değerlendirme"
+  },
+  "reviews": {
+    "subtitle": "Etkinliklerden gelen oyuncu geri bildirimleri",
+    "commentCount": "{{count}} yorum",
+    "loading": "Değerlendirmeler yükleniyor…"
+  },
+  "introVideo": {
+    "label": "TANITIM VİDEOSU",
+    "pause": "Videoyu duraklat",
+    "play": "Tanıtım videosunu oynat"
+  },
+  "organizations": {
+    "add": "Ekle",
+    "pending": "Bekliyor"
+  },
+  "edit": {
+    "title": "DÜZENLE",
+    "basicInfoTitle": "Temel bilgiler",
+    "basicInfoSubtitle": "Profilinde seni tanımlayan bilgiler.",
+    "detailsTitle": "Profil detayları",
+    "detailsSubtitle": "Topluluğun seni daha kolay tanımasına yardımcı olur.",
+    "usernameLabel": "Kullanıcı adı",
+    "usernameHelper": "Harf, rakam, nokta ve alt çizgi kullanabilirsin.",
+    "usernameAvailableAt": "Tekrar {{date}} değiştirebilirsin.",
+    "usernameAvailableLater": "daha sonra",
+    "firstNameLabel": "Ad",
+    "lastNameLabel": "Soyad",
+    "birthDateLabel": "Doğum tarihi",
+    "birthDatePlaceholder": "GG.AA.YYYY",
+    "genderLabel": "Cinsiyet",
+    "genderPlaceholder": "Cinsiyet seç",
+    "genderSheetTitle": "Cinsiyet",
+    "cityLabel": "Şehir",
+    "cityLoadingPlaceholder": "Şehirler yükleniyor...",
+    "cityPlaceholder": "Şehir seç",
+    "citySearchPlaceholder": "Şehir ara",
+    "citySheetTitle": "Şehir seç",
+    "citySheetSubtitle": "Türkiye'deki 81 ilden birini seç",
+    "bioLabel": "Kısa bio",
+    "permissionRequired": "İzin gerekli",
+    "videoPermissionRequired": "Video seçmek için galeri izni vermelisin.",
+    "photoUpdated": "Fotoğraf güncellendi",
+    "videoUpdated": "Video güncellendi",
+    "uploadFailed": "Yüklenemedi",
+    "photoUploadFailed": "Fotoğraf yüklenemedi.",
+    "videoUploadFailed": "Video yüklenemedi.",
+    "firstNameRequired": "Ad gerekli",
+    "firstNameRequiredDescription": "Profilinde kullanmak için adını girmelisin.",
+    "cityRequired": "Şehir seçimi gerekli",
+    "cityRequiredDescription": "Lütfen şehir listesinden geçerli bir şehir seç.",
+    "checkInfo": "Bilgileri kontrol et",
+    "genderRequired": "Lütfen cinsiyet seçimini tamamla.",
+    "saved": "Profil kaydedildi",
+    "saveFailed": "Kaydedilemedi",
+    "saveFailedDescription": "Profil güncellenemedi.",
+    "validation": {
+      "usernameMinLength": "Kullanıcı adı en az 3 karakter olmalı.",
+      "usernamePattern": "Kullanıcı adı yalnızca harf, rakam, . ve _ içerebilir.",
+      "birthDateFormat": "Doğum tarihini GG.AA.YYYY formatında gir.",
+      "birthDateRange": "Yaş 13 ile 120 arasında olmalı."
+    }
+  },
+  "sportsEdit": {
+    "title": "SPORLARIM",
+    "heading": "Sporların",
+    "subtitle": "Seviyeni değiştir, birincil seç veya kaldır.",
+    "primaryBadge": "Birincil",
+    "makePrimary": "Birincil yap",
+    "addSport": "Yeni spor ekle",
+    "updateFailed": "Güncellenemedi",
+    "sportRemoved": "Spor kaldırıldı",
+    "levelUpdated": "Seviye güncellendi",
+    "primarySelected": "Birincil spor seçildi"
+  },
+  "addSport": {
+    "title": "SPOR EKLE",
+    "heading": "Seni harekete geçiren ne?",
+    "subtitle": "Sporunu seç, seviyeni belirle ve profilini tamamla.",
+    "searchPlaceholder": "Spor ara…",
+    "teamBuilding": "Takımın şekilleniyor",
+    "selectLevelHint": "Her spor için seviyeni seç.",
+    "selectedCount": "{{count}} SEÇİLDİ",
+    "levelForSport": "{{name}} seviyen",
+    "tapToChange": "Değiştirmek için dokun",
+    "adding": "Ekleniyor…",
+    "addToProfile": "{{count}} sporu profilime ekle",
+    "multiSelectTitle": "Birden fazla seçebilirsin",
+    "multiSelectHint": "Spor kartlarına dokun, sonra seviyelerini belirle.",
+    "removeSelection": "{{name}} seçimini kaldır",
+    "emptyResults": "Eklenecek spor bulunamadı.",
+    "addFailed": "Eklenemedi",
+    "addedOne": "Spor eklendi",
+    "addedMany": "{{count}} spor eklendi"
+  },
+  "privacy": {
+    "title": "GİZLİLİK",
+    "heading": "Gizlilik",
+    "subtitle": "Profilinin kimler tarafından görüleceğini seç.",
+    "publicTitle": "Herkese açık",
+    "publicDescription": "Sporcular profilini ve istatistiklerini görebilir.",
+    "privateTitle": "Gizli",
+    "privateDescription": "Yalnızca sen ve kısıtlı bağlantılar görür.",
+    "blockedTitle": "Engellenenler",
+    "blockedDescription": "Engellediğin kişileri gör ve engeli kaldır.",
+    "profilePublic": "Profil açık",
+    "profilePrivate": "Profil gizli",
+    "updateFailed": "Güncellenemedi"
+  },
+  "blocked": {
+    "title": "ENGELLENENLER",
+    "description": "Engellediğin kişiler seni ve sen onları göremez. İstediğin zaman engeli kaldırabilirsin.",
+    "empty": "Engellenen kimse yok.",
+    "loadFailed": "Yüklenemedi",
+    "remove": "Kaldır",
+    "unblockFailed": "Kaldırılamadı",
+    "unblocked": "Engel kaldırıldı"
+  },
+  "service": {
+    "notFound": "Profil bulunamadı."
+  }
+}

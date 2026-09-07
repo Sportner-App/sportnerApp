@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -26,6 +27,7 @@ import {
 export function NotificationsScreen() {
   const router = useRouter();
   const { showToast } = useToast();
+  const { t } = useTranslation(["notifications", "common"]);
   const [items, setItems] = useState<ApiNotification[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,7 +51,7 @@ export function NotificationsScreen() {
       } catch (error) {
         showToast({
           type: "error",
-          title: "Yüklenemedi",
+          title: t("notifications:loadFailed"),
           description: getApiErrorMessage(error),
         });
       } finally {
@@ -58,7 +60,7 @@ export function NotificationsScreen() {
         setIsLoadingMore(false);
       }
     },
-    [cursor, showToast],
+    [cursor, showToast, t],
   );
 
   useEffect(() => {
@@ -116,7 +118,7 @@ export function NotificationsScreen() {
     <AppScreen
       header={
         <ScreenHeader
-          title="BİLDİRİMLER"
+          title={t("notifications:title")}
           showBack
           right={
             <Pressable
@@ -129,7 +131,7 @@ export function NotificationsScreen() {
               className="px-2"
             >
               <Text className="font-body text-xs text-brand-primary">
-                Tümünü oku
+                {t("notifications:markAllRead")}
               </Text>
             </Pressable>
           }
@@ -147,11 +149,11 @@ export function NotificationsScreen() {
     >
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Bildirimler yükleniyor" />
+          <SportLoader size={120} label={t("notifications:loading")} />
         </View>
       ) : items.length === 0 ? (
         <Text className="py-12 text-center font-body text-sm text-brand-neutral">
-          Yeni bildirimin yok.
+          {t("notifications:empty")}
         </Text>
       ) : (
         items.map((item) => {
@@ -181,7 +183,7 @@ export function NotificationsScreen() {
 
       {isLoadingMore ? (
         <View className="items-center py-5">
-          <SportLoader size={64} label="Bildirimler yükleniyor" />
+          <SportLoader size={64} label={t("notifications:loading")} />
         </View>
       ) : null}
     </AppScreen>

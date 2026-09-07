@@ -1,6 +1,9 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
+
+import { useProfileQuickActions } from "@/constants/profile";
 
 type ProfileAboutSectionProps = {
   bio: string | null;
@@ -8,16 +11,13 @@ type ProfileAboutSectionProps = {
   onBadgesPress?: () => void;
 };
 
-const QUICK_ACTIONS = [
-  { key: "friends", label: "Arkadaşlar", icon: "user-group" },
-  { key: "badges", label: "Rozetler", icon: "trophy" },
-] as const;
-
 export function ProfileAboutSection({
   bio,
   onFriendsPress,
   onBadgesPress,
 }: ProfileAboutSectionProps) {
+  const { t } = useTranslation("profile");
+  const quickActions = useProfileQuickActions();
   const actions =
     onFriendsPress && onBadgesPress
       ? { friends: onFriendsPress, badges: onBadgesPress }
@@ -26,12 +26,12 @@ export function ProfileAboutSection({
   return (
     <Animated.View entering={FadeInDown.duration(320)} className="gap-4 px-1">
       <Text className="font-body text-sm leading-5 text-text-secondary">
-        {bio?.trim() || "Henüz profil açıklaması eklenmemiş."}
+        {bio?.trim() || t("about.emptyBio")}
       </Text>
 
       {actions ? (
         <View className="flex-row gap-3">
-          {QUICK_ACTIONS.map((item) => (
+          {quickActions.map((item) => (
             <Pressable
               key={item.key}
               onPress={actions[item.key]}

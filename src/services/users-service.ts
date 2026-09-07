@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { apiClient } from "@/lib/api/client";
 import type { PagedResult } from "@/types/events";
 import type { ApiDiscoverUser, PagedUsers } from "@/types/users";
@@ -28,7 +29,7 @@ export async function discoverUsers({
       name:
         [user.firstName, user.lastName].filter(Boolean).join(" ").trim() ||
         user.username ||
-        "Sporcu",
+        i18n.t("events:fallback.athlete"),
       avatarUrl: user.profileImageUrl,
       city: user.city,
     })),

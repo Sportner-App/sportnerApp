@@ -1,0 +1,140 @@
+{
+  "fallback": {
+    "name": "Organization"
+  },
+  "role": {
+    "founder": "Founder",
+    "admin": "Admin",
+    "member": "Member"
+  },
+  "status": {
+    "pending": "Pending approval",
+    "approved": "Member",
+    "rejected": "Rejected",
+    "blocked": "Blocked",
+    "left": "Left"
+  },
+  "memberStatus": {
+    "pending": "Awaiting approval",
+    "blocked": "Blocked"
+  },
+  "form": {
+    "nameLabel": "Name",
+    "descriptionLabel": "Description",
+    "optionalPlaceholder": "Optional",
+    "cityOptionalPlaceholder": "Select (optional)",
+    "plateCodeDescription": "Plate code {{code}}"
+  },
+  "list": {
+    "title": "ORGANIZATIONS",
+    "create": "Create",
+    "joinWithCode": "Join with code",
+    "empty": "You don't have any organizations yet. Create one or join with an invite code.",
+    "memberCount": "{{count}} members"
+  },
+  "detail": {
+    "title": "ORGANIZATION",
+    "notFound": "Organization not found.",
+    "eventsLoadFailed": "Could not load events",
+    "membersLoadFailed": "Could not load members",
+    "loadFailed": "Could not load",
+    "codeCopied": "Code copied",
+    "shareFailed": "Could not share",
+    "whatsappFailed": "Could not open WhatsApp",
+    "codeRotated": "New code generated",
+    "codeRotateFailed": "Could not refresh code",
+    "leaveTitle": "Leave",
+    "leaveMessage": "Do you want to leave this organization?",
+    "leaveConfirm": "Leave",
+    "left": "You left the organization",
+    "leaveFailed": "Could not leave",
+    "pendingTitle": "Pending approval",
+    "pendingDescription": "Once the founder or an admin approves your request, you can see events.",
+    "inviteCodeLabel": "Invite code",
+    "copyCodeAccessibility": "Copy invite code",
+    "copyCodeHint": "You can also tap the code to copy it.",
+    "share": "Share",
+    "refreshCode": "Refresh",
+    "eventsTitle": "Events",
+    "createEvent": "Create",
+    "noEvents": "No published events for this organization.",
+    "viewLinkedEvents": "View organization events",
+    "membersTitle": "Members",
+    "memberCount": "{{count}} members",
+    "pendingCount": "{{count}} pending approval",
+    "seeAll": "See all",
+    "noMembers": "No members yet.",
+    "moreMembers": "+{{count}} more members",
+    "leaveOrganization": "Leave organization",
+    "editAccessibility": "Edit organization details",
+    "defaultDescription": "Grow your sports community, bring members together, and manage events as a team.",
+    "statMembers": "Members",
+    "statEvents": "Events"
+  },
+  "members": {
+    "title": "MEMBERS",
+    "notFound": "Organization not found.",
+    "loadFailed": "Could not load",
+    "actionFailed": "Action failed",
+    "searchPlaceholder": "Search by name or username",
+    "tabMembers": "Members ({{count}})",
+    "tabPending": "Pending ({{count}})",
+    "tabBlocked": "Blocked ({{count}})",
+    "emptySearch": "No members match your search.",
+    "emptyPending": "No one awaiting approval.",
+    "emptyBlocked": "No blocked users.",
+    "emptyMembers": "No members yet."
+  },
+  "memberRow": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "unblock": "Unblock",
+    "makeMember": "Make member",
+    "makeAdmin": "Make admin",
+    "remove": "Remove",
+    "block": "Block",
+    "removeTitle": "Remove member",
+    "removeMessage": "They will be removed from the organization. They can reapply with an invite code if they want.",
+    "blockTitle": "Block member",
+    "blockMessage": "Blocked users cannot rejoin with an invite code. You can unblock them later."
+  },
+  "join": {
+    "title": "JOIN",
+    "heading": "Invite code",
+    "subtitle": "Enter the 8-character code from the organization founder.",
+    "codeLabel": "Code",
+    "codePlaceholder": "e.g. 4K7N2M9P",
+    "submit": "Join",
+    "invalidCodeTitle": "Invalid code",
+    "invalidCodeDescription": "Invite code must be 8 characters.",
+    "requestSentTitle": "Request sent",
+    "requestSentDescription": "You'll become a member once the founder or an admin approves.",
+    "joinFailed": "Could not join"
+  },
+  "create": {
+    "title": "ORGANIZATION",
+    "heading": "New organization",
+    "subtitle": "University team, club, or venue. Joining is invite-code only.",
+    "namePlaceholder": "e.g. ITU Tennis",
+    "submit": "Create",
+    "nameRequiredTitle": "Name required",
+    "nameRequiredDescription": "Enter a name for the organization.",
+    "createdTitle": "Organization created",
+    "createdDescription": "You can share the invite code with members.",
+    "createFailed": "Could not create"
+  },
+  "edit": {
+    "title": "EDIT",
+    "heading": "Edit organization",
+    "loadFailed": "Could not load",
+    "nameRequired": "Name required",
+    "updated": "Organization updated",
+    "saveFailed": "Could not save"
+  },
+  "invite": {
+    "message": "Join {{organizationName}} on Sportner",
+    "codeLabel": "Invite code:",
+    "howToJoin": "App: Profile → Organizations → Join with code",
+    "shareTitle": "{{organizationName}} invite code"
+  }
+}

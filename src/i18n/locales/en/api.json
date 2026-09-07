@@ -1,0 +1,19 @@
+{
+  "status": {
+    "400": "The information you sent is invalid.",
+    "401": "Your session has expired. Please sign in again.",
+    "403": "You don't have permission for this action.",
+    "404": "The requested record was not found.",
+    "408": "The request timed out.",
+    "409": "This action conflicts with existing data.",
+    "422": "The information you sent could not be processed.",
+    "429": "Too many requests. Please wait a moment.",
+    "500": "An unexpected server error occurred.",
+    "502": "The server is unreachable right now.",
+    "503": "The service is temporarily unavailable."
+  },
+  "networkError": "Could not connect to the server. Check your internet connection.",
+  "requestFailed": "The request could not be completed.",
+  "unexpectedError": "An unexpected error occurred.",
+  "actionFailed": "The action could not be completed."
+}

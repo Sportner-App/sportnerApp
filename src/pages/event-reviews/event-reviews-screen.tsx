@@ -1,6 +1,7 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   Avatar,
@@ -23,6 +24,7 @@ function firstParam(value: string | string[] | undefined) {
 }
 
 export function EventReviewsScreen() {
+  const { t } = useTranslation(["eventReviews", "events"]);
   const params = useLocalSearchParams<{ id: string; userId?: string }>();
   const id = firstParam(params.id);
   const presetUserId = firstParam(params.userId);
@@ -58,7 +60,7 @@ export function EventReviewsScreen() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Yüklenemedi",
+        title: t("eventReviews:toasts.loadFailedTitle"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -87,14 +89,14 @@ export function EventReviewsScreen() {
       setSelectedUserId(null);
       showToast({
         type: "success",
-        title: "Değerlendirme gönderildi",
-        description: "Puan ve yorum karşı tarafın profilinde görünür.",
+        title: t("eventReviews:toasts.sentTitle"),
+        description: t("eventReviews:toasts.sentDescription"),
       });
       await load();
     } catch (error) {
       showToast({
         type: "error",
-        title: "Gönderilemedi",
+        title: t("eventReviews:toasts.sendFailedTitle"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -105,23 +107,22 @@ export function EventReviewsScreen() {
   return (
     <AppScreen
       keyboardAvoiding
-      header={<ScreenHeader title="DEĞERLENDİRME" showBack />}
+      header={<ScreenHeader title={t("eventReviews:title")} showBack />}
       contentClassName="gap-4 px-6 pt-3"
     >
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} label={t("eventReviews:loading")} />
         </View>
       ) : (
         <>
           {peers.length > 0 ? (
             <View className="gap-3 rounded-3xl border border-border-default bg-surface-primary p-4">
               <Text className="font-display text-base text-text-primary">
-                Kimi değerlendirmek istersin?
+                {t("eventReviews:form.heading")}
               </Text>
               <Text className="font-body text-xs text-brand-neutral">
-                1–5 puan ve isteğe bağlı yorum. Karşı tarafın profilinde
-                görünür.
+                {t("eventReviews:form.hint")}
               </Text>
               {peers.map((peer) => (
                 <Pressable
@@ -140,7 +141,8 @@ export function EventReviewsScreen() {
                     borderWidth={0}
                   />
                   <Text className="font-body text-sm text-text-primary">
-                    @{peer.username || "sporcu"}
+                    @
+                    {peer.username || t("events:fallback.athleteHandle")}
                   </Text>
                 </Pressable>
               ))}
@@ -168,12 +170,12 @@ export function EventReviewsScreen() {
               <TextInput
                 value={comment}
                 onChangeText={setComment}
-                placeholder="Yorum (opsiyonel)"
+                placeholder={t("eventReviews:form.commentPlaceholder")}
                 placeholderTextColor="#64748b"
                 className="rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
               />
               <Button
-                label="Gönder"
+                label={t("eventReviews:form.submit")}
                 disabled={!selectedUserId}
                 isLoading={saving}
                 onPress={submit}
@@ -182,21 +184,20 @@ export function EventReviewsScreen() {
           ) : (
             <View className="gap-2 rounded-3xl border border-border-default bg-surface-primary p-4">
               <Text className="font-display text-base text-text-primary">
-                Şu an puanlanacak kimse yok
+                {t("eventReviews:emptyPeers.title")}
               </Text>
               <Text className="font-body text-sm leading-5 text-brand-neutral">
-                Organizatör önce yoklamada “Geldi” işaretlemeli. Sonra gelen
-                katılımcılar ve organizatör birbirini 1–5 puanlayabilir.
+                {t("eventReviews:emptyPeers.description")}
               </Text>
             </View>
           )}
 
           <Text className="font-display text-base text-text-primary">
-            Bu etkinlikteki yorumlar
+            {t("eventReviews:list.heading")}
           </Text>
           {reviews.length === 0 ? (
             <Text className="font-body text-sm text-brand-neutral">
-              Henüz değerlendirme yok.
+              {t("eventReviews:list.empty")}
             </Text>
           ) : (
             reviews.map((review) => (
@@ -212,8 +213,11 @@ export function EventReviewsScreen() {
                     borderWidth={0}
                   />
                   <Text className="flex-1 font-body text-sm font-semibold text-text-primary">
-                    @{review.reviewerUsername || "sporcu"} → @
-                    {review.reviewedUsername || "sporcu"}
+                    @
+                    {review.reviewerUsername ||
+                      t("events:fallback.athleteHandle")}{" "}
+                    → @
+                    {review.reviewedUsername || t("events:fallback.athleteHandle")}
                   </Text>
                 </View>
                 <Text className="mt-1 font-mono text-xs text-amber-300">

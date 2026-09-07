@@ -1,0 +1,22 @@
+{
+  "title": "PARTICIPANTS",
+  "loading": "Loading participants",
+  "count": "{{count}} participants",
+  "empty": "No participants yet.",
+  "loadFailed": "Could not load participants.",
+  "guestParticipant": "Guest participant",
+  "removeAccessibility": "Remove participant {{name}}",
+  "removalSheet": {
+    "title": "Remove participant",
+    "subtitle": "Choose a reason for removing {{name}}.",
+    "noteLabel": "Note (optional)",
+    "notePlaceholder": "Any details you'd like to add",
+    "cancel": "Cancel",
+    "confirm": "Remove"
+  },
+  "toasts": {
+    "removeFailedTitle": "Could not remove participant",
+    "removedTitle": "Participant removed",
+    "removedDescription": "The selected reason was recorded for review."
+  }
+}

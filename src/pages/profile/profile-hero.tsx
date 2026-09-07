@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
 import type { UserProfile } from "@/types/profile";
@@ -11,6 +12,8 @@ type ProfileHeroProps = {
 };
 
 export function ProfileHero({ profile, onEdit }: ProfileHeroProps) {
+  const { t } = useTranslation("profile");
+
   return (
     <Animated.View
       entering={FadeInDown.duration(380)}
@@ -56,7 +59,7 @@ export function ProfileHero({ profile, onEdit }: ProfileHeroProps) {
           onPress={onEdit}
           hitSlop={8}
           accessibilityRole="button"
-          accessibilityLabel="Profili düzenle"
+          accessibilityLabel={t("hero.editAccessibility")}
           className="h-10 w-10 items-center justify-center rounded-full border border-border-strong bg-surface-primary active:opacity-70"
         >
           <FontAwesome6 name="pen" size={11} color="#ccff00" />

@@ -1,0 +1,21 @@
+{
+  "list": {
+    "title": "ALBÜMLER",
+    "loading": "Yükleniyor",
+    "newAlbumLabel": "Yeni albüm",
+    "newAlbumPlaceholder": "Örn. Halı saha 2026",
+    "create": "Albüm oluştur",
+    "photoCount": "{{count}} fotoğraf"
+  },
+  "detail": {
+    "title": "ALBÜM",
+    "loading": "Yükleniyor",
+    "addPhoto": "Fotoğraf ekle"
+  },
+  "toasts": {
+    "loadFailedTitle": "Yüklenemedi",
+    "openFailedTitle": "Açılamadı",
+    "uploadFailedTitle": "Yüklenemedi",
+    "permissionRequiredTitle": "İzin gerekli"
+  }
+}

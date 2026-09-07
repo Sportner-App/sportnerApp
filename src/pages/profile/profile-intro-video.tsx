@@ -4,6 +4,7 @@ import { useEvent } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useEffect } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { resolveMediaUrl } from "@/utils/media-url";
 
@@ -12,6 +13,7 @@ type ProfileIntroVideoProps = {
 };
 
 export function ProfileIntroVideo({ uri }: ProfileIntroVideoProps) {
+  const { t } = useTranslation("profile");
   const isFocused = useIsFocused();
   const source = resolveMediaUrl(uri);
   const player = useVideoPlayer(source, (instance) => {
@@ -30,12 +32,12 @@ export function ProfileIntroVideo({ uri }: ProfileIntroVideoProps) {
   return (
     <View className="gap-2.5">
       <Text className="font-body text-[10px] font-semibold tracking-[1.5px] text-text-tertiary">
-        TANITIM VİDEOSU
+        {t("introVideo.label")}
       </Text>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={
-          isPlaying ? "Videoyu duraklat" : "Tanıtım videosunu oynat"
+          isPlaying ? t("introVideo.pause") : t("introVideo.play")
         }
         onPress={() => {
           if (isPlaying) {

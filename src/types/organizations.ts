@@ -1,3 +1,5 @@
+import i18n from "@/i18n";
+
 export const ORGANIZATION_ROLE = {
   founder: 0,
   admin: 1,
@@ -54,17 +56,29 @@ export type ApiOrganizationMember = {
 };
 
 export function organizationRoleLabel(role: number) {
-  if (role === ORGANIZATION_ROLE.founder) return "Kurucu";
-  if (role === ORGANIZATION_ROLE.admin) return "Yönetici";
-  return "Üye";
+  if (role === ORGANIZATION_ROLE.founder) {
+    return i18n.t("organizations:role.founder");
+  }
+  if (role === ORGANIZATION_ROLE.admin) {
+    return i18n.t("organizations:role.admin");
+  }
+  return i18n.t("organizations:role.member");
 }
 
 export function organizationStatusLabel(status: number) {
-  if (status === ORGANIZATION_STATUS.pending) return "Onay bekleniyor";
-  if (status === ORGANIZATION_STATUS.approved) return "Üye";
-  if (status === ORGANIZATION_STATUS.rejected) return "Reddedildi";
-  if (status === ORGANIZATION_STATUS.blocked) return "Engellendi";
-  return "Ayrıldı";
+  if (status === ORGANIZATION_STATUS.pending) {
+    return i18n.t("organizations:status.pending");
+  }
+  if (status === ORGANIZATION_STATUS.approved) {
+    return i18n.t("organizations:status.approved");
+  }
+  if (status === ORGANIZATION_STATUS.rejected) {
+    return i18n.t("organizations:status.rejected");
+  }
+  if (status === ORGANIZATION_STATUS.blocked) {
+    return i18n.t("organizations:status.blocked");
+  }
+  return i18n.t("organizations:status.left");
 }
 
 export function canModerateOrganizationMember(

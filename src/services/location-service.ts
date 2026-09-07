@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import {
   getGooglePlaceDetails,
   hasGoogleMapsKey,
@@ -55,7 +56,7 @@ export async function resolveLocationSuggestion(
     return getGooglePlaceDetails(suggestion.placeId);
   }
 
-  throw new Error("Konum detayı alınamadı.");
+  throw new Error(i18n.t("location:resolveFailed"));
 }
 
 /**

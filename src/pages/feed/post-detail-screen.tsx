@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Image,
   Pressable,
@@ -38,6 +39,7 @@ export function PostDetailScreen() {
   const { width } = useWindowDimensions();
   const router = useRouter();
   const { showToast } = useToast();
+  const { t } = useTranslation(["feed", "social", "events", "common"]);
   const [post, setPost] = useState<ApiPost | null>(null);
   const [comments, setComments] = useState<ApiComment[]>([]);
   const [draft, setDraft] = useState("");
@@ -59,7 +61,7 @@ export function PostDetailScreen() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Yüklenemedi",
+        title: t("social:toasts.loadFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -95,7 +97,7 @@ export function PostDetailScreen() {
       setPost(post);
       showToast({
         type: "error",
-        title: "Beğenilemedi",
+        title: t("social:toasts.likeFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -103,7 +105,12 @@ export function PostDetailScreen() {
     }
   };
 
-  const author = post?.username || post?.firstName || "Sporcu";
+  const author =
+    post?.username ||
+    post?.firstName ||
+    t("events:fallback.athlete");
+  const replyUsername =
+    replyingTo?.username || t("social:fallback.user");
   const images =
     post?.media.filter((item) => item.mediaType === POST_MEDIA_TYPE.image) ??
     [];
@@ -111,12 +118,12 @@ export function PostDetailScreen() {
   return (
     <AppScreen
       keyboardAvoiding
-      header={<ScreenHeader title="GÖNDERİ" showBack />}
+      header={<ScreenHeader title={t("feed:detail.header")} showBack />}
       contentClassName="gap-4 pt-2"
     >
       {isLoading || !post ? (
         <View className="items-center px-6 py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} label={t("common:loading")} />
         </View>
       ) : (
         <>
@@ -126,7 +133,7 @@ export function PostDetailScreen() {
           >
             <Avatar uri={post.profileImageUrl} name={author} size={40} />
             <Text className="font-body text-sm font-semibold text-text-primary">
-              @{post.username || "sporcu"}
+              @{post.username || t("events:fallback.athleteHandle")}
             </Text>
           </Pressable>
 
@@ -164,23 +171,23 @@ export function PostDetailScreen() {
                   color={post.likedByMe ? "#ccff00" : "#94a3b8"}
                 />
                 <Text className="font-mono text-xs text-white">
-                  {post.likeCount} beğeni
+                  {t("social:likesCount", { count: post.likeCount })}
                 </Text>
               </Pressable>
               <View className="flex-row items-center gap-2">
                 <FontAwesome6 name="comment" size={15} color="#94a3b8" />
                 <Text className="font-mono text-xs text-brand-neutral">
-                  {post.commentCount} yorum
+                  {t("social:commentsCount", { count: post.commentCount })}
                 </Text>
               </View>
             </View>
 
             <Text className="font-display text-base text-text-primary">
-              Yorumlar
+              {t("social:comments.title")}
             </Text>
             {comments.length === 0 ? (
               <Text className="font-body text-sm text-brand-neutral">
-                İlk yorumu sen yaz.
+                {t("social:comments.firstComment")}
               </Text>
             ) : (
               <CommentThread
@@ -196,11 +203,11 @@ export function PostDetailScreen() {
             {replyingTo ? (
               <View className="flex-row items-center justify-between">
                 <Text className="flex-1 font-body text-xs text-brand-neutral">
-                  {replyingTo.username || "kullanıcı"} kullanıcısına yanıt
+                  {t("social:comments.replyTo", { username: replyUsername })}
                 </Text>
                 <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>
                   <Text className="font-body text-xs font-semibold text-brand-primary">
-                    İptal
+                    {t("common:cancel")}
                   </Text>
                 </Pressable>
               </View>
@@ -211,14 +218,20 @@ export function PostDetailScreen() {
               onChangeText={setDraft}
               placeholder={
                 replyingTo
-                  ? `${replyingTo.username || "kullanıcı"} kullanıcısına yanıt ver…`
-                  : "Yorum yaz…"
+                  ? t("social:comments.replyPlaceholder", {
+                      username: replyUsername,
+                    })
+                  : t("social:comments.placeholder")
               }
               placeholderTextColor="#64748b"
               className="rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
             />
             <Button
-              label={replyingTo ? "Yanıt gönder" : "Yorum gönder"}
+              label={
+                replyingTo
+                  ? t("social:comments.sendReply")
+                  : t("social:comments.sendComment")
+              }
               disabled={!draft.trim()}
               isLoading={isCommenting}
               onPress={async () => {
@@ -232,7 +245,7 @@ export function PostDetailScreen() {
                       draft.trim(),
                     );
                     if (!reply) {
-                      throw new Error("Yanıt gönderilemedi.");
+                      throw new Error(t("social:toasts.replyFailed"));
                     }
                     setDraft("");
                     setReplyingTo(null);
@@ -271,8 +284,8 @@ export function PostDetailScreen() {
                   showToast({
                     type: "error",
                     title: replyingTo
-                      ? "Yanıt gönderilemedi"
-                      : "Yorum gönderilemedi",
+                      ? t("social:toasts.replyFailed")
+                      : t("social:toasts.commentFailed"),
                     description: getApiErrorMessage(error),
                   });
                 } finally {
@@ -282,7 +295,7 @@ export function PostDetailScreen() {
             />
 
             <Button
-              label="Şikayet et"
+              label={t("social:report")}
               variant="ghost"
               size="sm"
               onPress={() =>

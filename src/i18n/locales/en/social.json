@@ -1,0 +1,37 @@
+{
+  "fallback": {
+    "user": "user",
+    "post": "Post"
+  },
+  "likesCount": "{{count}} likes",
+  "commentsCount": "{{count}} comments",
+  "viewComments": "View {{count}} comments",
+  "relativeTime": {
+    "now": "now",
+    "minutes": "{{count}} min",
+    "hours": "{{count}} h",
+    "days": "{{count}} days"
+  },
+  "comments": {
+    "title": "Comments",
+    "firstComment": "Be the first to comment.",
+    "loading": "Loading comments…",
+    "placeholder": "Write a comment…",
+    "replyPlaceholder": "Reply to {{username}}…",
+    "replyTo": "Replying to {{username}}",
+    "sendComment": "Send comment",
+    "sendReply": "Send reply",
+    "share": "Share"
+  },
+  "videoShare": "Video post",
+  "toasts": {
+    "loadFailed": "Could not load",
+    "likeFailed": "Could not like",
+    "commentFailed": "Could not send comment",
+    "replyFailed": "Could not send reply",
+    "commentsLoadFailed": "Could not load comments",
+    "actionFailed": "Action failed",
+    "permissionRequired": "Permission required"
+  },
+  "report": "Report"
+}

@@ -5,23 +5,83 @@ import type {
   ProfileMenuItem,
   SkillLevelKey,
 } from "@/types/profile";
+import type { SegmentedTabOption } from "@/types/components";
+import type { ProfileStatistics } from "@/types/profile";
 import { FEATURE_FLAGS } from "./feature-flags";
 
-const PROFILE_SOCIAL_ACTION_ITEMS: ProfileMenuItem[] = [
-  { key: "friends", label: "Arkadaşlar", icon: "user-group" },
-  { key: "feed", label: "Akış", icon: "newspaper" },
-  { key: "badges", label: "Rozetler", icon: "trophy" },
-  { key: "albums", label: "Albümler", icon: "images" },
-];
+type ProfileTab = "activity" | "reviews" | "settings";
 
-export const PROFILE_SOCIAL_ACTIONS = PROFILE_SOCIAL_ACTION_ITEMS.filter(
-  (item) => item.key !== "albums" || FEATURE_FLAGS.albums,
-);
+/**
+ * Profil ekranı paylaşılan kopya metinleri — modül düzeyinde sabit yerine hook:
+ * dil değiştiğinde `t()` yeniden değerlendirilsin diye render sırasında
+ * çağrılmalı.
+ */
+export function useProfileCopy() {
+  const { t } = useTranslation("profile");
+
+  return {
+    sportsTitle: t("sportsTitle"),
+    organizationsTitle: t("organizationsTitle"),
+    emptyOrganizations: t("emptyOrganizations"),
+    emptySports: t("emptySports"),
+    emptySportsPublic: t("emptySportsPublic"),
+    reviewsTitle: t("reviewsTitle"),
+    emptyReviews: t("emptyReviews"),
+    notFound: t("notFound"),
+  } as const;
+}
+
+export function useProfileTabs(): SegmentedTabOption<ProfileTab>[] {
+  const { t } = useTranslation("profile");
+
+  return [
+    { key: "activity", label: t("tabs.activity") },
+    { key: "reviews", label: t("tabs.reviews") },
+    { key: "settings", label: t("tabs.settings") },
+  ];
+}
+
+export function useProfileQuickActions() {
+  const { t } = useTranslation("profile");
+
+  return [
+    { key: "friends" as const, label: t("about.friends"), icon: "user-group" as const },
+    { key: "badges" as const, label: t("about.badges"), icon: "trophy" as const },
+  ];
+}
+
+export function useStatItems(): {
+  key: string;
+  label: string;
+  field: keyof ProfileStatistics;
+}[] {
+  const { t } = useTranslation("profile");
+
+  return [
+    { key: "joined", label: t("stats.joined"), field: "eventsJoined" },
+    { key: "organized", label: t("stats.organized"), field: "eventsOrganized" },
+    { key: "completed", label: t("stats.completed"), field: "eventsCompleted" },
+    { key: "friends", label: t("stats.friends"), field: "friendsCount" },
+  ];
+}
+
+export function useProfileSocialActions(): ProfileMenuItem[] {
+  const { t } = useTranslation("profile");
+
+  const items: ProfileMenuItem[] = [
+    { key: "friends", label: t("about.friends"), icon: "user-group" },
+    { key: "feed", label: t("social.feed"), icon: "newspaper" },
+    { key: "badges", label: t("about.badges"), icon: "trophy" },
+    { key: "albums", label: t("social.albums"), icon: "images" },
+  ];
+
+  return items.filter(
+    (item) => item.key !== "albums" || FEATURE_FLAGS.albums,
+  );
+}
 
 /**
  * Profil menüsü — dil değiştiğinde etiketler yeniden çözülsün diye hook.
- * Menünün yönlendirdiği ekranların çoğu henüz kendi başına çevrilmedi;
- * bu yalnızca menü satırlarını kapsıyor.
  */
 export function useProfileMenuGroups(): ProfileMenuGroup[] {
   const { t } = useTranslation("settings");
@@ -56,24 +116,6 @@ export function useProfileMenuGroups(): ProfileMenuGroup[] {
     },
   ];
 }
-
-export const PROFILE_COPY = {
-  header: "PROFİL",
-  sportsTitle: "Sporlar",
-  organizationsTitle: "Organizasyonlar",
-  emptyOrganizations: "Henüz organizasyonun yok. Dokunarak ekle veya katıl.",
-  statsTitle: "Özet",
-  socialTitle: "Sosyal",
-  menuTitle: "Hesap",
-  edit: "Profili düzenle",
-  guestName: "Sporcu",
-  emptySports: "Henüz spor eklemedin. Dokunarak ekle.",
-  emptySportsPublic: "Henüz spor eklenmemiş.",
-  reviewsTitle: "Değerlendirmeler",
-  emptyReviews:
-    "Henüz değerlendirme yok. Etkinlik sonrası gelen yorumlar burada görünür.",
-  notFound: "Profil bulunamadı. Kayıt sırasında profil oluşmamış olabilir.",
-} as const;
 
 const SKILL_BY_CODE: Record<number, SkillLevelKey> = {
   0: "beginner",

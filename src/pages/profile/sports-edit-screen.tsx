@@ -1,5 +1,7 @@
 import { useRouter } from "expo-router";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 import { AppScreen, Button, ScreenHeader, SportLoader } from "@/components";
 import { useSkillLevelOptions } from "@/constants/onboarding";
@@ -13,9 +15,9 @@ import {
   updateSportSkill,
 } from "@/services/profile-service";
 import { sportIconForSlug } from "@/utils/events";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 export function SportsEditScreen() {
+  const { t } = useTranslation(["profile", "common"]);
   const router = useRouter();
   const { profile, isLoading, refresh } = useProfile();
   const { showToast } = useToast();
@@ -30,7 +32,7 @@ export function SportsEditScreen() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Güncellenemedi",
+        title: t("profile:sportsEdit.updateFailed"),
         description: getApiErrorMessage(error),
       });
     }
@@ -38,20 +40,20 @@ export function SportsEditScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="SPORLARIM" showBack />}
+      header={<ScreenHeader title={t("profile:sportsEdit.title")} showBack />}
       contentClassName="gap-4 px-6 pt-3"
     >
       {isLoading || !profile ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} />
         </View>
       ) : (
         <>
           <Text className="font-display text-3xl text-text-primary">
-            Sporların
+            {t("profile:sportsEdit.heading")}
           </Text>
           <Text className="font-body text-sm text-brand-neutral">
-            Seviyeni değiştir, birincil seç veya kaldır.
+            {t("profile:sportsEdit.subtitle")}
           </Text>
 
           {profile.sports.map((sport) => (
@@ -73,12 +75,17 @@ export function SportsEditScreen() {
                   </Text>
                   <Text className="font-body text-xs text-brand-neutral">
                     {SKILL_LEVEL_LABELS[skillKeyFromCode(sport.skillLevel)]}
-                    {sport.isPrimary ? " · Birincil" : ""}
+                    {sport.isPrimary
+                      ? ` · ${t("profile:sportsEdit.primaryBadge")}`
+                      : ""}
                   </Text>
                 </View>
                 <Pressable
                   onPress={() =>
-                    run(() => removeMySport(sport.sportId), "Spor kaldırıldı")
+                    run(
+                      () => removeMySport(sport.sportId),
+                      t("profile:sportsEdit.sportRemoved"),
+                    )
                   }
                 >
                   <FontAwesome6 name="trash" size={13} color="#fda4af" />
@@ -94,7 +101,7 @@ export function SportsEditScreen() {
                       onPress={() =>
                         run(
                           () => updateSportSkill(sport.sportId, option.level),
-                          "Seviye güncellendi",
+                          t("profile:sportsEdit.levelUpdated"),
                         )
                       }
                       className={`rounded-full border px-3 py-1.5 ${
@@ -117,13 +124,13 @@ export function SportsEditScreen() {
 
               {!sport.isPrimary ? (
                 <Button
-                  label="Birincil yap"
+                  label={t("profile:sportsEdit.makePrimary")}
                   variant="outline"
                   size="sm"
                   onPress={() =>
                     run(
                       () => setPrimarySport(sport.sportId),
-                      "Birincil spor seçildi",
+                      t("profile:sportsEdit.primarySelected"),
                     )
                   }
                 />
@@ -132,7 +139,7 @@ export function SportsEditScreen() {
           ))}
 
           <Button
-            label="Yeni spor ekle"
+            label={t("profile:sportsEdit.addSport")}
             variant="outline"
             onPress={() => router.push("/profile/add-sport")}
           />

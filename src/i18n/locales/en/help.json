@@ -1,0 +1,23 @@
+{
+  "title": "HELP",
+  "heading": "Frequently asked",
+  "faq": [
+    {
+      "q": "How do I join an event?",
+      "a": "Tap Join on the event details. Once the organizer approves you, you can enter the chat."
+    },
+    {
+      "q": "Why can I leave an event?",
+      "a": "You can leave a published event with Leave. You can't leave events that have ended or been cancelled."
+    },
+    {
+      "q": "Do notifications reach my phone?",
+      "a": "In-app notifications work. Push notifications on device are still disabled on the server side."
+    }
+  ],
+  "feedback": {
+    "title": "Have a suggestion?",
+    "description": "If something is confusing or you'd like a new feature, write to us.",
+    "cta": "Send suggestion"
+  }
+}

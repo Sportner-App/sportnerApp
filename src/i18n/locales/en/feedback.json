@@ -1,0 +1,22 @@
+{
+  "title": "FEEDBACK",
+  "heading": "Have a suggestion?",
+  "subtitle": "If something works well, feels confusing, or you'd like a new feature, write here. No need to email — we'll get it from here.",
+  "fieldLabel": "Your suggestion",
+  "placeholder": "If you added this feature / I got stuck here…",
+  "helperText": "{{current}}/{{max}} · at least {{min}} characters",
+  "minLengthError": "Write at least {{min}} characters.",
+  "submit": "Send",
+  "success": {
+    "title": "Suggestion received",
+    "description": "Your message was saved. You can send another anytime.",
+    "cta": "Write another suggestion"
+  },
+  "toasts": {
+    "receivedTitle": "Suggestion received",
+    "receivedDescription": "Thanks, we'll review your message.",
+    "sendFailedTitle": "Could not send",
+    "sendFailedDescription": "Could not send suggestion.",
+    "rateLimited": "You sent too many recently. Try again in a few minutes."
+  }
+}

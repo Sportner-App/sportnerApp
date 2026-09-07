@@ -1,0 +1,30 @@
+{
+  "title": "My events",
+  "subtitle": "Ongoing, past, and events you organize.",
+  "loading": "Loading events",
+  "loadingMore": "Loading events",
+  "eventCount": "{{count}} events",
+  "tabs": {
+    "upcoming": "Ongoing",
+    "past": "Past",
+    "organized": "Organized"
+  },
+  "empty": {
+    "upcoming": {
+      "message": "You don't have any ongoing or upcoming participations.",
+      "action": "Browse events"
+    },
+    "past": {
+      "message": "You don't have any past events yet.",
+      "action": "Browse events"
+    },
+    "organized": {
+      "message": "You haven't organized an event yet.",
+      "action": "Create event"
+    }
+  },
+  "errors": {
+    "loadFailed": "Could not load events.",
+    "loadMoreFailed": "Could not load more."
+  }
+}

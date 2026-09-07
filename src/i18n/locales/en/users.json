@@ -1,0 +1,41 @@
+{
+  "publicProfile": {
+    "title": "PROFILE",
+    "loading": "Loading profile",
+    "notFound": "Profile not found.",
+    "tabs": {
+      "activity": "Activity",
+      "reviews": "Reviews"
+    },
+    "auth": {
+      "sendFriendRequest": "You need to sign in to send a friend request.",
+      "reportUser": "You need to sign in to report a user."
+    },
+    "actions": {
+      "accept": "Accept",
+      "reject": "Decline",
+      "message": "Send message",
+      "requestSent": "Request sent",
+      "addFriend": "Add friend",
+      "report": "Report",
+      "block": "Block"
+    },
+    "blockSheet": {
+      "title": "Block this person?",
+      "subtitle": "You won't see each other in lists or on profiles. You can unblock anytime from Privacy.",
+      "confirm": "Block"
+    },
+    "toasts": {
+      "notFoundTitle": "Profile unavailable",
+      "requestSentTitle": "Request sent",
+      "sendFailedTitle": "Could not send",
+      "friendAddedTitle": "Friend added",
+      "acceptFailedTitle": "Could not accept",
+      "requestDeclinedTitle": "Request declined",
+      "rejectFailedTitle": "Could not decline",
+      "chatFailedTitle": "Could not open chat",
+      "blockedTitle": "User blocked",
+      "blockFailedTitle": "Could not block"
+    }
+  }
+}

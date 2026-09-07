@@ -93,6 +93,6 @@ export function AppTourProvider({
 export function useAppTour() {
   const context = useContext(AppTourContext);
   if (!context)
-    throw new Error("useAppTour AppTourProvider içinde kullanılmalı.");
+    throw new Error("useAppTour must be used within AppTourProvider.");
   return context;
 }

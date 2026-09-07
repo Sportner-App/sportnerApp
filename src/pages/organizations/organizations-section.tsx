@@ -1,8 +1,9 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
-import { PROFILE_COPY } from "@/constants/profile";
+import { useProfileCopy } from "@/constants/profile";
 import { useMyOrganizations } from "@/hooks/use-organizations";
 import { ORGANIZATION_STATUS } from "@/types/organizations";
 
@@ -15,6 +16,8 @@ export function OrganizationsSection({
   onPressList,
   onPressItem,
 }: OrganizationsSectionProps) {
+  const { t } = useTranslation(["profile", "common"]);
+  const PROFILE_COPY = useProfileCopy();
   const { items } = useMyOrganizations();
   const visible = items.slice(0, 4);
   const remaining = items.length - visible.length;
@@ -31,7 +34,9 @@ export function OrganizationsSection({
         {onPressList ? (
           <Pressable onPress={onPressList} hitSlop={8}>
             <Text className="font-body text-[11px] font-semibold text-brand-primary">
-              {items.length === 0 ? "Ekle" : "Tümü"}
+              {items.length === 0
+                ? t("profile:organizations.add")
+                : t("common:all")}
             </Text>
           </Pressable>
         ) : null}
@@ -65,7 +70,7 @@ export function OrganizationsSection({
               </Text>
               {item.status === ORGANIZATION_STATUS.pending ? (
                 <Text className="font-body text-[9px] text-amber-300">
-                  Bekliyor
+                  {t("profile:organizations.pending")}
                 </Text>
               ) : null}
             </Pressable>

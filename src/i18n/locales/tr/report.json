@@ -1,0 +1,11 @@
+{
+  "title": "ŞİKAYET",
+  "loading": "Yükleniyor",
+  "heading": "Neden bildiriyorsun?",
+  "descriptionLabel": "Açıklama (opsiyonel)",
+  "submit": "Gönder",
+  "toasts": {
+    "receivedTitle": "Şikayet alındı",
+    "sendFailedTitle": "Gönderilemedi"
+  }
+}

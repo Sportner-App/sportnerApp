@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import type { Sport } from "@/types/sports";
 
 export type SportGroup = {
@@ -26,7 +27,7 @@ export function groupSportsByCategory(sports: Sport[]): SportGroup[] {
 
     groups.set(key, {
       key,
-      label: sport.categoryName ?? "Diğer",
+      label: sport.categoryName ?? i18n.t("common:other"),
       sports: [sport],
     });
   }

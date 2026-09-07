@@ -1,0 +1,24 @@
+{
+  "title": "REVIEWS",
+  "loading": "Loading",
+  "toasts": {
+    "loadFailedTitle": "Could not load",
+    "sentTitle": "Review submitted",
+    "sentDescription": "The rating and comment appear on their profile.",
+    "sendFailedTitle": "Could not send"
+  },
+  "form": {
+    "heading": "Who would you like to review?",
+    "hint": "Rate 1–5 and add an optional comment. It appears on their profile.",
+    "commentPlaceholder": "Comment (optional)",
+    "submit": "Send"
+  },
+  "emptyPeers": {
+    "title": "No one to review right now",
+    "description": "The organizer must mark attendance as attended first. Then participants and the organizer can rate each other 1–5."
+  },
+  "list": {
+    "heading": "Reviews for this event",
+    "empty": "No reviews yet."
+  }
+}

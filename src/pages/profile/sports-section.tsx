@@ -1,9 +1,10 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import {
-  PROFILE_COPY,
+  useProfileCopy,
   skillKeyFromCode,
   useSkillLevelLabels,
 } from "@/constants/profile";
@@ -17,6 +18,8 @@ type SportsSectionProps = {
 };
 
 export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
+  const { t } = useTranslation("profile");
+  const PROFILE_COPY = useProfileCopy();
   const SKILL_LEVEL_LABELS = useSkillLevelLabels();
   const sports = [...profile.sports].sort(
     (a, b) => Number(b.isPrimary) - Number(a.isPrimary),
@@ -41,11 +44,11 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
             onPress={onPress}
             hitSlop={8}
             accessibilityRole="button"
-            accessibilityLabel="Sporları düzenle"
+            accessibilityLabel={t("sports.editAccessibility")}
             className="min-h-[36px] flex-row items-center gap-1.5 rounded-full px-2 active:opacity-65"
           >
             <Text className="font-body text-xs font-semibold text-brand-primary">
-              Düzenle
+              {t("sports.edit")}
             </Text>
           </Pressable>
         ) : null}
@@ -98,7 +101,7 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
               <Pressable
                 onPress={onAdd}
                 accessibilityRole="button"
-                accessibilityLabel="Spor ekle veya düzenle"
+                accessibilityLabel={t("sports.addAccessibility")}
                 className="h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-primary active:opacity-75"
               >
                 <FontAwesome6 name="plus" size={13} color="#06111a" />
@@ -109,7 +112,7 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
           <View className="flex-row overflow-hidden rounded-[22px] border border-border-default bg-surface-primary">
             <View className="flex-1 items-center px-3 py-4">
               <Text className="font-body text-[10px] uppercase tracking-[1.2px] text-text-tertiary">
-                Ana spor seviyesi
+                {t("sports.primaryLevel")}
               </Text>
               <Text className="mt-2 font-display text-xl text-brand-primary">
                 {primarySport
@@ -119,13 +122,13 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
                   : "—"}
               </Text>
               <Text className="mt-1 font-body text-[10px] text-text-secondary">
-                {primarySport?.sportName ?? "Spor eklenmedi"}
+                {primarySport?.sportName ?? t("sports.noSportAdded")}
               </Text>
             </View>
             <View className="my-3 w-px bg-border-default" />
             <View className="flex-1 items-center px-3 py-4">
               <Text className="font-body text-[10px] uppercase tracking-[1.2px] text-text-tertiary">
-                Oyuncu puanı
+                {t("sports.playerRating")}
               </Text>
               <View className="mt-2 flex-row items-center gap-1.5">
                 <Text className="font-display text-xl text-brand-primary">
@@ -134,7 +137,7 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
                 <FontAwesome6 name="star" size={12} color="#ccff00" />
               </View>
               <Text className="mt-1 font-body text-[10px] text-text-secondary">
-                {reviewCount} değerlendirme
+                {t("sports.reviewCount", { count: reviewCount })}
               </Text>
             </View>
           </View>

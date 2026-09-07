@@ -1,0 +1,24 @@
+{
+  "title": "DEĞERLENDİRME",
+  "loading": "Yükleniyor",
+  "toasts": {
+    "loadFailedTitle": "Yüklenemedi",
+    "sentTitle": "Değerlendirme gönderildi",
+    "sentDescription": "Puan ve yorum karşı tarafın profilinde görünür.",
+    "sendFailedTitle": "Gönderilemedi"
+  },
+  "form": {
+    "heading": "Kimi değerlendirmek istersin?",
+    "hint": "1–5 puan ve isteğe bağlı yorum. Karşı tarafın profilinde görünür.",
+    "commentPlaceholder": "Yorum (opsiyonel)",
+    "submit": "Gönder"
+  },
+  "emptyPeers": {
+    "title": "Şu an puanlanacak kimse yok",
+    "description": "Organizatör önce yoklamada \"Geldi\" işaretlemeli. Sonra gelen katılımcılar ve organizatör birbirini 1–5 puanlayabilir."
+  },
+  "list": {
+    "heading": "Bu etkinlikteki yorumlar",
+    "empty": "Henüz değerlendirme yok."
+  }
+}

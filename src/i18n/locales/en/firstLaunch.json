@@ -1,0 +1,56 @@
+{
+  "welcome": {
+    "title": "LIVE SPORT\nTOGETHER.",
+    "subtitle": "Discover nearby athletes, events, and community—all in one place.",
+    "continue": "Explore Sportner",
+    "loginHint": "Already have an account?",
+    "login": "Sign In"
+  },
+  "intro1": {
+    "title": "FIND YOUR\nEVENT.",
+    "subtitle": "Discover nearby events, pick the one that fits you, and send a join request.",
+    "next": "Continue"
+  },
+  "intro2": {
+    "title": "BUILD YOUR\nTEAM.",
+    "subtitle": "Create events, invite friends, and plan together in event chat.",
+    "next": "Continue"
+  },
+  "intro3": {
+    "title": "SHARE,\nCONNECT.",
+    "subtitle": "Share your sports moments, follow the community, and stay connected through chat.",
+    "next": "Get Started"
+  },
+  "skip": "Skip",
+  "progress": {
+    "stepLabel": "Step {{step}} / 3"
+  },
+  "visuals": {
+    "welcome": {
+      "live": "LIVE",
+      "athletesNearby": "120+ athletes",
+      "openMatches": "8 open matches"
+    },
+    "events": {
+      "today": "TODAY",
+      "openMatchesCount": "4 open matches",
+      "venueTurf": "Indoor pitch",
+      "openBadge": "OPEN",
+      "spotsRemaining": "2 spots left · tonight",
+      "neighborhoodOpen": "Open near you now"
+    },
+    "people": {
+      "eveningMatch": "Evening match",
+      "createdBadge": "CREATED",
+      "invitesSent": "3 invites sent",
+      "eventChat": "EVENT CHAT",
+      "chatQuestion": "Meet at the field at 8:15 PM?",
+      "chatReply": "Sounds good, see you! 🙌"
+    },
+    "community": {
+      "postCaption": "Morning run done! Who moved today? 🏃",
+      "commentsCount": "8 comments",
+      "communityActive": "Community is active"
+    }
+  }
+}

@@ -1,6 +1,8 @@
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 
+import i18n from "@/i18n";
+
 export type PickedMedia = {
   uri: string;
   name: string;
@@ -13,8 +15,8 @@ export type MediaSource = "camera" | "gallery";
 
 export function mediaDeniedMessage(source: MediaSource) {
   return source === "camera"
-    ? "Fotoğraf çekmek için kamera izni vermelisin."
-    : "Fotoğraf seçmek için galeri izni vermelisin.";
+    ? i18n.t("common:media.cameraPermissionDenied")
+    : i18n.t("common:media.galleryPermissionDenied");
 }
 
 function guessVideoType(asset: ImagePicker.ImagePickerAsset): string {

@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Image,
   Pressable,
@@ -20,6 +21,7 @@ import type { ApiComment, ApiPost } from "@/types/social";
 import { POST_MEDIA_TYPE } from "@/types/social";
 import { lightImpact } from "@/utils/haptics";
 import { resolveMediaUrl } from "@/utils/media-url";
+import { formatRelativeTime } from "@/utils/relative-time";
 
 type DiscoverPostProps = {
   post: ApiPost;
@@ -28,18 +30,6 @@ type DiscoverPostProps = {
   onReply: (parent: ApiComment, content: string) => Promise<ApiComment>;
   onAuthorPress: () => void;
 };
-
-function relativeTime(iso: string) {
-  const diff = Date.now() - new Date(iso).getTime();
-  const minutes = Math.max(Math.floor(diff / 60_000), 0);
-  if (minutes < 1) return "şimdi";
-  if (minutes < 60) return `${minutes} dk`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} sa`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days} gün`;
-  return new Date(iso).toLocaleDateString("tr-TR");
-}
 
 export function DiscoverPost({
   post,
@@ -52,6 +42,7 @@ export function DiscoverPost({
   const cardWidth = width - 64;
   const router = useRouter();
   const { showToast } = useToast();
+  const { t } = useTranslation(["social", "events", "common"]);
   const lastTap = useRef(0);
   const [page, setPage] = useState(0);
   const [draft, setDraft] = useState("");
@@ -64,7 +55,11 @@ export function DiscoverPost({
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [heartBurst, setHeartBurst] = useState(false);
 
-  const author = post.username || post.firstName || "Sporcu";
+  const author =
+    post.username || post.firstName || t("events:fallback.athlete");
+  const athleteHandle = post.username || t("events:fallback.athleteHandle");
+  const replyUsername =
+    replyingTo?.username || t("social:fallback.user");
   const images = post.media.filter(
     (item) => item.mediaType === POST_MEDIA_TYPE.image,
   );
@@ -95,7 +90,7 @@ export function DiscoverPost({
         if (!cancelled) {
           showToast({
             type: "error",
-            title: "Yorumlar yüklenemedi",
+            title: t("social:toasts.commentsLoadFailed"),
             description: getApiErrorMessage(error),
           });
         }
@@ -109,7 +104,7 @@ export function DiscoverPost({
     return () => {
       cancelled = true;
     };
-  }, [commentsOpen, post.id, showToast]);
+  }, [commentsOpen, post.id, showToast, t]);
 
   const like = async () => {
     if (isLiking) {
@@ -123,7 +118,7 @@ export function DiscoverPost({
     } catch (error) {
       showToast({
         type: "error",
-        title: "Beğenilemedi",
+        title: t("social:toasts.likeFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -175,7 +170,9 @@ export function DiscoverPost({
     } catch (error) {
       showToast({
         type: "error",
-        title: replyingTo ? "Yanıt gönderilemedi" : "Yorum gönderilemedi",
+        title: replyingTo
+          ? t("social:toasts.replyFailed")
+          : t("social:toasts.commentFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -192,10 +189,10 @@ export function DiscoverPost({
         <Avatar uri={post.profileImageUrl} name={author} size={40} />
         <View className="flex-1">
           <Text className="font-body-bold text-sm text-text-primary">
-            @{post.username || "sporcu"}
+            @{athleteHandle}
           </Text>
           <Text className="mt-0.5 font-mono text-[9px] text-text-tertiary">
-            @{post.username || "sporcu"} · {relativeTime(post.createdAt)}
+            @{athleteHandle} · {formatRelativeTime(post.createdAt)}
           </Text>
         </View>
         <View className="h-8 w-8 items-center justify-center rounded-full bg-background-secondary">
@@ -245,12 +242,12 @@ export function DiscoverPost({
                   />
                 </View>
                 <Text className="text-center font-body text-sm text-text-secondary">
-                  Video paylaşımı
+                  {t("social:videoShare")}
                 </Text>
               </View>
             ) : (
               <Text className="font-display text-2xl text-text-primary">
-                {caption || "Gönderi"}
+                {caption || t("social:fallback.post")}
               </Text>
             )}
           </View>
@@ -339,7 +336,7 @@ export function DiscoverPost({
         {post.commentCount > 0 && !commentsOpen ? (
           <Pressable onPress={() => setCommentsOpen(true)}>
             <Text className="font-body text-sm text-text-secondary">
-              {post.commentCount} yorumu gör
+              {t("social:viewComments", { count: post.commentCount })}
             </Text>
           </Pressable>
         ) : null}
@@ -348,11 +345,11 @@ export function DiscoverPost({
           <View className="gap-2">
             {isLoadingComments ? (
               <Text className="font-body text-xs text-text-secondary">
-                Yorumlar yükleniyor…
+                {t("social:comments.loading")}
               </Text>
             ) : comments.length === 0 ? (
               <Text className="font-body text-xs text-text-secondary">
-                İlk yorumu sen yaz.
+                {t("social:comments.firstComment")}
               </Text>
             ) : (
               <CommentThread
@@ -372,11 +369,11 @@ export function DiscoverPost({
         {replyingTo ? (
           <View className="flex-row items-center justify-between px-1">
             <Text className="flex-1 font-body text-xs text-text-secondary">
-              {replyingTo.username || "kullanıcı"} kullanıcısına yanıt
+              {t("social:comments.replyTo", { username: replyUsername })}
             </Text>
             <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>
               <Text className="font-body text-xs font-semibold text-brand-primary">
-                İptal
+                {t("common:cancel")}
               </Text>
             </Pressable>
           </View>
@@ -389,8 +386,10 @@ export function DiscoverPost({
             onFocus={() => setCommentsOpen(true)}
             placeholder={
               replyingTo
-                ? `${replyingTo.username || "kullanıcı"} kullanıcısına yanıt ver…`
-                : "Yorum yaz…"
+                ? t("social:comments.replyPlaceholder", {
+                    username: replyUsername,
+                  })
+                : t("social:comments.placeholder")
             }
             placeholderTextColor={themeColors.text.tertiary}
             className="min-h-[44px] flex-1 font-body text-sm text-text-primary"
@@ -405,7 +404,7 @@ export function DiscoverPost({
                 draft.trim() ? "text-brand-primary" : "text-text-tertiary"
               }`}
             >
-              Paylaş
+              {t("social:comments.share")}
             </Text>
           </Pressable>
         </View>

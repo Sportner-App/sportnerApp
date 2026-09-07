@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { AppScreen, ScreenHeader, SportLoader } from "@/components";
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -12,6 +13,7 @@ import {
 import type { ApiBadge, ApiQuest } from "@/types/social";
 
 export function BadgesScreen() {
+  const { t } = useTranslation("badges");
   const { showToast } = useToast();
   const [badges, setBadges] = useState<ApiBadge[]>([]);
   const [progress, setProgress] = useState<ApiBadge[]>([]);
@@ -28,30 +30,30 @@ export function BadgesScreen() {
       .catch((error) =>
         showToast({
           type: "error",
-          title: "Yüklenemedi",
+          title: t("toasts.loadFailedTitle"),
           description: getApiErrorMessage(error),
         }),
       )
       .finally(() => setIsLoading(false));
-  }, [showToast]);
+  }, [showToast, t]);
 
   return (
     <AppScreen
-      header={<ScreenHeader title="ROZETLER" showBack />}
+      header={<ScreenHeader title={t("title")} showBack />}
       contentClassName="gap-4 px-6 pt-3"
     >
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} label={t("loading")} />
         </View>
       ) : (
         <>
           <Text className="font-display text-2xl text-text-primary">
-            Rozetlerin
+            {t("sections.earned")}
           </Text>
           {badges.length === 0 ? (
             <Text className="font-body text-sm text-brand-neutral">
-              Henüz rozet kazanmadın.
+              {t("empty.badges")}
             </Text>
           ) : (
             badges.map((badge) => (
@@ -64,29 +66,36 @@ export function BadgesScreen() {
           )}
 
           <Text className="mt-2 font-display text-2xl text-text-primary">
-            İlerleme
+            {t("sections.progress")}
           </Text>
           {progress.map((badge) => (
             <Card
               key={badge.badgeId ?? badge.id}
               title={badge.name}
-              body={`${badge.percent ?? 0}% · ${badge.current ?? 0}/${badge.target ?? 0}`}
+              body={t("progressBody", {
+                percent: badge.percent ?? 0,
+                current: badge.current ?? 0,
+                target: badge.target ?? 0,
+              })}
             />
           ))}
 
           <Text className="mt-2 font-display text-2xl text-text-primary">
-            Görevler
+            {t("sections.quests")}
           </Text>
           {quests.length === 0 ? (
             <Text className="font-body text-sm text-brand-neutral">
-              Aktif görev yok.
+              {t("empty.quests")}
             </Text>
           ) : (
             quests.map((quest) => (
               <Card
                 key={quest.id}
                 title={quest.title}
-                body={`${quest.description} · %${quest.percent}`}
+                body={t("questBody", {
+                  description: quest.description,
+                  percent: quest.percent,
+                })}
               />
             ))
           )}

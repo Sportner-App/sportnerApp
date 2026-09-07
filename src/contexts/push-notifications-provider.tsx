@@ -23,7 +23,7 @@ export function PushNotificationsProvider({ children }: PropsWithChildren) {
     if (!isReady || !isAuthenticated || !isOnboarded || !userId) return;
 
     void registerCurrentDeviceForPush().catch((error) => {
-      console.warn("Push notification kaydı başarısız:", error);
+      console.warn("Push notification registration failed:", error);
     });
   }, [isAuthenticated, isOnboarded, isReady, userId]);
 

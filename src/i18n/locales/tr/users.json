@@ -1,0 +1,41 @@
+{
+  "publicProfile": {
+    "title": "PROFİL",
+    "loading": "Profil yükleniyor",
+    "notFound": "Profil bulunamadı.",
+    "tabs": {
+      "activity": "Aktivite",
+      "reviews": "Yorumlar"
+    },
+    "auth": {
+      "sendFriendRequest": "Arkadaşlık isteği göndermek için giriş yapmalısın.",
+      "reportUser": "Bir kullanıcıyı şikayet etmek için giriş yapmalısın."
+    },
+    "actions": {
+      "accept": "Kabul et",
+      "reject": "Reddet",
+      "message": "Mesaj gönder",
+      "requestSent": "İstek gönderildi",
+      "addFriend": "Arkadaş ekle",
+      "report": "Şikayet et",
+      "block": "Engelle"
+    },
+    "blockSheet": {
+      "title": "Bu kişiyi engellemek istiyor musun?",
+      "subtitle": "Birbirinizi listelerde ve profilde göremezsiniz. İstediğin zaman Gizlilik'ten engeli kaldırabilirsin.",
+      "confirm": "Engelle"
+    },
+    "toasts": {
+      "notFoundTitle": "Profil yok",
+      "requestSentTitle": "İstek gönderildi",
+      "sendFailedTitle": "Gönderilemedi",
+      "friendAddedTitle": "Arkadaş eklendi",
+      "acceptFailedTitle": "Kabul edilemedi",
+      "requestDeclinedTitle": "İstek reddedildi",
+      "rejectFailedTitle": "Reddedilemedi",
+      "chatFailedTitle": "Sohbet açılamadı",
+      "blockedTitle": "Kullanıcı engellendi",
+      "blockFailedTitle": "Engellenemedi"
+    }
+  }
+}

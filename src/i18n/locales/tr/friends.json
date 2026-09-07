@@ -1,0 +1,24 @@
+{
+  "title": "ARKADAŞLAR",
+  "loading": "Yükleniyor",
+  "tabs": {
+    "friends": "Liste",
+    "requests": "İstekler",
+    "suggestions": "Öneriler"
+  },
+  "empty": {
+    "friends": "Henüz arkadaşın yok.",
+    "requests": "Bekleyen istek yok.",
+    "suggestions": "Öneri yok."
+  },
+  "actions": {
+    "accept": "Kabul",
+    "reject": "Reddet"
+  },
+  "sharedSports": "{{count}} ortak spor",
+  "toasts": {
+    "loadFailedTitle": "Yüklenemedi",
+    "acceptFailedTitle": "Kabul edilemedi",
+    "rejectFailedTitle": "Reddedilemedi"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "loading": "Keşfet yükleniyor",
+  "loadFailed": "Keşfet yüklenemedi.",
+  "hero": {
+    "eyebrow": "COMMUNITY",
+    "postCount": "· {{count}} paylaşım",
+    "title": "Hareketi <highlight>paylaş.</highlight>",
+    "subtitle": "Spor anını toplulukla buluştur.",
+    "createLabel": "Gönderi paylaş",
+    "createA11y": "Gönderi paylaş"
+  },
+  "people": {
+    "title": "Yeni sporcular keşfet",
+    "seeAll": "Tümünü gör"
+  },
+  "section": {
+    "title": "Anı yakala",
+    "subtitle": "Topluluktan son paylaşımlar",
+    "postCount": "{{count}} GÖNDERİ"
+  },
+  "empty": {
+    "message": "Henüz paylaşım yok. İlk fotoğrafı sen ekle.",
+    "cta": "Fotoğraf paylaş"
+  },
+  "auth": {
+    "createPost": "Gönderi paylaşmak için giriş yapmalısın.",
+    "like": "Gönderileri beğenmek için giriş yapmalısın.",
+    "comment": "Yorum yapmak için giriş yapmalısın.",
+    "reply": "Yanıt vermek için giriş yapmalısın."
+  }
+}

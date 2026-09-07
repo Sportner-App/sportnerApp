@@ -10,6 +10,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import type { IconName, SportLoaderProps } from "@/types/components";
 
@@ -29,8 +30,10 @@ const ORBIT_ICONS: { name: IconName; color: string }[] = [
 
 export function SportLoader({
   size = 168,
-  label = "Yükleniyor",
+  label,
 }: SportLoaderProps) {
+  const { t } = useTranslation("common");
+  const resolvedLabel = label === undefined ? t("loading") : label;
   const rotation = useSharedValue(0);
   const centerScale = useSharedValue(1);
   const pulseProgress = useSharedValue(0);
@@ -157,10 +160,10 @@ export function SportLoader({
         </Animated.View>
       </View>
 
-      {label ? (
+      {resolvedLabel ? (
         <Animated.View style={labelStyle}>
           <Text className="font-mono text-xs uppercase tracking-[4px] text-brand-primary">
-            {label}
+            {resolvedLabel}
           </Text>
         </Animated.View>
       ) : null}

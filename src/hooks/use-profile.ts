@@ -1,6 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AUTH_BYPASS } from "@/constants/env";
 import { useAuth, useToast } from "@/contexts";
@@ -15,6 +16,7 @@ export function useProfile() {
   const router = useRouter();
   const { signOut } = useAuth();
   const { showToast } = useToast();
+  const { t } = useTranslation(["profile", "settings"]);
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,13 +44,13 @@ export function useProfile() {
       } else {
         setNotFound(false);
         setProfile(null);
-        setError(getApiErrorMessage(err, "Profil yüklenemedi."));
+        setError(getApiErrorMessage(err, t("profile:loadFailed")));
       }
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, []);
+  }, [t]);
 
   const refresh = useCallback(() => load("refresh"), [load]);
 
@@ -75,7 +77,7 @@ export function useProfile() {
       if (signOutError && !AUTH_BYPASS) {
         showToast({
           type: "error",
-          title: "Çıkış yapılamadı",
+          title: t("settings:logoutToasts.failed"),
           description: signOutError.message,
         });
         return;
@@ -83,10 +85,10 @@ export function useProfile() {
 
       showToast({
         type: "success",
-        title: "Çıkış yapıldı",
+        title: t("settings:logoutToasts.success"),
         description: AUTH_BYPASS
-          ? "Auth bypass açık; login ekranına yönlendirildin."
-          : "Görüşmek üzere!",
+          ? t("settings:logoutToasts.bypassDescription")
+          : t("settings:logoutToasts.farewell"),
       });
 
       router.replace("/(auth)/login");

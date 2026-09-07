@@ -1,0 +1,89 @@
+{
+  "eyebrow": "PROFİL KURULUMU",
+  "sports": {
+    "title": "Sporlarını seç.",
+    "subtitle": "Ara, seç, seviyeni ayarla. En az bir spor ve birincil gerekli.",
+    "submit": "Devam Et",
+    "searchPlaceholder": "Spor ara…",
+    "searchHint": "Aramak için en az 2 harf yaz",
+    "selectedEmpty": "Henüz spor seçilmedi",
+    "stepLabel": "1 / 2",
+    "selectedCount_one": "1 spor seçildi",
+    "selectedCount_other": "{{count}} spor seçildi",
+    "primaryBadge": "BİRİNCİL",
+    "tapForLevel": "SEVİYE İÇİN DOKUN",
+    "selectedHint": "Grid'den spor seç — seçtiklerin burada toplanır.",
+    "noResults": "Sonuca uygun spor yok. Aramayı veya grubu değiştir.",
+    "loading": "Sporlar yükleniyor…",
+    "loadFailed": "Sporlar yüklenemedi"
+  },
+  "configSheet": {
+    "subtitle": "Seviyeni seç ve istersen birincil yap.",
+    "levelLabel": "Seviye",
+    "primaryTitle": "Birincil spor",
+    "primaryDescription": "Profilinde ve önerilerde öne çıkar.",
+    "confirm": "Tamam"
+  },
+  "details": {
+    "title": "Seni\ntanıyalım.",
+    "subtitle": "Fotoğraf, tanıtım videosu, şehir ve bio opsiyonel; sonra da ekleyebilirsin.",
+    "submit": "Tamamla",
+    "skip": "Atla ve tamamla",
+    "stepLabel": "2 / 2",
+    "backAccessibility": "Spor seçimine dön",
+    "bioLabel": "Bio",
+    "bioPlaceholder": "Kısaca kendini anlat (opsiyonel)"
+  },
+  "identity": {
+    "title": "Seni\ntanıyalım.",
+    "subtitle": "Profilini oluşturmak için birkaç bilgiye ihtiyacımız var.",
+    "usernamePlaceholder": "Kullanıcı adı",
+    "usernameHelper": "Senin için önerdik, istersen değiştirebilirsin",
+    "firstNamePlaceholder": "Ad",
+    "lastNamePlaceholder": "Soyad (opsiyonel)",
+    "birthDateLabel": "Doğum tarihi",
+    "birthDatePlaceholder": "GG.AA.YYYY",
+    "submit": "Devam et",
+    "validation": {
+      "usernameRequired": "Kullanıcı adı gerekli.",
+      "usernameMinLength": "Kullanıcı adı en az 3 karakter olmalı.",
+      "usernameMaxLength": "Kullanıcı adı en fazla 30 karakter olabilir.",
+      "usernamePattern": "Kullanıcı adı yalnızca harf, rakam, . ve _ içerebilir.",
+      "firstNameRequired": "Ad gerekli.",
+      "firstNameMaxLength": "Ad en fazla 50 karakter olabilir.",
+      "birthDateRequired": "Doğum tarihi gerekli.",
+      "birthDateFormat": "Tarihi GG.AA.YYYY formatında gir.",
+      "birthDateRange": "Yaş 13 ile 120 arasında olmalı."
+    },
+    "saveFailed": "Kaydedilemedi",
+    "saveFailedDescription": "Bilgiler kaydedilemedi."
+  },
+  "media": {
+    "avatarName": "Profil",
+    "selectPhotoAccessibility": "Profil fotoğrafı seç",
+    "changePhoto": "Fotoğrafı değiştir",
+    "addPhotoRequired": "Profil fotoğrafı ekle (zorunlu)",
+    "googlePhotoReady": "Google profil fotoğrafın hazır. İstersen değiştirebilirsin.",
+    "revertToGoogle": "Google fotoğrafına dön",
+    "remove": "Kaldır",
+    "introVideoTitle": "Tanıtım videosu",
+    "introVideoEmpty": "Opsiyonel · en fazla 30 sn"
+  },
+  "toasts": {
+    "successTitle": "Hazırsın",
+    "successDescription": "Profilin hazır. İyi maçlar!",
+    "saveFailed": "Kurulum kaydedilemedi",
+    "completeFailed": "Profil kurulumu tamamlanamadı",
+    "sportRequiredTitle": "Spor gerekli",
+    "sportRequiredDescription": "En az bir spor seç ve birincil sporunu belirle.",
+    "permissionRequired": "İzin gerekli",
+    "videoPermissionRequired": "Video seçmek için galeri izni vermelisin.",
+    "photoRequiredTitle": "Profil fotoğrafı gerekli",
+    "photoRequiredDescription": "Devam etmek için bir profil fotoğrafı seçmelisin.",
+    "completeFailedTitle": "Tamamlanamadı"
+  },
+  "service": {
+    "profileMissing": "Profil bulunamadı. Çıkış yapıp aynı hesapla tekrar kayıt / giriş dene.",
+    "completeFailed": "Profil kurulumu tamamlanamadı"
+  }
+}

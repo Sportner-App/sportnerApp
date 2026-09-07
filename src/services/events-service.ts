@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { apiClient } from "@/lib/api/client";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import type {
@@ -157,7 +158,9 @@ export async function joinEvent(id: string): Promise<EventActionResult> {
     return { error: null, data: response.data };
   } catch (error) {
     return {
-      error: { message: getApiErrorMessage(error, "Katılım başarısız") },
+      error: {
+        message: getApiErrorMessage(error, i18n.t("events:service.joinFailed")),
+      },
       data: null,
     };
   }
@@ -166,14 +169,14 @@ export async function joinEvent(id: string): Promise<EventActionResult> {
 export async function acceptEventInvitation(eventId: string) {
   return eventAction(
     () => apiClient.post(`/api/events/${eventId}/invitations/me/accept`),
-    "Davet kabul edilemedi",
+    i18n.t("events:service.acceptInvitationFailed"),
   );
 }
 
 export async function declineEventInvitation(eventId: string) {
   return eventAction(
     () => apiClient.post(`/api/events/${eventId}/invitations/me/decline`),
-    "Davet reddedilemedi",
+    i18n.t("events:service.declineInvitationFailed"),
   );
 }
 
@@ -199,28 +202,28 @@ export async function removeEventParticipant(
         `/api/events/${eventId}/participants/${participantId}/remove`,
         payload,
       ),
-    "Katılımcı çıkarılamadı",
+    i18n.t("events:service.removeParticipantFailed"),
   );
 }
 
 export async function cancelParticipation(id: string) {
   return eventAction(
     () => apiClient.post(`/api/events/${id}/participants/me/cancel`),
-    "Ayrılma başarısız",
+    i18n.t("events:service.cancelParticipationFailed"),
   );
 }
 
 export async function cancelEvent(id: string) {
   return eventAction(
     () => apiClient.post(`/api/events/${id}/cancel`),
-    "Etkinlik iptal edilemedi",
+    i18n.t("events:service.cancelEventFailed"),
   );
 }
 
 export async function completeEvent(id: string) {
   return eventAction(
     () => apiClient.post(`/api/events/${id}/complete`),
-    "Etkinlik tamamlanamadı",
+    i18n.t("events:service.completeEventFailed"),
   );
 }
 
@@ -228,7 +231,7 @@ export async function approveParticipant(eventId: string, userId: string) {
   return eventAction(
     () =>
       apiClient.post(`/api/events/${eventId}/participants/${userId}/approve`),
-    "Onaylanamadı",
+    i18n.t("events:service.approveFailed"),
   );
 }
 
@@ -236,14 +239,14 @@ export async function rejectParticipant(eventId: string, userId: string) {
   return eventAction(
     () =>
       apiClient.post(`/api/events/${eventId}/participants/${userId}/reject`),
-    "Reddedilemedi",
+    i18n.t("events:service.rejectFailed"),
   );
 }
 
 export async function promoteFromWaitlist(eventId: string, userId: string) {
   return eventAction(
     () => apiClient.post(`/api/events/${eventId}/waitlist/${userId}/promote`),
-    "Listeden alınamadı",
+    i18n.t("events:service.promoteWaitlistFailed"),
   );
 }
 
@@ -251,7 +254,7 @@ export async function confirmAttendance(eventId: string, userId: string) {
   return eventAction(
     () =>
       apiClient.post(`/api/events/${eventId}/participants/${userId}/attended`),
-    "Yoklama kaydedilemedi",
+    i18n.t("events:service.attendanceFailed"),
   );
 }
 
@@ -259,7 +262,7 @@ export async function markNoShow(eventId: string, userId: string) {
   return eventAction(
     () =>
       apiClient.post(`/api/events/${eventId}/participants/${userId}/no-show`),
-    "Yoklama kaydedilemedi",
+    i18n.t("events:service.attendanceFailed"),
   );
 }
 
@@ -278,7 +281,7 @@ export async function updateEventDetails(
 ) {
   return eventAction(
     () => apiClient.put(`/api/events/${eventId}`, payload),
-    "Etkinlik güncellenemedi",
+    i18n.t("events:service.updateDetailsFailed"),
   );
 }
 
@@ -288,7 +291,7 @@ export async function updateEventSchedule(
 ) {
   return eventAction(
     () => apiClient.put(`/api/events/${eventId}/schedule`, payload),
-    "Tarih güncellenemedi",
+    i18n.t("events:service.updateScheduleFailed"),
   );
 }
 
@@ -298,7 +301,7 @@ export async function updateEventLocation(
 ) {
   return eventAction(
     () => apiClient.put(`/api/events/${eventId}/location`, payload),
-    "Konum güncellenemedi",
+    i18n.t("events:service.updateLocationFailed"),
   );
 }
 
@@ -308,7 +311,7 @@ export async function updateEventCapacity(
 ) {
   return eventAction(
     () => apiClient.put(`/api/events/${eventId}/capacity`, { maxParticipants }),
-    "Kapasite güncellenemedi",
+    i18n.t("events:service.updateCapacityFailed"),
   );
 }
 
@@ -318,7 +321,7 @@ export async function updateEventFee(
 ) {
   return eventAction(
     () => apiClient.put(`/api/events/${eventId}/fee`, payload),
-    "Ücret bilgisi güncellenemedi",
+    i18n.t("events:service.updateFeeFailed"),
   );
 }
 
@@ -357,26 +360,38 @@ export async function createEvent(
   const address = payload.address.trim();
 
   if (!title) {
-    return { data: null, error: { message: "Başlık zorunlu." } };
+    return {
+      data: null,
+      error: { message: i18n.t("events:service.validation.titleRequired") },
+    };
   }
 
   if (title.length > 150) {
     return {
       data: null,
-      error: { message: "Başlık en fazla 150 karakter olabilir." },
+      error: { message: i18n.t("events:service.validation.titleTooLong") },
     };
   }
 
   if (!payload.sportId) {
-    return { data: null, error: { message: "Spor seçimi zorunlu." } };
+    return {
+      data: null,
+      error: { message: i18n.t("events:service.validation.sportRequired") },
+    };
   }
 
   if (payload.durationMinutes <= 0) {
-    return { data: null, error: { message: "Süre 0'dan büyük olmalı." } };
+    return {
+      data: null,
+      error: { message: i18n.t("events:service.validation.durationPositive") },
+    };
   }
 
   if (!address) {
-    return { data: null, error: { message: "Adres zorunlu." } };
+    return {
+      data: null,
+      error: { message: i18n.t("events:service.validation.addressRequired") },
+    };
   }
 
   if (
@@ -385,13 +400,16 @@ export async function createEvent(
     payload.longitude < -180 ||
     payload.longitude > 180
   ) {
-    return { data: null, error: { message: "Konum koordinatları geçersiz." } };
+    return {
+      data: null,
+      error: { message: i18n.t("events:service.validation.coordinatesInvalid") },
+    };
   }
 
   if (payload.maxParticipants <= 0) {
     return {
       data: null,
-      error: { message: "Oyuncu sayısı 0'dan büyük olmalı." },
+      error: { message: i18n.t("events:service.validation.capacityPositive") },
     };
   }
 
@@ -405,7 +423,7 @@ export async function createEvent(
     return {
       data: null,
       error: {
-        message: "Katılım yaş aralığı 13–120 arasında ve sıralı olmalı.",
+        message: i18n.t("events:service.validation.ageRangeInvalid"),
       },
     };
   }
@@ -416,7 +434,7 @@ export async function createEvent(
       return {
         data: null,
         error: {
-          message: "Ücretli etkinlik için 0'dan büyük bir fiyat gir.",
+          message: i18n.t("events:service.validation.paidFeeRequired"),
         },
       };
     }
@@ -466,13 +484,15 @@ export async function createEvent(
     if (!eventId) {
       return {
         data: null,
-        error: { message: "Etkinlik oluşturuldu ama kimlik alınamadı." },
+        error: { message: i18n.t("events:service.createMissingId") },
       };
     }
   } catch (error) {
     return {
       data: null,
-      error: { message: getApiErrorMessage(error, "Etkinlik oluşturulamadı") },
+      error: {
+        message: getApiErrorMessage(error, i18n.t("events:service.createFailed")),
+      },
     };
   }
 
@@ -490,7 +510,7 @@ export async function createEvent(
       error: {
         message: getApiErrorMessage(
           error,
-          "Etkinlik taslak olarak kaldı; yayınlanamadı.",
+          i18n.t("events:service.publishFailed"),
         ),
       },
     };

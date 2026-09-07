@@ -1,6 +1,7 @@
 import * as AppleAuthentication from "expo-apple-authentication";
 import Constants from "expo-constants";
 
+import i18n from "@/i18n";
 import { apiClient } from "@/lib/api/client";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { clearCurrentDevicePushToken } from "@/services/push-notifications-service";
@@ -58,20 +59,20 @@ function validateUsername(
   const normalized = normalizeUsername(username);
 
   if (!normalized) {
-    return "Kullanıcı adı gerekli.";
+    return i18n.t("auth:validation.usernameRequired");
   }
 
   if (normalized.length > 30) {
-    return "Kullanıcı adı en fazla 30 karakter olabilir.";
+    return i18n.t("auth:validation.usernameTooLong", { max: 30 });
   }
 
   if (forRegister) {
     if (normalized.length < 3) {
-      return "Kullanıcı adı en az 3 karakter olmalı.";
+      return i18n.t("auth:validation.usernameTooShort", { min: 3 });
     }
 
     if (!USERNAME_PATTERN.test(normalized)) {
-      return "Kullanıcı adı yalnızca harf, rakam, . ve _ içerebilir.";
+      return i18n.t("auth:validation.usernameInvalidChars");
     }
   }
 
@@ -83,15 +84,15 @@ function validatePassword(
   forRegister: boolean,
 ): string | null {
   if (!password) {
-    return "Şifre gerekli.";
+    return i18n.t("auth:validation.passwordRequired");
   }
 
   if (password.length > 128) {
-    return "Şifre çok uzun.";
+    return i18n.t("auth:validation.passwordTooLong");
   }
 
   if (forRegister && password.length < 8) {
-    return "Şifre en az 8 karakter olmalı.";
+    return i18n.t("auth:validation.passwordTooShort", { min: 8 });
   }
 
   return null;
@@ -103,7 +104,7 @@ async function persistAuthSession(
   names?: { firstName?: string; lastName?: string },
 ): Promise<AuthResult> {
   if (!body?.accessToken || !body?.userId || !body?.refreshToken) {
-    throw new Error("API geçersiz response döndü: token veya userId eksik");
+    throw new Error(i18n.t("auth:service.invalidApiResponse"));
   }
 
   const user = toAuthUser(body, username, names);
@@ -138,7 +139,7 @@ async function persistExternalAuthSession(
   },
 ): Promise<AuthResult> {
   if (!body?.accessToken || !body?.userId || !body?.refreshToken) {
-    throw new Error("API geçersiz response döndü: token veya userId eksik");
+    throw new Error(i18n.t("auth:service.invalidApiResponse"));
   }
 
   const user = toAuthUser(body, undefined, hints);
@@ -201,7 +202,7 @@ function toExternalRegistration(body: ExternalSignInResponse) {
     !body.registrationTokenExpiresAt ||
     !body.suggestedUsername
   ) {
-    throw new Error("API geçersiz sosyal kayıt bilgisi döndürdü.");
+    throw new Error(i18n.t("auth:service.invalidExternalRegistration"));
   }
 
   return {
@@ -227,7 +228,7 @@ async function handleExternalSignInResponse(
   }
 
   if (!body.authentication) {
-    throw new Error("API geçersiz sosyal giriş cevabı döndürdü.");
+    throw new Error(i18n.t("auth:service.invalidExternalSignIn"));
   }
 
   const result = await persistExternalAuthSession(body.authentication);
@@ -247,9 +248,7 @@ function loadGoogleSignInModule(): GoogleSignInModule {
     // not crash the entire application before the user even taps Google sign-in.
     return require("@react-native-google-signin/google-signin") as GoogleSignInModule;
   } catch {
-    throw new Error(
-      "Google ile giriş bu uygulama sürümünde bulunmuyor. Native uygulamayı yeniden derleyip yükle.",
-    );
+    throw new Error(i18n.t("auth:service.googleNotAvailable"));
   }
 }
 
@@ -290,7 +289,7 @@ export async function signInWithGoogle(): Promise<ExternalAuthResult | null> {
       return {
         data: null,
         registration: null,
-        error: { message: "Google kimlik bilgisi alınamadı." },
+        error: { message: i18n.t("auth:service.googleTokenFailed") },
       };
     }
 
@@ -314,7 +313,10 @@ export async function signInWithGoogle(): Promise<ExternalAuthResult | null> {
       data: null,
       registration: null,
       error: {
-        message: getApiErrorMessage(error, "Google ile giriş başarısız"),
+        message: getApiErrorMessage(
+          error,
+          i18n.t("auth:service.googleSignInFailed"),
+        ),
       },
     };
   }
@@ -337,7 +339,7 @@ export async function signInWithApple(): Promise<ExternalAuthResult | null> {
       return {
         data: null,
         registration: null,
-        error: { message: "Apple kimlik bilgisi alınamadı." },
+        error: { message: i18n.t("auth:service.appleTokenFailed") },
       };
     }
 
@@ -364,7 +366,10 @@ export async function signInWithApple(): Promise<ExternalAuthResult | null> {
       data: null,
       registration: null,
       error: {
-        message: getApiErrorMessage(error, "Apple ile giriş başarısız"),
+        message: getApiErrorMessage(
+          error,
+          i18n.t("auth:service.appleSignInFailed"),
+        ),
       },
     };
   }
@@ -395,7 +400,10 @@ export async function completeExternalRegistration(
     return {
       data: null,
       error: {
-        message: getApiErrorMessage(error, "Sosyal kayıt tamamlanamadı"),
+        message: getApiErrorMessage(
+          error,
+          i18n.t("auth:service.externalRegistrationFailed"),
+        ),
       },
     };
   }
@@ -416,7 +424,10 @@ export async function login({
     return {
       data: null,
       error: {
-        message: usernameError || passwordError || "Geçersiz bilgiler.",
+        message:
+          usernameError ||
+          passwordError ||
+          i18n.t("auth:service.invalidCredentials"),
       },
     };
   }
@@ -434,7 +445,9 @@ export async function login({
   } catch (error) {
     return {
       data: null,
-      error: { message: getApiErrorMessage(error, "Giriş başarısız") },
+      error: {
+        message: getApiErrorMessage(error, i18n.t("auth:service.loginFailed")),
+      },
     };
   }
 }
@@ -461,7 +474,10 @@ export async function register({
     return {
       data: null,
       error: {
-        message: usernameError || passwordError || "Geçersiz bilgiler.",
+        message:
+          usernameError ||
+          passwordError ||
+          i18n.t("auth:service.invalidCredentials"),
       },
     };
   }
@@ -469,35 +485,39 @@ export async function register({
   if (!trimmedFirstName) {
     return {
       data: null,
-      error: { message: "Ad gerekli." },
+      error: { message: i18n.t("auth:validation.firstNameRequired") },
     };
   }
 
   if (trimmedFirstName.length > 50) {
     return {
       data: null,
-      error: { message: "Ad en fazla 50 karakter olabilir." },
+      error: {
+        message: i18n.t("auth:validation.firstNameTooLong", { max: 50 }),
+      },
     };
   }
 
   if (trimmedLastName && trimmedLastName.length > 50) {
     return {
       data: null,
-      error: { message: "Soyad en fazla 50 karakter olabilir." },
+      error: {
+        message: i18n.t("auth:validation.lastNameTooLong", { max: 50 }),
+      },
     };
   }
 
   if (!Number.isInteger(gender) || gender < 0 || gender > 2) {
     return {
       data: null,
-      error: { message: "Geçerli bir cinsiyet seçmelisin." },
+      error: { message: i18n.t("auth:service.genderInvalid") },
     };
   }
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
     return {
       data: null,
-      error: { message: "Geçerli bir doğum tarihi girmelisin." },
+      error: { message: i18n.t("auth:service.birthDateInvalid") },
     };
   }
 
@@ -521,7 +541,9 @@ export async function register({
   } catch (error) {
     return {
       data: null,
-      error: { message: getApiErrorMessage(error, "Kayıt başarısız") },
+      error: {
+        message: getApiErrorMessage(error, i18n.t("auth:service.registerFailed")),
+      },
     };
   }
 }
@@ -549,7 +571,9 @@ export async function signOut(): Promise<AuthActionResult> {
     return { error: null };
   } catch (error) {
     return {
-      error: { message: getApiErrorMessage(error, "Logout başarısız") },
+      error: {
+        message: getApiErrorMessage(error, i18n.t("auth:service.logoutFailed")),
+      },
     };
   }
 }

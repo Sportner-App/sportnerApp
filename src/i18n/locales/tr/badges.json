@@ -1,0 +1,18 @@
+{
+  "title": "ROZETLER",
+  "loading": "Yükleniyor",
+  "sections": {
+    "earned": "Rozetlerin",
+    "progress": "İlerleme",
+    "quests": "Görevler"
+  },
+  "empty": {
+    "badges": "Henüz rozet kazanmadın.",
+    "quests": "Aktif görev yok."
+  },
+  "progressBody": "{{percent}}% · {{current}}/{{target}}",
+  "questBody": "{{description}} · %{{percent}}",
+  "toasts": {
+    "loadFailedTitle": "Yüklenemedi"
+  }
+}

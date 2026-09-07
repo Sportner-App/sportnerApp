@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, Text, View } from "react-native";
 
 import {
@@ -26,6 +27,7 @@ type Tab = "home" | "explore";
 export function FeedScreen() {
   const router = useRouter();
   const { showToast } = useToast();
+  const { t } = useTranslation(["feed", "social"]);
   const [tab, setTab] = useState<Tab>("home");
   const [posts, setPosts] = useState<ApiPost[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
@@ -50,7 +52,7 @@ export function FeedScreen() {
       } catch (error) {
         showToast({
           type: "error",
-          title: "Akış yüklenemedi",
+          title: t("feed:toasts.loadFailed"),
           description: getApiErrorMessage(error),
         });
       } finally {
@@ -59,7 +61,7 @@ export function FeedScreen() {
         setIsLoadingMore(false);
       }
     },
-    [cursor, showToast, tab],
+    [cursor, showToast, t, tab],
   );
 
   useEffect(() => {
@@ -78,14 +80,16 @@ export function FeedScreen() {
     <AppScreen
       header={
         <ScreenHeader
-          title="AKIŞ"
+          title={t("feed:header.title")}
           showBack
           right={
             <Pressable
               onPress={() => router.push("/posts/create")}
               className="px-1"
             >
-              <Text className="font-body text-xs text-brand-primary">Yaz</Text>
+              <Text className="font-body text-xs text-brand-primary">
+                {t("feed:header.write")}
+              </Text>
             </Pressable>
           }
         />
@@ -102,8 +106,8 @@ export function FeedScreen() {
     >
       <SegmentedTabs
         options={[
-          { key: "home", label: "Takip" },
-          { key: "explore", label: "Keşfet" },
+          { key: "home", label: t("feed:tabs.home") },
+          { key: "explore", label: t("feed:tabs.explore") },
         ]}
         value={tab}
         onChange={(next) => {
@@ -114,11 +118,11 @@ export function FeedScreen() {
 
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Akış yükleniyor" />
+          <SportLoader size={120} label={t("feed:loading")} />
         </View>
       ) : posts.length === 0 ? (
         <Text className="py-10 text-center font-body text-sm text-brand-neutral">
-          Henüz gönderi yok.
+          {t("feed:empty")}
         </Text>
       ) : (
         posts.map((post) => (
@@ -135,7 +139,7 @@ export function FeedScreen() {
               onPress={() => router.push(`/users/${post.userId}`)}
             />
             <Text className="font-body text-sm text-text-primary">
-              {post.content || "Gönderi"}
+              {post.content || t("social:fallback.post")}
             </Text>
             <View className="flex-row gap-4">
               <Pressable
@@ -150,18 +154,18 @@ export function FeedScreen() {
                   } catch (error) {
                     showToast({
                       type: "error",
-                      title: "İşlem başarısız",
+                      title: t("social:toasts.actionFailed"),
                       description: getApiErrorMessage(error),
                     });
                   }
                 }}
               >
                 <Text className="font-mono text-xs text-brand-primary">
-                  {post.likeCount} beğeni
+                  {t("social:likesCount", { count: post.likeCount })}
                 </Text>
               </Pressable>
               <Text className="font-mono text-xs text-brand-neutral">
-                {post.commentCount} yorum
+                {t("social:commentsCount", { count: post.commentCount })}
               </Text>
             </View>
           </Pressable>
@@ -170,7 +174,7 @@ export function FeedScreen() {
 
       {isLoadingMore ? (
         <View className="items-center py-5">
-          <SportLoader size={64} label="Akış yükleniyor" />
+          <SportLoader size={64} label={t("feed:loading")} />
         </View>
       ) : null}
     </AppScreen>

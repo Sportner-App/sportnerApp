@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { apiClient } from "@/lib/api/client";
 import { getApiErrorMessage, normalizeApiError } from "@/lib/api/errors";
 import type { UserSportResponse } from "@/types/onboarding";
@@ -129,9 +130,7 @@ export async function upsertOnboardingProfileDetails(payload: {
     const username = payload.username?.trim();
     const firstName = payload.firstName?.trim() || username;
     if (!username || !firstName) {
-      throw new Error(
-        "Profil bulunamadı. Çıkış yapıp aynı hesapla tekrar kayıt / giriş dene.",
-      );
+      throw new Error(i18n.t("onboarding:service.profileMissing"));
     }
 
     await createMyProfile({
@@ -165,7 +164,10 @@ export async function completeOnboarding(): Promise<{
   } catch (error) {
     return {
       error: {
-        message: getApiErrorMessage(error, "Profil kurulumu tamamlanamadı"),
+        message: getApiErrorMessage(
+          error,
+          i18n.t("onboarding:service.completeFailed"),
+        ),
       },
     };
   }

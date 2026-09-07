@@ -5,6 +5,7 @@ import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -16,6 +17,7 @@ import {
 } from "@/components";
 import { themeColors } from "@/constants/theme";
 import { useToast } from "@/contexts";
+import { getCurrentLocale } from "@/i18n";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
   getOrganization,
@@ -45,6 +47,7 @@ import {
 } from "./organization-member-row";
 
 export function OrganizationDetailScreen() {
+  const { t } = useTranslation(["organizations", "common"]);
   const router = useRouter();
   const { showToast } = useToast();
   const { id: rawId } = useLocalSearchParams<{ id: string }>();
@@ -74,7 +77,7 @@ export function OrganizationDetailScreen() {
             setEvents([]);
             showToast({
               type: "error",
-              title: "Etkinlikler yüklenemedi",
+              title: t("organizations:detail.eventsLoadFailed"),
               description: getApiErrorMessage(error),
             });
           }
@@ -85,7 +88,7 @@ export function OrganizationDetailScreen() {
             setMembers([]);
             showToast({
               type: "error",
-              title: "Üyeler yüklenemedi",
+              title: t("organizations:detail.membersLoadFailed"),
               description: getApiErrorMessage(error),
             });
           }
@@ -96,7 +99,7 @@ export function OrganizationDetailScreen() {
       } catch (error) {
         showToast({
           type: "error",
-          title: "Yüklenemedi",
+          title: t("organizations:detail.loadFailed"),
           description: getApiErrorMessage(error),
         });
         setOrganization(null);
@@ -105,7 +108,7 @@ export function OrganizationDetailScreen() {
         setIsRefreshing(false);
       }
     },
-    [organizationId, showToast],
+    [organizationId, showToast, t],
   );
 
   useFocusEffect(
@@ -120,7 +123,7 @@ export function OrganizationDetailScreen() {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     showToast({
       type: "success",
-      title: "Kod kopyalandı",
+      title: t("organizations:detail.codeCopied"),
       description: organization.inviteCode,
     });
   };
@@ -132,7 +135,7 @@ export function OrganizationDetailScreen() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Paylaşılamadı",
+        title: t("organizations:detail.shareFailed"),
         description: getApiErrorMessage(error),
       });
     }
@@ -148,7 +151,7 @@ export function OrganizationDetailScreen() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "WhatsApp açılamadı",
+        title: t("organizations:detail.whatsappFailed"),
         description: getApiErrorMessage(error),
       });
     }
@@ -159,11 +162,14 @@ export function OrganizationDetailScreen() {
     try {
       const next = await rotateInviteCode(organization.id);
       setOrganization(next);
-      showToast({ type: "success", title: "Yeni kod oluşturuldu" });
+      showToast({
+        type: "success",
+        title: t("organizations:detail.codeRotated"),
+      });
     } catch (error) {
       showToast({
         type: "error",
-        title: "Kod yenilenemedi",
+        title: t("organizations:detail.codeRotateFailed"),
         description: getApiErrorMessage(error),
       });
     }
@@ -171,27 +177,34 @@ export function OrganizationDetailScreen() {
 
   const confirmLeave = () => {
     if (!organization) return;
-    Alert.alert("Ayrıl", "Bu organizasyondan ayrılmak istiyor musun?", [
-      { text: "Vazgeç", style: "cancel" },
-      {
-        text: "Ayrıl",
-        style: "destructive",
-        onPress: () => {
-          void leaveOrganization(organization.id)
-            .then(() => {
-              showToast({ type: "success", title: "Organizasyondan ayrıldın" });
-              router.replace("/organizations");
-            })
-            .catch((error) => {
-              showToast({
-                type: "error",
-                title: "Ayrılamadın",
-                description: getApiErrorMessage(error),
+    Alert.alert(
+      t("organizations:detail.leaveTitle"),
+      t("organizations:detail.leaveMessage"),
+      [
+        { text: t("common:cancel"), style: "cancel" },
+        {
+          text: t("organizations:detail.leaveConfirm"),
+          style: "destructive",
+          onPress: () => {
+            void leaveOrganization(organization.id)
+              .then(() => {
+                showToast({
+                  type: "success",
+                  title: t("organizations:detail.left"),
+                });
+                router.replace("/organizations");
+              })
+              .catch((error) => {
+                showToast({
+                  type: "error",
+                  title: t("organizations:detail.leaveFailed"),
+                  description: getApiErrorMessage(error),
+                });
               });
-            });
+          },
         },
-      },
-    ]);
+      ],
+    );
   };
 
   const memberPreview = useMemo(
@@ -221,7 +234,7 @@ export function OrganizationDetailScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="ORGANİZASYON" showBack />}
+      header={<ScreenHeader title={t("organizations:detail.title")} showBack />}
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="gap-4 px-6 pt-3"
       refreshControl={
@@ -233,11 +246,11 @@ export function OrganizationDetailScreen() {
     >
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} />
         </View>
       ) : !organization ? (
         <Text className="py-8 text-center font-body text-sm text-brand-neutral">
-          Organizasyon bulunamadı.
+          {t("organizations:detail.notFound")}
         </Text>
       ) : (
         <>
@@ -254,11 +267,10 @@ export function OrganizationDetailScreen() {
           {organization.myStatus === ORGANIZATION_STATUS.pending ? (
             <View className="rounded-3xl border border-amber-300/30 bg-amber-400/10 p-4">
               <Text className="font-body text-sm font-semibold text-amber-200">
-                Onay bekleniyor
+                {t("organizations:detail.pendingTitle")}
               </Text>
               <Text className="mt-1 font-body text-sm text-text-secondary">
-                Kurucu veya yönetici isteğini onaylayınca etkinlikleri
-                görebilirsin.
+                {t("organizations:detail.pendingDescription")}
               </Text>
             </View>
           ) : (
@@ -266,7 +278,7 @@ export function OrganizationDetailScreen() {
               {organization.inviteCode ? (
                 <View className="rounded-3xl border border-border-default bg-surface-primary p-4">
                   <Text className="font-body text-xs text-text-tertiary">
-                    Davet kodu
+                    {t("organizations:detail.inviteCodeLabel")}
                   </Text>
                   <View className="mt-2 flex-row items-center gap-2">
                     <Pressable
@@ -282,7 +294,9 @@ export function OrganizationDetailScreen() {
                     </Pressable>
                     <Pressable
                       accessibilityRole="button"
-                      accessibilityLabel="Davet kodunu kopyala"
+                      accessibilityLabel={t(
+                        "organizations:detail.copyCodeAccessibility",
+                      )}
                       onPress={() => void copyCode()}
                       hitSlop={8}
                       className="h-12 w-12 items-center justify-center rounded-2xl border border-border-default bg-surface-secondary active:bg-surface-primary"
@@ -295,11 +309,15 @@ export function OrganizationDetailScreen() {
                     </Pressable>
                   </View>
                   <Text className="mt-2 font-body text-xs text-text-tertiary">
-                    Koda dokunarak da kopyalayabilirsin.
+                    {t("organizations:detail.copyCodeHint")}
                   </Text>
                   <View className="mt-3 flex-row gap-2">
                     <View className="flex-1">
-                      <Button label="Paylaş" size="sm" onPress={shareCode} />
+                      <Button
+                        label={t("organizations:detail.share")}
+                        size="sm"
+                        onPress={shareCode}
+                      />
                     </View>
                     <View className="flex-1">
                       <Button
@@ -312,7 +330,7 @@ export function OrganizationDetailScreen() {
                     {organization.canRotateInviteCode ? (
                       <View className="flex-1">
                         <Button
-                          label="Yenile"
+                          label={t("organizations:detail.refreshCode")}
                           variant="outline"
                           size="sm"
                           onPress={rotateCode}
@@ -325,7 +343,7 @@ export function OrganizationDetailScreen() {
 
               <View className="flex-row items-center justify-between">
                 <Text className="font-display text-lg text-text-primary">
-                  Etkinlikler
+                  {t("organizations:detail.eventsTitle")}
                 </Text>
                 {organization.canCreateEvents ? (
                   <Pressable
@@ -338,7 +356,7 @@ export function OrganizationDetailScreen() {
                     hitSlop={8}
                   >
                     <Text className="font-body text-[11px] font-semibold text-brand-primary">
-                      Oluştur
+                      {t("organizations:detail.createEvent")}
                     </Text>
                   </Pressable>
                 ) : null}
@@ -346,11 +364,11 @@ export function OrganizationDetailScreen() {
 
               {events.length === 0 ? (
                 <Text className="font-body text-sm text-text-tertiary">
-                  Bu organizasyona ait yayınlanmış etkinlik yok.
+                  {t("organizations:detail.noEvents")}
                 </Text>
               ) : (
                 <Button
-                  label="Organizasyona bağlı etkinlikleri gör"
+                  label={t("organizations:detail.viewLinkedEvents")}
                   variant="outline"
                   icon="calendar-day"
                   onPress={() =>
@@ -368,12 +386,14 @@ export function OrganizationDetailScreen() {
               <View className="flex-row items-center justify-between">
                 <View>
                   <Text className="font-display text-lg text-text-primary">
-                    Üyeler
+                    {t("organizations:detail.membersTitle")}
                   </Text>
                   <Text className="font-body text-xs text-text-tertiary">
-                    {approvedCount} üye
+                    {t("organizations:detail.memberCount", {
+                      count: approvedCount,
+                    })}
                     {organization.canManageMembers && pendingCount > 0
-                      ? ` · ${pendingCount} onay bekliyor`
+                      ? ` · ${t("organizations:detail.pendingCount", { count: pendingCount })}`
                       : ""}
                   </Text>
                 </View>
@@ -394,7 +414,7 @@ export function OrganizationDetailScreen() {
                     }
                   >
                     <Text className="font-body text-[11px] font-semibold text-brand-primary">
-                      Tümünü gör
+                      {t("organizations:detail.seeAll")}
                     </Text>
                   </Pressable>
                 ) : null}
@@ -402,7 +422,7 @@ export function OrganizationDetailScreen() {
 
               {memberPreview.length === 0 ? (
                 <Text className="font-body text-sm text-text-tertiary">
-                  Henüz üye yok.
+                  {t("organizations:detail.noMembers")}
                 </Text>
               ) : (
                 memberPreview.map((member) => (
@@ -429,14 +449,16 @@ export function OrganizationDetailScreen() {
                   className="items-center rounded-2xl border border-border-default bg-surface-primary py-3 active:bg-surface-secondary"
                 >
                   <Text className="font-body text-sm font-semibold text-brand-primary">
-                    +{members.length - memberPreview.length} üye daha
+                    {t("organizations:detail.moreMembers", {
+                      count: members.length - memberPreview.length,
+                    })}
                   </Text>
                 </Pressable>
               ) : null}
 
               {organization.canLeave ? (
                 <Button
-                  label="Organizasyondan ayrıl"
+                  label={t("organizations:detail.leaveOrganization")}
                   variant="danger"
                   onPress={confirmLeave}
                 />
@@ -458,10 +480,10 @@ function OrganizationHero({
   eventCount: number;
   onEdit?: () => void;
 }) {
-  // Production may still contain legacy organization rows whose name is null.
-  // Keep the detail route renderable instead of crashing on String.trim().
-  const organizationName = organization.name?.trim() || "Organizasyon";
-  const initial = organizationName.charAt(0).toLocaleUpperCase("tr-TR");
+  const { t } = useTranslation("organizations");
+  const organizationName =
+    organization.name?.trim() || t("fallback.name");
+  const initial = organizationName.charAt(0).toLocaleUpperCase(getCurrentLocale());
 
   return (
     <View className="relative overflow-hidden rounded-[30px] border border-border-default bg-surface-primary p-5">
@@ -497,7 +519,7 @@ function OrganizationHero({
         {onEdit ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Organizasyon bilgilerini düzenle"
+            accessibilityLabel={t("detail.editAccessibility")}
             hitSlop={8}
             onPress={onEdit}
             className="h-10 w-10 items-center justify-center rounded-full border border-border-strong bg-background-secondary/80 active:opacity-70"
@@ -517,21 +539,20 @@ function OrganizationHero({
         </Text>
       ) : (
         <Text className="mt-5 font-body text-sm leading-5 text-text-tertiary">
-          Spor topluluğunu büyüt, üyelerini bir araya getir ve etkinliklerini
-          birlikte yönet.
+          {t("detail.defaultDescription")}
         </Text>
       )}
 
       <View className="mt-5 flex-row border-t border-border-default pt-4">
         <OrganizationStat
           value={organization.approvedMemberCount}
-          label="Üye"
+          label={t("detail.statMembers")}
           icon="user-group"
         />
         <View className="mx-4 h-9 w-px bg-border-default" />
         <OrganizationStat
           value={eventCount}
-          label="Etkinlik"
+          label={t("detail.statEvents")}
           icon="calendar-day"
         />
       </View>

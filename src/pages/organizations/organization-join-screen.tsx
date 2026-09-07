@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { AppScreen, Button, Input, ScreenHeader } from "@/components";
 import { useToast } from "@/contexts";
@@ -9,6 +10,7 @@ import { joinOrganization } from "@/services/organizations-service";
 import { resolveRouteParam } from "@/utils/route-params";
 
 export function OrganizationJoinScreen() {
+  const { t } = useTranslation("organizations");
   const router = useRouter();
   const { showToast } = useToast();
   const { inviteCode: inviteCodeParam } = useLocalSearchParams<{
@@ -32,8 +34,8 @@ export function OrganizationJoinScreen() {
     if (code.length !== 8) {
       showToast({
         type: "error",
-        title: "Kod geçersiz",
-        description: "Davet kodu 8 karakter olmalı.",
+        title: t("join.invalidCodeTitle"),
+        description: t("join.invalidCodeDescription"),
       });
       return;
     }
@@ -43,8 +45,8 @@ export function OrganizationJoinScreen() {
       const joined = await joinOrganization(code);
       showToast({
         type: "success",
-        title: "İstek gönderildi",
-        description: "Kurucu veya yönetici onaylayınca üye olursun.",
+        title: t("join.requestSentTitle"),
+        description: t("join.requestSentDescription"),
       });
       if (joined?.id) {
         router.replace(`/organizations/${joined.id}`);
@@ -54,7 +56,7 @@ export function OrganizationJoinScreen() {
     } catch (error) {
       showToast({
         type: "error",
-        title: "Katılınamadı",
+        title: t("join.joinFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -64,26 +66,26 @@ export function OrganizationJoinScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="KATIL" showBack />}
+      header={<ScreenHeader title={t("join.title")} showBack />}
       contentClassName="gap-4 px-6 pt-3"
     >
       <Text className="font-display text-3xl text-text-primary">
-        Davet kodu
+        {t("join.heading")}
       </Text>
       <Text className="font-body text-sm text-text-secondary">
-        Organizasyon kurucusundan aldığın 8 karakterlik kodu yaz.
+        {t("join.subtitle")}
       </Text>
       <Input
-        label="Kod"
+        label={t("join.codeLabel")}
         value={inviteCode}
         onChangeText={(value) => setInviteCode(value.toUpperCase())}
-        placeholder="Örn. 4K7N2M9P"
+        placeholder={t("join.codePlaceholder")}
         autoCapitalize="characters"
         maxLength={8}
       />
       <View className="pt-2">
         <Button
-          label="Katıl"
+          label={t("join.submit")}
           onPress={submit}
           isLoading={isSubmitting}
           disabled={isSubmitting}

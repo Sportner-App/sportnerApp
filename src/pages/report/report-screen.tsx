@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
@@ -15,6 +16,7 @@ import { createReport, listReportReasons } from "@/services/reports-service";
 import type { ApiReportReason } from "@/types/social";
 
 export function ReportScreen() {
+  const { t } = useTranslation("report");
   const { entityType, entityId } = useLocalSearchParams<{
     entityType: string;
     entityId: string;
@@ -36,17 +38,17 @@ export function ReportScreen() {
   return (
     <AppScreen
       keyboardAvoiding
-      header={<ScreenHeader title="ŞİKAYET" showBack />}
+      header={<ScreenHeader title={t("title")} showBack />}
       contentClassName="gap-4 px-6 pt-3"
     >
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} label={t("loading")} />
         </View>
       ) : (
         <>
           <Text className="font-display text-2xl text-text-primary">
-            Neden bildiriyorsun?
+            {t("heading")}
           </Text>
           {reasons.map((reason) => (
             <Pressable
@@ -64,13 +66,13 @@ export function ReportScreen() {
             </Pressable>
           ))}
           <Input
-            label="Açıklama (opsiyonel)"
+            label={t("descriptionLabel")}
             value={description}
             onChangeText={setDescription}
             multiline
           />
           <Button
-            label="Gönder"
+            label={t("submit")}
             disabled={!reasonId || !entityId}
             isLoading={saving}
             onPress={async () => {
@@ -83,12 +85,15 @@ export function ReportScreen() {
                   reportReasonId: reasonId,
                   description: description.trim() || undefined,
                 });
-                showToast({ type: "success", title: "Şikayet alındı" });
+                showToast({
+                  type: "success",
+                  title: t("toasts.receivedTitle"),
+                });
                 router.back();
               } catch (error) {
                 showToast({
                   type: "error",
-                  title: "Gönderilemedi",
+                  title: t("toasts.sendFailedTitle"),
                   description: getApiErrorMessage(error),
                 });
               } finally {

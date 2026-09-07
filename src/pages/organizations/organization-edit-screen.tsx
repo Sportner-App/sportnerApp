@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { AppScreen, Button, Input, ScreenHeader, SelectField, SportLoader } from "@/components";
 import { useToast } from "@/contexts";
@@ -11,6 +12,7 @@ import type { SelectOption } from "@/types/components";
 import { resolveRouteParam } from "@/utils/route-params";
 
 export function OrganizationEditScreen() {
+  const { t } = useTranslation(["organizations", "profile", "common"]);
   const router = useRouter();
   const { showToast } = useToast();
   const { id: rawId } = useLocalSearchParams<{ id: string }>();
@@ -27,9 +29,11 @@ export function OrganizationEditScreen() {
       cities.map((city) => ({
         key: city.id,
         label: city.name,
-        description: `${String(city.plateCode).padStart(2, "0")} plaka kodu`,
+        description: t("organizations:form.plateCodeDescription", {
+          code: String(city.plateCode).padStart(2, "0"),
+        }),
       })),
-    [cities],
+    [cities, t],
   );
 
   useEffect(() => {
@@ -43,18 +47,18 @@ export function OrganizationEditScreen() {
       .catch((error) => {
         showToast({
           type: "error",
-          title: "Yüklenemedi",
+          title: t("organizations:edit.loadFailed"),
           description: getApiErrorMessage(error),
         });
       })
       .finally(() => setIsLoading(false));
-  }, [organizationId, showToast]);
+  }, [organizationId, showToast, t]);
 
   const submit = async () => {
     if (!organizationId) return;
     const trimmed = name.trim();
     if (!trimmed) {
-      showToast({ type: "error", title: "İsim gerekli" });
+      showToast({ type: "error", title: t("organizations:edit.nameRequired") });
       return;
     }
 
@@ -65,12 +69,12 @@ export function OrganizationEditScreen() {
         description: description.trim() || null,
         cityId: cityId || null,
       });
-      showToast({ type: "success", title: "Organizasyon güncellendi" });
+      showToast({ type: "success", title: t("organizations:edit.updated") });
       router.back();
     } catch (error) {
       showToast({
         type: "error",
-        title: "Kaydedilemedi",
+        title: t("organizations:edit.saveFailed"),
         description: getApiErrorMessage(error),
       });
     } finally {
@@ -80,38 +84,47 @@ export function OrganizationEditScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title="DÜZENLE" showBack />}
+      header={<ScreenHeader title={t("organizations:edit.title")} showBack />}
       contentClassName="gap-4 px-6 pt-3"
     >
       {isLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={120} label="Yükleniyor" />
+          <SportLoader size={120} />
         </View>
       ) : (
         <>
           <Text className="font-display text-3xl text-text-primary">
-            Organizasyonu düzenle
+            {t("organizations:edit.heading")}
           </Text>
-          <Input label="Ad" value={name} onChangeText={setName} maxLength={80} />
           <Input
-            label="Açıklama"
+            label={t("organizations:form.nameLabel")}
+            value={name}
+            onChangeText={setName}
+            maxLength={80}
+          />
+          <Input
+            label={t("organizations:form.descriptionLabel")}
             value={description}
             onChangeText={setDescription}
             maxLength={1000}
             multiline
           />
           <SelectField
-            label="Şehir"
-            placeholder={citiesLoading ? "Yükleniyor" : "Seç (isteğe bağlı)"}
+            label={t("profile:edit.cityLabel")}
+            placeholder={
+              citiesLoading
+                ? t("common:loading")
+                : t("organizations:form.cityOptionalPlaceholder")
+            }
             options={cityOptions}
             value={cityId}
             onChange={setCityId}
-            sheetTitle="Şehir"
+            sheetTitle={t("profile:edit.citySheetTitle")}
             searchable
-            searchPlaceholder="Şehir ara"
+            searchPlaceholder={t("profile:edit.citySearchPlaceholder")}
           />
           <Button
-            label="Kaydet"
+            label={t("common:save")}
             onPress={submit}
             isLoading={isSubmitting}
             disabled={isSubmitting}

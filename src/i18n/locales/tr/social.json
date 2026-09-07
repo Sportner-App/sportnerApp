@@ -1,0 +1,37 @@
+{
+  "fallback": {
+    "user": "kullanıcı",
+    "post": "Gönderi"
+  },
+  "likesCount": "{{count}} beğeni",
+  "commentsCount": "{{count}} yorum",
+  "viewComments": "{{count}} yorumu gör",
+  "relativeTime": {
+    "now": "şimdi",
+    "minutes": "{{count}} dk",
+    "hours": "{{count}} sa",
+    "days": "{{count}} gün"
+  },
+  "comments": {
+    "title": "Yorumlar",
+    "firstComment": "İlk yorumu sen yaz.",
+    "loading": "Yorumlar yükleniyor…",
+    "placeholder": "Yorum yaz…",
+    "replyPlaceholder": "{{username}} kullanıcısına yanıt ver…",
+    "replyTo": "{{username}} kullanıcısına yanıt",
+    "sendComment": "Yorum gönder",
+    "sendReply": "Yanıt gönder",
+    "share": "Paylaş"
+  },
+  "videoShare": "Video paylaşımı",
+  "toasts": {
+    "loadFailed": "Yüklenemedi",
+    "likeFailed": "Beğenilemedi",
+    "commentFailed": "Yorum gönderilemedi",
+    "replyFailed": "Yanıt gönderilemedi",
+    "commentsLoadFailed": "Yorumlar yüklenemedi",
+    "actionFailed": "İşlem başarısız",
+    "permissionRequired": "İzin gerekli"
+  },
+  "report": "Şikayet et"
+}

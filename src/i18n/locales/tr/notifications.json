@@ -1,0 +1,66 @@
+{
+  "title": "BİLDİRİMLER",
+  "markAllRead": "Tümünü oku",
+  "loading": "Bildirimler yükleniyor",
+  "empty": "Yeni bildirimin yok.",
+  "loadFailed": "Yüklenemedi",
+  "settings": {
+    "title": "BİLDİRİM AYARLARI",
+    "inApp": "Uygulama içi",
+    "push": "Cihaz bildirimi",
+    "saveFailed": "Kaydedilemedi",
+    "typeFallback": "Tür {{type}}"
+  },
+  "copy": {
+    "namedUser": "{{username}} kullanıcısı {{action}}",
+    "anonymousUser": "Bir kullanıcı {{action}}"
+  },
+  "actions": {
+    "0": "arkadaşlık isteği gönderdi",
+    "1": "arkadaşlık isteğini kabul etti",
+    "2": "seni etkinliğe davet etti",
+    "3": "başvurunu onayladı",
+    "4": "başvurunu reddetti",
+    "6": "etkinliği iptal etti",
+    "7": "fotoğrafını beğendi",
+    "8": "fotoğrafına yorum yaptı",
+    "9": "yorumuna yanıt verdi",
+    "11": "mesaj gönderdi",
+    "14": "etkinliğine soru sordu",
+    "15": "soruna yanıt verdi",
+    "16": "organizasyona katılmak istiyor",
+    "17": "organizasyon katılımını onayladı",
+    "18": "organizasyon katılımını reddetti",
+    "19": "organizasyon rolünü güncelledi",
+    "20": "seni organizasyondan çıkardı",
+    "21": "seni organizasyondan engelledi"
+  },
+  "settingsLabels": {
+    "0": "Arkadaşlık isteği",
+    "1": "Arkadaşlık kabul",
+    "2": "Etkinlik daveti",
+    "3": "Katılım onaylandı",
+    "4": "Katılım reddedildi",
+    "5": "Etkinlik hatırlatması",
+    "6": "Etkinlik iptali",
+    "7": "Gönderi beğenisi",
+    "8": "Gönderi yorumu",
+    "9": "Yorum yanıtı",
+    "10": "Rozet kazandın",
+    "11": "Yeni mesaj",
+    "12": "Sistem",
+    "13": "Görev tamamlandı",
+    "14": "Etkinlik sorusu",
+    "15": "Soru yanıtı",
+    "16": "Organizasyon katılım isteği",
+    "17": "Organizasyon katılımı onaylandı",
+    "18": "Organizasyon katılımı reddedildi",
+    "19": "Organizasyon rolü değişti",
+    "20": "Organizasyondan çıkarıldın",
+    "21": "Organizasyondan engellendin"
+  },
+  "push": {
+    "channelName": "Sportner Bildirimleri",
+    "projectIdMissing": "EAS projectId bulunamadı; push token alınamadı."
+  }
+}

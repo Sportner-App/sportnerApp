@@ -1,4 +1,5 @@
 const appJson = require("./app.json");
+const withAndroidPackageQueries = require("./plugins/withAndroidPackageQueries");
 
 const googleMapsApiKey =
   process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY?.trim() || "";
@@ -24,7 +25,6 @@ module.exports = {
     },
     android: {
       ...appJson.expo?.android,
-      package: appJson.expo?.android?.package || "com.anonymous.sportner",
       config: {
         ...(appJson.expo?.android?.config || {}),
         ...(googleMapsApiKey
@@ -43,6 +43,11 @@ module.exports = {
         "@react-native-google-signin/google-signin",
         { iosUrlScheme: googleIosUrlScheme },
       ],
+      // Android 11+ paket görünürlüğü: WhatsApp'ın yüklü olup olmadığını
+      // Linking.canOpenURL ile doğru tespit edebilmek için (bkz.
+      // organization-invite.ts). iOS'ta bunun karşılığı zaten
+      // app.json > ios.infoPlist.LSApplicationQueriesSchemes.
+      [withAndroidPackageQueries, ["com.whatsapp"]],
     ],
     extra: {
       ...appJson.expo?.extra,

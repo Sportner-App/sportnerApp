@@ -1,5 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
 import type { PickedMedia } from "@/utils/media-picker";
@@ -25,6 +26,7 @@ export function MediaFields({
   onClearVideo,
   showVideo = true,
 }: MediaFieldsProps) {
+  const { t } = useTranslation("onboarding");
   const avatarUri = avatar?.uri ?? existingAvatarUrl;
   const hasExistingAvatar = Boolean(existingAvatarUrl && !avatar);
 
@@ -33,30 +35,30 @@ export function MediaFields({
       <View className="items-center gap-2">
         <Avatar
           uri={avatarUri}
-          name="Profil"
+          name={t("media.avatarName")}
           size={96}
           fallbackIcon="camera"
           borderColor="rgba(204,255,0,0.3)"
           previewable={false}
           onPress={onPickAvatar}
-          accessibilityLabel="Profil fotoğrafı seç"
+          accessibilityLabel={t("media.selectPhotoAccessibility")}
         />
         <Pressable onPress={onPickAvatar} hitSlop={8}>
           <Text className="font-body text-xs text-brand-primary">
-            {avatarUri
-              ? "Fotoğrafı değiştir"
-              : "Profil fotoğrafı ekle (zorunlu)"}
+            {avatarUri ? t("media.changePhoto") : t("media.addPhotoRequired")}
           </Text>
         </Pressable>
         {hasExistingAvatar ? (
           <Text className="font-body text-center text-xs text-brand-neutral">
-            Google profil fotoğrafın hazır. İstersen değiştirebilirsin.
+            {t("media.googlePhotoReady")}
           </Text>
         ) : null}
         {avatar && onClearAvatar ? (
           <Pressable onPress={onClearAvatar} hitSlop={8}>
             <Text className="font-body text-xs text-brand-neutral">
-              {existingAvatarUrl ? "Google fotoğrafına dön" : "Kaldır"}
+              {existingAvatarUrl
+                ? t("media.revertToGoogle")
+                : t("media.remove")}
             </Text>
           </Pressable>
         ) : null}
@@ -72,19 +74,19 @@ export function MediaFields({
           </View>
           <View className="flex-1">
             <Text className="font-body text-sm font-semibold text-text-primary">
-              Tanıtım videosu
+              {t("media.introVideoTitle")}
             </Text>
             <Text
               className="font-body text-xs text-brand-neutral"
               numberOfLines={1}
             >
-              {video ? video.name : "Opsiyonel · en fazla 30 sn"}
+              {video ? video.name : t("media.introVideoEmpty")}
             </Text>
           </View>
           {video && onClearVideo ? (
             <Pressable onPress={onClearVideo} hitSlop={8}>
               <Text className="font-body text-xs text-brand-neutral">
-                Kaldır
+                {t("media.remove")}
               </Text>
             </Pressable>
           ) : (

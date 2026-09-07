@@ -2,9 +2,10 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { Button, Input, SelectField } from "@/components";
-import { ONBOARDING_COPY } from "@/constants/onboarding";
+import { useOnboardingCopy } from "@/constants/onboarding";
 import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
 import { useOnboarding } from "@/hooks/use-onboarding";
 import { AnimatedBackground } from "@/pages/auth/animated-background";
@@ -13,6 +14,8 @@ import { MediaFields } from "./media-fields";
 import { SportsPickerStep } from "./sports-picker-step";
 
 export function OnboardingScreen() {
+  const { t } = useTranslation(["onboarding", "profile"]);
+  const ONBOARDING_COPY = useOnboardingCopy();
   const form = useOnboarding();
   const { chooseSource, sourceSheet } = useMediaSourceChoice();
   const insets = useSafeAreaInsets();
@@ -39,7 +42,7 @@ export function OnboardingScreen() {
               hitSlop={8}
               onPress={() => form.setStep("sports")}
               accessibilityRole="button"
-              accessibilityLabel="Spor seçimine dön"
+              accessibilityLabel={detailsCopy.backAccessibility}
               className="h-11 w-11 items-center justify-center rounded-full border border-border-default bg-surface-primary active:opacity-80"
             >
               <FontAwesome6 name="arrow-left" size={14} color="#ccff00" />
@@ -89,9 +92,11 @@ export function OnboardingScreen() {
               onClearVideo={form.clearVideo}
             />
             <SelectField
-              label="Şehir"
+              label={t("profile:edit.cityLabel")}
               placeholder={
-                form.isCitiesLoading ? "Şehirler yükleniyor..." : "Şehir seç"
+                form.isCitiesLoading
+                  ? t("profile:edit.cityLoadingPlaceholder")
+                  : t("profile:edit.cityPlaceholder")
               }
               icon="location-dot"
               options={form.cityOptions}
@@ -99,13 +104,13 @@ export function OnboardingScreen() {
               onChange={form.setCity}
               disabled={form.isCitiesLoading || Boolean(form.citiesError)}
               searchable
-              searchPlaceholder="Şehir ara"
-              sheetTitle="Şehir seç"
-              sheetSubtitle="Türkiye'deki 81 ilden birini seç"
+              searchPlaceholder={t("profile:edit.citySearchPlaceholder")}
+              sheetTitle={t("profile:edit.citySheetTitle")}
+              sheetSubtitle={t("profile:edit.citySheetSubtitle")}
             />
             <Input
-              label="Bio"
-              placeholder="Kısaca kendini anlat (opsiyonel)"
+              label={detailsCopy.bioLabel}
+              placeholder={detailsCopy.bioPlaceholder}
               icon="align-left"
               value={form.bio}
               onChangeText={form.setBio}

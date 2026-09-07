@@ -1,5 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, useWindowDimensions, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import Animated from "react-native-reanimated";
 
 import { heroFadeScale, heroFadeUp } from "./hero-enter";
@@ -44,6 +45,7 @@ function SportChip({
 
 export function WelcomeVisual() {
   const { height } = useWindowDimensions();
+  const { t } = useTranslation("firstLaunch");
   const compact = height < 720;
 
   return (
@@ -104,7 +106,9 @@ export function WelcomeVisual() {
           entering={heroFadeUp(200, 100, 6)}
           className="absolute bottom-5 right-16 rounded-full border border-white/10 bg-brand-raised px-2.5 py-1"
         >
-          <Text className="font-mono text-[11px] text-brand-primary">LIVE</Text>
+          <Text className="font-mono text-[11px] text-brand-primary">
+            {t("visuals.welcome.live")}
+          </Text>
         </Animated.View>
       </View>
 
@@ -114,11 +118,15 @@ export function WelcomeVisual() {
       >
         <View className="flex-row items-center gap-1.5 rounded-full border border-white/10 bg-brand-surface/90 px-3 py-1.5">
           <FontAwesome6 name="user-group" size={10} color="#ccff00" />
-          <Text className="font-body text-xs text-white">120+ sporcu</Text>
+          <Text className="font-body text-xs text-white">
+            {t("visuals.welcome.athletesNearby")}
+          </Text>
         </View>
         <View className="flex-row items-center gap-1.5 rounded-full border border-white/10 bg-brand-surface/90 px-3 py-1.5">
           <FontAwesome6 name="calendar-days" size={10} color="#ccff00" />
-          <Text className="font-body text-xs text-white">8 açık maç</Text>
+          <Text className="font-body text-xs text-white">
+            {t("visuals.welcome.openMatches")}
+          </Text>
         </View>
       </Animated.View>
     </View>
