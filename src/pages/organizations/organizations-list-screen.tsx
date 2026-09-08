@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
-  BrandRefreshControl,
+  brandRefreshControl,
   Button,
   LinearRefreshBar,
   ScreenHeader,
@@ -42,9 +42,10 @@ export function OrganizationsListScreen() {
       }
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="gap-4 px-6 pt-3"
-      refreshControl={
-        <BrandRefreshControl refreshing={isRefreshing} onRefresh={refresh} />
-      }
+      refreshControl={brandRefreshControl({
+        refreshing: isRefreshing,
+        onRefresh: refresh,
+      })}
     >
       <View className="flex-row gap-2">
         <View className="flex-1">

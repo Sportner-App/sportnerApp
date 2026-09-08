@@ -8,7 +8,7 @@ import {
   AppScreen,
   Avatar,
   BottomSheet,
-  BrandRefreshControl,
+  brandRefreshControl,
   Button,
   Input,
   LinearRefreshBar,
@@ -145,12 +145,10 @@ export function EventParticipantsScreen() {
           keyExtractor={(item) => item.id}
           contentContainerClassName="gap-3 px-5 pb-10 pt-3"
           showsVerticalScrollIndicator={false}
-          refreshControl={
-            <BrandRefreshControl
-              refreshing={isRefreshing}
-              onRefresh={() => void load("refresh")}
-            />
-          }
+          refreshControl={brandRefreshControl({
+            refreshing: isRefreshing,
+            onRefresh: () => void load("refresh"),
+          })}
           ListHeaderComponent={
             participants.length > 0 ? (
               <Text className="pb-1 font-body text-xs text-text-secondary">

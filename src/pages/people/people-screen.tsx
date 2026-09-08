@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import {
   AppScreen,
   Avatar,
-  BrandRefreshControl,
+  brandRefreshControl,
   Button,
   LinearRefreshBar,
   ScreenHeader,
@@ -118,12 +118,10 @@ export function PeopleScreen() {
           keyExtractor={(person) => person.userId}
           contentContainerClassName="px-5 pb-8"
           showsVerticalScrollIndicator={false}
-          refreshControl={
-            <BrandRefreshControl
-              refreshing={isRefreshing}
-              onRefresh={() => void load(true)}
-            />
-          }
+          refreshControl={brandRefreshControl({
+            refreshing: isRefreshing,
+            onRefresh: () => void load(true),
+          })}
           ListHeaderComponent={
             <View className="mb-4">
               <Text className="font-display text-[24px] text-text-primary">

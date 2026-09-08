@@ -13,7 +13,11 @@ import { DARK_MAP_STYLE, MAP_INITIAL_REGION } from "@/constants/map";
 import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
 import { shadows, sportAccentToken, themeColors } from "@/constants/theme";
 import type { UserCoordinates, UserLocationStatus } from "@/hooks/use-user-location";
-import { isGooglePlacesEnabled } from "@/services/location-service";
+import {
+  isGooglePlacesEnabled,
+  isNativeMapAvailable,
+} from "@/services/location-service";
+import { MapUnavailable } from "@/components";
 import type { IconName } from "@/types/components";
 import type { EventSummary } from "@/types/events";
 import {
@@ -79,6 +83,7 @@ export function EventsMap({
   onRequestLocation,
 }: EventsMapProps) {
   const { t } = useTranslation("home");
+  const { t: tLocation } = useTranslation("location");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const useGoogleMaps = isGooglePlacesEnabled();
   const mapRef = useRef<MapView>(null);
@@ -119,6 +124,14 @@ export function EventsMap({
       350,
     );
   };
+
+  if (!isNativeMapAvailable()) {
+    return (
+      <View className="h-[220px] overflow-hidden rounded-xlarge border border-border-default">
+        <MapUnavailable message={tLocation("mapUnavailable")} />
+      </View>
+    );
+  }
 
   return (
     <View className="h-[560px] overflow-hidden rounded-xlarge border border-border-default">

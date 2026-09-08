@@ -16,11 +16,14 @@ import MapView, {
 import Animated, { FadeIn, FadeInDown, FadeOut } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
-import { MapPin } from "@/components";
+import { MapPin, MapUnavailable } from "@/components";
 import { DARK_MAP_STYLE, MAP_INITIAL_REGION } from "@/constants/map";
 import { themeColors } from "@/constants/theme";
 import { useLocationSearch } from "@/hooks/use-location-search";
-import { isGooglePlacesEnabled } from "@/services/location-service";
+import {
+  isGooglePlacesEnabled,
+  isNativeMapAvailable,
+} from "@/services/location-service";
 import type { LocationSuggestion, SelectedLocation } from "@/types/location";
 
 type LocationPickerProps = {
@@ -39,6 +42,7 @@ export function LocationPicker({
   compact = false,
 }: LocationPickerProps) {
   const { t } = useTranslation("eventCreate");
+  const { t: tLocation } = useTranslation("location");
   const mapRef = useRef<MapView>(null);
   const {
     query,
@@ -52,6 +56,7 @@ export function LocationPicker({
   } = useLocationSearch(addressText);
 
   const useGoogleMaps = isGooglePlacesEnabled();
+  const mapAvailable = isNativeMapAvailable();
   const hasSelection = latitude != null && longitude != null;
 
   const animateTo = (lat: number, lng: number) => {
@@ -188,33 +193,37 @@ export function LocationPicker({
 
         {/* Harita */}
         <View className={`relative ${compact ? "h-40" : "h-56"}`}>
-          <MapView
-            ref={mapRef}
-            style={{ flex: 1 }}
-            provider={useGoogleMaps ? PROVIDER_GOOGLE : undefined}
-            initialRegion={MAP_INITIAL_REGION}
-            customMapStyle={useGoogleMaps ? DARK_MAP_STYLE : undefined}
-            userInterfaceStyle="dark"
-            onPress={handleMapPress}
-            showsUserLocation={false}
-            showsCompass={false}
-            showsPointsOfInterest={false}
-            toolbarEnabled={false}
-            rotateEnabled={false}
-            pitchEnabled={false}
-          >
-            {hasSelection && (
-              <Marker
-                coordinate={{
-                  latitude: latitude!,
-                  longitude: longitude!,
-                }}
-                anchor={{ x: 0.5, y: 1 }}
-              >
-                <MapPin />
-              </Marker>
-            )}
-          </MapView>
+          {mapAvailable ? (
+            <MapView
+              ref={mapRef}
+              style={{ flex: 1 }}
+              provider={useGoogleMaps ? PROVIDER_GOOGLE : undefined}
+              initialRegion={MAP_INITIAL_REGION}
+              customMapStyle={useGoogleMaps ? DARK_MAP_STYLE : undefined}
+              userInterfaceStyle="dark"
+              onPress={handleMapPress}
+              showsUserLocation={false}
+              showsCompass={false}
+              showsPointsOfInterest={false}
+              toolbarEnabled={false}
+              rotateEnabled={false}
+              pitchEnabled={false}
+            >
+              {hasSelection && (
+                <Marker
+                  coordinate={{
+                    latitude: latitude!,
+                    longitude: longitude!,
+                  }}
+                  anchor={{ x: 0.5, y: 1 }}
+                >
+                  <MapPin />
+                </Marker>
+              )}
+            </MapView>
+          ) : (
+            <MapUnavailable message={tLocation("mapUnavailable")} />
+          )}
 
           {/* Alt bilgi şeridi */}
           <View className="absolute bottom-3 left-3 right-3">
@@ -228,7 +237,11 @@ export function LocationPicker({
                 className="flex-1 font-body text-xs text-text-secondary"
                 numberOfLines={2}
               >
-                {hasSelection ? addressText : t("location.emptyHint")}
+                {hasSelection
+                  ? addressText
+                  : mapAvailable
+                    ? t("location.emptyHint")
+                    : tLocation("mapUnavailableHint")}
               </Text>
             </View>
           </View>

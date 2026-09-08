@@ -7,7 +7,7 @@ import { Pressable, Text, View } from "react-native";
 import {
   AppScreen,
   Avatar,
-  BrandRefreshControl,
+  brandRefreshControl,
   LinearRefreshBar,
   ScreenHeader,
   SegmentedTabs,
@@ -93,12 +93,10 @@ export function ConversationsScreen() {
       }
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="gap-3 px-5 pt-3"
-      refreshControl={
-        <BrandRefreshControl
-          refreshing={isRefreshing}
-          onRefresh={() => void load(true)}
-        />
-      }
+      refreshControl={brandRefreshControl({
+        refreshing: isRefreshing,
+        onRefresh: () => void load(true),
+      })}
     >
       <View className="gap-1 pb-2">
         <Text className="font-display text-[28px] text-text-primary">

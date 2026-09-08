@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
-  BrandRefreshControl,
+  brandRefreshControl,
   Button,
   LinearRefreshBar,
   ScreenHeader,
@@ -75,12 +75,10 @@ export function EventDetailScreen() {
       }
       belowHeader={<LinearRefreshBar visible={detail.isRefreshing} />}
       contentClassName="flex-grow"
-      refreshControl={
-        <BrandRefreshControl
-          refreshing={detail.isRefreshing}
-          onRefresh={detail.refresh}
-        />
-      }
+      refreshControl={brandRefreshControl({
+        refreshing: detail.isRefreshing,
+        onRefresh: detail.refresh,
+      })}
       footer={
         !detail.isLoading && detail.event ? (
           <JoinBar

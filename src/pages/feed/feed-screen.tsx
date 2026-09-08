@@ -5,7 +5,7 @@ import { Pressable, Text, View } from "react-native";
 
 import {
   AppScreen,
-  BrandRefreshControl,
+  brandRefreshControl,
   LinearRefreshBar,
   ScreenHeader,
   SegmentedTabs,
@@ -96,12 +96,10 @@ export function FeedScreen() {
       }
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="gap-3 px-6 pt-3"
-      refreshControl={
-        <BrandRefreshControl
-          refreshing={isRefreshing}
-          onRefresh={() => load("refresh")}
-        />
-      }
+      refreshControl={brandRefreshControl({
+        refreshing: isRefreshing,
+        onRefresh: () => load("refresh"),
+      })}
       onEndReached={loadMore}
     >
       <SegmentedTabs

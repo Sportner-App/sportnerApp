@@ -3,7 +3,7 @@ import type { PropsWithChildren } from "react";
 
 import { AppScreen } from "./app-screen";
 import { LinearRefreshBar } from "./linear-refresh-bar";
-import { BrandRefreshControl } from "./refresh-control";
+import { brandRefreshControl } from "./refresh-control";
 import { TabScreenHeader } from "./tab-screen-header";
 
 type TabPageProps = PropsWithChildren<{
@@ -27,9 +27,7 @@ export function TabPage({
       keyboardAvoiding={keyboardAvoiding}
       belowHeader={<LinearRefreshBar visible={refreshing} />}
       contentClassName="gap-6 px-5 pt-2"
-      refreshControl={
-        <BrandRefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
+      refreshControl={brandRefreshControl({ refreshing, onRefresh })}
       onEndReached={onEndReached}
     >
       <StatusBar style="auto" />

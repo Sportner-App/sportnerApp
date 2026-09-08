@@ -1,3 +1,5 @@
+import { Platform } from "react-native";
+
 import i18n from "@/i18n";
 import {
   getGooglePlaceDetails,
@@ -13,6 +15,16 @@ import type { LocationSuggestion, SelectedLocation } from "@/types/location";
 
 export function isGooglePlacesEnabled() {
   return hasGoogleMapsKey();
+}
+
+/**
+ * Android'de react-native-maps'in tek sağlayıcısı Google Maps: manifest'te
+ * `com.google.android.geo.API_KEY` yoksa MapView mount edilir edilmez
+ * IllegalStateException fırlatıp uygulamayı çökertiyor. iOS'ta anahtar
+ * olmadan Apple Maps'e düşülebildiği için harita çalışmaya devam ediyor.
+ */
+export function isNativeMapAvailable() {
+  return Platform.OS !== "android" || hasGoogleMapsKey();
 }
 
 /**

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
-  BrandRefreshControl,
+  brandRefreshControl,
   Button,
   LinearRefreshBar,
   ScreenHeader,
@@ -71,12 +71,10 @@ export function BlockedUsersScreen() {
       header={<ScreenHeader title={t("blocked.title")} showBack />}
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="gap-4 px-6 pt-3"
-      refreshControl={
-        <BrandRefreshControl
-          refreshing={isRefreshing}
-          onRefresh={() => load("refresh")}
-        />
-      }
+      refreshControl={brandRefreshControl({
+        refreshing: isRefreshing,
+        onRefresh: () => load("refresh"),
+      })}
     >
       <Text className="font-body text-sm text-brand-neutral">
         {t("blocked.description")}

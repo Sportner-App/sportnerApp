@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
-  BrandRefreshControl,
+  brandRefreshControl,
   LinearRefreshBar,
   ScreenHeader,
   SegmentedTabs,
@@ -202,12 +202,10 @@ export function OrganizationMembersScreen() {
       header={<ScreenHeader title={t("members.title")} showBack />}
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="gap-4 px-6 pt-3"
-      refreshControl={
-        <BrandRefreshControl
-          refreshing={isRefreshing}
-          onRefresh={() => load("refresh")}
-        />
-      }
+      refreshControl={brandRefreshControl({
+        refreshing: isRefreshing,
+        onRefresh: () => load("refresh"),
+      })}
     >
       {organization ? (
         <Text className="font-body text-sm text-text-secondary">

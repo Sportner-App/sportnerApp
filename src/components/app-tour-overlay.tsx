@@ -2,7 +2,9 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect, useState } from "react";
 import {
   Modal,
+  Platform,
   Pressable,
+  StatusBar,
   Text,
   useWindowDimensions,
   View,
@@ -14,6 +16,16 @@ import { useAppTourCopy } from "@/constants/components";
 import { useAppTour } from "@/contexts/app-tour-context";
 
 type TargetRect = { x: number; y: number; width: number; height: number };
+
+/**
+ * `measureInWindow`, status bar'ın altından başlayan uygulama penceresine göre
+ * ölçüyor; aşağıdaki Modal ise `statusBarTranslucent` ile ekranın tamamını
+ * kaplıyor. Android'de iki koordinat uzayı arasındaki fark status bar kadar
+ * oluyor ve telafi edilmezse delik hedefin yukarısına düşüyor. iOS'ta Modal
+ * zaten ölçümle aynı uzayda.
+ */
+const MEASURE_Y_OFFSET =
+  Platform.OS === "android" ? (StatusBar.currentHeight ?? 0) : 0;
 
 export function AppTourOverlay() {
   const { t } = useTranslation("components");
@@ -27,7 +39,12 @@ export function AppTourOverlay() {
     setRect(null);
     const timer = setTimeout(() => {
       getTarget(target)?.measureInWindow((x, y, targetWidth, targetHeight) => {
-        setRect({ x, y, width: targetWidth, height: targetHeight });
+        setRect({
+          x,
+          y: y + MEASURE_Y_OFFSET,
+          width: targetWidth,
+          height: targetHeight,
+        });
       });
     }, 80);
     return () => clearTimeout(timer);
@@ -39,8 +56,8 @@ export function AppTourOverlay() {
   const pad = 7;
   const focus = rect
     ? {
-        x: Math.max(6, rect.x - pad),
-        y: Math.max(6, rect.y - pad),
+        left: Math.max(6, rect.x - pad),
+        top: Math.max(6, rect.y - pad),
         width: Math.min(width - 12, rect.width + pad * 2),
         height: rect.height + pad * 2,
       }
@@ -58,23 +75,23 @@ export function AppTourOverlay() {
           <>
             <View
               className="absolute left-0 right-0 top-0 bg-black/80"
-              style={{ height: focus.y }}
+              style={{ height: focus.top }}
             />
             <View
               className="absolute left-0 bg-black/80"
-              style={{ top: focus.y, width: focus.x, height: focus.height }}
+              style={{ top: focus.top, width: focus.left, height: focus.height }}
             />
             <View
               className="absolute right-0 bg-black/80"
               style={{
-                top: focus.y,
-                left: focus.x + focus.width,
+                top: focus.top,
+                left: focus.left + focus.width,
                 height: focus.height,
               }}
             />
             <View
               className="absolute bottom-0 left-0 right-0 bg-black/80"
-              style={{ top: focus.y + focus.height }}
+              style={{ top: focus.top + focus.height }}
             />
             <View
               pointerEvents="none"
@@ -92,13 +109,13 @@ export function AppTourOverlay() {
             cardBelow
               ? {
                   top: Math.min(
-                    (focus?.y ?? 80) + (focus?.height ?? 48) + 18,
+                    (focus?.top ?? 80) + (focus?.height ?? 48) + 18,
                     height - 290,
                   ),
                 }
               : {
                   bottom: Math.max(
-                    height - (focus?.y ?? height - 90) + 18,
+                    height - (focus?.top ?? height - 90) + 18,
                     112,
                   ),
                 }

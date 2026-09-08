@@ -10,10 +10,13 @@ import Animated, {
 } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
-import { DirectionsSheet, MapPin } from "@/components";
+import { DirectionsSheet, MapPin, MapUnavailable } from "@/components";
 import { DARK_MAP_STYLE } from "@/constants/map";
 import { themeColors, typeStyles } from "@/constants/theme";
-import { isGooglePlacesEnabled } from "@/services/location-service";
+import {
+  isGooglePlacesEnabled,
+  isNativeMapAvailable,
+} from "@/services/location-service";
 import type { EventDetail } from "@/types/events";
 import type { DirectionsTarget } from "@/utils/open-directions";
 import { lightImpact } from "@/utils/haptics";
@@ -43,6 +46,7 @@ function locationPresentation(address: string) {
 
 export function LocationMap({ event }: LocationMapProps) {
   const { t } = useTranslation("eventDetail");
+  const { t: tLocation } = useTranslation("location");
   const useGoogleMaps = isGooglePlacesEnabled();
   const [sheetVisible, setSheetVisible] = useState(false);
   const { title: primaryLocation, detail: secondaryAddress } =
@@ -110,36 +114,40 @@ export function LocationMap({ event }: LocationMapProps) {
           }}
         >
           <View className="relative h-52">
-            <MapView
-              style={{ flex: 1 }}
-              provider={useGoogleMaps ? PROVIDER_GOOGLE : undefined}
-              customMapStyle={useGoogleMaps ? DARK_MAP_STYLE : undefined}
-              userInterfaceStyle="dark"
-              initialRegion={{
-                latitude: event.latitude,
-                longitude: event.longitude,
-                latitudeDelta: 0.018,
-                longitudeDelta: 0.018,
-              }}
-              scrollEnabled={false}
-              zoomEnabled={false}
-              rotateEnabled={false}
-              pitchEnabled={false}
-              toolbarEnabled={false}
-              showsCompass={false}
-              showsPointsOfInterest={false}
-              pointerEvents="none"
-            >
-              <Marker
-                coordinate={{
+            {isNativeMapAvailable() ? (
+              <MapView
+                style={{ flex: 1 }}
+                provider={useGoogleMaps ? PROVIDER_GOOGLE : undefined}
+                customMapStyle={useGoogleMaps ? DARK_MAP_STYLE : undefined}
+                userInterfaceStyle="dark"
+                initialRegion={{
                   latitude: event.latitude,
                   longitude: event.longitude,
+                  latitudeDelta: 0.018,
+                  longitudeDelta: 0.018,
                 }}
-                anchor={{ x: 0.5, y: 1 }}
+                scrollEnabled={false}
+                zoomEnabled={false}
+                rotateEnabled={false}
+                pitchEnabled={false}
+                toolbarEnabled={false}
+                showsCompass={false}
+                showsPointsOfInterest={false}
+                pointerEvents="none"
               >
-                <MapPin />
-              </Marker>
-            </MapView>
+                <Marker
+                  coordinate={{
+                    latitude: event.latitude,
+                    longitude: event.longitude,
+                  }}
+                  anchor={{ x: 0.5, y: 1 }}
+                >
+                  <MapPin />
+                </Marker>
+              </MapView>
+            ) : (
+              <MapUnavailable message={tLocation("mapUnavailable")} />
+            )}
 
             <Pressable onPress={openSheet} className="absolute inset-0" />
           </View>

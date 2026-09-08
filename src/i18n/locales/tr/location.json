@@ -5,5 +5,7 @@
   "reverseFailed": "Adres çözümlenemedi.",
   "nominatimSearchFailed": "Konum araması başarısız.",
   "selectedLocation": "Seçilen konum",
-  "locationLabel": "Konum"
+  "locationLabel": "Konum",
+  "mapUnavailable": "Harita şu anda kullanılamıyor.",
+  "mapUnavailableHint": "Konumu yukarıdaki arama alanından seçebilirsin."
 }

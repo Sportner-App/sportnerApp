@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
-  BrandRefreshControl,
+  brandRefreshControl,
   LinearRefreshBar,
   ScreenHeader,
   SportLoader,
@@ -139,12 +139,10 @@ export function NotificationsScreen() {
       }
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       contentClassName="gap-3 px-6 pt-2"
-      refreshControl={
-        <BrandRefreshControl
-          refreshing={isRefreshing}
-          onRefresh={() => load("refresh")}
-        />
-      }
+      refreshControl={brandRefreshControl({
+        refreshing: isRefreshing,
+        onRefresh: () => load("refresh"),
+      })}
       onEndReached={loadMore}
     >
       {isLoading ? (
