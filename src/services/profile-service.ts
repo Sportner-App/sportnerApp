@@ -104,16 +104,6 @@ export async function uploadAvatar(file: {
   });
 }
 
-export async function uploadIntroVideo(file: {
-  uri: string;
-  name: string;
-  type: string;
-}) {
-  await apiClient.put("/api/user-profiles/me/intro-video", appendMedia(file), {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-}
-
 export async function updateSportSkill(sportId: string, skillLevel: number) {
   await apiClient.put(`/api/me/sports/${sportId}`, { skillLevel });
 }

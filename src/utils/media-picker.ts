@@ -1,5 +1,6 @@
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
+import { Platform } from "react-native";
 
 import i18n from "@/i18n";
 
@@ -19,17 +20,6 @@ export function mediaDeniedMessage(source: MediaSource) {
     : i18n.t("common:media.galleryPermissionDenied");
 }
 
-function guessVideoType(asset: ImagePicker.ImagePickerAsset): string {
-  const mime = asset.mimeType?.toLowerCase();
-  if (mime === "video/mp4" || mime === "video/quicktime" || mime === "video/webm") {
-    return mime;
-  }
-  if (asset.uri.toLowerCase().endsWith(".mov")) {
-    return "video/quicktime";
-  }
-  return "video/mp4";
-}
-
 function fileName(asset: ImagePicker.ImagePickerAsset, fallback: string) {
   return asset.fileName?.trim() || fallback;
 }
@@ -38,11 +28,48 @@ function stem(name: string) {
   return name.replace(/\.[^.]+$/, "") || "photo";
 }
 
-async function toJpegUpload(asset: ImagePicker.ImagePickerAsset, fallbackName: string): Promise<PickedMedia> {
-  const converted = await ImageManipulator.manipulateAsync(asset.uri, [], {
-    compress: 0.85,
-    format: ImageManipulator.SaveFormat.JPEG,
-  });
+/**
+ * expo-image-manipulator normalizes EXIF orientation on iOS (including mirrored
+ * tags) before any manipulation runs, but on Android its loader only corrects
+ * plain rotation (EXIF 3/6/8) — a front-camera selfie's mirror tag (EXIF 2/4)
+ * passes straight through, leaving the photo flipped left-right (or up-down)
+ * relative to what the user saw. Fix only the confirmed-broken mirror cases
+ * here; rotation already works, so we leave it untouched to avoid double-
+ * correcting it.
+ */
+function androidMirrorCorrectionAction(
+  exif: Record<string, unknown> | null | undefined,
+): ImageManipulator.Action | null {
+  if (Platform.OS !== "android") {
+    return null;
+  }
+
+  const orientation = Number(exif?.Orientation ?? exif?.orientation);
+
+  if (orientation === 2) {
+    return { flip: ImageManipulator.FlipType.Horizontal };
+  }
+  if (orientation === 4) {
+    return { flip: ImageManipulator.FlipType.Vertical };
+  }
+
+  return null;
+}
+
+async function toJpegUpload(
+  asset: ImagePicker.ImagePickerAsset,
+  fallbackName: string,
+): Promise<PickedMedia> {
+  const mirrorFix = androidMirrorCorrectionAction(asset.exif);
+
+  const converted = await ImageManipulator.manipulateAsync(
+    asset.uri,
+    mirrorFix ? [mirrorFix] : [],
+    {
+      compress: 0.85,
+      format: ImageManipulator.SaveFormat.JPEG,
+    },
+  );
 
   return {
     uri: converted.uri,
@@ -68,13 +95,16 @@ async function launchImages(
     return "denied" as const;
   }
 
+  // `exif: true` is what lets androidMirrorCorrectionAction read the
+  // orientation tag needed to un-mirror front-camera photos on Android.
   const result =
     source === "camera"
       ? await ImagePicker.launchCameraAsync({
           ...options,
+          exif: true,
           allowsMultipleSelection: false,
         })
-      : await ImagePicker.launchImageLibraryAsync(options);
+      : await ImagePicker.launchImageLibraryAsync({ ...options, exif: true });
 
   if (result.canceled || result.assets.length === 0) {
     return "cancelled" as const;
@@ -142,28 +172,4 @@ export async function pickPostImages(
   return Promise.all(
     assets.map((asset, index) => toJpegUpload(asset, `post-${index + 1}.jpg`)),
   );
-}
-
-export async function pickIntroVideo(): Promise<MediaPickResult> {
-  const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  if (!permission.granted) {
-    return "denied";
-  }
-
-  const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ["videos"],
-    videoMaxDuration: 30,
-    quality: 0.8,
-  });
-
-  if (result.canceled || !result.assets[0]) {
-    return "cancelled";
-  }
-
-  const asset = result.assets[0];
-  return {
-    uri: asset.uri,
-    name: fileName(asset, "intro.mp4"),
-    type: guessVideoType(asset),
-  };
 }

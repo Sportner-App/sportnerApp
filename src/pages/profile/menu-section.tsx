@@ -1,23 +1,14 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { useTranslation } from "react-i18next";
 
-import { Button } from "@/components";
 import { useProfileMenuGroups } from "@/constants/profile";
 
 type MenuSectionProps = {
   onItemPress: (key: string) => void;
-  onLogout: () => void;
-  isSigningOut: boolean;
 };
 
-export function MenuSection({
-  onItemPress,
-  onLogout,
-  isSigningOut,
-}: MenuSectionProps) {
-  const { t } = useTranslation("settings");
+export function MenuSection({ onItemPress }: MenuSectionProps) {
   const menuGroups = useProfileMenuGroups();
 
   return (
@@ -53,14 +44,6 @@ export function MenuSection({
           </View>
         </View>
       ))}
-
-      <Button
-        label={t("logout")}
-        variant="danger"
-        icon="right-from-bracket"
-        isLoading={isSigningOut}
-        onPress={onLogout}
-      />
     </Animated.View>
   );
 }

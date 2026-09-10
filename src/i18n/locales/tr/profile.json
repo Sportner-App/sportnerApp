@@ -46,11 +46,6 @@
     "commentCount": "{{count}} yorum",
     "loading": "Değerlendirmeler yükleniyor…"
   },
-  "introVideo": {
-    "label": "TANITIM VİDEOSU",
-    "pause": "Videoyu duraklat",
-    "play": "Tanıtım videosunu oynat"
-  },
   "organizations": {
     "add": "Ekle",
     "pending": "Bekliyor"
@@ -80,12 +75,9 @@
     "citySheetSubtitle": "Türkiye'deki 81 ilden birini seç",
     "bioLabel": "Kısa bio",
     "permissionRequired": "İzin gerekli",
-    "videoPermissionRequired": "Video seçmek için galeri izni vermelisin.",
     "photoUpdated": "Fotoğraf güncellendi",
-    "videoUpdated": "Video güncellendi",
     "uploadFailed": "Yüklenemedi",
     "photoUploadFailed": "Fotoğraf yüklenemedi.",
-    "videoUploadFailed": "Video yüklenemedi.",
     "firstNameRequired": "Ad gerekli",
     "firstNameRequiredDescription": "Profilinde kullanmak için adını girmelisin.",
     "cityRequired": "Şehir seçimi gerekli",

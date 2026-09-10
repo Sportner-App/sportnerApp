@@ -21,7 +21,6 @@ export function mapMyProfile(api: ApiMyProfile): UserProfile {
     bio: api.bio,
     city: api.city,
     avatarUrl: api.profileImageUrl,
-    introVideoUrl: api.introVideoUrl,
     averageRating: Number(api.averageRating) || 0,
     reviewCount: api.reviewCount ?? 0,
     isProfilePublic: api.isProfilePublic,

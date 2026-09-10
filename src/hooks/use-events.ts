@@ -1,5 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { InteractionManager } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -162,30 +163,39 @@ export function useEvents(
     useCallback(() => {
       let cancelled = false;
 
-      void (async () => {
-        const isFirstLoad = !hasLoadedRef.current;
-        hasLoadedRef.current = true;
+      // Odak, ekranlar arası native geçiş animasyonuyla aynı anda tetiklenir
+      // (ör. etkinlik detayından geri dönüş). Ağır liste yeniden render'ını
+      // hemen başlatmak o animasyonla JS thread'i paylaşıyor ve bazı
+      // cihaz/zamanlama koşullarında geçişi yarıda donuk bırakıyor — eski
+      // ekranın alt kısmı yeni listenin üstünde kalıyor. Etkileşimler
+      // (geçiş dahil) bitene kadar erteleyerek bu yarışı ortadan kaldırıyoruz.
+      const task = InteractionManager.runAfterInteractions(() => {
+        void (async () => {
+          const isFirstLoad = !hasLoadedRef.current;
+          hasLoadedRef.current = true;
 
-        try {
-          await fetchPage(
-            isFirstLoad ? "initial" : "refresh",
-            categoryFilterRef.current,
-            1,
-            filtersRef.current,
-            scopeRef.current,
-          );
-        } catch (err) {
-          if (cancelled) {
-            return;
+          try {
+            await fetchPage(
+              isFirstLoad ? "initial" : "refresh",
+              categoryFilterRef.current,
+              1,
+              filtersRef.current,
+              scopeRef.current,
+            );
+          } catch (err) {
+            if (cancelled) {
+              return;
+            }
+
+            setError(getApiErrorMessage(err, t("loadFailed")));
+            setIsLoading(false);
           }
-
-          setError(getApiErrorMessage(err, t("loadFailed")));
-          setIsLoading(false);
-        }
-      })();
+        })();
+      });
 
       return () => {
         cancelled = true;
+        task.cancel();
       };
     }, [fetchPage]),
   );
@@ -227,15 +237,7 @@ export function useEvents(
       return;
     }
     void fetchPage("more", categoryFilter, page + 1, filters, scope);
-  }, [
-    categoryFilter,
-    fetchPage,
-    filters,
-    hasNext,
-    isLoadingMore,
-    page,
-    scope,
-  ]);
+  }, [categoryFilter, fetchPage, filters, hasNext, isLoadingMore, page, scope]);
 
   const changeCategoryFilter = useCallback(
     (nextCategoryId: string | null) => {

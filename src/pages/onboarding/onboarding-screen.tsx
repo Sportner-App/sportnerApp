@@ -1,8 +1,8 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTranslation } from "react-i18next";
 
 import { Button, Input, SelectField } from "@/components";
 import { useOnboardingCopy } from "@/constants/onboarding";
@@ -78,7 +78,6 @@ export function OnboardingScreen() {
             <MediaFields
               avatar={form.avatar}
               existingAvatarUrl={form.existingAvatarUrl}
-              video={form.video}
               onPickAvatar={() => {
                 void (async () => {
                   const source = await chooseSource();
@@ -87,9 +86,7 @@ export function OnboardingScreen() {
                   }
                 })();
               }}
-              onPickVideo={form.chooseVideo}
               onClearAvatar={form.clearAvatar}
-              onClearVideo={form.clearVideo}
             />
             <SelectField
               label={t("profile:edit.cityLabel")}

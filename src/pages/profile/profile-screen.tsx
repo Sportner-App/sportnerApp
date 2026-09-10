@@ -16,7 +16,6 @@ import { OrganizationsSection } from "../organizations/organizations-section";
 import { MenuSection } from "./menu-section";
 import { ProfileAboutSection } from "./profile-about-section";
 import { ProfileHero } from "./profile-hero";
-import { ProfileIntroVideo } from "./profile-intro-video";
 import { ReviewsSection } from "./reviews-section";
 import { SportsSection } from "./sports-section";
 import { StatsSection } from "./stats-section";
@@ -24,7 +23,7 @@ import { StatsSection } from "./stats-section";
 type ProfileTab = "activity" | "reviews" | "settings";
 
 export function ProfileScreen() {
-  const { t } = useTranslation(["profile", "common"]);
+  const { t } = useTranslation(["profile", "common", "settings"]);
   const PROFILE_COPY = useProfileCopy();
   const PROFILE_TABS = useProfileTabs();
   const router = useRouter();
@@ -121,6 +120,12 @@ export function ProfileScreen() {
             onPress={() => router.push("/profile/sports")}
             onAdd={() => router.push("/profile/add-sport")}
           />
+          <OrganizationsSection
+            onPressList={() => router.push("/organizations")}
+            onPressItem={(organizationId) =>
+              router.push(`/organizations/${organizationId}`)
+            }
+          />
           <SegmentedTabs
             options={PROFILE_TABS}
             value={activeTab}
@@ -128,18 +133,7 @@ export function ProfileScreen() {
           />
 
           {activeTab === "activity" ? (
-            <>
-              <StatsSection statistics={profile.statistics} />
-              {profile.introVideoUrl ? (
-                <ProfileIntroVideo uri={profile.introVideoUrl} />
-              ) : null}
-              <OrganizationsSection
-                onPressList={() => router.push("/organizations")}
-                onPressItem={(organizationId) =>
-                  router.push(`/organizations/${organizationId}`)
-                }
-              />
-            </>
+            <StatsSection statistics={profile.statistics} />
           ) : null}
 
           {activeTab === "reviews" ? (
@@ -156,12 +150,16 @@ export function ProfileScreen() {
           ) : null}
 
           {activeTab === "settings" ? (
-            <MenuSection
-              onItemPress={openMenu}
-              onLogout={logout}
-              isSigningOut={isSigningOut}
-            />
+            <MenuSection onItemPress={openMenu} />
           ) : null}
+
+          <Button
+            label={t("settings:logout")}
+            variant="danger"
+            icon="right-from-bracket"
+            isLoading={isSigningOut}
+            onPress={logout}
+          />
         </>
       )}
     </TabPage>

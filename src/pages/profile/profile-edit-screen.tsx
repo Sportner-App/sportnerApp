@@ -26,11 +26,9 @@ import {
   updatePersonalDetails,
   updateUsername,
   uploadAvatar,
-  uploadIntroVideo,
 } from "@/services/profile-service";
 import {
   mediaDeniedMessage,
-  pickIntroVideo,
   pickProfileImage,
   type PickedMedia,
 } from "@/utils/media-picker";
@@ -51,7 +49,6 @@ export function ProfileEditScreen() {
   const [birthDate, setBirthDate] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [avatar, setAvatar] = useState<PickedMedia | null>(null);
-  const [video, setVideo] = useState<PickedMedia | null>(null);
   const {
     options: cityOptions,
     isLoading: isCitiesLoading,
@@ -74,11 +71,6 @@ export function ProfileEditScreen() {
         ? { uri: profile.avatarUrl, name: "avatar.jpg", type: "image/jpeg" }
         : null,
     );
-    setVideo(
-      profile.introVideoUrl
-        ? { uri: profile.introVideoUrl, name: "intro.mp4", type: "video/mp4" }
-        : null,
-    );
   }, [profile]);
 
   const usernameAvailableAt = profile?.usernameChangeAvailableAt
@@ -87,25 +79,19 @@ export function ProfileEditScreen() {
   const canChangeUsername =
     !usernameAvailableAt || usernameAvailableAt.getTime() <= Date.now();
 
-  const chooseMedia = async (kind: "avatar" | "video") => {
-    const source = kind === "avatar" ? await chooseSource() : "gallery";
-    if (kind === "avatar" && !source) {
+  const chooseAvatar = async () => {
+    const source = await chooseSource();
+    if (!source) {
       return;
     }
 
-    const picked =
-      kind === "avatar"
-        ? await pickProfileImage(source ?? "gallery")
-        : await pickIntroVideo();
+    const picked = await pickProfileImage(source);
 
     if (picked === "denied") {
       showToast({
         type: "error",
         title: t("profile:edit.permissionRequired"),
-        description:
-          kind === "avatar"
-            ? mediaDeniedMessage(source ?? "gallery")
-            : t("profile:edit.videoPermissionRequired"),
+        description: mediaDeniedMessage(source),
       });
       return;
     }
@@ -115,15 +101,9 @@ export function ProfileEditScreen() {
     }
 
     try {
-      if (kind === "avatar") {
-        await uploadAvatar(picked);
-        setAvatar(picked);
-        showToast({ type: "success", title: t("profile:edit.photoUpdated") });
-      } else {
-        await uploadIntroVideo(picked);
-        setVideo(picked);
-        showToast({ type: "success", title: t("profile:edit.videoUpdated") });
-      }
+      await uploadAvatar(picked);
+      setAvatar(picked);
+      showToast({ type: "success", title: t("profile:edit.photoUpdated") });
       await refresh();
     } catch (error) {
       showToast({
@@ -131,9 +111,7 @@ export function ProfileEditScreen() {
         title: t("profile:edit.uploadFailed"),
         description: getApiErrorMessage(
           error,
-          kind === "avatar"
-            ? t("profile:edit.photoUploadFailed")
-            : t("profile:edit.videoUploadFailed"),
+          t("profile:edit.photoUploadFailed"),
         ),
       });
     }
@@ -169,9 +147,7 @@ export function ProfileEditScreen() {
         type: "error",
         title: t("profile:edit.checkInfo"),
         description:
-          usernameError ||
-          birthDateError ||
-          t("profile:edit.genderRequired"),
+          usernameError || birthDateError || t("profile:edit.genderRequired"),
       });
       return;
     }
@@ -217,9 +193,7 @@ export function ProfileEditScreen() {
         <>
           <MediaFields
             avatar={avatar}
-            video={video}
-            onPickAvatar={() => void chooseMedia("avatar")}
-            onPickVideo={() => void chooseMedia("video")}
+            onPickAvatar={() => void chooseAvatar()}
           />
 
           <View className="gap-1">

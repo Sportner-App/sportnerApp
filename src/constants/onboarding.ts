@@ -27,8 +27,7 @@ export function useOnboardingCopy() {
       searchHint: t("sports.searchHint"),
       selectedEmpty: t("sports.selectedEmpty"),
       stepLabel: t("sports.stepLabel"),
-      selectedCount: (count: number) =>
-        t("sports.selectedCount", { count }),
+      selectedCount: (count: number) => t("sports.selectedCount", { count }),
       primaryBadge: t("sports.primaryBadge"),
       tapForLevel: t("sports.tapForLevel"),
       selectedHint: t("sports.selectedHint"),
@@ -61,7 +60,6 @@ export function useOnboardingCopy() {
       sportRequiredTitle: t("toasts.sportRequiredTitle"),
       sportRequiredDescription: t("toasts.sportRequiredDescription"),
       permissionRequired: t("toasts.permissionRequired"),
-      videoPermissionRequired: t("toasts.videoPermissionRequired"),
       photoRequiredTitle: t("toasts.photoRequiredTitle"),
       photoRequiredDescription: t("toasts.photoRequiredDescription"),
       completeFailedTitle: t("toasts.completeFailedTitle"),
@@ -82,11 +80,41 @@ export function useSkillLevelOptions(): OnboardingSkillOption[] {
   const { t } = useTranslation("skills");
 
   return [
-    { key: "0", label: t("beginner"), shortLabel: t("beginnerShort"), level: 0, skillKey: "beginner" },
-    { key: "1", label: t("intermediate"), shortLabel: t("intermediateShort"), level: 1, skillKey: "intermediate" },
-    { key: "2", label: t("advanced"), shortLabel: t("advancedShort"), level: 2, skillKey: "advanced" },
-    { key: "3", label: t("expert"), shortLabel: t("expertShort"), level: 3, skillKey: "expert" },
-    { key: "4", label: t("professional"), shortLabel: t("professionalShort"), level: 4, skillKey: "professional" },
+    {
+      key: "0",
+      label: t("beginner"),
+      shortLabel: t("beginnerShort"),
+      level: 0,
+      skillKey: "beginner",
+    },
+    {
+      key: "1",
+      label: t("intermediate"),
+      shortLabel: t("intermediateShort"),
+      level: 1,
+      skillKey: "intermediate",
+    },
+    {
+      key: "2",
+      label: t("advanced"),
+      shortLabel: t("advancedShort"),
+      level: 2,
+      skillKey: "advanced",
+    },
+    {
+      key: "3",
+      label: t("expert"),
+      shortLabel: t("expertShort"),
+      level: 3,
+      skillKey: "expert",
+    },
+    {
+      key: "4",
+      label: t("professional"),
+      shortLabel: t("professionalShort"),
+      level: 4,
+      skillKey: "professional",
+    },
   ];
 }
 

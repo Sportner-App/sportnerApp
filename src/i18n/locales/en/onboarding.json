@@ -26,7 +26,7 @@
   },
   "details": {
     "title": "Let's get\nto know you.",
-    "subtitle": "Photo, intro video, city, and bio are optional — you can add them later.",
+    "subtitle": "Photo, city, and bio are optional — you can add them later.",
     "submit": "Finish",
     "skip": "Skip and finish",
     "stepLabel": "2 / 2",
@@ -65,9 +65,7 @@
     "addPhotoRequired": "Add profile photo (required)",
     "googlePhotoReady": "Your Google profile photo is ready. You can change it if you like.",
     "revertToGoogle": "Use Google photo",
-    "remove": "Remove",
-    "introVideoTitle": "Intro video",
-    "introVideoEmpty": "Optional · up to 30 sec"
+    "remove": "Remove"
   },
   "toasts": {
     "successTitle": "You're all set",
@@ -77,7 +75,6 @@
     "sportRequiredTitle": "Sport required",
     "sportRequiredDescription": "Select at least one sport and set your primary sport.",
     "permissionRequired": "Permission required",
-    "videoPermissionRequired": "You need to grant gallery access to select a video.",
     "photoRequiredTitle": "Profile photo required",
     "photoRequiredDescription": "Select a profile photo to continue.",
     "completeFailedTitle": "Could not complete"

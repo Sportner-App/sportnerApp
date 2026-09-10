@@ -46,11 +46,6 @@
     "commentCount": "{{count}} reviews",
     "loading": "Loading reviews…"
   },
-  "introVideo": {
-    "label": "INTRO VIDEO",
-    "pause": "Pause video",
-    "play": "Play intro video"
-  },
   "organizations": {
     "add": "Add",
     "pending": "Pending"
@@ -80,12 +75,9 @@
     "citySheetSubtitle": "Choose one of 81 provinces in Turkey",
     "bioLabel": "Short bio",
     "permissionRequired": "Permission required",
-    "videoPermissionRequired": "You need to grant gallery access to select a video.",
     "photoUpdated": "Photo updated",
-    "videoUpdated": "Video updated",
     "uploadFailed": "Upload failed",
     "photoUploadFailed": "Could not upload photo.",
-    "videoUploadFailed": "Could not upload video.",
     "firstNameRequired": "First name required",
     "firstNameRequiredDescription": "Enter your first name to use on your profile.",
     "cityRequired": "City selection required",

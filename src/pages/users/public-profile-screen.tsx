@@ -15,7 +15,6 @@ import { ProfileAboutSection } from "@/pages/profile/profile-about-section";
 import { useSession, useToast } from "@/contexts";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { ProfileHero } from "@/pages/profile/profile-hero";
-import { ProfileIntroVideo } from "@/pages/profile/profile-intro-video";
 import { ReviewsSection } from "@/pages/profile/reviews-section";
 import { SportsSection } from "@/pages/profile/sports-section";
 import { StatsSection } from "@/pages/profile/stats-section";
@@ -345,12 +344,7 @@ export function PublicProfileScreen() {
           />
 
           {activeTab === "activity" ? (
-            <>
-              <StatsSection statistics={profile.statistics} />
-              {profile.introVideoUrl ? (
-                <ProfileIntroVideo uri={profile.introVideoUrl} />
-              ) : null}
-            </>
+            <StatsSection statistics={profile.statistics} />
           ) : null}
 
           {activeTab === "reviews" ? (

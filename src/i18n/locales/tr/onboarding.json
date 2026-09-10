@@ -26,7 +26,7 @@
   },
   "details": {
     "title": "Seni\ntanıyalım.",
-    "subtitle": "Fotoğraf, tanıtım videosu, şehir ve bio opsiyonel; sonra da ekleyebilirsin.",
+    "subtitle": "Fotoğraf, şehir ve bio opsiyonel; sonra da ekleyebilirsin.",
     "submit": "Tamamla",
     "skip": "Atla ve tamamla",
     "stepLabel": "2 / 2",
@@ -65,9 +65,7 @@
     "addPhotoRequired": "Profil fotoğrafı ekle (zorunlu)",
     "googlePhotoReady": "Google profil fotoğrafın hazır. İstersen değiştirebilirsin.",
     "revertToGoogle": "Google fotoğrafına dön",
-    "remove": "Kaldır",
-    "introVideoTitle": "Tanıtım videosu",
-    "introVideoEmpty": "Opsiyonel · en fazla 30 sn"
+    "remove": "Kaldır"
   },
   "toasts": {
     "successTitle": "Hazırsın",
@@ -77,7 +75,6 @@
     "sportRequiredTitle": "Spor gerekli",
     "sportRequiredDescription": "En az bir spor seç ve birincil sporunu belirle.",
     "permissionRequired": "İzin gerekli",
-    "videoPermissionRequired": "Video seçmek için galeri izni vermelisin.",
     "photoRequiredTitle": "Profil fotoğrafı gerekli",
     "photoRequiredDescription": "Devam etmek için bir profil fotoğrafı seçmelisin.",
     "completeFailedTitle": "Tamamlanamadı"

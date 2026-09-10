@@ -48,7 +48,6 @@ export type ApiMyProfile = {
   birthDate: string | null;
   city: string | null;
   profileImageUrl: string | null;
-  introVideoUrl: string | null;
   averageRating: number;
   reviewCount: number;
   isProfilePublic: boolean;
@@ -67,7 +66,6 @@ export type ApiPublicProfile = {
   bio: string | null;
   city: string | null;
   profileImageUrl: string | null;
-  introVideoUrl: string | null;
   averageRating: number;
   reviewCount: number;
   sports: ProfileSport[];
@@ -87,7 +85,6 @@ export type UserProfile = {
   bio: string | null;
   city: string | null;
   avatarUrl: string | null;
-  introVideoUrl: string | null;
   averageRating: number;
   reviewCount: number;
   isProfilePublic: boolean;

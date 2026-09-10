@@ -22,7 +22,6 @@ import {
 import {
   updatePersonalDetails,
   uploadAvatar,
-  uploadIntroVideo,
 } from "@/services/profile-service";
 import { listSports } from "@/services/sports-service";
 import { useSportCategories } from "@/hooks/use-sport-categories";
@@ -30,7 +29,6 @@ import type { OnboardingSportDraft, OnboardingStep } from "@/types/onboarding";
 import type { Sport } from "@/types/sports";
 import {
   mediaDeniedMessage,
-  pickIntroVideo,
   pickProfileImage,
   type MediaSource,
   type PickedMedia,
@@ -140,7 +138,6 @@ export function useOnboarding() {
   const [city, setCity] = useState("");
   const [bio, setBio] = useState("");
   const [avatar, setAvatar] = useState<PickedMedia | null>(null);
-  const [video, setVideo] = useState<PickedMedia | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     options: cityOptions,
@@ -289,22 +286,6 @@ export function useOnboarding() {
     setAvatar(picked);
   };
 
-  const chooseVideo = async () => {
-    const picked = await pickIntroVideo();
-    if (picked === "denied") {
-      showToast({
-        type: "error",
-        title: ONBOARDING_COPY.toasts.permissionRequired,
-        description: ONBOARDING_COPY.toasts.videoPermissionRequired,
-      });
-      return;
-    }
-    if (picked === "cancelled") {
-      return;
-    }
-    setVideo(picked);
-  };
-
   const setBirthDate = (value: string) => {
     setBirthDateState(formatBirthDateInput(value));
   };
@@ -380,7 +361,10 @@ export function useOnboarding() {
       showToast({
         type: "error",
         title: t("identity.saveFailed"),
-        description: getApiErrorMessage(error, t("identity.saveFailedDescription")),
+        description: getApiErrorMessage(
+          error,
+          t("identity.saveFailedDescription"),
+        ),
       });
     } finally {
       setIsIdentitySubmitting(false);
@@ -425,10 +409,6 @@ export function useOnboarding() {
 
       if (avatar) {
         await uploadAvatar(avatar);
-      }
-
-      if (video) {
-        await uploadIntroVideo(video);
       }
 
       const { error } = await completeOnboarding();
@@ -504,11 +484,8 @@ export function useOnboarding() {
     setBio,
     avatar,
     existingAvatarUrl: user?.avatarUrl ?? null,
-    video,
     chooseAvatar,
-    chooseVideo,
     clearAvatar: () => setAvatar(null),
-    clearVideo: () => setVideo(null),
     isSubmitting,
     canContinueSports,
     canFinish: canContinueSports && Boolean(avatar || user?.avatarUrl),
