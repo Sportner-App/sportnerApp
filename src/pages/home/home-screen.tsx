@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { SegmentedTabs, SportLoader, TabPage } from "@/components";
 import { shadows, themeColors } from "@/constants/theme";
 import { useAuth } from "@/contexts";
+import { useEntranceAnimationsReady } from "@/hooks/use-entrance-animations-ready";
 import {
   DEFAULT_EVENT_FILTERS,
   type EventFeedScope,
@@ -31,11 +32,11 @@ type ViewMode = "list" | "map";
 /**
  * The list isn't virtualized (plain ScrollView + .map, so onEndReached-based
  * pagination keeps working), which means every fetched event mounts at once.
- * Each EventCard runs its own FadeInDown entrance animation on mount; staggering
- * dozens of them simultaneously can overwhelm the UI thread and leave a card
- * stuck in its pre-animation (invisible) state — a blank gap where the card
- * should be, until something forces a fresh mount. Only entrance-animate the
- * cards that are actually visible when the list first renders.
+ * Only entrance-animate the cards that are actually visible when the list
+ * first renders — staggering dozens of them at once adds up to little visible
+ * benefit past the fold. (See useEntranceAnimationsReady for the cold-start
+ * race that can leave an animated card stuck invisible — the actual cause of
+ * the "blank gap" bug; this cap is a secondary, unrelated trim.)
  */
 const MAX_ENTRANCE_ANIMATED_CARDS = 6;
 
@@ -53,6 +54,7 @@ export function HomeScreen() {
     initialScope === "organizations" ? (organizationIdParam ?? null) : null;
   const [filterOpen, setFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const entranceReady = useEntranceAnimationsReady();
   const { requireAuth } = useRequireAuth();
   const { isAuthenticated } = useAuth();
   const { items: myOrganizations, isLoading: isOrganizationsLoading } =
@@ -352,7 +354,7 @@ export function HomeScreen() {
               key={event.id}
               event={event}
               index={index}
-              animateEntrance={index < MAX_ENTRANCE_ANIMATED_CARDS}
+              animateEntrance={entranceReady && index < MAX_ENTRANCE_ANIMATED_CARDS}
               onPress={() => router.push(`/events/${event.id}`)}
             />
           ))}
