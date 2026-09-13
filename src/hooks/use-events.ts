@@ -7,7 +7,7 @@ import { getApiErrorMessage } from "@/lib/api/errors";
 import { getEvents } from "@/services/events-service";
 import type { EventSummary } from "@/types/events";
 
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 5;
 export const DEFAULT_EVENT_FILTERS: EventListFilters = {
   city: null,
   minAge: 13,

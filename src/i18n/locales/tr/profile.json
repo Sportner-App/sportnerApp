@@ -64,6 +64,7 @@
     "lastNameLabel": "Soyad",
     "birthDateLabel": "Doğum tarihi",
     "birthDatePlaceholder": "GG.AA.YYYY",
+    "birthDateLocked": "Doğum tarihi yalnızca bir kez girilebilir. Düzeltmek için destek ile iletişime geç.",
     "genderLabel": "Cinsiyet",
     "genderPlaceholder": "Cinsiyet seç",
     "genderSheetTitle": "Cinsiyet",
@@ -138,7 +139,17 @@
     "blockedDescription": "Engellediğin kişileri gör ve engeli kaldır.",
     "profilePublic": "Profil açık",
     "profilePrivate": "Profil gizli",
-    "updateFailed": "Güncellenemedi"
+    "updateFailed": "Güncellenemedi",
+    "deleteAccount": {
+      "sectionTitle": "Tehlikeli bölge",
+      "title": "Hesabı sil",
+      "description": "Hesabını silersen profilin, arkadaşlıkların ve etkinlik geçmişin artık görünmez ve bu hesapla tekrar giriş yapamazsın.",
+      "sheetTitle": "Hesabını silmek istediğine emin misin?",
+      "sheetSubtitle": "Bu işlem geri alınamaz. Devam edersen anında oturumun kapatılır ve hesabına tekrar giriş yapamazsın.",
+      "confirm": "Hesabımı sil",
+      "success": "Hesabın silindi",
+      "failed": "Hesap silinemedi"
+    }
   },
   "blocked": {
     "title": "ENGELLENENLER",

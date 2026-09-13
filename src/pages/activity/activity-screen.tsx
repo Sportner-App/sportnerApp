@@ -8,6 +8,14 @@ import { useActivityCopy } from "@/constants/activity";
 import { useActivity } from "@/hooks/use-activity";
 import { EventCard } from "@/pages/home/event-card";
 
+/**
+ * See MAX_ENTRANCE_ANIMATED_CARDS in home-screen.tsx: this list isn't
+ * virtualized either, so only entrance-animate the cards visible on first
+ * render to avoid overwhelming the UI thread with simultaneous animations
+ * (which can leave a card stuck invisible until the list remounts).
+ */
+const MAX_ENTRANCE_ANIMATED_CARDS = 6;
+
 export function ActivityScreen() {
   const router = useRouter();
   const { t } = useTranslation("common");
@@ -84,6 +92,7 @@ export function ActivityScreen() {
               key={event.id}
               event={event}
               index={index}
+              animateEntrance={index < MAX_ENTRANCE_ANIMATED_CARDS}
               onPress={() => router.push(`/events/${event.id}`)}
             />
           ))}

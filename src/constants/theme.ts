@@ -24,7 +24,9 @@ export type {
 
 /**
  * Katalog slug'ı → aksan tokeni. Hem güncel Türkçe slug'lar hem de seed'deki
- * legacy İngilizce slug'lar eşlenir; katalogdaki 34 branşın tamamı kapsanır.
+ * legacy İngilizce slug'lar eşlenir. "Diğer" bilinçli olarak burada yok —
+ * nötr gri fallback'e düşmesi (sportAccentToken → null) o jenerik seçenek
+ * için zaten doğru görünüm.
  */
 const SPORT_ACCENT_BY_SLUG: Record<string, SportAccentName> = {
   // Takım sporları
@@ -77,6 +79,7 @@ const SPORT_ACCENT_BY_SLUG: Record<string, SportAccentName> = {
   swimming: "swimming",
   dalis: "diving",
   yelken: "sailing",
+  kurek: "rowing",
 
   // Kış sporları
   kayak: "ski",

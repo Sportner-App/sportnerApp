@@ -78,6 +78,10 @@ export function ProfileEditScreen() {
     : null;
   const canChangeUsername =
     !usernameAvailableAt || usernameAvailableAt.getTime() <= Date.now();
+  // Age eligibility for events is checked live against birth date, so it can
+  // only be set once — otherwise it could be nudged to qualify for an event
+  // and reverted afterward. Corrections go through support.
+  const isBirthDateLocked = Boolean(profile?.birthDate);
 
   const chooseAvatar = async () => {
     const source = await chooseSource();
@@ -244,6 +248,12 @@ export function ProfileEditScreen() {
             onChangeText={(value) => setBirthDate(formatBirthDateInput(value))}
             keyboardType="number-pad"
             maxLength={10}
+            disabled={isBirthDateLocked}
+            helperText={
+              isBirthDateLocked
+                ? t("profile:edit.birthDateLocked")
+                : undefined
+            }
           />
           <SelectField
             label={t("profile:edit.genderLabel")}

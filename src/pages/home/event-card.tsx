@@ -16,6 +16,7 @@ import Svg, {
 } from "react-native-svg";
 import { useTranslation } from "react-i18next";
 
+import { Avatar } from "@/components";
 import { resolveEventBadgeThemes } from "@/constants/badge-colors";
 import { skillKeyFromCode, useSkillLevelLabels } from "@/constants/profile";
 import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
@@ -26,7 +27,7 @@ import {
   themeColors,
 } from "@/constants/theme";
 import type { IconName } from "@/types/components";
-import type { EventSummary } from "@/types/events";
+import type { EventSummary, ParticipantAvatarPreview } from "@/types/events";
 import {
   currentDateLocale,
   formatDurationLabel,
@@ -270,6 +271,7 @@ export function EventCard({
                 <View className="w-[40%]">
                   <ParticipantProof
                     occupied={occupied}
+                    avatars={event.participantAvatars}
                     soft={sportSoft}
                     accent={isFull ? themeColors.warning : sportColor}
                   />
@@ -461,10 +463,12 @@ function SportPhoto({
 
 function ParticipantProof({
   occupied,
+  avatars,
   soft,
   accent,
 }: {
   occupied: number;
+  avatars: ParticipantAvatarPreview[];
   soft: string;
   accent: string;
 }) {
@@ -473,21 +477,36 @@ function ParticipantProof({
 
   return (
     <View className="flex-row items-center">
-      {Array.from({ length: shown }, (_, index) => (
-        <View
-          key={index}
-          className="h-8 w-8 items-center justify-center rounded-full border-2 border-white"
-          style={{
-            marginLeft: index === 0 ? 0 : -10,
-            backgroundColor: soft,
-            zIndex: shown - index,
-          }}
-        >
-          {index === 0 ? (
-            <FontAwesome6 name="user-group" size={11} color={accent} />
-          ) : null}
-        </View>
-      ))}
+      {Array.from({ length: shown }, (_, index) => {
+        const avatar = avatars[index];
+
+        return (
+          <View
+            key={index}
+            className="h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-white"
+            style={{
+              marginLeft: index === 0 ? 0 : -10,
+              backgroundColor: soft,
+              zIndex: shown - index,
+            }}
+          >
+            {avatar ? (
+              <Avatar
+                uri={avatar.avatarUrl}
+                name={avatar.name}
+                isGuest={avatar.isGuest}
+                size={28}
+                borderWidth={0}
+                backgroundColor={soft}
+                textColor={accent}
+                previewable={false}
+              />
+            ) : index === 0 ? (
+              <FontAwesome6 name="user-group" size={11} color={accent} />
+            ) : null}
+          </View>
+        );
+      })}
       {extra > 0 ? (
         <View className="ml-1.5 h-8 min-w-8 items-center justify-center rounded-full border border-white bg-white px-2">
           <Text className="font-body text-[11px] font-semibold text-text-primary">

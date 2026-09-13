@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import {
   Platform,
   Pressable,
-  Text,
   View,
   type View as ViewType,
 } from "react-native";
@@ -31,7 +30,6 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 function TabButton({
   label,
-  createShortLabel,
   icon,
   focused,
   isAction,
@@ -42,8 +40,6 @@ function TabButton({
   tourTargetRef,
 }: {
   label: string;
-  /** Aksiyon (create) butonunun içindeki kısa etiket. */
-  createShortLabel: string;
   icon: (typeof TAB_ITEMS)[number]["icon"];
   focused: boolean;
   isAction?: boolean;
@@ -90,10 +86,10 @@ function TabButton({
           onPressIn={pressIn}
           onPressOut={pressOut}
           style={animatedStyle}
-          className="h-[60px] w-[60px] items-center justify-center rounded-full border border-white/25 bg-white/10"
+          className="h-[54px] w-[54px] items-center justify-center rounded-full border border-white/25 bg-white/10"
         >
           <View
-            className="h-[50px] w-[50px] items-center justify-center gap-0.5 overflow-hidden rounded-full bg-brand-primary"
+            className="h-[44px] w-[44px] items-center justify-center overflow-hidden rounded-full bg-brand-primary"
             style={{
               shadowColor: themeColors.brand.primary,
               shadowOpacity: 0.32,
@@ -109,15 +105,9 @@ function TabButton({
             />
             <FontAwesome6
               name={icon}
-              size={15}
+              size={17}
               color={themeColors.text.onPrimary}
             />
-            <Text
-              className="font-body-bold text-[8px] leading-[9px]"
-              style={{ color: themeColors.text.onPrimary }}
-            >
-              {createShortLabel}
-            </Text>
           </View>
         </AnimatedPressable>
       </View>
@@ -137,50 +127,32 @@ function TabButton({
         className="h-full items-center justify-center px-0.5"
       >
         <View
-          className={`min-h-[48px] min-w-[52px] items-center justify-center rounded-[20px] border px-2 ${
+          className={`h-11 w-11 items-center justify-center rounded-full border ${
             focused
               ? "border-white/20 bg-white/10"
               : "border-transparent bg-transparent"
           }`}
         >
-          <View
-            className={`${isProfile ? "h-9" : "h-6"} items-center justify-center`}
-          >
-            {isProfile ? (
-              <Avatar
-                uri={avatarUrl}
-                name={avatarName}
-                size={34}
-                borderWidth={focused ? 2 : 1}
-                borderColor={
-                  focused
-                    ? themeColors.brand.primary
-                    : themeColors.text.secondary
-                }
-                previewable={false}
-              />
-            ) : (
-              <FontAwesome6
-                name={icon}
-                size={16}
-                color={
-                  focused
-                    ? themeColors.brand.primary
-                    : themeColors.text.secondary
-                }
-              />
-            )}
-          </View>
-          {!isProfile ? (
-            <Text
-              numberOfLines={1}
-              className={`mt-1 text-center font-body-bold text-[10px] leading-3 tracking-[-0.1px] ${
-                focused ? "text-white" : "text-white/55"
-              }`}
-            >
-              {label}
-            </Text>
-          ) : null}
+          {isProfile ? (
+            <Avatar
+              uri={avatarUrl}
+              name={avatarName}
+              size={32}
+              borderWidth={focused ? 2 : 1}
+              borderColor={
+                focused ? themeColors.brand.primary : themeColors.text.secondary
+              }
+              previewable={false}
+            />
+          ) : (
+            <FontAwesome6
+              name={icon}
+              size={20}
+              color={
+                focused ? themeColors.brand.primary : themeColors.text.secondary
+              }
+            />
+          )}
         </View>
       </AnimatedPressable>
     </View>
@@ -218,7 +190,7 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
   return (
     <View
       pointerEvents="box-none"
-      className="absolute bottom-0 left-0 right-0 px-3"
+      className="absolute bottom-0 left-0 right-0 px-7"
       style={{ paddingBottom: Math.max(insets.bottom, 9) }}
     >
       <View
@@ -233,7 +205,7 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
         }}
       >
         <BlurView
-          intensity={Platform.OS === "ios" ? 68 : 46}
+          intensity={Platform.OS === "ios" ? 26 : 18}
           tint={Platform.OS === "ios" ? "systemUltraThinMaterialDark" : "dark"}
           experimentalBlurMethod={
             Platform.OS === "android" ? "dimezisBlurView" : undefined
@@ -242,7 +214,7 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
         >
           <View
             pointerEvents="none"
-            className="absolute inset-0 bg-background-primary/10"
+            className="absolute inset-0 bg-background-primary/5"
           />
           <View
             pointerEvents="none"
@@ -253,7 +225,7 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
             className="absolute inset-x-8 bottom-0 h-px bg-white/10"
           />
 
-          <View className="h-[72px] flex-row items-center px-1.5">
+          <View className="h-16 flex-row items-center px-1.5">
             {TAB_ITEMS.map((item) => {
               const routeIndex = state.routes.findIndex(
                 (route) => route.name === item.key,
@@ -264,7 +236,6 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
                 <TabButton
                   key={item.key}
                   label={t(item.labelKey)}
-                  createShortLabel={t("createShort")}
                   icon={item.icon}
                   focused={focused}
                   isAction={item.isAction}

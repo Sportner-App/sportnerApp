@@ -6,7 +6,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
 import { SegmentedTabs, SportLoader, TabPage } from "@/components";
-import { themeColors } from "@/constants/theme";
+import { shadows, themeColors } from "@/constants/theme";
 import { useAuth } from "@/contexts";
 import {
   DEFAULT_EVENT_FILTERS,
@@ -27,6 +27,17 @@ import { Hero } from "./hero";
 import { SportFilter } from "./sport-filter";
 
 type ViewMode = "list" | "map";
+
+/**
+ * The list isn't virtualized (plain ScrollView + .map, so onEndReached-based
+ * pagination keeps working), which means every fetched event mounts at once.
+ * Each EventCard runs its own FadeInDown entrance animation on mount; staggering
+ * dozens of them simultaneously can overwhelm the UI thread and leave a card
+ * stuck in its pre-animation (invisible) state — a blank gap where the card
+ * should be, until something forces a fresh mount. Only entrance-animate the
+ * cards that are actually visible when the list first renders.
+ */
+const MAX_ENTRANCE_ANIMATED_CARDS = 6;
 
 export function HomeScreen() {
   const { t } = useTranslation("home");
@@ -111,6 +122,124 @@ export function HomeScreen() {
     filters.organizationId != null ||
     filters.sportId != null;
 
+  const viewModeToggle = (
+    <View className="flex-row items-center gap-1 rounded-full border border-border-default bg-background-secondary p-1">
+      <ViewModeButton
+        icon="list"
+        label={t("viewMode.list")}
+        active={viewMode === "list"}
+        onPress={() => setViewMode("list")}
+      />
+      <ViewModeButton
+        icon="map-location-dot"
+        label={t("viewMode.map")}
+        active={viewMode === "map"}
+        onPress={() => setViewMode("map")}
+      />
+    </View>
+  );
+
+  const filterButtons = (
+    <>
+      {hasActiveFilters ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t("filters.clearAccessibility")}
+          onPress={() => applyFilters(DEFAULT_EVENT_FILTERS)}
+          className="h-11 w-11 items-center justify-center rounded-full active:opacity-70"
+        >
+          <FontAwesome6
+            name="filter-circle-xmark"
+            size={17}
+            color={themeColors.text.secondary}
+          />
+        </Pressable>
+      ) : null}
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t("filters.accessibility")}
+        onPress={() => setFilterOpen(true)}
+        className="h-11 w-11 items-center justify-center rounded-full active:opacity-70"
+      >
+        <FontAwesome6 name="sliders" size={17} color={themeColors.text.primary} />
+        {hasActiveFilters ? (
+          <View className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full border-2 border-background-primary bg-brand-primary" />
+        ) : null}
+      </Pressable>
+    </>
+  );
+
+  const filterSheet = (
+    <EventFilterSheet
+      visible={filterOpen}
+      filters={filters}
+      onClose={() => setFilterOpen(false)}
+      onApply={applyFilters}
+      organizations={isOrganizations ? approvedOrganizations : []}
+      sports={sports}
+    />
+  );
+
+  if (viewMode === "map") {
+    // Full-screen map: a fixed-height map buried under Hero/filters/list controls
+    // in a scrolling page meant the tapped-marker preview card could render
+    // below the visible viewport, forcing a scroll to see it. The map now fills
+    // the whole screen and the controls float on top of it instead, so the
+    // preview card (anchored to the bottom of the map's own box) is always
+    // inside the visible area no matter where on the map it was opened.
+    return (
+      <TabPage refreshing={isRefreshing} onRefresh={refresh} scroll={false}>
+        <View className="flex-1">
+          <View className="flex-1">
+            {isLoading ? (
+              <View className="flex-1 items-center justify-center">
+                <SportLoader size={148} label={t("loadingEvents")} />
+              </View>
+            ) : (
+              <EventsMap
+                events={events}
+                onOpenEvent={(eventId) => router.push(`/events/${eventId}`)}
+                userLocation={userLocation}
+                locationStatus={locationStatus}
+                onRequestLocation={() => void requestLocation()}
+              />
+            )}
+          </View>
+
+          <Animated.View
+            entering={FadeInDown.duration(400)}
+            pointerEvents="box-none"
+            className="absolute inset-x-3 top-3"
+          >
+            <View
+              className="gap-sm rounded-[24px] border border-border-default bg-background-primary/80 p-3"
+              style={shadows.md}
+            >
+              <View className="flex-row items-center justify-between">
+                <Text className="font-display text-[18px] leading-[24px] text-text-primary">
+                  {tTabs("events")}
+                </Text>
+                <View className="flex-row items-center gap-sm">
+                  {viewModeToggle}
+                  {filterButtons}
+                </View>
+              </View>
+
+              <SportFilter
+                categories={sportCategories}
+                value={categoryFilter}
+                onChange={setCategoryFilter}
+              />
+            </View>
+          </Animated.View>
+        </View>
+
+        {filterSheet}
+      </TabPage>
+    );
+  }
+
   return (
     <TabPage
       refreshing={isRefreshing}
@@ -133,51 +262,8 @@ export function HomeScreen() {
             {tTabs("events")}
           </Text>
           <View className="flex-row items-center gap-sm">
-            <View className="flex-row items-center gap-1 rounded-full border border-border-default bg-background-secondary p-1">
-              <ViewModeButton
-                icon="list"
-                label={t("viewMode.list")}
-                active={viewMode === "list"}
-                onPress={() => setViewMode("list")}
-              />
-              <ViewModeButton
-                icon="map-location-dot"
-                label={t("viewMode.map")}
-                active={viewMode === "map"}
-                onPress={() => setViewMode("map")}
-              />
-            </View>
-
-            {hasActiveFilters ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t("filters.clearAccessibility")}
-                onPress={() => applyFilters(DEFAULT_EVENT_FILTERS)}
-                className="h-11 w-11 items-center justify-center rounded-full active:opacity-70"
-              >
-                <FontAwesome6
-                  name="filter-circle-xmark"
-                  size={17}
-                  color={themeColors.text.secondary}
-                />
-              </Pressable>
-            ) : null}
-
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={t("filters.accessibility")}
-              onPress={() => setFilterOpen(true)}
-              className="h-11 w-11 items-center justify-center rounded-full active:opacity-70"
-            >
-              <FontAwesome6
-                name="sliders"
-                size={17}
-                color={themeColors.text.primary}
-              />
-              {hasActiveFilters ? (
-                <View className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full border-2 border-background-primary bg-brand-primary" />
-              ) : null}
-            </Pressable>
+            {viewModeToggle}
+            {filterButtons}
           </View>
         </View>
 
@@ -259,14 +345,6 @@ export function HomeScreen() {
                 : t("empty.default")}
           </Text>
         </View>
-      ) : viewMode === "map" ? (
-        <EventsMap
-          events={events}
-          onOpenEvent={(eventId) => router.push(`/events/${eventId}`)}
-          userLocation={userLocation}
-          locationStatus={locationStatus}
-          onRequestLocation={() => void requestLocation()}
-        />
       ) : (
         <View className="gap-lg">
           {events.map((event, index) => (
@@ -274,6 +352,7 @@ export function HomeScreen() {
               key={event.id}
               event={event}
               index={index}
+              animateEntrance={index < MAX_ENTRANCE_ANIMATED_CARDS}
               onPress={() => router.push(`/events/${event.id}`)}
             />
           ))}
@@ -285,14 +364,7 @@ export function HomeScreen() {
         </View>
       )}
 
-      <EventFilterSheet
-        visible={filterOpen}
-        filters={filters}
-        onClose={() => setFilterOpen(false)}
-        onApply={applyFilters}
-        organizations={isOrganizations ? approvedOrganizations : []}
-        sports={sports}
-      />
+      {filterSheet}
     </TabPage>
   );
 }

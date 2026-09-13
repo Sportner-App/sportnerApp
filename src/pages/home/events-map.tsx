@@ -127,14 +127,14 @@ export function EventsMap({
 
   if (!isNativeMapAvailable()) {
     return (
-      <View className="h-[220px] overflow-hidden rounded-xlarge border border-border-default">
+      <View className="flex-1 overflow-hidden rounded-xlarge border border-border-default">
         <MapUnavailable message={tLocation("mapUnavailable")} />
       </View>
     );
   }
 
   return (
-    <View className="h-[560px] overflow-hidden rounded-xlarge border border-border-default">
+    <View className="flex-1 overflow-hidden rounded-xlarge border border-border-default">
       <MapView
         ref={mapRef}
         style={{ flex: 1 }}

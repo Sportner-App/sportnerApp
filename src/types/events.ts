@@ -1,5 +1,13 @@
 import type { IconName } from "./components";
 
+/** API: ParticipantAvatarResponse — small preview stack on list cards */
+export type ApiParticipantAvatar = {
+  userId: string | null;
+  name: string | null;
+  profileImageUrl: string | null;
+  isGuest: boolean;
+};
+
 /** API: EventListItemResponse */
 export type ApiEventListItem = {
   id: string;
@@ -23,6 +31,7 @@ export type ApiEventListItem = {
   feeAmount: number | null;
   status: number;
   occupiedParticipantCount: number;
+  participantAvatars: ApiParticipantAvatar[] | null;
 };
 
 /** API: OrganizerSnippetResponse */
@@ -128,6 +137,13 @@ export type PagedResult<T> = {
   hasNext: boolean;
 };
 
+export type ParticipantAvatarPreview = {
+  userId: string | null;
+  name: string;
+  avatarUrl: string | null;
+  isGuest: boolean;
+};
+
 export type EventSummary = {
   id: string;
   title: string;
@@ -142,6 +158,7 @@ export type EventSummary = {
   eventDate: string;
   location: string;
   participantCount: number;
+  participantAvatars: ParticipantAvatarPreview[];
   maxParticipants: number | null;
   minParticipantAge: number;
   maxParticipantAge: number;

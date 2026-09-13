@@ -171,6 +171,7 @@ const sports = {
   swimming: sportAccent("#06b6d4"),
   diving: sportAccent("#0284c7"),
   sailing: sportAccent("#38bdf8"),
+  rowing: sportAccent("#1d4ed8"),
 
   // Kış sporları
   ski: sportAccent("#60a5fa"),

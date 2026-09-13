@@ -113,6 +113,7 @@ export type AuthActions = {
   login: (payload: AuthCredentials) => Promise<AuthResult>;
   register: (payload: RegisterPayload) => Promise<AuthResult>;
   signOut: () => Promise<AuthActionResult>;
+  deleteAccount: () => Promise<AuthActionResult>;
   /** Resolves to null when the user cancels the native sign-in flow. */
   signInWithGoogle: () => Promise<ExternalAuthResult | null>;
   signInWithApple: () => Promise<ExternalAuthResult | null>;

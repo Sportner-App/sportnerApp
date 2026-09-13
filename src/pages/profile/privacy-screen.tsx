@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { AppScreen, ScreenHeader, SportLoader } from "@/components";
-import { useToast } from "@/contexts";
+import { AppScreen, BottomSheet, Button, ScreenHeader, SportLoader } from "@/components";
+import { useAuth, useToast } from "@/contexts";
 import { useProfile } from "@/hooks/use-profile";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { updateVisibility } from "@/services/profile-service";
@@ -15,7 +15,38 @@ export function PrivacyScreen() {
   const router = useRouter();
   const { profile, isLoading, refresh } = useProfile();
   const { showToast } = useToast();
+  const { deleteAccount } = useAuth();
   const [saving, setSaving] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    if (isDeleting) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const { error } = await deleteAccount();
+
+      if (error) {
+        showToast({
+          type: "error",
+          title: t("profile:privacy.deleteAccount.failed"),
+          description: error.message,
+        });
+        return;
+      }
+
+      showToast({
+        type: "success",
+        title: t("profile:privacy.deleteAccount.success"),
+      });
+      router.replace("/(auth)/login");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const toggle = async (isProfilePublic: boolean) => {
     if (!profile || saving || profile.isProfilePublic === isProfilePublic) {
@@ -91,6 +122,47 @@ export function PrivacyScreen() {
             </View>
             <FontAwesome6 name="chevron-right" size={10} color="#6f7d86" />
           </Pressable>
+
+          <View className="mt-4 gap-2">
+            <Text className="font-body text-xs font-semibold uppercase tracking-wide text-destructive">
+              {t("profile:privacy.deleteAccount.sectionTitle")}
+            </Text>
+            <Pressable
+              onPress={() => setDeleteConfirmOpen(true)}
+              className="flex-row items-center gap-3 rounded-3xl border border-destructive/30 bg-destructive/5 px-4 py-4 active:opacity-70"
+            >
+              <View className="h-8 w-8 items-center justify-center rounded-full bg-destructive/10">
+                <FontAwesome6 name="trash" size={12} color="#ef4444" />
+              </View>
+              <View className="min-w-0 flex-1">
+                <Text className="font-body text-base font-semibold text-destructive">
+                  {t("profile:privacy.deleteAccount.title")}
+                </Text>
+                <Text className="mt-0.5 font-body text-xs text-brand-neutral">
+                  {t("profile:privacy.deleteAccount.description")}
+                </Text>
+              </View>
+            </Pressable>
+          </View>
+
+          <BottomSheet
+            visible={deleteConfirmOpen}
+            onClose={() => {
+              if (!isDeleting) {
+                setDeleteConfirmOpen(false);
+              }
+            }}
+            title={t("profile:privacy.deleteAccount.sheetTitle")}
+            subtitle={t("profile:privacy.deleteAccount.sheetSubtitle")}
+          >
+            <Button
+              label={t("profile:privacy.deleteAccount.confirm")}
+              variant="danger"
+              isLoading={isDeleting}
+              disabled={isDeleting}
+              onPress={() => void handleDeleteAccount()}
+            />
+          </BottomSheet>
         </>
       )}
     </AppScreen>

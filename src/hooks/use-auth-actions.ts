@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import {
+  deleteAccount,
   login,
   register,
   signInWithApple,
@@ -16,6 +17,7 @@ export function useAuthActions(): AuthActions {
       login,
       register,
       signOut,
+      deleteAccount,
       signInWithGoogle,
       signInWithApple,
       completeExternalRegistration,

@@ -578,6 +578,34 @@ export async function signOut(): Promise<AuthActionResult> {
   }
 }
 
+/**
+ * DELETE /api/auth/me — soft-deletes the account server-side (Status → Deleted,
+ * every session revoked) and clears the local session so the app returns to
+ * signed-out. Idempotent from the client's perspective: whether the server call
+ * fails or succeeds, only the caller decides whether to keep the local session.
+ */
+export async function deleteAccount(): Promise<AuthActionResult> {
+  try {
+    await apiClient.delete("/api/auth/me");
+
+    await clearCurrentDevicePushToken().catch((error) => {
+      console.warn("Push token kaldırılamadı:", error);
+    });
+    await apiClient.clearToken();
+
+    return { error: null };
+  } catch (error) {
+    return {
+      error: {
+        message: getApiErrorMessage(
+          error,
+          i18n.t("auth:service.deleteAccountFailed"),
+        ),
+      },
+    };
+  }
+}
+
 export async function getSession(): Promise<SessionResult> {
   try {
     const token = await apiClient.getToken();

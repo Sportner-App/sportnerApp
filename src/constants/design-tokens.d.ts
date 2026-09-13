@@ -61,6 +61,7 @@ export type SportAccentName =
   | "swimming"
   | "diving"
   | "sailing"
+  | "rowing"
   // Kış sporları
   | "ski"
   | "snowboard"

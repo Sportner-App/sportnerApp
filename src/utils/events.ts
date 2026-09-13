@@ -9,6 +9,7 @@ import {
   type ApiExplorePerson,
   type ApiOrganizerSnippet,
   type ApiParticipant,
+  type ApiParticipantAvatar,
   type ApiWaitlistEntry,
   type EventDetail,
   type EventParticipant,
@@ -16,6 +17,7 @@ import {
   type EventWaitlistEntry,
   type ExploreEventItem,
   type ExplorePerson,
+  type ParticipantAvatarPreview,
 } from "@/types/events";
 
 const SPORT_ICON_BY_SLUG: Record<string, IconName> = {
@@ -43,6 +45,7 @@ const SPORT_ICON_BY_SLUG: Record<string, IconName> = {
   yoga: "spa",
   crossfit: "dumbbell",
   badminton: "table-tennis-paddle-ball",
+  kurek: "sailboat",
 };
 
 function startOfDay(date: Date) {
@@ -325,6 +328,17 @@ export function formatEventFee(
   return formatTryAmount(feeAmount);
 }
 
+function mapParticipantAvatarPreview(
+  avatar: ApiParticipantAvatar,
+): ParticipantAvatarPreview {
+  return {
+    userId: avatar.userId,
+    name: avatar.name?.trim() || i18n.t("events:fallback.unnamedGuest"),
+    avatarUrl: avatar.profileImageUrl,
+    isGuest: avatar.isGuest,
+  };
+}
+
 export function mapListItemToSummary(item: ApiEventListItem): EventSummary {
   return {
     id: item.id,
@@ -340,6 +354,9 @@ export function mapListItemToSummary(item: ApiEventListItem): EventSummary {
     eventDate: item.eventDate,
     location: shortLocation(item.address),
     participantCount: item.occupiedParticipantCount,
+    participantAvatars: (item.participantAvatars ?? []).map(
+      mapParticipantAvatarPreview,
+    ),
     maxParticipants: item.maxParticipants,
     minParticipantAge: item.minParticipantAge,
     maxParticipantAge: item.maxParticipantAge,
@@ -374,6 +391,9 @@ export function mapDetailToEvent(
     eventDate: detail.eventDate,
     location: shortLocation(detail.address),
     participantCount: detail.occupiedParticipantCount,
+    // Detail screen renders participants from the full `participants` list
+    // (EventCapacitySummary), not from this card-preview field.
+    participantAvatars: [],
     maxParticipants: detail.maxParticipants,
     minParticipantAge: detail.minParticipantAge,
     maxParticipantAge: detail.maxParticipantAge,
