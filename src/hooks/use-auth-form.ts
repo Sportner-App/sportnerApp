@@ -9,12 +9,14 @@ import { useAuth, useFirstLaunch, useSession, useToast } from "@/contexts";
 import type { AuthMode } from "@/types/auth";
 
 const USERNAME_PATTERN = /^[a-zA-Z0-9._]+$/;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type AuthFieldErrors = {
   firstName?: string;
   lastName?: string;
   username?: string;
   password?: string;
+  email?: string;
   gender?: string;
   birthDate?: string;
 };
@@ -26,6 +28,7 @@ function getAuthFieldErrors(
   isLogin: boolean,
   username: string,
   password: string,
+  email: string,
   firstName: string,
   lastName: string,
   gender: string,
@@ -33,6 +36,7 @@ function getAuthFieldErrors(
 ): AuthFieldErrors {
   const errors: AuthFieldErrors = {};
   const trimmedUsername = username.trim();
+  const trimmedEmail = email.trim();
   const trimmedFirstName = firstName.trim();
   const trimmedLastName = lastName.trim();
 
@@ -55,6 +59,14 @@ function getAuthFieldErrors(
   }
 
   if (!isLogin) {
+    if (!trimmedEmail) {
+      errors.email = t("validation.emailRequired");
+    } else if (trimmedEmail.length > 254) {
+      errors.email = t("validation.emailTooLong", { max: 254 });
+    } else if (!EMAIL_PATTERN.test(trimmedEmail)) {
+      errors.email = t("validation.emailInvalid");
+    }
+
     if (!trimmedFirstName) {
       errors.firstName = t("validation.firstNameRequired");
     } else if (trimmedFirstName.length > 50) {
@@ -138,6 +150,7 @@ export function useAuthForm() {
   const [mode, setModeState] = useState<AuthMode>("login");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [gender, setGender] = useState("");
@@ -151,6 +164,7 @@ export function useAuthForm() {
     setModeState(nextMode);
     setUsername("");
     setPassword("");
+    setEmail("");
     setFirstName("");
     setLastName("");
     setGender("");
@@ -176,12 +190,17 @@ export function useAuthForm() {
       return trimmedUsername.length <= 30 && password.length <= 128;
     }
 
+    const trimmedEmail = email.trim();
+
     return (
       trimmedUsername.length >= 3 &&
       trimmedUsername.length <= 30 &&
       USERNAME_PATTERN.test(trimmedUsername) &&
       password.length >= 8 &&
       password.length <= 128 &&
+      Boolean(trimmedEmail) &&
+      trimmedEmail.length <= 254 &&
+      EMAIL_PATTERN.test(trimmedEmail) &&
       Boolean(firstName.trim()) &&
       firstName.trim().length <= 50 &&
       lastName.trim().length <= 50 &&
@@ -191,7 +210,16 @@ export function useAuthForm() {
         isAllowedBirthDate(parseBirthDate(birthDate)!),
       )
     );
-  }, [username, password, firstName, lastName, gender, birthDate, isLogin]);
+  }, [
+    username,
+    password,
+    email,
+    firstName,
+    lastName,
+    gender,
+    birthDate,
+    isLogin,
+  ]);
 
   const fieldErrors = useMemo(
     () =>
@@ -201,6 +229,7 @@ export function useAuthForm() {
             isLogin,
             username,
             password,
+            email,
             firstName,
             lastName,
             gender,
@@ -209,6 +238,7 @@ export function useAuthForm() {
         : EMPTY_FIELD_ERRORS,
     [
       birthDate,
+      email,
       firstName,
       gender,
       hasAttemptedSubmit,
@@ -253,6 +283,7 @@ export function useAuthForm() {
         : await register({
             username: username.trim(),
             password,
+            email: email.trim(),
             firstName: firstName.trim(),
             lastName: lastName.trim() || undefined,
             gender: Number(gender),
@@ -301,6 +332,8 @@ export function useAuthForm() {
     setUsername,
     password,
     setPassword,
+    email,
+    setEmail,
     firstName,
     setFirstName,
     lastName,

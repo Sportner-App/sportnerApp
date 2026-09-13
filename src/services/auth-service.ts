@@ -46,6 +46,7 @@ function toAuthUser(
     lastName,
     fullName,
     email: names?.email,
+    isEmailVerified: response.isEmailVerified,
     avatarUrl: names?.avatarUrl,
     isNewUser: response.isNewUser,
     isOnboarded: response.isOnboardingCompleted,
@@ -98,10 +99,28 @@ function validatePassword(
   return null;
 }
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validateEmail(email: string): string | null {
+  if (!email) {
+    return i18n.t("auth:validation.emailRequired");
+  }
+
+  if (email.length > 254) {
+    return i18n.t("auth:validation.emailTooLong", { max: 254 });
+  }
+
+  if (!EMAIL_PATTERN.test(email)) {
+    return i18n.t("auth:validation.emailInvalid");
+  }
+
+  return null;
+}
+
 async function persistAuthSession(
   body: AuthenticationResponse,
   username: string,
-  names?: { firstName?: string; lastName?: string },
+  names?: { firstName?: string; lastName?: string; email?: string },
 ): Promise<AuthResult> {
   if (!body?.accessToken || !body?.userId || !body?.refreshToken) {
     throw new Error(i18n.t("auth:service.invalidApiResponse"));
@@ -458,25 +477,29 @@ export async function login({
 export async function register({
   username,
   password,
+  email,
   firstName,
   lastName,
   gender,
   birthDate,
 }: RegisterPayload): Promise<AuthResult> {
   const normalized = normalizeUsername(username);
+  const normalizedEmail = email.trim().toLowerCase();
   const trimmedFirstName = firstName.trim();
   const trimmedLastName = lastName?.trim() || undefined;
 
   const usernameError = validateUsername(username, true);
   const passwordError = validatePassword(password, true);
+  const emailError = validateEmail(normalizedEmail);
 
-  if (usernameError || passwordError) {
+  if (usernameError || passwordError || emailError) {
     return {
       data: null,
       error: {
         message:
           usernameError ||
           passwordError ||
+          emailError ||
           i18n.t("auth:service.invalidCredentials"),
       },
     };
@@ -527,6 +550,7 @@ export async function register({
       {
         username: normalized,
         password,
+        email: normalizedEmail,
         firstName: trimmedFirstName,
         lastName: trimmedLastName ?? null,
         gender,
@@ -537,6 +561,7 @@ export async function register({
     return persistAuthSession(response.data, normalized, {
       firstName: trimmedFirstName,
       lastName: trimmedLastName,
+      email: normalizedEmail,
     });
   } catch (error) {
     return {
@@ -600,6 +625,50 @@ export async function deleteAccount(): Promise<AuthActionResult> {
         message: getApiErrorMessage(
           error,
           i18n.t("auth:service.deleteAccountFailed"),
+        ),
+      },
+    };
+  }
+}
+
+/**
+ * POST /api/auth/email/verify
+ */
+export async function verifyEmail(code: string): Promise<AuthActionResult> {
+  try {
+    await apiClient.post("/api/auth/email/verify", { code: code.trim() });
+
+    const user = await apiClient.getUser();
+    if (user) {
+      await apiClient.setUser({ ...user, isEmailVerified: true });
+    }
+
+    return { error: null };
+  } catch (error) {
+    return {
+      error: {
+        message: getApiErrorMessage(
+          error,
+          i18n.t("auth:service.verifyEmailFailed"),
+        ),
+      },
+    };
+  }
+}
+
+/**
+ * POST /api/auth/email/resend
+ */
+export async function resendEmailVerification(): Promise<AuthActionResult> {
+  try {
+    await apiClient.post("/api/auth/email/resend", {});
+    return { error: null };
+  } catch (error) {
+    return {
+      error: {
+        message: getApiErrorMessage(
+          error,
+          i18n.t("auth:service.resendEmailVerificationFailed"),
         ),
       },
     };

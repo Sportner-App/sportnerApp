@@ -4,10 +4,12 @@ import {
   deleteAccount,
   login,
   register,
+  resendEmailVerification,
   signInWithApple,
   signInWithGoogle,
   signOut,
   completeExternalRegistration,
+  verifyEmail,
 } from "@/services/auth-service";
 import type { AuthActions } from "@/types/auth";
 
@@ -18,6 +20,8 @@ export function useAuthActions(): AuthActions {
       register,
       signOut,
       deleteAccount,
+      verifyEmail,
+      resendEmailVerification,
       signInWithGoogle,
       signInWithApple,
       completeExternalRegistration,

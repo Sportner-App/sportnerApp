@@ -6,6 +6,7 @@ export type AuthUser = {
   firstName?: string;
   lastName?: string;
   email?: string;
+  isEmailVerified?: boolean;
   fullName?: string;
   avatarUrl?: string;
   bio?: string;
@@ -26,6 +27,7 @@ export type AuthenticationResponse = {
   refreshTokenExpiresAt: string;
   isNewUser: boolean;
   isOnboardingCompleted: boolean;
+  isEmailVerified: boolean;
 };
 
 export type ExternalRegistration = {
@@ -60,6 +62,7 @@ export type AuthCredentials = {
 };
 
 export type RegisterPayload = AuthCredentials & {
+  email: string;
   firstName: string;
   lastName?: string;
   gender: number;
@@ -114,6 +117,8 @@ export type AuthActions = {
   register: (payload: RegisterPayload) => Promise<AuthResult>;
   signOut: () => Promise<AuthActionResult>;
   deleteAccount: () => Promise<AuthActionResult>;
+  verifyEmail: (code: string) => Promise<AuthActionResult>;
+  resendEmailVerification: () => Promise<AuthActionResult>;
   /** Resolves to null when the user cancels the native sign-in flow. */
   signInWithGoogle: () => Promise<ExternalAuthResult | null>;
   signInWithApple: () => Promise<ExternalAuthResult | null>;

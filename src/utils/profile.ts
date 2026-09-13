@@ -29,6 +29,8 @@ export function mapMyProfile(api: ApiMyProfile): UserProfile {
     sports: api.sports ?? [],
     statistics: api.statistics,
     friendship: null,
+    email: api.email,
+    isEmailVerified: api.isEmailVerified,
   };
 }
 
@@ -40,6 +42,8 @@ export function mapPublicProfile(api: ApiPublicProfile): UserProfile {
       isProfilePublic: true,
       usernameChangedAt: "",
       usernameChangeAvailableAt: "",
+      email: null,
+      isEmailVerified: false,
       ...api,
     }),
     friendship: api.friendship ?? null,

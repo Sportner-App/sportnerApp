@@ -55,6 +55,8 @@ export type ApiMyProfile = {
   usernameChangeAvailableAt: string | null;
   sports: ProfileSport[];
   statistics: ProfileStatistics | null;
+  email: string | null;
+  isEmailVerified: boolean;
 };
 
 /** API: PublicProfileResponse — GET /api/user-profiles/{userId} */
@@ -93,6 +95,8 @@ export type UserProfile = {
   sports: ProfileSport[];
   statistics: ProfileStatistics | null;
   friendship: ApiProfileFriendship | null;
+  email: string | null;
+  isEmailVerified: boolean;
 };
 
 export type ProfileMenuItem = {

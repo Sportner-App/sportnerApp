@@ -1,24 +1,116 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { AppScreen, BottomSheet, Button, ScreenHeader, SportLoader } from "@/components";
+import {
+  AppScreen,
+  BottomSheet,
+  Button,
+  Input,
+  ScreenHeader,
+  SportLoader,
+} from "@/components";
 import { useAuth, useToast } from "@/contexts";
 import { useProfile } from "@/hooks/use-profile";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { updateVisibility } from "@/services/profile-service";
+
+const RESEND_COOLDOWN_SECONDS = 60;
 
 export function PrivacyScreen() {
   const { t } = useTranslation(["profile", "common"]);
   const router = useRouter();
   const { profile, isLoading, refresh } = useProfile();
   const { showToast } = useToast();
-  const { deleteAccount } = useAuth();
+  const { deleteAccount, verifyEmail, resendEmailVerification } = useAuth();
   const [saving, setSaving] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [verifyOpen, setVerifyOpen] = useState(false);
+  const [code, setCode] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown <= 0) {
+      return;
+    }
+    const timer = setInterval(() => {
+      setCooldown((value) => Math.max(value - 1, 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
+  const openVerifySheet = async () => {
+    setCode("");
+    setVerifyOpen(true);
+    await handleResend(true);
+  };
+
+  const handleResend = async (silent = false) => {
+    if (isResending || cooldown > 0) {
+      return;
+    }
+
+    setIsResending(true);
+    try {
+      const { error } = await resendEmailVerification();
+
+      if (error) {
+        if (!silent) {
+          showToast({
+            type: "error",
+            title: t("profile:privacy.emailVerification.resendFailed"),
+            description: error.message,
+          });
+        }
+        return;
+      }
+
+      setCooldown(RESEND_COOLDOWN_SECONDS);
+      if (!silent) {
+        showToast({
+          type: "success",
+          title: t("profile:privacy.emailVerification.resendSuccess"),
+        });
+      }
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  const handleVerify = async () => {
+    if (isVerifying || code.trim().length !== 6) {
+      return;
+    }
+
+    setIsVerifying(true);
+    try {
+      const { error } = await verifyEmail(code.trim());
+
+      if (error) {
+        showToast({
+          type: "error",
+          title: t("profile:privacy.emailVerification.verifyFailed"),
+          description: error.message,
+        });
+        return;
+      }
+
+      showToast({
+        type: "success",
+        title: t("profile:privacy.emailVerification.verifySuccess"),
+      });
+      setVerifyOpen(false);
+      await refresh();
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
   const handleDeleteAccount = async () => {
     if (isDeleting) {
@@ -105,6 +197,55 @@ export function PrivacyScreen() {
             onPress={() => toggle(false)}
           />
 
+          {profile.email ? (
+            <View className="gap-2">
+              <Text className="font-body text-xs font-semibold uppercase tracking-wide text-brand-neutral">
+                {t("profile:privacy.emailVerification.sectionTitle")}
+              </Text>
+              <Pressable
+                onPress={profile.isEmailVerified ? undefined : openVerifySheet}
+                disabled={profile.isEmailVerified}
+                className="flex-row items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-4 py-4 active:opacity-70"
+              >
+                <View
+                  className={`h-8 w-8 items-center justify-center rounded-full ${
+                    profile.isEmailVerified
+                      ? "bg-success/10"
+                      : "bg-background-secondary"
+                  }`}
+                >
+                  <FontAwesome6
+                    name={profile.isEmailVerified ? "circle-check" : "envelope"}
+                    size={12}
+                    color={profile.isEmailVerified ? "#22c55e" : "#ccff00"}
+                  />
+                </View>
+                <View className="min-w-0 flex-1">
+                  <Text className="font-body text-base font-semibold text-text-primary">
+                    {profile.isEmailVerified
+                      ? t("profile:privacy.emailVerification.verifiedTitle")
+                      : t("profile:privacy.emailVerification.unverifiedTitle")}
+                  </Text>
+                  <Text className="mt-0.5 font-body text-xs text-brand-neutral">
+                    {profile.isEmailVerified
+                      ? t("profile:privacy.emailVerification.verifiedDescription", {
+                          email: profile.email,
+                        })
+                      : t(
+                          "profile:privacy.emailVerification.unverifiedDescription",
+                          { email: profile.email },
+                        )}
+                  </Text>
+                </View>
+                {!profile.isEmailVerified ? (
+                  <Text className="font-body text-xs font-semibold text-brand-primary">
+                    {t("profile:privacy.emailVerification.verifyButton")}
+                  </Text>
+                ) : null}
+              </Pressable>
+            </View>
+          ) : null}
+
           <Pressable
             onPress={() => router.push("/profile/blocked")}
             className="mt-2 flex-row items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-4 py-4 active:opacity-70"
@@ -162,6 +303,51 @@ export function PrivacyScreen() {
               disabled={isDeleting}
               onPress={() => void handleDeleteAccount()}
             />
+          </BottomSheet>
+
+          <BottomSheet
+            visible={verifyOpen}
+            onClose={() => {
+              if (!isVerifying) {
+                setVerifyOpen(false);
+              }
+            }}
+            title={t("profile:privacy.emailVerification.sheetTitle")}
+            subtitle={t("profile:privacy.emailVerification.sheetSubtitle", {
+              email: profile.email,
+            })}
+          >
+            <View className="gap-3">
+              <Input
+                icon="key"
+                placeholder={t("profile:privacy.emailVerification.codePlaceholder")}
+                value={code}
+                onChangeText={(value) =>
+                  setCode(value.replace(/\D/g, "").slice(0, 6))
+                }
+                keyboardType="number-pad"
+                maxLength={6}
+              />
+              <Button
+                label={t("profile:privacy.emailVerification.confirm")}
+                isLoading={isVerifying}
+                disabled={isVerifying || code.trim().length !== 6}
+                onPress={() => void handleVerify()}
+              />
+              <Pressable
+                onPress={() => void handleResend()}
+                disabled={isResending || cooldown > 0}
+                className="items-center py-2"
+              >
+                <Text className="font-body text-xs font-semibold text-brand-primary">
+                  {cooldown > 0
+                    ? t("profile:privacy.emailVerification.resendCooldown", {
+                        seconds: cooldown,
+                      })
+                    : t("profile:privacy.emailVerification.resend")}
+                </Text>
+              </Pressable>
+            </View>
           </BottomSheet>
         </>
       )}

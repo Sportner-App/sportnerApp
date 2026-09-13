@@ -170,6 +170,18 @@ export function AuthScreen() {
                 {!form.isLogin && (
                   <>
                     <Input
+                      icon="envelope"
+                      placeholder={t("fields.email")}
+                      value={form.email}
+                      onChangeText={form.setEmail}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      keyboardType="email-address"
+                      autoComplete="email"
+                      textContentType="emailAddress"
+                      error={form.fieldErrors.email}
+                    />
+                    <Input
                       icon="user"
                       placeholder={t("fields.firstName")}
                       value={form.firstName}
