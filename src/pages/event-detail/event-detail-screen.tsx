@@ -147,6 +147,7 @@ export function EventDetailScreen() {
           >
             <EventPrimaryInfo
               event={detail.event}
+              isOrganizer={detail.isOrganizer}
               onOpenParticipants={() =>
                 router.push(`/events/${detail.event?.id}/participants`)
               }

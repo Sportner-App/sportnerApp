@@ -8,6 +8,7 @@ import { skillKeyFromCode, useSkillLevelLabels } from "@/constants/profile";
 import { sportAccentToken, themeColors, typeStyles } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { EventDetail, EventParticipant } from "@/types/events";
+import { PARTICIPANT_STATUS } from "@/types/events";
 import {
   formatDurationLabel,
   formatEventFee,
@@ -17,8 +18,11 @@ import {
 } from "@/utils/events";
 import { lightImpact } from "@/utils/haptics";
 
+import { InboxRow } from "./inbox-row";
+
 type EventPrimaryInfoProps = {
   event: EventDetail;
+  isOrganizer?: boolean;
   onOpenParticipants?: () => void;
   onOpenReviews?: () => void;
 };
@@ -27,6 +31,7 @@ const VISIBLE_AVATARS = 3;
 
 export function EventPrimaryInfo({
   event,
+  isOrganizer,
   onOpenParticipants,
   onOpenReviews,
 }: EventPrimaryInfoProps) {
@@ -103,6 +108,7 @@ export function EventPrimaryInfo({
 
       <EventCapacitySummary
         event={event}
+        isOrganizer={isOrganizer}
         onOpenParticipants={onOpenParticipants}
         onOpenReviews={onOpenReviews}
       />
@@ -140,10 +146,13 @@ function MetaPiece({ icon, label }: { icon: IconName; label: string }) {
 
 export function EventCapacitySummary({
   event,
+  isOrganizer,
   onOpenParticipants,
   onOpenReviews,
 }: EventPrimaryInfoProps) {
   const { t } = useTranslation("eventDetail");
+  const canRate =
+    !isOrganizer && event.myParticipationStatus === PARTICIPANT_STATUS.attended;
   const max = event.maxParticipants;
   const occupied = Math.max(event.participantCount, 0);
   const unlimited = max == null;
@@ -276,7 +285,16 @@ export function EventCapacitySummary({
         </View>
       ) : null}
 
-      {onOpenReviews ? (
+      {onOpenReviews && canRate ? (
+        <InboxRow
+          icon="star"
+          title={t("primaryInfo.reviewPrompt.title")}
+          subtitle={t("primaryInfo.reviewPrompt.subtitle")}
+          accentBackground={sportSoft}
+          accentColor={sportColor}
+          onPress={onOpenReviews}
+        />
+      ) : onOpenReviews ? (
         <Pressable onPress={onOpenReviews} className="self-start py-1">
           <Text
             className="font-body text-caption"

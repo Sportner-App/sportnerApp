@@ -26,6 +26,10 @@
     "countLabelWithMax": "{{count}} / {{max}} kişi",
     "guestCount": "{{count}} misafir",
     "reviews": "Değerlendirmeler",
+    "reviewPrompt": {
+      "title": "Katılımcıları değerlendir",
+      "subtitle": "Etkinlik sona erdi — geri bildirimini paylaş."
+    },
     "paymentDisclaimer": "Uygulama üzerinden ödeme alınmaz. Ücret etkinlikte ödenir."
   },
   "qna": {

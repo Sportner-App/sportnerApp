@@ -6,10 +6,10 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components";
 import { themeColors } from "@/constants/theme";
-import type { IconName } from "@/types/components";
 import type { EventDetail } from "@/types/events";
 import { lightImpact } from "@/utils/haptics";
 
+import { InboxRow } from "./inbox-row";
 import {
   OrganizerManageSheet,
   type OrganizerManageTab,
@@ -166,72 +166,5 @@ export function OrganizerPanel({
         }}
       />
     </Animated.View>
-  );
-}
-
-function InboxRow({
-  title,
-  subtitle,
-  icon,
-  badge,
-  onPress,
-}: {
-  title: string;
-  subtitle: string;
-  icon: IconName;
-  badge?: number;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      className="flex-row items-center gap-3 rounded-large py-2.5 active:opacity-80"
-    >
-      <View
-        className="h-10 w-10 items-center justify-center rounded-full"
-        style={{ backgroundColor: themeColors.surface.secondary }}
-      >
-        <FontAwesome6
-          name={icon}
-          size={14}
-          color={themeColors.text.secondary}
-        />
-      </View>
-
-      <View className="flex-1">
-        <Text
-          className="font-body-bold text-sm"
-          style={{ color: themeColors.text.primary }}
-        >
-          {title}
-        </Text>
-        <Text
-          className="font-body text-caption"
-          style={{ color: themeColors.text.secondary }}
-        >
-          {subtitle}
-        </Text>
-      </View>
-
-      {badge != null ? (
-        <View
-          className="min-w-[22px] items-center rounded-full px-1.5 py-0.5"
-          style={{ backgroundColor: themeColors.brand.primary }}
-        >
-          <Text
-            className="font-body-bold text-[11px]"
-            style={{ color: themeColors.text.onPrimary }}
-          >
-            {badge}
-          </Text>
-        </View>
-      ) : null}
-
-      <FontAwesome6
-        name="chevron-right"
-        size={12}
-        color={themeColors.text.tertiary}
-      />
-    </Pressable>
   );
 }

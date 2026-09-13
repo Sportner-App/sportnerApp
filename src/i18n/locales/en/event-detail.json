@@ -26,6 +26,10 @@
     "countLabelWithMax": "{{count}} / {{max}} people",
     "guestCount": "{{count}} guests",
     "reviews": "Reviews",
+    "reviewPrompt": {
+      "title": "Rate your teammates",
+      "subtitle": "The event is over — share your feedback."
+    },
     "paymentDisclaimer": "Payment isn't collected through the app. The fee is paid at the event."
   },
   "qna": {
