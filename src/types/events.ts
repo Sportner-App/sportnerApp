@@ -221,6 +221,35 @@ export type EventActionResult<T = ApiApplyToEventResponse | null> = {
   data?: T;
 };
 
+/** API: PendingAttendanceParticipantResponse */
+export type ApiPendingAttendanceParticipant = {
+  userId: string;
+  username: string | null;
+  firstName: string | null;
+  profileImageUrl: string | null;
+};
+
+/** API: PendingAttendanceEventResponse — GET /api/events/mine/pending-attendance */
+export type ApiPendingAttendanceEvent = {
+  eventId: string;
+  title: string;
+  eventDate: string;
+  participants: ApiPendingAttendanceParticipant[];
+};
+
+export type PendingAttendanceParticipant = {
+  userId: string;
+  name: string;
+  avatarUrl: string | null;
+};
+
+export type PendingAttendanceEvent = {
+  eventId: string;
+  title: string;
+  eventDate: string;
+  participants: PendingAttendanceParticipant[];
+};
+
 export type EventListPage = {
   items: EventSummary[];
   totalCount: number;

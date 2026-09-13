@@ -42,6 +42,17 @@
     "noShow": "Gelmedi",
     "invited": "Davet gönderildi"
   },
+  "pendingAttendance": {
+    "title": "\"{{title}}\" sona erdi",
+    "subtitle": "Yoklamayı tamamlayalım, böylece herkes birbirini değerlendirebilir.",
+    "everyoneAttended": "Herkes geldi",
+    "someoneAbsent": "Gelmeyen var mı?",
+    "later": "Şimdi değil",
+    "checklistTitle": "Kim gelmedi?",
+    "checklistSubtitle": "Gelmeyen kişiye dokun — diğerleri geldi olarak işaretlenecek.",
+    "confirm": "Bitti",
+    "failedTitle": "Yoklama kaydedilemedi"
+  },
   "service": {
     "joinFailed": "Katılım başarısız",
     "acceptInvitationFailed": "Davet kabul edilemedi",

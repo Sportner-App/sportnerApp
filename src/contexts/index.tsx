@@ -3,6 +3,7 @@ import type { PropsWithChildren } from "react";
 import { AuthProvider } from "./auth-provider";
 import { FirstLaunchProvider } from "./first-launch-provider";
 import { LanguageSyncBridge } from "./language-sync-bridge";
+import { PendingAttendancePrompt } from "./pending-attendance-prompt";
 import { PushNotificationsProvider } from "./push-notifications-provider";
 import { SessionProvider } from "./session-provider";
 import { ToastProvider } from "./toast-provider";
@@ -14,7 +15,9 @@ export function AppProviders({ children }: PropsWithChildren) {
         <SessionProvider>
           <AuthProvider>
             <LanguageSyncBridge>
-              <PushNotificationsProvider>{children}</PushNotificationsProvider>
+              <PushNotificationsProvider>
+                <PendingAttendancePrompt>{children}</PendingAttendancePrompt>
+              </PushNotificationsProvider>
             </LanguageSyncBridge>
           </AuthProvider>
         </SessionProvider>

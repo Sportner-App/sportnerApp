@@ -18,6 +18,8 @@ import {
   type ExploreEventItem,
   type ExplorePerson,
   type ParticipantAvatarPreview,
+  type ApiPendingAttendanceEvent,
+  type PendingAttendanceEvent,
 } from "@/types/events";
 
 const SPORT_ICON_BY_SLUG: Record<string, IconName> = {
@@ -416,6 +418,21 @@ export function mapDetailToEvent(
     organizationId: detail.organizationId ?? null,
     organizationName: detail.organizationName ?? null,
     canCancel: detail.canCancel === true,
+  };
+}
+
+export function mapPendingAttendanceEvent(
+  event: ApiPendingAttendanceEvent,
+): PendingAttendanceEvent {
+  return {
+    eventId: event.eventId,
+    title: event.title,
+    eventDate: event.eventDate,
+    participants: event.participants.map((participant) => ({
+      userId: participant.userId,
+      name: formatPersonName(participant),
+      avatarUrl: participant.profileImageUrl,
+    })),
   };
 }
 

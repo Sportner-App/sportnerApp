@@ -8,6 +8,7 @@ import type {
   ApiExploreEventItem,
   ApiExplorePerson,
   ApiParticipant,
+  ApiPendingAttendanceEvent,
   ApiWaitlistEntry,
   CreateEventPayload,
   CreateEventResult,
@@ -21,6 +22,7 @@ import type {
   ExploreEventItem,
   ExplorePerson,
   PagedResult,
+  PendingAttendanceEvent,
 } from "@/types/events";
 import {
   mapDetailToEvent,
@@ -28,6 +30,7 @@ import {
   mapExplorePerson,
   mapListItemToSummary,
   mapParticipant,
+  mapPendingAttendanceEvent,
   mapWaitlistEntry,
 } from "@/utils/events";
 
@@ -262,6 +265,33 @@ export async function markNoShow(eventId: string, userId: string) {
   return eventAction(
     () =>
       apiClient.post(`/api/events/${eventId}/participants/${userId}/no-show`),
+    i18n.t("events:service.attendanceFailed"),
+  );
+}
+
+/** GET /api/events/mine/pending-attendance */
+export async function listPendingAttendanceEvents(): Promise<
+  PendingAttendanceEvent[]
+> {
+  const response = await apiClient.get<ApiPendingAttendanceEvent[]>(
+    "/api/events/mine/pending-attendance",
+  );
+  return (response.data ?? []).map(mapPendingAttendanceEvent);
+}
+
+/**
+ * POST /api/events/{id}/attendance/confirm-all — marks every still-pending participant
+ * Attended, except whoever is listed in `absentUserIds` (marked No-Show instead).
+ */
+export async function confirmAllAttendance(
+  eventId: string,
+  absentUserIds?: string[],
+) {
+  return eventAction(
+    () =>
+      apiClient.post(`/api/events/${eventId}/attendance/confirm-all`, {
+        absentUserIds: absentUserIds?.length ? absentUserIds : null,
+      }),
     i18n.t("events:service.attendanceFailed"),
   );
 }

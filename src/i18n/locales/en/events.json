@@ -42,6 +42,17 @@
     "noShow": "No-show",
     "invited": "Invitation sent"
   },
+  "pendingAttendance": {
+    "title": "\"{{title}}\" is over",
+    "subtitle": "Let's take attendance so everyone can rate their teammates.",
+    "everyoneAttended": "Everyone showed up",
+    "someoneAbsent": "Was anyone absent?",
+    "later": "Not now",
+    "checklistTitle": "Who was absent?",
+    "checklistSubtitle": "Tap to mark someone as absent — everyone else will be confirmed as attended.",
+    "confirm": "Done",
+    "failedTitle": "Could not save attendance"
+  },
   "service": {
     "joinFailed": "Could not join",
     "acceptInvitationFailed": "Could not accept invitation",
