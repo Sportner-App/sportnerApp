@@ -99,7 +99,12 @@ export function NotificationsScreen() {
       return;
     }
 
-    if (item.entityType === NOTIFICATION_ENTITY.event) {
+    if (
+      item.notificationType === NOTIFICATION_TYPE.eventReviewPrompt &&
+      item.entityType === NOTIFICATION_ENTITY.event
+    ) {
+      router.push(`/events/${item.entityId}/reviews`);
+    } else if (item.entityType === NOTIFICATION_ENTITY.event) {
       router.push(`/events/${item.entityId}`);
     } else if (item.entityType === NOTIFICATION_ENTITY.user) {
       router.push(`/users/${item.entityId}`);

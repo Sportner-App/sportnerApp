@@ -51,6 +51,11 @@ export function PushNotificationsProvider({ children }: PropsWithChildren) {
         entityType === NOTIFICATION_ENTITY.user
       ) {
         router.push(`/users/${entityId}`);
+      } else if (
+        notificationType === NOTIFICATION_TYPE.eventReviewPrompt &&
+        entityType === NOTIFICATION_ENTITY.event
+      ) {
+        router.push(`/events/${entityId}/reviews`);
       } else if (entityType === NOTIFICATION_ENTITY.event) {
         router.push(`/events/${entityId}`);
       } else if (entityType === NOTIFICATION_ENTITY.post) {
