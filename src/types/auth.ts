@@ -119,6 +119,7 @@ export type AuthActions = {
   deleteAccount: () => Promise<AuthActionResult>;
   verifyEmail: (code: string) => Promise<AuthActionResult>;
   resendEmailVerification: () => Promise<AuthActionResult>;
+  syncPreferredLanguage: (language: "tr" | "en") => Promise<void>;
   /** Resolves to null when the user cancels the native sign-in flow. */
   signInWithGoogle: () => Promise<ExternalAuthResult | null>;
   signInWithApple: () => Promise<ExternalAuthResult | null>;

@@ -9,6 +9,7 @@ import {
   signInWithGoogle,
   signOut,
   completeExternalRegistration,
+  syncPreferredLanguage,
   verifyEmail,
 } from "@/services/auth-service";
 import type { AuthActions } from "@/types/auth";
@@ -22,6 +23,7 @@ export function useAuthActions(): AuthActions {
       deleteAccount,
       verifyEmail,
       resendEmailVerification,
+      syncPreferredLanguage,
       signInWithGoogle,
       signInWithApple,
       completeExternalRegistration,

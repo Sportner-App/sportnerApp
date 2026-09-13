@@ -675,6 +675,21 @@ export async function resendEmailVerification(): Promise<AuthActionResult> {
   }
 }
 
+/**
+ * PUT /api/auth/me/language — backend'in kullanıcıya özel ürettiği içerikler
+ * (şimdilik rozet/görev bildirimleri) bu dile göre yazılsın diye senkronize eder.
+ * Best-effort: başarısız olursa sessizce yutulur, uygulamanın kendi dili etkilenmez.
+ */
+export async function syncPreferredLanguage(language: "tr" | "en"): Promise<void> {
+  try {
+    await apiClient.put("/api/auth/me/language", {
+      language: language === "en" ? 1 : 0,
+    });
+  } catch {
+    // Best-effort: local UI language already switched regardless of server sync.
+  }
+}
+
 export async function getSession(): Promise<SessionResult> {
   try {
     const token = await apiClient.getToken();
