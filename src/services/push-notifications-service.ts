@@ -28,11 +28,13 @@ async function getDeviceIdentifier() {
 }
 
 export function configureForegroundNotifications() {
+  // The OS banner is suppressed in favor of the app's own top-down in-app banner
+  // (InAppNotificationBanner) so a foreground notification isn't shown twice.
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldPlaySound: true,
       shouldSetBadge: true,
-      shouldShowBanner: true,
+      shouldShowBanner: false,
       shouldShowList: true,
     }),
   });

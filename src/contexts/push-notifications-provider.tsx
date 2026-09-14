@@ -4,15 +4,10 @@ import type { PropsWithChildren } from "react";
 import { useEffect, useRef } from "react";
 
 import { registerCurrentDeviceForPush } from "@/services/push-notifications-service";
-import { NOTIFICATION_ENTITY, NOTIFICATION_TYPE } from "@/types/notifications";
+import { resolveNotificationRoute } from "@/utils/notification-routing";
 
 import { useAuth } from "./auth-context";
-
-type PushData = {
-  notificationType?: number | string;
-  entityType?: number | string;
-  entityId?: string;
-};
+import { InAppNotificationBanner } from "./in-app-notification-banner";
 
 export function PushNotificationsProvider({ children }: PropsWithChildren) {
   const router = useRouter();
@@ -35,40 +30,11 @@ export function PushNotificationsProvider({ children }: PropsWithChildren) {
       if (handledResponseId.current === responseId) return;
       handledResponseId.current = responseId;
 
-      const data = response.notification.request.content.data as PushData;
-      const entityType = Number(data.entityType);
-      const notificationType = Number(data.notificationType);
-      const entityId = typeof data.entityId === "string" ? data.entityId : null;
-
-      if (!entityId) {
-        router.push("/notifications");
-        return;
-      }
-
-      if (
-        notificationType === NOTIFICATION_TYPE.friendRequest ||
-        notificationType === NOTIFICATION_TYPE.friendAccepted ||
-        entityType === NOTIFICATION_ENTITY.user
-      ) {
-        router.push(`/users/${entityId}`);
-      } else if (
-        notificationType === NOTIFICATION_TYPE.eventReviewPrompt &&
-        entityType === NOTIFICATION_ENTITY.event
-      ) {
-        router.push(`/events/${entityId}/reviews`);
-      } else if (entityType === NOTIFICATION_ENTITY.event) {
-        router.push(`/events/${entityId}`);
-      } else if (entityType === NOTIFICATION_ENTITY.post) {
-        router.push(`/posts/${entityId}`);
-      } else if (entityType === NOTIFICATION_ENTITY.conversation) {
-        router.push(`/conversations/${entityId}`);
-      } else if (entityType === NOTIFICATION_ENTITY.badge) {
-        router.push("/badges");
-      } else if (entityType === NOTIFICATION_ENTITY.organization) {
-        router.push(`/organizations/${entityId}`);
-      } else {
-        router.push("/notifications");
-      }
+      router.push(
+        resolveNotificationRoute(
+          response.notification.request.content.data,
+        ) as never,
+      );
     };
 
     const subscription =
@@ -81,5 +47,10 @@ export function PushNotificationsProvider({ children }: PropsWithChildren) {
     return () => subscription.remove();
   }, [isAuthenticated, isReady, router]);
 
-  return children;
+  return (
+    <>
+      {children}
+      {isReady && isAuthenticated ? <InAppNotificationBanner /> : null}
+    </>
+  );
 }
