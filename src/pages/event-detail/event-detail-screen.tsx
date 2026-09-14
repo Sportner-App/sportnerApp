@@ -1,8 +1,8 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
-import { Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { ScrollView, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -16,6 +16,7 @@ import {
 import { radius, spacing, themeColors } from "@/constants/theme";
 import { useEventDetail } from "@/hooks/use-event-detail";
 import { useRequireAuth } from "@/hooks/use-require-auth";
+import { useScrollToSection } from "@/hooks/use-scroll-to-section";
 import { EVENT_STATUS, PARTICIPANT_STATUS } from "@/types/events";
 import { hasApprovedParticipation, hasEventEnded } from "@/utils/events";
 
@@ -33,10 +34,30 @@ import { PendingRequestsSheet } from "./pending-requests-sheet";
 
 export function EventDetailScreen() {
   const { t } = useTranslation("eventDetail");
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, focus } = useLocalSearchParams<{ id: string; focus?: string }>();
   const router = useRouter();
   const detail = useEventDetail(id);
   const { isAuthenticated, requireAuth } = useRequireAuth();
+
+  const scrollRef = useRef<ScrollView>(null);
+  const { registerSection, scrollToSection } = useScrollToSection(scrollRef);
+  const hasAppliedFocusRef = useRef(false);
+
+  useEffect(() => {
+    if (
+      focus !== "questions" ||
+      hasAppliedFocusRef.current ||
+      detail.isLoading ||
+      !detail.event
+    ) {
+      return;
+    }
+    hasAppliedFocusRef.current = true;
+    // Gives EventQnASection's own data fetch a head start so we scroll to its real height
+    // rather than a loading placeholder's.
+    const timeout = setTimeout(() => scrollToSection("questions"), 400);
+    return () => clearTimeout(timeout);
+  }, [detail.event, detail.isLoading, focus, scrollToSection]);
 
   const [pendingSheetOpen, setPendingSheetOpen] = useState(false);
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
@@ -66,6 +87,7 @@ export function EventDetailScreen() {
 
   return (
     <AppScreen
+      scrollRef={scrollRef}
       tone="light"
       edgeToEdgeTop={Boolean(detail.event)}
       header={
@@ -205,11 +227,13 @@ export function EventDetailScreen() {
 
             <SectionDivider />
 
-            <EventQnASection
-              event={detail.event}
-              isOrganizer={detail.isOrganizer}
-              onOpenUser={(userId) => router.push(`/users/${userId}`)}
-            />
+            <View ref={registerSection("questions")}>
+              <EventQnASection
+                event={detail.event}
+                isOrganizer={detail.isOrganizer}
+                onOpenUser={(userId) => router.push(`/users/${userId}`)}
+              />
+            </View>
 
             <SectionDivider />
 

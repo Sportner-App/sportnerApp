@@ -101,6 +101,10 @@ export function PendingAttendancePrompt({ children }: PropsWithChildren) {
         });
         return;
       }
+      showToast({
+        type: "success",
+        title: t("pendingAttendance.successTitle"),
+      });
       resetForNext();
     } finally {
       setIsSubmitting(false);

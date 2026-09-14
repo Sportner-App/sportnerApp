@@ -18,11 +18,8 @@ import {
   markNotificationRead,
 } from "@/services/notifications-service";
 import type { ApiNotification } from "@/types/notifications";
-import {
-  NOTIFICATION_ENTITY,
-  NOTIFICATION_TYPE,
-  notificationCopy,
-} from "@/types/notifications";
+import { NOTIFICATION_TYPE, notificationCopy } from "@/types/notifications";
+import { resolveNotificationRoute } from "@/utils/notification-routing";
 
 export function NotificationsScreen() {
   const router = useRouter();
@@ -91,32 +88,11 @@ export function NotificationsScreen() {
         item.notificationType === NOTIFICATION_TYPE.friendAccepted) &&
       friendUserId
     ) {
-      router.push(`/users/${friendUserId}`);
+      router.push(`/users/${friendUserId}` as never);
       return;
     }
 
-    if (!item.entityId) {
-      return;
-    }
-
-    if (
-      item.notificationType === NOTIFICATION_TYPE.eventReviewPrompt &&
-      item.entityType === NOTIFICATION_ENTITY.event
-    ) {
-      router.push(`/events/${item.entityId}/reviews`);
-    } else if (item.entityType === NOTIFICATION_ENTITY.event) {
-      router.push(`/events/${item.entityId}`);
-    } else if (item.entityType === NOTIFICATION_ENTITY.user) {
-      router.push(`/users/${item.entityId}`);
-    } else if (item.entityType === NOTIFICATION_ENTITY.post) {
-      router.push(`/posts/${item.entityId}`);
-    } else if (item.entityType === NOTIFICATION_ENTITY.conversation) {
-      router.push(`/conversations/${item.entityId}`);
-    } else if (item.entityType === NOTIFICATION_ENTITY.badge) {
-      router.push("/badges");
-    } else if (item.entityType === NOTIFICATION_ENTITY.organization) {
-      router.push(`/organizations/${item.entityId}`);
-    }
+    router.push(resolveNotificationRoute(item) as never);
   };
 
   return (

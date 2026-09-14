@@ -193,7 +193,7 @@ export function AuthScreen() {
                     />
                     <Input
                       icon="user"
-                      placeholder={t("fields.lastNameOptional")}
+                      placeholder={t("fields.lastName")}
                       value={form.lastName}
                       onChangeText={form.setLastName}
                       autoCapitalize="words"

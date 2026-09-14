@@ -521,7 +521,14 @@ export async function register({
     };
   }
 
-  if (trimmedLastName && trimmedLastName.length > 50) {
+  if (!trimmedLastName) {
+    return {
+      data: null,
+      error: { message: i18n.t("auth:validation.lastNameRequired") },
+    };
+  }
+
+  if (trimmedLastName.length > 50) {
     return {
       data: null,
       error: {

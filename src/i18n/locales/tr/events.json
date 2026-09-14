@@ -51,6 +51,7 @@
     "checklistTitle": "Kim gelmedi?",
     "checklistSubtitle": "Gelmeyen kişiye dokun — diğerleri geldi olarak işaretlenecek.",
     "confirm": "Bitti",
+    "successTitle": "Yoklama kaydedildi",
     "failedTitle": "Yoklama kaydedilemedi"
   },
   "service": {

@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Image,
@@ -21,6 +21,7 @@ import {
   SportLoader,
 } from "@/components";
 import { useToast } from "@/contexts";
+import { useScrollToSection } from "@/hooks/use-scroll-to-section";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
   createComment,
@@ -35,7 +36,7 @@ import { POST_MEDIA_TYPE } from "@/types/social";
 import { resolveMediaUrl } from "@/utils/media-url";
 
 export function PostDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, focus } = useLocalSearchParams<{ id: string; focus?: string }>();
   const { width } = useWindowDimensions();
   const router = useRouter();
   const { showToast } = useToast();
@@ -48,6 +49,19 @@ export function PostDetailScreen() {
   const [isCommenting, setIsCommenting] = useState(false);
   const [replyingTo, setReplyingTo] = useState<ApiComment | null>(null);
   const [incomingReply, setIncomingReply] = useState<ApiComment | null>(null);
+
+  const scrollRef = useRef<ScrollView>(null);
+  const { registerSection, scrollToSection } = useScrollToSection(scrollRef);
+  const hasAppliedFocusRef = useRef(false);
+
+  useEffect(() => {
+    if (focus !== "comments" || hasAppliedFocusRef.current || isLoading || !post) {
+      return;
+    }
+    hasAppliedFocusRef.current = true;
+    const timeout = setTimeout(() => scrollToSection("comments"), 150);
+    return () => clearTimeout(timeout);
+  }, [focus, isLoading, post, scrollToSection]);
 
   const load = async () => {
     if (!id) return;
@@ -117,6 +131,7 @@ export function PostDetailScreen() {
 
   return (
     <AppScreen
+      scrollRef={scrollRef}
       keyboardAvoiding
       header={<ScreenHeader title={t("feed:detail.header")} showBack />}
       contentClassName="gap-4 pt-2"
@@ -182,23 +197,25 @@ export function PostDetailScreen() {
               </View>
             </View>
 
-            <Text className="font-display text-base text-text-primary">
-              {t("social:comments.title")}
-            </Text>
-            {comments.length === 0 ? (
-              <Text className="font-body text-sm text-brand-neutral">
-                {t("social:comments.firstComment")}
+            <View ref={registerSection("comments")} className="gap-4">
+              <Text className="font-display text-base text-text-primary">
+                {t("social:comments.title")}
               </Text>
-            ) : (
-              <CommentThread
-                postId={post.id}
-                comments={comments}
-                incomingReply={incomingReply}
-                variant="detail"
-                onReply={setReplyingTo}
-                onAuthorPress={(userId) => router.push(`/users/${userId}`)}
-              />
-            )}
+              {comments.length === 0 ? (
+                <Text className="font-body text-sm text-brand-neutral">
+                  {t("social:comments.firstComment")}
+                </Text>
+              ) : (
+                <CommentThread
+                  postId={post.id}
+                  comments={comments}
+                  incomingReply={incomingReply}
+                  variant="detail"
+                  onReply={setReplyingTo}
+                  onAuthorPress={(userId) => router.push(`/users/${userId}`)}
+                />
+              )}
+            </View>
 
             {replyingTo ? (
               <View className="flex-row items-center justify-between">

@@ -73,7 +73,9 @@ function getAuthFieldErrors(
       errors.firstName = t("validation.firstNameTooLong", { max: 50 });
     }
 
-    if (trimmedLastName.length > 50) {
+    if (!trimmedLastName) {
+      errors.lastName = t("validation.lastNameRequired");
+    } else if (trimmedLastName.length > 50) {
       errors.lastName = t("validation.lastNameTooLong", { max: 50 });
     }
 
@@ -203,6 +205,7 @@ export function useAuthForm() {
       EMAIL_PATTERN.test(trimmedEmail) &&
       Boolean(firstName.trim()) &&
       firstName.trim().length <= 50 &&
+      Boolean(lastName.trim()) &&
       lastName.trim().length <= 50 &&
       Boolean(gender) &&
       Boolean(
@@ -285,7 +288,7 @@ export function useAuthForm() {
             password,
             email: email.trim(),
             firstName: firstName.trim(),
-            lastName: lastName.trim() || undefined,
+            lastName: lastName.trim(),
             gender: Number(gender),
             birthDate: toApiBirthDate(birthDate),
           });

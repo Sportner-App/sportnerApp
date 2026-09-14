@@ -51,6 +51,7 @@
     "checklistTitle": "Who was absent?",
     "checklistSubtitle": "Tap to mark someone as absent — everyone else will be confirmed as attended.",
     "confirm": "Done",
+    "successTitle": "Attendance saved",
     "failedTitle": "Could not save attendance"
   },
   "service": {

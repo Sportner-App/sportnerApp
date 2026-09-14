@@ -58,7 +58,8 @@
     "19": "Organization role changed",
     "20": "Removed from organization",
     "21": "Blocked from organization",
-    "22": "Review reminder"
+    "22": "Review reminder",
+    "23": "New reviews"
   },
   "push": {
     "channelName": "Sportner Notifications",

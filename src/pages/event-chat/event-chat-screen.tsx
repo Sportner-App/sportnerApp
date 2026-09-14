@@ -102,7 +102,11 @@ export function EventChatScreen({
         if (disposed) {
           return;
         }
-        const ordered = [...page.items].reverse();
+        // listMessages already returns oldest-to-newest (see the backend's
+        // ListMessagesQuery) - reversing again here put messages newest-first,
+        // so "the last item" was actually the oldest one, and read-state tracking
+        // (below) kept marking that stale message as read instead of the real latest.
+        const ordered = page.items;
         stickToBottomRef.current = true;
         setMessages(ordered);
 
