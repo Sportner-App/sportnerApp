@@ -46,4 +46,4 @@ export const LIGHT_THEME_COLORS = {
   destructive: "#dc2626",
 } as const;
 
-export type ThemePreference = "system" | "light" | "dark";
+export type ThemePreference = "light" | "dark";

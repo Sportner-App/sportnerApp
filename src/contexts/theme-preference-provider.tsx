@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useColorScheme, View } from "react-native";
+import { View } from "react-native";
 
 import { themeColors } from "@/constants/theme";
 import {
@@ -48,14 +48,8 @@ export function createThemeVariables(
 }
 
 export function ThemePreferenceProvider({ children }: PropsWithChildren) {
-  const systemScheme = useColorScheme();
-  const [preference, setPreferenceState] = useState<ThemePreference>("system");
-  const resolvedScheme =
-    preference === "system"
-      ? systemScheme === "dark"
-        ? "dark"
-        : "light"
-      : preference;
+  const [preference, setPreferenceState] = useState<ThemePreference>("dark");
+  const resolvedScheme = preference;
   const colors =
     resolvedScheme === "dark" ? DARK_THEME_COLORS : LIGHT_THEME_COLORS;
 
@@ -71,8 +65,7 @@ export function ThemePreferenceProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     void AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
-      if (stored === "light" || stored === "dark" || stored === "system")
-        setPreferenceState(stored);
+      if (stored === "light" || stored === "dark") setPreferenceState(stored);
     });
   }, []);
 

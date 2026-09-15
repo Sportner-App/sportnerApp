@@ -1,21 +1,7 @@
 {
   "appearance": {
-    "title": "Appearance",
-    "description": "Choose how Sportner looks. The System option automatically follows your phone's theme changes.",
-    "options": {
-      "system": {
-        "label": "System",
-        "description": "Follows your phone's display setting"
-      },
-      "light": {
-        "label": "Light",
-        "description": "Always uses the light theme"
-      },
-      "dark": {
-        "label": "Dark",
-        "description": "Always uses the dark theme"
-      }
-    }
+    "light": "Light theme",
+    "dark": "Dark theme"
   },
   "language": {
     "title": "Language",
@@ -40,7 +26,6 @@
     "editProfile": "Edit profile",
     "notifications": "Notifications",
     "notificationSettings": "Notification settings",
-    "appearance": "Appearance",
     "language": "Language",
     "privacy": "Privacy",
     "feedback": "Send feedback",

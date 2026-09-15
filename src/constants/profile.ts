@@ -100,8 +100,8 @@ export function useProfileMenuGroups(): ProfileMenuGroup[] {
         },
         {
           key: "appearance",
-          label: t("menu.appearance"),
-          icon: "circle-half-stroke",
+          label: t("appearance.dark"),
+          icon: "moon",
         },
         { key: "language", label: t("menu.language"), icon: "globe" },
         { key: "privacy", label: t("menu.privacy"), icon: "shield-halved" },

@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "sportner",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "projectId": "sportner-app",
     "ios": {
       "supportsTablet": true,

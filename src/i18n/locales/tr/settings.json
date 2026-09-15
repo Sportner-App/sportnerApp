@@ -1,21 +1,7 @@
 {
   "appearance": {
-    "title": "Görünüm",
-    "description": "Sportner’ın görünümünü seç. Sistem seçeneği telefonundaki tema değişikliklerini otomatik uygular.",
-    "options": {
-      "system": {
-        "label": "Sistem",
-        "description": "Telefonunun görünüm ayarını takip eder"
-      },
-      "light": {
-        "label": "Açık",
-        "description": "Her zaman açık temayı kullanır"
-      },
-      "dark": {
-        "label": "Koyu",
-        "description": "Her zaman koyu temayı kullanır"
-      }
-    }
+    "light": "Açık tema",
+    "dark": "Koyu tema"
   },
   "language": {
     "title": "Dil",
@@ -40,7 +26,6 @@
     "editProfile": "Profili düzenle",
     "notifications": "Bildirimler",
     "notificationSettings": "Bildirim ayarları",
-    "appearance": "Görünüm",
     "language": "Dil",
     "privacy": "Gizlilik",
     "feedback": "Öneri gönder",
