@@ -1,12 +1,14 @@
 import {
-  KeyboardAvoidingView,
   Platform,
   ScrollView,
   View,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import {
+  KeyboardAwareScrollView,
+  KeyboardStickyView,
+} from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
@@ -96,12 +98,11 @@ export function AppScreen({
     </View>
   );
 
-  const content = (
+  const mainContent = (
     <>
       {header}
       {belowHeader}
       {body}
-      {footer}
     </>
   );
 
@@ -111,14 +112,17 @@ export function AppScreen({
       style={{ paddingTop: edgeToEdgeTop ? 0 : insets.top }}
     >
       {keyboardAvoiding ? (
-        <KeyboardAvoidingView
-          className="flex-1"
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-        >
-          {content}
-        </KeyboardAvoidingView>
+        <>
+          <View className="flex-1">{mainContent}</View>
+          {footer ? (
+            <KeyboardStickyView>{footer}</KeyboardStickyView>
+          ) : null}
+        </>
       ) : (
-        content
+        <>
+          {mainContent}
+          {footer}
+        </>
       )}
     </View>
   );
