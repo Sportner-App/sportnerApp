@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import Animated from "react-native-reanimated";
 
@@ -27,9 +27,13 @@ export function IntroCommunityVisual() {
           </View>
           <FontAwesome6 name="ellipsis" size={14} color="#6f7d86" />
         </View>
-        <View className="h-36 items-center justify-center bg-brand-raised">
-          <View className="absolute h-28 w-28 rounded-full border-[18px] border-brand-primary/10" />
-          <FontAwesome6 name="person-running" size={40} color="#ccff00" />
+        <View className="h-36 overflow-hidden bg-brand-raised">
+          <Image
+            source={require("../../../assets/images/first-launch/community-run-post-v2.png")}
+            resizeMode="cover"
+            className="h-full w-full"
+          />
+          <View className="absolute inset-0 bg-brand-secondary/15" />
           <View className="absolute bottom-3 right-3 rounded-full bg-brand-secondary/80 px-3 py-1.5">
             <Text className="font-mono text-[10px] text-white">
               5.2 KM · 28 DK

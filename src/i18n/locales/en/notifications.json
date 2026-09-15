@@ -9,6 +9,12 @@
     "inApp": "In-app",
     "push": "Push notification",
     "saveFailed": "Could not save",
+    "groups": {
+      "messages": "MESSAGES",
+      "events": "EVENTS",
+      "social": "SOCIAL",
+      "progress": "PROGRESS & SYSTEM"
+    },
     "typeFallback": "Type {{type}}"
   },
   "copy": {

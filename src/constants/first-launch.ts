@@ -28,6 +28,11 @@ export function useFirstLaunchCopy() {
       subtitle: t("intro3.subtitle"),
       next: t("intro3.next"),
     },
+    intro4: {
+      title: t("intro4.title"),
+      subtitle: t("intro4.subtitle"),
+      next: t("intro4.next"),
+    },
     skip: t("skip"),
   } as const;
 }

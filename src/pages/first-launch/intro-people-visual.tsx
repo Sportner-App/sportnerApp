@@ -54,25 +54,13 @@ export function IntroPeopleVisual() {
         </View>
       </Animated.View>
       <Animated.View
-        entering={heroFadeUp(220, 180, 8)}
-        className="ml-8 rounded-[24px] border border-white/10 bg-brand-raised/95 p-4"
+        entering={heroFadeUp(180, 180, 8)}
+        className="ml-8 flex-row items-center gap-2 self-start rounded-full border border-brand-primary/25 bg-brand-primary/10 px-3.5 py-2"
       >
-        <View className="flex-row items-center gap-2">
-          <FontAwesome6 name="comments" size={12} color="#ccff00" />
-          <Text className="font-mono text-[10px] tracking-[1.5px] text-brand-primary">
-            {t("visuals.people.eventChat")}
-          </Text>
-        </View>
-        <View className="mt-3 self-start rounded-2xl rounded-tl-sm bg-white/10 px-3 py-2">
-          <Text className="font-body text-xs text-white">
-            {t("visuals.people.chatQuestion")}
-          </Text>
-        </View>
-        <View className="mt-2 self-end rounded-2xl rounded-tr-sm bg-brand-primary px-3 py-2">
-          <Text className="font-body-bold text-xs text-brand-secondary">
-            {t("visuals.people.chatReply")}
-          </Text>
-        </View>
+        <FontAwesome6 name="users" size={11} color="#ccff00" />
+        <Text className="font-body text-sm text-brand-primary">
+          {t("visuals.people.teamReady")}
+        </Text>
       </Animated.View>
     </View>
   );

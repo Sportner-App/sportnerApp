@@ -50,7 +50,7 @@
     "later": "Not now",
     "checklistTitle": "Who was absent?",
     "checklistSubtitle": "Tap to mark someone as absent — everyone else will be confirmed as attended.",
-    "confirm": "Done",
+    "confirm": "Complete attendance",
     "successTitle": "Attendance saved",
     "failedTitle": "Could not save attendance"
   },

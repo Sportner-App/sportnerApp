@@ -192,6 +192,7 @@ export type AppScreenProps = PropsWithChildren<{
   withTabBar?: boolean;
   /** false ise ScrollView kullanılmaz (varsayılan: true) */
   scroll?: boolean;
+  /** Varsayılan olarak açıktır; odaktaki metin alanını klavyenin üstünde tutar. */
   keyboardAvoiding?: boolean;
   refreshControl?: ReactElement<RefreshControlProps>;
   contentClassName?: string;

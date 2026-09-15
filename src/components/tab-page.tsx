@@ -20,7 +20,7 @@ export function TabPage({
   children,
   refreshing,
   onRefresh,
-  keyboardAvoiding = false,
+  keyboardAvoiding = true,
   onEndReached,
   scroll = true,
 }: TabPageProps) {
@@ -31,7 +31,9 @@ export function TabPage({
       keyboardAvoiding={keyboardAvoiding}
       belowHeader={<LinearRefreshBar visible={refreshing} />}
       contentClassName={scroll ? "gap-6 px-5 pt-2" : "gap-3 px-5 pt-2"}
-      refreshControl={scroll ? brandRefreshControl({ refreshing, onRefresh }) : undefined}
+      refreshControl={
+        scroll ? brandRefreshControl({ refreshing, onRefresh }) : undefined
+      }
       onEndReached={scroll ? onEndReached : undefined}
     >
       <StatusBar style="auto" />

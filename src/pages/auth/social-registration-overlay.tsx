@@ -29,6 +29,9 @@ export function SocialRegistrationOverlay({ social }: Props) {
       >
         <ScrollView
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode={
+            Platform.OS === "ios" ? "interactive" : "on-drag"
+          }
           contentContainerClassName="flex-grow justify-center px-6 py-12"
         >
           <Text className="font-display text-4xl text-text-primary">

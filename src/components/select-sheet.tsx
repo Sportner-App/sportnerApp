@@ -191,6 +191,7 @@ export function SelectSheet<T extends string>({
         style={{ maxHeight: listMaxHeight }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
         bounces={false}
       >
         {filtered.length === 0 ? (

@@ -20,4 +20,6 @@ export type ApiReviewablePeer = {
   username: string | null;
   firstName: string | null;
   profileImageUrl: string | null;
+  /** The event owner is deliberately called out first in the feedback flow. */
+  isOrganizer: boolean;
 };

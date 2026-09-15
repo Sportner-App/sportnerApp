@@ -1,5 +1,6 @@
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
@@ -18,11 +19,15 @@ import {
   listReviewablePeers,
 } from "@/services/reviews-service";
 import type { ApiReview, ApiReviewablePeer } from "@/types/reviews";
+import { lightImpact } from "@/utils/haptics";
 
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+type Step = "choose" | "rate";
+
+/** Feedback starts with the event owner; teammates are a short optional follow-up. */
 export function EventReviewsScreen() {
   const { t } = useTranslation(["eventReviews", "events"]);
   const params = useLocalSearchParams<{ id: string; userId?: string }>();
@@ -32,17 +37,26 @@ export function EventReviewsScreen() {
   const [reviews, setReviews] = useState<ApiReview[]>([]);
   const [peers, setPeers] = useState<ApiReviewablePeer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(
-    presetUserId ?? null,
+  const [step, setStep] = useState<Step>("choose");
+  const [selectedPeer, setSelectedPeer] = useState<ApiReviewablePeer | null>(
+    null,
   );
-  const [rating, setRating] = useState(5);
+  const [showTeammates, setShowTeammates] = useState(false);
+  const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const organizer = useMemo(
+    () => peers.find((peer) => peer.isOrganizer) ?? null,
+    [peers],
+  );
+  const teammates = useMemo(
+    () => peers.filter((peer) => !peer.isOrganizer),
+    [peers],
+  );
+
   const load = async () => {
-    if (!id) {
-      return;
-    }
+    if (!id) return;
     try {
       const [page, reviewable] = await Promise.all([
         listEventReviews(id),
@@ -50,13 +64,15 @@ export function EventReviewsScreen() {
       ]);
       setReviews(page?.items ?? []);
       setPeers(reviewable);
-      setSelectedUserId((current) => {
-        const preferred = current ?? presetUserId ?? null;
-        if (preferred && reviewable.some((peer) => peer.userId === preferred)) {
-          return preferred;
+      if (presetUserId) {
+        const preferred = reviewable.find(
+          (peer) => peer.userId === presetUserId,
+        );
+        if (preferred) {
+          setSelectedPeer(preferred);
+          setStep("rate");
         }
-        return preferred && reviewable.length === 0 ? preferred : current;
-      });
+      }
     } catch (error) {
       showToast({
         type: "error",
@@ -73,25 +89,33 @@ export function EventReviewsScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  const choosePeer = (peer: ApiReviewablePeer) => {
+    lightImpact();
+    setSelectedPeer(peer);
+    setRating(null);
+    setComment("");
+    setStep("rate");
+  };
+
   const submit = async () => {
-    if (!id || !selectedUserId || saving) {
-      return;
-    }
+    if (!id || !selectedPeer || rating == null || saving) return;
     setSaving(true);
     try {
       await createReview({
         eventId: id,
-        reviewedUserId: selectedUserId,
+        reviewedUserId: selectedPeer.userId,
         rating,
         comment: comment.trim() || undefined,
       });
-      setComment("");
-      setSelectedUserId(null);
       showToast({
         type: "success",
         title: t("eventReviews:toasts.sentTitle"),
         description: t("eventReviews:toasts.sentDescription"),
       });
+      setSelectedPeer(null);
+      setRating(null);
+      setComment("");
+      setStep("choose");
       await load();
     } catch (error) {
       showToast({
@@ -114,125 +138,293 @@ export function EventReviewsScreen() {
         <View className="items-center py-16">
           <SportLoader size={120} label={t("eventReviews:loading")} />
         </View>
-      ) : (
+      ) : step === "rate" && selectedPeer ? (
+        <RatingForm
+          peer={selectedPeer}
+          rating={rating}
+          comment={comment}
+          saving={saving}
+          onBack={() => {
+            setStep("choose");
+            setSelectedPeer(null);
+          }}
+          onRating={setRating}
+          onComment={setComment}
+          onSubmit={() => void submit()}
+        />
+      ) : peers.length > 0 ? (
         <>
-          {peers.length > 0 ? (
-            <View className="gap-3 rounded-3xl border border-border-default bg-surface-primary p-4">
-              <Text className="font-display text-base text-text-primary">
-                {t("eventReviews:form.heading")}
-              </Text>
-              <Text className="font-body text-xs text-brand-neutral">
-                {t("eventReviews:form.hint")}
-              </Text>
-              {peers.map((peer) => (
-                <Pressable
-                  key={peer.userId}
-                  onPress={() => setSelectedUserId(peer.userId)}
-                  className={`flex-row items-center gap-3 rounded-2xl border px-3 py-2.5 ${
-                    selectedUserId === peer.userId
-                      ? "border-brand-primary bg-brand-primary/10"
-                      : "border-border-default"
-                  }`}
-                >
-                  <Avatar
-                    uri={peer.profileImageUrl}
-                    name={peer.username || peer.firstName}
-                    size={36}
-                    borderWidth={0}
-                  />
-                  <Text className="font-body text-sm text-text-primary">
-                    @
-                    {peer.username || t("events:fallback.athleteHandle")}
-                  </Text>
-                </Pressable>
-              ))}
-              <View className="flex-row gap-2">
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <Pressable
-                    key={value}
-                    onPress={() => setRating(value)}
-                    className={`h-10 w-10 items-center justify-center rounded-full ${
-                      rating >= value ? "bg-brand-primary" : "bg-white/10"
-                    }`}
-                  >
-                    <Text
-                      className={`font-mono ${
-                        rating >= value
-                          ? "text-brand-secondary"
-                          : "text-text-primary"
-                      }`}
-                    >
-                      {value}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-              <TextInput
-                value={comment}
-                onChangeText={setComment}
-                placeholder={t("eventReviews:form.commentPlaceholder")}
-                placeholderTextColor="#64748b"
-                className="rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
-              />
-              <Button
-                label={t("eventReviews:form.submit")}
-                disabled={!selectedUserId}
-                isLoading={saving}
-                onPress={submit}
-              />
-            </View>
-          ) : (
-            <View className="gap-2 rounded-3xl border border-border-default bg-surface-primary p-4">
-              <Text className="font-display text-base text-text-primary">
-                {t("eventReviews:emptyPeers.title")}
-              </Text>
-              <Text className="font-body text-sm leading-5 text-brand-neutral">
-                {t("eventReviews:emptyPeers.description")}
-              </Text>
-            </View>
-          )}
-
-          <Text className="font-display text-base text-text-primary">
-            {t("eventReviews:list.heading")}
-          </Text>
-          {reviews.length === 0 ? (
-            <Text className="font-body text-sm text-brand-neutral">
-              {t("eventReviews:list.empty")}
+          <View className="gap-1">
+            <Text className="font-display text-xl text-text-primary">
+              {t("eventReviews:choose.heading")}
             </Text>
-          ) : (
-            reviews.map((review) => (
-              <View
-                key={review.id}
-                className="rounded-2xl border border-border-default bg-surface-primary p-4"
+            <Text className="font-body text-sm leading-5 text-brand-neutral">
+              {t("eventReviews:choose.hint")}
+            </Text>
+          </View>
+          {organizer ? (
+            <OrganizerCard peer={organizer} onPress={choosePeer} />
+          ) : null}
+          {teammates.length > 0 ? (
+            <View className="rounded-3xl border border-border-default bg-surface-primary">
+              <Pressable
+                onPress={() => setShowTeammates((value) => !value)}
+                className="flex-row items-center gap-3 p-4 active:opacity-80"
               >
-                <View className="flex-row items-center gap-3">
-                  <Avatar
-                    uri={review.reviewerProfileImageUrl}
-                    name={review.reviewerUsername || review.reviewerFirstName}
-                    size={36}
-                    borderWidth={0}
-                  />
-                  <Text className="flex-1 font-body text-sm font-semibold text-text-primary">
-                    @
-                    {review.reviewerUsername ||
-                      t("events:fallback.athleteHandle")}{" "}
-                    → @
-                    {review.reviewedUsername || t("events:fallback.athleteHandle")}
+                <View className="h-10 w-10 items-center justify-center rounded-full bg-white/10">
+                  <FontAwesome6 name="people-group" size={15} color="#cbd5e1" />
+                </View>
+                <View className="flex-1">
+                  <Text className="font-body text-sm font-semibold text-text-primary">
+                    {t("eventReviews:choose.teammatesTitle", {
+                      count: teammates.length,
+                    })}
+                  </Text>
+                  <Text className="font-body text-xs text-brand-neutral">
+                    {t("eventReviews:choose.teammatesHint")}
                   </Text>
                 </View>
-                <Text className="mt-1 font-mono text-xs text-amber-300">
-                  {review.rating}/5
-                </Text>
-                {review.comment ? (
-                  <Text className="mt-2 font-body text-sm text-brand-neutral">
-                    {review.comment}
-                  </Text>
-                ) : null}
-              </View>
-            ))
-          )}
+                <FontAwesome6
+                  name={showTeammates ? "chevron-up" : "chevron-down"}
+                  size={12}
+                  color="#94a3b8"
+                />
+              </Pressable>
+              {showTeammates ? (
+                <View className="gap-2 border-t border-border-default p-3">
+                  {teammates.map((peer) => (
+                    <PeerRow
+                      key={peer.userId}
+                      peer={peer}
+                      onPress={choosePeer}
+                    />
+                  ))}
+                </View>
+              ) : null}
+            </View>
+          ) : null}
         </>
+      ) : (
+        <View className="gap-2 rounded-3xl border border-border-default bg-surface-primary p-5">
+          <Text className="font-display text-base text-text-primary">
+            {t("eventReviews:emptyPeers.title")}
+          </Text>
+          <Text className="font-body text-sm leading-5 text-brand-neutral">
+            {t("eventReviews:emptyPeers.description")}
+          </Text>
+        </View>
       )}
+      <ReviewList reviews={reviews} />
     </AppScreen>
+  );
+}
+
+function OrganizerCard({
+  peer,
+  onPress,
+}: {
+  peer: ApiReviewablePeer;
+  onPress: (peer: ApiReviewablePeer) => void;
+}) {
+  const { t } = useTranslation(["eventReviews", "events"]);
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={() => onPress(peer)}
+      className="flex-row items-center gap-3 rounded-3xl border border-brand-primary/40 bg-brand-primary/10 p-4 active:opacity-80"
+    >
+      <Avatar
+        uri={peer.profileImageUrl}
+        name={peer.username || peer.firstName}
+        size={48}
+        borderWidth={0}
+      />
+      <View className="flex-1 gap-0.5">
+        <Text className="font-mono text-[10px] text-brand-primary">
+          {t("eventReviews:choose.organizerEyebrow")}
+        </Text>
+        <Text className="font-body text-base font-semibold text-text-primary">
+          @{peer.username || t("events:fallback.athleteHandle")}
+        </Text>
+        <Text className="font-body text-xs text-brand-neutral">
+          {t("eventReviews:choose.organizerHint")}
+        </Text>
+      </View>
+      <FontAwesome6 name="chevron-right" size={12} color="#ccff00" />
+    </Pressable>
+  );
+}
+
+function PeerRow({
+  peer,
+  onPress,
+}: {
+  peer: ApiReviewablePeer;
+  onPress: (peer: ApiReviewablePeer) => void;
+}) {
+  const { t } = useTranslation("events");
+  return (
+    <Pressable
+      onPress={() => onPress(peer)}
+      className="flex-row items-center gap-3 rounded-2xl px-2 py-2 active:bg-white/5"
+    >
+      <Avatar
+        uri={peer.profileImageUrl}
+        name={peer.username || peer.firstName}
+        size={36}
+        borderWidth={0}
+      />
+      <Text className="flex-1 font-body text-sm text-text-primary">
+        @{peer.username || t("fallback.athleteHandle")}
+      </Text>
+      <FontAwesome6 name="chevron-right" size={11} color="#94a3b8" />
+    </Pressable>
+  );
+}
+
+function RatingForm({
+  peer,
+  rating,
+  comment,
+  saving,
+  onBack,
+  onRating,
+  onComment,
+  onSubmit,
+}: {
+  peer: ApiReviewablePeer;
+  rating: number | null;
+  comment: string;
+  saving: boolean;
+  onBack: () => void;
+  onRating: (value: number) => void;
+  onComment: (value: string) => void;
+  onSubmit: () => void;
+}) {
+  const { t } = useTranslation(["eventReviews", "events"]);
+  const context = peer.isOrganizer ? "organizer" : "teammate";
+  const ratingLabel =
+    rating == null
+      ? t("eventReviews:rating.unselected")
+      : t(`eventReviews:rating.${context}.${rating}`);
+  return (
+    <View className="gap-4 rounded-3xl border border-border-default bg-surface-primary p-5">
+      <Pressable onPress={onBack} className="self-start py-1 active:opacity-70">
+        <Text className="font-body text-sm font-semibold text-brand-primary">
+          {t("eventReviews:form.back")}
+        </Text>
+      </Pressable>
+      <View className="flex-row items-center gap-3">
+        <Avatar
+          uri={peer.profileImageUrl}
+          name={peer.username || peer.firstName}
+          size={52}
+          borderWidth={0}
+        />
+        <View className="flex-1">
+          <Text className="font-mono text-[10px] text-brand-primary">
+            {t(`eventReviews:form.${context}Eyebrow`)}
+          </Text>
+          <Text className="font-display text-lg text-text-primary">
+            @{peer.username || t("events:fallback.athleteHandle")}
+          </Text>
+        </View>
+      </View>
+      <Text className="font-body text-sm leading-5 text-brand-neutral">
+        {t(`eventReviews:form.${context}Question`)}
+      </Text>
+      <View className="flex-row justify-between gap-2">
+        {[1, 2, 3, 4, 5].map((value) => {
+          const active = rating === value;
+          return (
+            <Pressable
+              key={value}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              accessibilityLabel={t("eventReviews:rating.accessibility", {
+                value,
+              })}
+              onPress={() => {
+                lightImpact();
+                onRating(value);
+              }}
+              className={`h-11 w-11 items-center justify-center rounded-full border ${active ? "border-brand-primary bg-brand-primary" : "border-border-default bg-white/5"}`}
+            >
+              <Text
+                className={`font-mono text-sm ${active ? "text-brand-secondary" : "text-text-primary"}`}
+              >
+                {value}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      <Text className="text-center font-body text-xs text-brand-neutral">
+        {ratingLabel}
+      </Text>
+      <TextInput
+        value={comment}
+        onChangeText={onComment}
+        multiline
+        maxLength={1000}
+        placeholder={t("eventReviews:form.commentPlaceholder")}
+        placeholderTextColor="#64748b"
+        className="min-h-[94px] rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
+      />
+      <Button
+        label={t("eventReviews:form.submit")}
+        disabled={rating == null}
+        isLoading={saving}
+        onPress={onSubmit}
+      />
+      <Text className="text-center font-body text-[11px] leading-4 text-text-secondary">
+        {t("eventReviews:form.visibilityNote")}
+      </Text>
+    </View>
+  );
+}
+
+function ReviewList({ reviews }: { reviews: ApiReview[] }) {
+  const { t } = useTranslation(["eventReviews", "events"]);
+  return (
+    <View className="gap-3">
+      <Text className="font-display text-base text-text-primary">
+        {t("eventReviews:list.heading")}
+      </Text>
+      {reviews.length === 0 ? (
+        <Text className="font-body text-sm text-brand-neutral">
+          {t("eventReviews:list.empty")}
+        </Text>
+      ) : (
+        reviews.map((review) => (
+          <View
+            key={review.id}
+            className="rounded-2xl border border-border-default bg-surface-primary p-4"
+          >
+            <View className="flex-row items-center gap-3">
+              <Avatar
+                uri={review.reviewerProfileImageUrl}
+                name={review.reviewerUsername || review.reviewerFirstName}
+                size={36}
+                borderWidth={0}
+              />
+              <Text className="flex-1 font-body text-sm font-semibold text-text-primary">
+                @{review.reviewerUsername || t("events:fallback.athleteHandle")}{" "}
+                → @
+                {review.reviewedUsername || t("events:fallback.athleteHandle")}
+              </Text>
+              <Text className="font-mono text-xs text-amber-300">
+                {review.rating}/5
+              </Text>
+            </View>
+            {review.comment ? (
+              <Text className="mt-2 font-body text-sm text-brand-neutral">
+                {review.comment}
+              </Text>
+            ) : null}
+          </View>
+        ))
+      )}
+    </View>
   );
 }

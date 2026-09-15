@@ -12,9 +12,12 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { resolveNotificationRoute } from "@/utils/notification-routing";
+import { markNotificationRead } from "@/services/notifications-service";
+import { listNotifications } from "@/services/notifications-service";
 
 type BannerState = {
   id: string;
+  notificationId: string | null;
   title: string;
   body: string;
   route: string;
@@ -33,6 +36,7 @@ export function InAppNotificationBanner() {
   const insets = useSafeAreaInsets();
   const [banner, setBanner] = useState<BannerState | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const seenInboxIds = useRef(new Set<string>());
 
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(-16);
@@ -63,6 +67,10 @@ export function InAppNotificationBanner() {
 
         setBanner({
           id,
+          notificationId:
+            typeof data.notificationId === "string"
+              ? data.notificationId
+              : null,
           title: title ?? "",
           body: body ?? "",
           route: resolveNotificationRoute(data),
@@ -87,12 +95,50 @@ export function InAppNotificationBanner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // In-app is a real delivery channel, not merely an inbox preference. Polling is a
+  // lightweight fallback for users who intentionally disabled device push while the
+  // app is open (and for simulators where Expo push is unavailable).
+  useEffect(() => {
+    let initialLoad = true;
+    const syncInbox = async () => {
+      const page = await listNotifications({ unreadOnly: true, limit: 1 });
+      const item = page.items[0];
+      if (!item) return;
+      const isNew = seenInboxIds.current.has(item.id);
+      seenInboxIds.current.add(item.id);
+      if (initialLoad || isNew) return;
+      setBanner({
+        id: `inbox-${item.id}`,
+        notificationId: item.id,
+        title: item.title,
+        body: item.body,
+        route: resolveNotificationRoute(item),
+      });
+      opacity.value = withTiming(1, { duration: 200 });
+      translateY.value = withTiming(0, {
+        duration: 220,
+        easing: Easing.out(Easing.cubic),
+      });
+    };
+    void syncInbox().finally(() => {
+      initialLoad = false;
+    });
+    const interval = setInterval(
+      () => void syncInbox().catch(() => undefined),
+      30000,
+    );
+    return () => clearInterval(interval);
+  }, []);
+
   const handlePress = () => {
     if (!banner) return;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     opacity.value = withTiming(0, { duration: HIDE_ANIMATION_MS });
     translateY.value = withTiming(-16, { duration: HIDE_ANIMATION_MS });
     router.push(banner.route as never);
+    if (banner.notificationId) {
+      void markNotificationRead(banner.notificationId).catch(() => undefined);
+    }
     setTimeout(() => setBanner(null), HIDE_ANIMATION_MS);
   };
 

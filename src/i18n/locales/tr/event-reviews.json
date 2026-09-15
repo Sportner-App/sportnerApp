@@ -4,18 +4,48 @@
   "toasts": {
     "loadFailedTitle": "Yüklenemedi",
     "sentTitle": "Değerlendirme gönderildi",
-    "sentDescription": "Puan ve yorum karşı tarafın profilinde görünür.",
+    "sentDescription": "Geri bildirimin kaydedildi.",
     "sendFailedTitle": "Gönderilemedi"
   },
+  "choose": {
+    "heading": "Etkinlik nasıl geçti?",
+    "hint": "Önce organizasyon deneyimini değerlendir. İstersen ardından takım arkadaşlarına da geri bildirim bırakabilirsin.",
+    "organizerEyebrow": "ORGANİZASYON SAHİBİ",
+    "organizerHint": "Organizasyon deneyimini puanla",
+    "teammatesTitle": "Takım arkadaşlarını değerlendir ({{count}})",
+    "teammatesHint": "İsteğe bağlı — yalnızca geri bildirim vermek istediklerini seç"
+  },
   "form": {
-    "heading": "Kimi değerlendirmek istersin?",
-    "hint": "1–5 puan ve isteğe bağlı yorum. Karşı tarafın profilinde görünür.",
+    "back": "‹ Kişi seçimine dön",
+    "organizerEyebrow": "ORGANİZASYON DENEYİMİ",
+    "organizerQuestion": "Organizasyon, iletişim ve etkinlik deneyimi nasıldı?",
+    "teammateEyebrow": "TAKIM ARKADAŞI",
+    "teammateQuestion": "Bu kişiyle yeniden spor yapmak ister misin?",
     "commentPlaceholder": "Yorum (opsiyonel)",
-    "submit": "Gönder"
+    "submit": "Geri bildirimi gönder",
+    "visibilityNote": "Yapıcı ve deneyimine dayanan geri bildirimler topluluğu daha güvenli yapar."
+  },
+  "rating": {
+    "accessibility": "{{value}} puan ver",
+    "unselected": "Puanını seç",
+    "organizer": {
+      "1": "Çok zayıf deneyim",
+      "2": "Beklentimi karşılamadı",
+      "3": "Ortalama bir deneyimdi",
+      "4": "İyi organize edilmişti",
+      "5": "Harika bir deneyimdi"
+    },
+    "teammate": {
+      "1": "Tekrar oynamak istemem",
+      "2": "Zor bir deneyimdi",
+      "3": "Nötr bir deneyimdi",
+      "4": "Yeniden oynarım",
+      "5": "Kesinlikle yeniden oynarım"
+    }
   },
   "emptyPeers": {
     "title": "Şu an puanlanacak kimse yok",
-    "description": "Organizatör önce yoklamada \"Geldi\" işaretlemeli. Sonra gelen katılımcılar ve organizatör birbirini 1–5 puanlayabilir."
+    "description": "Organizatör yoklamayı tamamladığında değerlendirme açılır. Biraz sonra tekrar kontrol edebilirsin."
   },
   "list": {
     "heading": "Bu etkinlikteki yorumlar",

@@ -4,18 +4,48 @@
   "toasts": {
     "loadFailedTitle": "Could not load",
     "sentTitle": "Review submitted",
-    "sentDescription": "The rating and comment appear on their profile.",
+    "sentDescription": "Your feedback has been saved.",
     "sendFailedTitle": "Could not send"
   },
+  "choose": {
+    "heading": "How was the event?",
+    "hint": "Start with the event experience. You can optionally leave feedback for teammates afterward.",
+    "organizerEyebrow": "EVENT OWNER",
+    "organizerHint": "Rate the organization experience",
+    "teammatesTitle": "Rate teammates ({{count}})",
+    "teammatesHint": "Optional — choose only the people you want to give feedback to"
+  },
   "form": {
-    "heading": "Who would you like to review?",
-    "hint": "Rate 1–5 and add an optional comment. It appears on their profile.",
+    "back": "‹ Back to people",
+    "organizerEyebrow": "EVENT EXPERIENCE",
+    "organizerQuestion": "How were the organization, communication, and event experience?",
+    "teammateEyebrow": "TEAMMATE",
+    "teammateQuestion": "Would you play sports with this person again?",
     "commentPlaceholder": "Comment (optional)",
-    "submit": "Send"
+    "submit": "Send feedback",
+    "visibilityNote": "Constructive, experience-based feedback helps keep the community safe."
+  },
+  "rating": {
+    "accessibility": "Give {{value}} stars",
+    "unselected": "Choose a rating",
+    "organizer": {
+      "1": "Very poor experience",
+      "2": "Did not meet expectations",
+      "3": "An average experience",
+      "4": "Well organized",
+      "5": "A great experience"
+    },
+    "teammate": {
+      "1": "I would not play again",
+      "2": "A difficult experience",
+      "3": "A neutral experience",
+      "4": "I would play again",
+      "5": "I would definitely play again"
+    }
   },
   "emptyPeers": {
     "title": "No one to review right now",
-    "description": "The organizer must mark attendance as attended first. Then participants and the organizer can rate each other 1–5."
+    "description": "Feedback opens after the organizer finishes attendance. Please check back shortly."
   },
   "list": {
     "heading": "Reviews for this event",

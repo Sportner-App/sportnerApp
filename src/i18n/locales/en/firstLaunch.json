@@ -7,8 +7,8 @@
     "login": "Sign In"
   },
   "intro1": {
-    "title": "FIND YOUR\nEVENT.",
-    "subtitle": "Discover nearby events, pick the one that fits you, and send a join request.",
+    "title": "DISCOVER,\nGET MOVING.",
+    "subtitle": "Find nearby open matches, athletes, and events that fit you in one place.",
     "next": "Continue"
   },
   "intro2": {
@@ -17,13 +17,18 @@
     "next": "Continue"
   },
   "intro3": {
-    "title": "SHARE,\nCONNECT.",
-    "subtitle": "Share your sports moments, follow the community, and stay connected through chat.",
+    "title": "CHAT WITH\nYOUR FRIENDS.",
+    "subtitle": "Plan before the match and keep talking after it. Your friends are always one message away.",
+    "next": "Continue"
+  },
+  "intro4": {
+    "title": "SHARE,\nSTAY CONNECTED.",
+    "subtitle": "Share your sports moments, follow the community, and meet new people to play with.",
     "next": "Get Started"
   },
   "skip": "Skip",
   "progress": {
-    "stepLabel": "Step {{step}} / 3"
+    "stepLabel": "Step {{step}} / 4"
   },
   "visuals": {
     "welcome": {
@@ -43,9 +48,14 @@
       "eveningMatch": "Evening match",
       "createdBadge": "CREATED",
       "invitesSent": "3 invites sent",
-      "eventChat": "EVENT CHAT",
-      "chatQuestion": "Meet at the field at 8:15 PM?",
-      "chatReply": "Sounds good, see you! 🙌"
+      "teamReady": "Your team is ready"
+    },
+    "chat": {
+      "friendName": "Ayşe Yılmaz",
+      "online": "Active now",
+      "friendMessage": "Are we playing tomorrow evening?",
+      "reply": "I'm in! I sent you an event that works. 🙌",
+      "friendsAvailable": "Your friends are here to chat"
     },
     "community": {
       "postCaption": "Morning run done! Who moved today? 🏃",

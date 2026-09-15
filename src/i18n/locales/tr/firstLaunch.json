@@ -7,8 +7,8 @@
     "login": "Giriş Yap"
   },
   "intro1": {
-    "title": "ETKİNLİĞİNİ\nBUL.",
-    "subtitle": "Yakınındaki etkinlikleri keşfet, sana uygun olanı seç ve katılım isteği gönder.",
+    "title": "KEŞFET,\nHAREKETE GEÇ.",
+    "subtitle": "Yakınındaki açık maçları, sporcuları ve sana uygun etkinlikleri tek ekranda bul.",
     "next": "Devam Et"
   },
   "intro2": {
@@ -17,13 +17,18 @@
     "next": "Devam Et"
   },
   "intro3": {
-    "title": "PAYLAŞ,\nETKİLEŞİME\nGEÇ.",
-    "subtitle": "Spor anlarını paylaş, topluluğu takip et ve sohbetlerle bağlantıda kal.",
+    "title": "ARKADAŞLARINLA\nSOHBET ET.",
+    "subtitle": "Maçtan önce plan yap, sonrasında konuşmaya devam et. Arkadaşların hep bir mesaj uzağında.",
+    "next": "Devam Et"
+  },
+  "intro4": {
+    "title": "PAYLAŞ,\nBAĞLANTI\nKUR.",
+    "subtitle": "Spor anlarını paylaş, topluluğu takip et ve yeni oyun arkadaşlarınla tanış.",
     "next": "Sportner'a Başla"
   },
   "skip": "Atla",
   "progress": {
-    "stepLabel": "Adım {{step}} / 3"
+    "stepLabel": "Adım {{step}} / 4"
   },
   "visuals": {
     "welcome": {
@@ -43,9 +48,14 @@
       "eveningMatch": "Akşam maçı",
       "createdBadge": "OLUŞTU",
       "invitesSent": "3 davet gönderildi",
-      "eventChat": "ETKİNLİK SOHBETİ",
-      "chatQuestion": "Sahada 20:15'te buluşalım mı?",
-      "chatReply": "Tamamdır, görüşürüz! 🙌"
+      "teamReady": "Takımın hazır"
+    },
+    "chat": {
+      "friendName": "Ayşe Yılmaz",
+      "online": "Şimdi aktif",
+      "friendMessage": "Yarın akşam sahaya çıkıyor muyuz?",
+      "reply": "Olur! Sana uygun etkinliği gönderdim. 🙌",
+      "friendsAvailable": "Arkadaşların sohbet için burada"
     },
     "community": {
       "postCaption": "Sabah koşusu tamam! Bugün kimler hareket etti? 🏃",

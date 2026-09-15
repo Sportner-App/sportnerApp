@@ -8,7 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 type OnboardingProgressProps = {
-  step: 1 | 2 | 3;
+  step: 1 | 2 | 3 | 4;
 };
 
 const SLOT = 24;
@@ -17,12 +17,13 @@ const DOT = 6;
 const LINE = 16;
 const GAP = 8;
 const PITCH = SLOT + GAP + LINE + GAP;
-const TRACK = SLOT * 3 + (GAP + LINE + GAP) * 2;
+const STEPS = [1, 2, 3, 4] as const;
+const TRACK = SLOT * STEPS.length + (GAP + LINE + GAP) * (STEPS.length - 1);
 const DURATION_MS = 220;
 
-let lastProgressStep: 1 | 2 | 3 = 1;
+let lastProgressStep: 1 | 2 | 3 | 4 = 1;
 
-function xForStep(step: 1 | 2 | 3) {
+function xForStep(step: 1 | 2 | 3 | 4) {
   return (step - 1) * PITCH;
 }
 
@@ -58,7 +59,7 @@ export function OnboardingProgress({ step }: OnboardingProgressProps) {
             alignItems: "center",
           }}
         >
-          {([1, 2, 3] as const).map((index) => (
+          {STEPS.map((index) => (
             <View key={index} style={{ flexDirection: "row", alignItems: "center" }}>
               <View
                 style={{
@@ -77,7 +78,7 @@ export function OnboardingProgress({ step }: OnboardingProgressProps) {
                   }}
                 />
               </View>
-              {index < 3 ? (
+              {index < STEPS.length ? (
                 <View
                   style={{
                     width: GAP + LINE + GAP,

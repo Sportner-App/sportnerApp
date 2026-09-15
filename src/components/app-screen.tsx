@@ -6,8 +6,9 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from "react-native";
-import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
 import { TAB_BAR_CLEARANCE } from "@/constants/tabs";
 import { themeColors } from "@/constants/theme";
@@ -25,7 +26,9 @@ export function AppScreen({
   footer,
   withTabBar = false,
   scroll = true,
-  keyboardAvoiding = false,
+  // Mesaj ekranındaki davranışı bütün ekranlara taşır: odaklanan alan
+  // klavyenin altında kalmaz; ekranın geri kalanı kaydırılarak klavye kapanır.
+  keyboardAvoiding = true,
   refreshControl,
   contentClassName,
   contentContainerStyle,
@@ -52,9 +55,12 @@ export function AppScreen({
         }
       }
     : undefined;
+  const ScrollContainer = keyboardAvoiding
+    ? KeyboardAwareScrollView
+    : ScrollView;
 
   const body = scroll ? (
-    <ScrollView
+    <ScrollContainer
       ref={scrollRef}
       onContentSizeChange={onContentSizeChange}
       contentContainerClassName={contentClassName}
@@ -63,7 +69,7 @@ export function AppScreen({
         contentContainerStyle,
       ]}
       showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps={keyboardAvoiding ? "always" : undefined}
+      keyboardShouldPersistTaps={keyboardAvoiding ? "handled" : undefined}
       keyboardDismissMode={
         keyboardAvoiding
           ? Platform.OS === "ios"
@@ -76,7 +82,7 @@ export function AppScreen({
       scrollEventThrottle={handleScroll ? 100 : undefined}
     >
       {children}
-    </ScrollView>
+    </ScrollContainer>
   ) : (
     <View
       className={`flex-1 ${contentClassName ?? ""}`}
@@ -107,7 +113,7 @@ export function AppScreen({
       {keyboardAvoiding ? (
         <KeyboardAvoidingView
           className="flex-1"
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           {content}
         </KeyboardAvoidingView>

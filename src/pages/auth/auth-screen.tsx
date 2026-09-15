@@ -31,6 +31,7 @@ import { useSocialAuth } from "@/hooks/use-social-auth";
 import type { AuthMode } from "@/types/auth";
 
 import { AnimatedBackground } from "./animated-background";
+import { LegalConsentModal } from "./legal-consent-modal";
 import { SocialAuthButton } from "./social-auth-button";
 import { SocialRegistrationOverlay } from "./social-registration-overlay";
 
@@ -93,6 +94,8 @@ export function AuthScreen() {
   const shift = form.isLogin ? -SHIFT : SHIFT;
   const hasMounted = useRef(false);
   const [isAppleAvailable, setIsAppleAvailable] = useState(false);
+  const [isLegalConsentModalVisible, setIsLegalConsentModalVisible] =
+    useState(false);
 
   useEffect(() => {
     hasMounted.current = true;
@@ -117,6 +120,14 @@ export function AuthScreen() {
   return (
     <View className="flex-1 bg-background-primary">
       <SocialRegistrationOverlay social={social} />
+      <LegalConsentModal
+        visible={isLegalConsentModalVisible}
+        onClose={() => setIsLegalConsentModalVisible(false)}
+        onAccept={() => {
+          form.setHasAcceptedLegalTerms(true);
+          setIsLegalConsentModalVisible(false);
+        }}
+      />
       <AnimatedBackground />
 
       <KeyboardAvoidingView
@@ -125,6 +136,9 @@ export function AuthScreen() {
       >
         <ScrollView
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode={
+            Platform.OS === "ios" ? "interactive" : "on-drag"
+          }
           contentContainerClassName="flex-grow justify-center px-6 py-14"
         >
           <Animated.View entering={fadeUp(180, 6)} className="mb-10">
@@ -255,6 +269,50 @@ export function AuthScreen() {
                 />
               </View>
 
+              {!form.isLogin ? (
+                <View className="mt-5">
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityState={{
+                      checked: form.hasAcceptedLegalTerms,
+                    }}
+                    accessibilityLabel={t("consent.accessibilityLabel")}
+                    className="flex-row items-start gap-3"
+                    onPress={() => setIsLegalConsentModalVisible(true)}
+                  >
+                    <View
+                      className={
+                        form.hasAcceptedLegalTerms
+                          ? "mt-0.5 h-5 w-5 items-center justify-center rounded-md bg-brand-primary"
+                          : "mt-0.5 h-5 w-5 rounded-md border border-border-default bg-surface-secondary"
+                      }
+                    >
+                      {form.hasAcceptedLegalTerms ? (
+                        <Text className="font-body text-xs font-bold text-white">
+                          ✓
+                        </Text>
+                      ) : null}
+                    </View>
+                    <Text className="flex-1 font-body text-xs leading-5 text-brand-neutral">
+                      {t("consent.prefix")}{" "}
+                      <Text className="font-body font-semibold text-text-primary">
+                        {t("consent.kvkk")}
+                      </Text>{" "}
+                      {t("consent.and")}{" "}
+                      <Text className="font-body font-semibold text-text-primary">
+                        {t("consent.privacy")}
+                      </Text>{" "}
+                      {t("consent.suffix")}
+                    </Text>
+                  </Pressable>
+                  {form.fieldErrors.legalConsent ? (
+                    <Text className="mt-2 font-body text-xs text-status-error">
+                      {form.fieldErrors.legalConsent}
+                    </Text>
+                  ) : null}
+                </View>
+              ) : null}
+
               <View className="relative mt-6">
                 <Button
                   label={copy.submit}
@@ -289,7 +347,11 @@ export function AuthScreen() {
                 label={t("social.google")}
                 isLoading={social.loadingProvider === "google"}
                 disabled={social.loadingProvider !== null}
-                onPress={social.signInWithGoogle}
+                onPress={
+                  form.isLogin || form.hasAcceptedLegalTerms
+                    ? social.signInWithGoogle
+                    : () => setIsLegalConsentModalVisible(true)
+                }
               />
               {isAppleAvailable ? (
                 <SocialAuthButton
@@ -297,7 +359,11 @@ export function AuthScreen() {
                   label={t("social.apple")}
                   isLoading={social.loadingProvider === "apple"}
                   disabled={social.loadingProvider !== null}
-                  onPress={social.signInWithApple}
+                  onPress={
+                    form.isLogin || form.hasAcceptedLegalTerms
+                      ? social.signInWithApple
+                      : () => setIsLegalConsentModalVisible(true)
+                  }
                 />
               ) : null}
             </View>

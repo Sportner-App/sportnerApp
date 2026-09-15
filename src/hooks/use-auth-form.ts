@@ -19,6 +19,7 @@ type AuthFieldErrors = {
   email?: string;
   gender?: string;
   birthDate?: string;
+  legalConsent?: string;
 };
 
 const EMPTY_FIELD_ERRORS: AuthFieldErrors = {};
@@ -33,6 +34,7 @@ function getAuthFieldErrors(
   lastName: string,
   gender: string,
   birthDate: string,
+  hasAcceptedLegalTerms: boolean,
 ): AuthFieldErrors {
   const errors: AuthFieldErrors = {};
   const trimmedUsername = username.trim();
@@ -93,6 +95,10 @@ function getAuthFieldErrors(
         min: 13,
         max: 120,
       });
+    }
+
+    if (!hasAcceptedLegalTerms) {
+      errors.legalConsent = t("validation.legalConsentRequired");
     }
   }
 
@@ -159,6 +165,7 @@ export function useAuthForm() {
   const [birthDate, setBirthDateState] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+  const [hasAcceptedLegalTerms, setHasAcceptedLegalTerms] = useState(false);
 
   const isLogin = mode === "login";
 
@@ -171,6 +178,7 @@ export function useAuthForm() {
     setLastName("");
     setGender("");
     setBirthDateState("");
+    setHasAcceptedLegalTerms(false);
     setHasAttemptedSubmit(false);
   }, []);
 
@@ -211,7 +219,8 @@ export function useAuthForm() {
       Boolean(
         parseBirthDate(birthDate) &&
         isAllowedBirthDate(parseBirthDate(birthDate)!),
-      )
+      ) &&
+      hasAcceptedLegalTerms
     );
   }, [
     username,
@@ -221,6 +230,7 @@ export function useAuthForm() {
     lastName,
     gender,
     birthDate,
+    hasAcceptedLegalTerms,
     isLogin,
   ]);
 
@@ -237,6 +247,7 @@ export function useAuthForm() {
             lastName,
             gender,
             birthDate,
+            hasAcceptedLegalTerms,
           )
         : EMPTY_FIELD_ERRORS,
     [
@@ -245,6 +256,7 @@ export function useAuthForm() {
       firstName,
       gender,
       hasAttemptedSubmit,
+      hasAcceptedLegalTerms,
       isLogin,
       lastName,
       password,
@@ -254,6 +266,11 @@ export function useAuthForm() {
   );
 
   const toggleMode = () => setMode(isLogin ? "register" : "login");
+
+  const requireLegalConsent = () => {
+    setHasAttemptedSubmit(true);
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+  };
 
   const submit = async () => {
     if (AUTH_BYPASS) {
@@ -345,10 +362,13 @@ export function useAuthForm() {
     setGender,
     birthDate,
     setBirthDate,
+    hasAcceptedLegalTerms,
+    setHasAcceptedLegalTerms,
     isLoading,
     canSubmit,
     isReady,
     fieldErrors,
+    requireLegalConsent,
     submit,
   };
 }

@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components";
 import { themeColors } from "@/constants/theme";
-import type { EventDetail } from "@/types/events";
+import { PARTICIPANT_STATUS, type EventDetail } from "@/types/events";
 import { lightImpact } from "@/utils/haptics";
 
 import { InboxRow } from "./inbox-row";
@@ -53,6 +53,12 @@ export function OrganizerPanel({
   const { t } = useTranslation("eventDetail");
   const [sheetTab, setSheetTab] = useState<OrganizerManageTab | null>(null);
   const hasWaitlist = event.waitlist.length > 0;
+  const hasPendingAttendance = event.participants.some(
+    (participant) =>
+      !participant.isGuest &&
+      participant.status === PARTICIPANT_STATUS.approved,
+  );
+  const isReadyForFeedback = canTakeAttendance && !hasPendingAttendance;
 
   const openSheet = (tab: OrganizerManageTab) => {
     lightImpact();
@@ -126,7 +132,7 @@ export function OrganizerPanel({
         />
       ) : null}
 
-      {canTakeAttendance ? (
+      {canTakeAttendance && hasPendingAttendance ? (
         <InboxRow
           icon="clipboard-check"
           title={t("organizerPanel.attendanceTitle")}
@@ -135,13 +141,28 @@ export function OrganizerPanel({
         />
       ) : null}
 
-      {canTakeAttendance ? (
-        <Button
-          label={t("organizerPanel.rateParticipants")}
-          variant="outline"
-          size="sm"
-          onPress={onOpenReviews}
-        />
+      {isReadyForFeedback ? (
+        <View className="gap-3 rounded-3xl border border-brand-primary/30 bg-brand-primary/10 p-4">
+          <View className="flex-row items-center gap-2">
+            <FontAwesome6
+              name="circle-check"
+              size={16}
+              color={themeColors.brand.primary}
+            />
+            <Text className="font-body-bold text-sm text-text-primary">
+              {t("organizerPanel.attendanceCompleteTitle")}
+            </Text>
+          </View>
+          <Text className="font-body text-xs leading-5 text-brand-neutral">
+            {t("organizerPanel.attendanceCompleteSubtitle")}
+          </Text>
+          <Button
+            label={t("organizerPanel.rateParticipants")}
+            variant="outline"
+            size="sm"
+            onPress={onOpenReviews}
+          />
+        </View>
       ) : null}
 
       <OrganizerManageSheet

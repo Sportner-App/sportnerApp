@@ -9,6 +9,12 @@
     "inApp": "Uygulama içi",
     "push": "Cihaz bildirimi",
     "saveFailed": "Kaydedilemedi",
+    "groups": {
+      "messages": "MESAJLAR",
+      "events": "ETKİNLİKLER",
+      "social": "SOSYAL",
+      "progress": "İLERLEME VE SİSTEM"
+    },
     "typeFallback": "Tür {{type}}"
   },
   "copy": {

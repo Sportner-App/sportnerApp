@@ -97,8 +97,10 @@
     "waitlistSubtitleOne": "1 person waiting for a spot",
     "waitlistSubtitleMany": "{{count}} people waiting for a spot",
     "attendanceTitle": "Attendance",
-    "attendanceSubtitle": "Who showed up, who didn't",
-    "rateParticipants": "Rate participants"
+    "attendanceSubtitle": "Close attendance first; feedback opens next.",
+    "attendanceCompleteTitle": "Attendance completed",
+    "attendanceCompleteSubtitle": "Attendees can now leave feedback. You can also rate teammates if you want.",
+    "rateParticipants": "Rate teammates"
   },
   "manageSheet": {
     "requestsTitle": "Join requests",

@@ -161,7 +161,7 @@ export function BottomSheet({
       onRequestClose={onClose}
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1 justify-end"
       >
         <Pressable className="absolute inset-0" onPress={onClose}>

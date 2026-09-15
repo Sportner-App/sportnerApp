@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useMemo } from "react";
 import {
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -13,7 +14,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { BottomSheet, Button } from "@/components";
-import { useOnboardingCopy, useSkillLevelOptions } from "@/constants/onboarding";
+import {
+  useOnboardingCopy,
+  useSkillLevelOptions,
+} from "@/constants/onboarding";
 import type { useOnboarding } from "@/hooks/use-onboarding";
 import type { OnboardingSportDraft } from "@/types/onboarding";
 import type { Sport } from "@/types/sports";
@@ -199,6 +203,9 @@ export function SportsPickerStep({ form }: { form: Form }) {
           <ScrollView
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode={
+              Platform.OS === "ios" ? "interactive" : "on-drag"
+            }
             contentContainerStyle={{
               flexDirection: "row",
               flexWrap: "wrap",

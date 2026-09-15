@@ -2,7 +2,14 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 import { Avatar, BottomSheet, SportLoader } from "@/components";
 import { themeColors } from "@/constants/theme";
@@ -134,7 +141,10 @@ export function NewConversationSheet({
 
       {isLoading ? (
         <View className="items-center py-10">
-          <SportLoader size={96} label={t("messaging:compose.loadingFriends")} />
+          <SportLoader
+            size={96}
+            label={t("messaging:compose.loadingFriends")}
+          />
         </View>
       ) : filtered.length === 0 ? (
         <View className="items-center gap-2 px-4 py-10">
@@ -154,6 +164,9 @@ export function NewConversationSheet({
           style={{ maxHeight: 380 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode={
+            Platform.OS === "ios" ? "interactive" : "on-drag"
+          }
           bounces={false}
         >
           <View className="gap-1 pb-2">

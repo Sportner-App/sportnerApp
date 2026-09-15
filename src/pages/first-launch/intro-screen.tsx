@@ -16,12 +16,13 @@ import { useFirstLaunch } from "@/contexts/first-launch-context";
 
 import { FirstLaunchScaffold } from "./first-launch-scaffold";
 import { IntroCommunityVisual } from "./intro-community-visual";
+import { IntroChatVisual } from "./intro-chat-visual";
 import { IntroEventsVisual } from "./intro-events-visual";
 import { IntroPeopleVisual } from "./intro-people-visual";
 
-type IntroStep = 1 | 2 | 3;
+type IntroStep = 1 | 2 | 3 | 4;
 
-const STEPS = [1, 2, 3] as const;
+const STEPS = [1, 2, 3, 4] as const;
 const IS_IOS = Platform.OS === "ios";
 
 export function IntroScreen({ step }: { step: IntroStep }) {
@@ -121,13 +122,15 @@ function IntroSlide({
   const FIRST_LAUNCH_COPY = useFirstLaunchCopy();
   const copy = FIRST_LAUNCH_COPY[`intro${step}`];
   const skipLabel = FIRST_LAUNCH_COPY.skip;
-  const isLastStep = step === 3;
+  const isLastStep = step === 4;
   const pageOffset = (step - 1) * width;
   const visual =
     step === 1 ? (
       <IntroEventsVisual />
     ) : step === 2 ? (
       <IntroPeopleVisual />
+    ) : step === 3 ? (
+      <IntroChatVisual />
     ) : (
       <IntroCommunityVisual />
     );

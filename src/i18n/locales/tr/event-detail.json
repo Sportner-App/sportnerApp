@@ -97,8 +97,10 @@
     "waitlistSubtitleOne": "1 kişi yer bekliyor",
     "waitlistSubtitleMany": "{{count}} kişi yer bekliyor",
     "attendanceTitle": "Yoklama",
-    "attendanceSubtitle": "Kim geldi, kim gelmedi",
-    "rateParticipants": "Katılımcıları değerlendir"
+    "attendanceSubtitle": "Önce yoklamayı kapat; ardından değerlendirme açılır.",
+    "attendanceCompleteTitle": "Yoklama tamamlandı",
+    "attendanceCompleteSubtitle": "Katılan kişiler artık geri bildirim verebilir. İstersen sen de takım arkadaşlarını değerlendirebilirsin.",
+    "rateParticipants": "Takım arkadaşlarını değerlendir"
   },
   "manageSheet": {
     "requestsTitle": "Katılım istekleri",

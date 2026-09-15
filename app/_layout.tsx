@@ -17,6 +17,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import "react-native-reanimated";
 import "../global.css";
 import { configureForegroundNotifications } from "@/services/push-notifications-service";
@@ -86,43 +87,45 @@ function ThemedRootLayoutNav() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <AppProviders>
-        <ThemeProvider
-          value={{
-            ...navigationTheme,
-            colors: {
-              ...navigationTheme.colors,
-              background: appColors.background,
-              card: appColors.surface,
-              border: appColors.border,
-              notification: appColors.tint,
-              primary: appColors.tint,
-              text: appColors.text,
-            },
-          }}
-        >
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="(first-launch)" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(onboarding)" />
-            <Stack.Screen name="events" />
-            <Stack.Screen name="users/[id]" />
-            <Stack.Screen name="notifications" />
-            <Stack.Screen name="profile" />
-            <Stack.Screen name="friends" />
-            <Stack.Screen name="conversations" />
-            <Stack.Screen name="people" />
-            <Stack.Screen name="feed" />
-            <Stack.Screen name="posts" />
-            <Stack.Screen name="badges" />
-            {FEATURE_FLAGS.albums ? <Stack.Screen name="albums" /> : null}
-            <Stack.Screen name="report" />
-            <Stack.Screen name="help" />
-          </Stack>
-        </ThemeProvider>
-      </AppProviders>
+      <KeyboardProvider>
+        <AppProviders>
+          <ThemeProvider
+            value={{
+              ...navigationTheme,
+              colors: {
+                ...navigationTheme.colors,
+                background: appColors.background,
+                card: appColors.surface,
+                border: appColors.border,
+                notification: appColors.tint,
+                primary: appColors.tint,
+                text: appColors.text,
+              },
+            }}
+          >
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="(first-launch)" />
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(onboarding)" />
+              <Stack.Screen name="events" />
+              <Stack.Screen name="users/[id]" />
+              <Stack.Screen name="notifications" />
+              <Stack.Screen name="profile" />
+              <Stack.Screen name="friends" />
+              <Stack.Screen name="conversations" />
+              <Stack.Screen name="people" />
+              <Stack.Screen name="feed" />
+              <Stack.Screen name="posts" />
+              <Stack.Screen name="badges" />
+              {FEATURE_FLAGS.albums ? <Stack.Screen name="albums" /> : null}
+              <Stack.Screen name="report" />
+              <Stack.Screen name="help" />
+            </Stack>
+          </ThemeProvider>
+        </AppProviders>
+      </KeyboardProvider>
     </GestureHandlerRootView>
   );
 }

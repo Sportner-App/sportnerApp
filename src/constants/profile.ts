@@ -94,11 +94,6 @@ export function useProfileMenuGroups(): ProfileMenuGroup[] {
         { key: "edit", label: t("menu.editProfile"), icon: "user-pen" },
         { key: "notifications", label: t("menu.notifications"), icon: "bell" },
         {
-          key: "notification-settings",
-          label: t("menu.notificationSettings"),
-          icon: "sliders",
-        },
-        {
           key: "appearance",
           label: t("appearance.dark"),
           icon: "moon",
