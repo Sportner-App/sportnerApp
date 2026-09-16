@@ -16,7 +16,7 @@ import Svg, {
 import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
-import { resolveEventBadgeThemes } from "@/constants/badge-colors";
+import { readableOn, resolveEventBadgeThemes } from "@/constants/badge-colors";
 import { skillKeyFromCode, useSkillLevelLabels } from "@/constants/profile";
 import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
 import {
@@ -32,6 +32,8 @@ import {
   formatDurationLabel,
   formatEventFee,
   formatEventTime,
+  hasApprovedParticipation,
+  hasPendingParticipation,
   isEventToday,
   noLocationLabel,
   relativeEventBadge,
@@ -88,6 +90,22 @@ export function EventCard({
     urgency: isEventToday(event.eventDate) ? "today" : "upcoming",
   });
 
+  // Kullanıcının bu etkinlikteki katılım durumu (katılımcı / onay bekliyor).
+  const myStatus = event.myParticipationStatus;
+  const myStatusBadge = hasApprovedParticipation(myStatus)
+    ? {
+        label: t("eventCard.myStatus.approved"),
+        accessibilityLabel: t("eventCard.accessibility.myStatusApproved"),
+        background: themeColors.success,
+      }
+    : hasPendingParticipation(myStatus)
+      ? {
+          label: t("eventCard.myStatus.pending"),
+          accessibilityLabel: t("eventCard.accessibility.myStatusPending"),
+          background: themeColors.warning,
+        }
+      : null;
+
   const remainingLabel = unlimited
     ? t("eventCard.unlimited")
     : isFull
@@ -118,6 +136,7 @@ export function EventCard({
       ? t("eventCard.accessibility.unlimitedCapacity")
       : t("eventCard.accessibility.capacity", { count: max }),
     remainingLabel,
+    myStatusBadge?.accessibilityLabel ?? null,
   ]
     .filter(Boolean)
     .join(", ");
@@ -258,25 +277,42 @@ export function EventCard({
               </View>
 
               <View className="mt-3 flex-row items-end justify-between gap-3">
-                <View className="w-[40%]">
+                <View className="flex-1">
                   <ParticipantProof
                     occupied={occupied}
                     avatars={event.participantAvatars}
                     soft={sportSoft}
                     accent={isFull ? themeColors.warning : sportColor}
                   />
-                  {fillRatio != null ? (
-                    <View
-                      className="mt-1.5 h-[4px] overflow-hidden rounded-full"
-                      style={{ backgroundColor: themeColors.border.default }}
-                    >
-                      <View
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${fillRatio * 100}%`,
-                          backgroundColor: sportColor,
-                        }}
-                      />
+                  {fillRatio != null || myStatusBadge ? (
+                    <View className="mt-1.5 flex-row items-center gap-1.5">
+                      {fillRatio != null ? (
+                        <View
+                          className="h-[4px] flex-1 overflow-hidden rounded-full"
+                          style={{ backgroundColor: themeColors.border.default }}
+                        >
+                          <View
+                            className="h-full rounded-full"
+                            style={{
+                              width: `${fillRatio * 100}%`,
+                              backgroundColor: sportColor,
+                            }}
+                          />
+                        </View>
+                      ) : null}
+                      {myStatusBadge ? (
+                        <View
+                          className="rounded-pill px-2 py-0.5"
+                          style={{ backgroundColor: myStatusBadge.background }}
+                        >
+                          <Text
+                            className="font-body-bold text-[9px] tracking-wide"
+                            style={{ color: readableOn(myStatusBadge.background) }}
+                          >
+                            {myStatusBadge.label}
+                          </Text>
+                        </View>
+                      ) : null}
                     </View>
                   ) : null}
                 </View>
@@ -464,6 +500,7 @@ function ParticipantProof({
 }) {
   const shown = occupied === 0 ? 1 : Math.min(occupied, 3);
   const extra = Math.max(occupied - 3, 0);
+  const extraAvatar = avatars[3];
 
   return (
     <View className="flex-row items-center">
@@ -498,10 +535,30 @@ function ParticipantProof({
         );
       })}
       {extra > 0 ? (
-        <View className="ml-1.5 h-8 min-w-8 items-center justify-center rounded-full border border-white bg-white px-2">
-          <Text className="font-body text-[11px] font-semibold text-text-primary">
-            +{extra}
-          </Text>
+        <View
+          className="h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-white"
+          style={{ marginLeft: -10, backgroundColor: soft, zIndex: 0 }}
+        >
+          {extraAvatar ? (
+            <Avatar
+              uri={extraAvatar.avatarUrl}
+              name={extraAvatar.name}
+              isGuest={extraAvatar.isGuest}
+              size={28}
+              borderWidth={0}
+              backgroundColor={soft}
+              textColor={accent}
+              previewable={false}
+            />
+          ) : null}
+          <View
+            className="absolute inset-0 items-center justify-center"
+            style={{ backgroundColor: "rgba(6, 17, 26, 0.62)" }}
+          >
+            <Text className="font-body-bold text-[11px] text-white">
+              +{extra}
+            </Text>
+          </View>
         </View>
       ) : null}
     </View>

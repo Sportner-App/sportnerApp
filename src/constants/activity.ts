@@ -7,6 +7,7 @@ export function useActivityCopy() {
 
   const tabs: { key: ActivityTab; label: string }[] = [
     { key: "upcoming", label: t("tabs.upcoming") },
+    { key: "pending", label: t("tabs.pending") },
     { key: "past", label: t("tabs.past") },
     { key: "organized", label: t("tabs.organized") },
   ];
@@ -18,6 +19,11 @@ export function useActivityCopy() {
     upcoming: {
       message: t("empty.upcoming.message"),
       action: t("empty.upcoming.action"),
+      href: "/(tabs)",
+    },
+    pending: {
+      message: t("empty.pending.message"),
+      action: t("empty.pending.action"),
       href: "/(tabs)",
     },
     past: {

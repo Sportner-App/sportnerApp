@@ -1,5 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import i18n from "@/i18n";
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -8,9 +8,9 @@ import {
   getMyParticipatingEvents,
 } from "@/services/events-service";
 import type { EventListPage, EventSummary } from "@/types/events";
-import { hasEventStartedOrClosed } from "@/utils/events";
+import { hasEventStartedOrClosed, hasPendingParticipation } from "@/utils/events";
 
-export type ActivityTab = "upcoming" | "past" | "organized";
+export type ActivityTab = "upcoming" | "past" | "pending" | "organized";
 
 const PAGE_SIZE = 20;
 
@@ -90,8 +90,28 @@ export function useActivity() {
     }, [load]),
   );
 
+  // "Onay bekliyor" sekmesi ayrı bir uçtan değil, zaten yüklenmiş "upcoming"
+  // listesinden süzülerek türetilir — Pending katılımlar da o listenin içinde.
+  const pending = useMemo<ListState>(() => {
+    const items = upcoming.items.filter((event) =>
+      hasPendingParticipation(event.myParticipationStatus),
+    );
+    return {
+      items,
+      page: upcoming.page,
+      hasNext: upcoming.hasNext,
+      totalCount: items.length,
+    };
+  }, [upcoming]);
+
   const current =
-    tab === "upcoming" ? upcoming : tab === "past" ? past : organized;
+    tab === "upcoming"
+      ? upcoming
+      : tab === "past"
+        ? past
+        : tab === "pending"
+          ? pending
+          : organized;
 
   const loadMore = useCallback(async () => {
     if (!current.hasNext || isLoadingMore) {
@@ -107,18 +127,20 @@ export function useActivity() {
           : await getMyParticipatingEvents(
               nextPage,
               PAGE_SIZE,
-              tab === "upcoming" ? "upcoming" : "past",
+              tab === "past" ? "past" : "upcoming",
             );
 
       const setter =
-        tab === "upcoming"
-          ? setUpcoming
-          : tab === "past"
-            ? setPast
-            : setOrganized;
+        tab === "past"
+          ? setPast
+          : tab === "organized"
+            ? setOrganized
+            : setUpcoming;
 
       const next =
-        tab === "organized" ? result : applyActivityScope(result, tab);
+        tab === "organized"
+          ? result
+          : applyActivityScope(result, tab === "past" ? "past" : "upcoming");
 
       setter((prev) => ({
         items: [...prev.items, ...next.items],

@@ -32,6 +32,7 @@ export type ApiEventListItem = {
   status: number;
   occupiedParticipantCount: number;
   participantAvatars: ApiParticipantAvatar[] | null;
+  myParticipationStatus: number | null;
 };
 
 /** API: OrganizerSnippetResponse */
@@ -168,6 +169,7 @@ export type EventSummary = {
   hostName: string;
   status: number;
   durationMinutes: number;
+  myParticipationStatus: number | null;
 };
 
 export type EventParticipant = {

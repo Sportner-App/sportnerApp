@@ -57,12 +57,18 @@
     "full": "Event full",
     "spotsLeft": "{{count}} spots left",
     "atTime": "at {{time}}",
+    "myStatus": {
+      "approved": "You're in",
+      "pending": "Pending approval"
+    },
     "accessibility": {
       "sportEvent": "{{sport}} event",
       "defaultEvent": "Event",
       "participantCount": "{{count}} participants",
       "unlimitedCapacity": "unlimited capacity",
-      "capacity": "capacity {{count}} people"
+      "capacity": "capacity {{count}} people",
+      "myStatusApproved": "you're in",
+      "myStatusPending": "pending approval"
     }
   },
   "filterSheet": {

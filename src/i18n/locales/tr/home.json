@@ -57,12 +57,18 @@
     "full": "Etkinlik dolu",
     "spotsLeft": "{{count}} yer kaldı",
     "atTime": "saat {{time}}",
+    "myStatus": {
+      "approved": "Katılıyorsun",
+      "pending": "Onay bekliyor"
+    },
     "accessibility": {
       "sportEvent": "{{sport}} etkinliği",
       "defaultEvent": "Etkinlik",
       "participantCount": "{{count}} katılımcı",
       "unlimitedCapacity": "sınırsız kapasite",
-      "capacity": "kapasite {{count}} kişi"
+      "capacity": "kapasite {{count}} kişi",
+      "myStatusApproved": "katılıyorsun",
+      "myStatusPending": "onay bekliyor"
     }
   },
   "filterSheet": {

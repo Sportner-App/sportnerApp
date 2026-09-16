@@ -6,12 +6,17 @@
   "eventCount": "{{count}} events",
   "tabs": {
     "upcoming": "Ongoing",
+    "pending": "Pending",
     "past": "Past",
     "organized": "Organized"
   },
   "empty": {
     "upcoming": {
       "message": "You don't have any ongoing or upcoming participations.",
+      "action": "Browse events"
+    },
+    "pending": {
+      "message": "No applications awaiting approval. Events you apply to show up here until the organizer approves them.",
       "action": "Browse events"
     },
     "past": {

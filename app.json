@@ -9,9 +9,10 @@
     "userInterfaceStyle": "dark",
     "projectId": "sportner-app",
     "ios": {
+      "appleTeamId": "MN3MXLT7QL",
       "supportsTablet": true,
       "bundleIdentifier": "com.yagizerdenler.sportner",
-      "buildNumber": "26",
+      "buildNumber": "27",
       "infoPlist": {
         "CFBundleDisplayName": "Sportner",
         "ITSAppUsesNonExemptEncryption": false,
@@ -39,7 +40,13 @@
     "plugins": [
       "expo-router",
       "expo-video",
-      "expo-notifications",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/android-icon-monochrome.png",
+          "color": "#ccff00"
+        }
+      ],
       [
         "expo-image-picker",
         {
@@ -61,7 +68,8 @@
           "backgroundColor": "#06111a"
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "@bacons/apple-targets"
     ],
     "experiments": {
       "typedRoutes": true

@@ -6,12 +6,17 @@
   "eventCount": "{{count}} etkinlik",
   "tabs": {
     "upcoming": "Devam eden",
+    "pending": "Bekleyen",
     "past": "Geçmiş",
     "organized": "Düzenlediklerim"
   },
   "empty": {
     "upcoming": {
       "message": "Şu an devam eden veya yaklaşan bir katılımın yok.",
+      "action": "Etkinlikleri Gör"
+    },
+    "pending": {
+      "message": "Onay bekleyen bir başvurun yok. Başvurduğun etkinlikler organizatör onaylayana kadar burada görünür.",
       "action": "Etkinlikleri Gör"
     },
     "past": {

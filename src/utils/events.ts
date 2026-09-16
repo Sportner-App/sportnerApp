@@ -370,6 +370,7 @@ export function mapListItemToSummary(item: ApiEventListItem): EventSummary {
       : i18n.t("events:fallback.organizer"),
     status: item.status,
     durationMinutes: item.durationMinutes,
+    myParticipationStatus: item.myParticipationStatus ?? null,
   };
 }
 

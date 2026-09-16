@@ -31,7 +31,7 @@ export function ConversationsScreen() {
   const router = useRouter();
   const { t } = useTranslation(["messaging", "common"]);
   const TAB_COPY = useConversationsTabCopy();
-  const [tab, setTab] = useState<InboxTab>("events");
+  const [tab, setTab] = useState<InboxTab>("friends");
   const [eventItems, setEventItems] = useState<ApiConversationListItem[]>([]);
   const [friendItems, setFriendItems] = useState<ApiConversationListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -109,8 +109,8 @@ export function ConversationsScreen() {
 
       <SegmentedTabs
         options={[
-          { key: "events", label: t("messaging:tabs.events") },
           { key: "friends", label: t("messaging:tabs.friends") },
+          { key: "events", label: t("messaging:tabs.events") },
         ]}
         value={tab}
         onChange={setTab}
