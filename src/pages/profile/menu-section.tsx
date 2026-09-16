@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { useProfileMenuGroups } from "@/constants/profile";
-import { useThemePreference } from "@/contexts";
+import { useLanguagePreference } from "@/contexts";
 
 type MenuSectionProps = {
   onItemPress: (key: string) => void;
@@ -13,8 +13,8 @@ type MenuSectionProps = {
 export function MenuSection({ onItemPress }: MenuSectionProps) {
   const { t } = useTranslation("settings");
   const menuGroups = useProfileMenuGroups();
-  const { preference, setPreference } = useThemePreference();
-  const isDark = preference === "dark";
+  const { preference, setPreference } = useLanguagePreference();
+  const isEnglish = preference === "en";
 
   return (
     <Animated.View
@@ -28,13 +28,13 @@ export function MenuSection({ onItemPress }: MenuSectionProps) {
           </Text>
           <View className="overflow-hidden rounded-[22px] border border-border-default bg-surface-primary">
             {group.items.map((item, index) => {
-              const isAppearance = item.key === "appearance";
+              const isLanguage = item.key === "language";
               return (
                 <Pressable
                   key={item.key}
                   onPress={() =>
-                    isAppearance
-                      ? setPreference(isDark ? "light" : "dark")
+                    isLanguage
+                      ? setPreference(isEnglish ? "tr" : "en")
                       : onItemPress(item.key)
                   }
                   className={`flex-row items-center gap-3 px-4 py-3 active:bg-surface-secondary ${
@@ -44,24 +44,20 @@ export function MenuSection({ onItemPress }: MenuSectionProps) {
                   }`}
                 >
                   <View className="h-8 w-8 items-center justify-center rounded-full bg-background-secondary">
-                    <FontAwesome6
-                      name={isAppearance ? (isDark ? "moon" : "sun") : item.icon}
-                      size={12}
-                      color="#ccff00"
-                    />
+                    <FontAwesome6 name={item.icon} size={12} color="#ccff00" />
                   </View>
                   <Text className="flex-1 font-body text-sm font-semibold text-text-primary">
-                    {isAppearance ? t(`appearance.${preference}`) : item.label}
+                    {isLanguage ? t(`language.${preference}`) : item.label}
                   </Text>
-                  {isAppearance ? (
+                  {isLanguage ? (
                     <View
                       className={`h-[18px] w-8 justify-center rounded-full px-[2px] ${
-                        isDark ? "bg-brand-primary" : "bg-border-strong"
+                        isEnglish ? "bg-brand-primary" : "bg-border-strong"
                       }`}
                     >
                       <View
                         className={`h-3.5 w-3.5 rounded-full bg-background-primary ${
-                          isDark ? "self-end" : "self-start"
+                          isEnglish ? "self-end" : "self-start"
                         }`}
                       />
                     </View>

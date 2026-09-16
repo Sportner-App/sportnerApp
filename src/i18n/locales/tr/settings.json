@@ -4,29 +4,14 @@
     "dark": "Koyu tema"
   },
   "language": {
-    "title": "Dil",
-    "description": "Uygulama dilini seç. Sistem seçeneği telefonunun dil ayarını takip eder.",
-    "options": {
-      "system": {
-        "label": "Sistem",
-        "description": "Telefonunun dil ayarını takip eder"
-      },
-      "tr": {
-        "label": "Türkçe",
-        "description": "Uygulamayı her zaman Türkçe kullan"
-      },
-      "en": {
-        "label": "English",
-        "description": "Uygulamayı her zaman İngilizce kullan"
-      }
-    }
+    "tr": "Türkçe",
+    "en": "English"
   },
   "menu": {
     "settingsGroupTitle": "Ayarlar",
     "editProfile": "Profili düzenle",
     "notifications": "Bildirimler",
     "notificationSettings": "Bildirim ayarları",
-    "language": "Dil",
     "privacy": "Gizlilik",
     "feedback": "Öneri gönder",
     "help": "Yardım",

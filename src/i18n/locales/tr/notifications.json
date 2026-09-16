@@ -65,7 +65,17 @@
     "20": "Organizasyondan çıkarıldın",
     "21": "Organizasyondan engellendin",
     "22": "Değerlendirme hatırlatması",
-    "23": "Yeni değerlendirmeler"
+    "23": "Yeni değerlendirmeler",
+    "24": "Yeni üye katıldı",
+    "25": "Davet kabul edildi",
+    "26": "Davet reddedildi",
+    "27": "Katılımcı ayrıldı",
+    "28": "Etkinlikten çıkarıldın",
+    "29": "Etkinlik tarihi değişti",
+    "30": "Etkinlik yeri değişti",
+    "31": "Etkinlik ücreti değişti",
+    "32": "Etkinlik kontenjanı değişti",
+    "33": "Gruba eklendin"
   },
   "push": {
     "channelName": "Sportner Bildirimleri",

@@ -15,7 +15,7 @@ import i18n, {
 
 const STORAGE_KEY = "sportner:language-preference";
 
-export type LanguagePreference = "system" | AppLanguage;
+export type LanguagePreference = AppLanguage;
 
 const LanguagePreferenceContext = createContext<{
   preference: LanguagePreference;
@@ -24,16 +24,21 @@ const LanguagePreferenceContext = createContext<{
 } | null>(null);
 
 export function LanguagePreferenceProvider({ children }: PropsWithChildren) {
-  const [preference, setPreferenceState] =
-    useState<LanguagePreference>("system");
-  const resolvedLanguage =
-    preference === "system" ? detectDeviceLanguage() : preference;
+  const [preference, setPreferenceState] = useState<LanguagePreference>(
+    detectDeviceLanguage(),
+  );
+  const resolvedLanguage = preference;
 
   useEffect(() => {
     void AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
-      if (stored === "system" || stored === "tr" || stored === "en") {
+      if (stored === "tr" || stored === "en") {
         setPreferenceState(stored);
+        return;
       }
+
+      const deviceLanguage = detectDeviceLanguage();
+      setPreferenceState(deviceLanguage);
+      void AsyncStorage.setItem(STORAGE_KEY, deviceLanguage);
     });
   }, []);
 

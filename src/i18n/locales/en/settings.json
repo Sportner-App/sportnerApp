@@ -4,29 +4,14 @@
     "dark": "Dark theme"
   },
   "language": {
-    "title": "Language",
-    "description": "Choose the app language. The System option follows your phone's language setting.",
-    "options": {
-      "system": {
-        "label": "System",
-        "description": "Follows your phone's language setting"
-      },
-      "tr": {
-        "label": "Türkçe",
-        "description": "Always use Turkish"
-      },
-      "en": {
-        "label": "English",
-        "description": "Always use English"
-      }
-    }
+    "tr": "Türkçe",
+    "en": "English"
   },
   "menu": {
     "settingsGroupTitle": "Settings",
     "editProfile": "Edit profile",
     "notifications": "Notifications",
     "notificationSettings": "Notification settings",
-    "language": "Language",
     "privacy": "Privacy",
     "feedback": "Send feedback",
     "help": "Help",

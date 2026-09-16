@@ -64,9 +64,12 @@ export function ThemePreferenceProvider({ children }: PropsWithChildren) {
   themeColors.destructive = colors.destructive;
 
   useEffect(() => {
-    void AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
-      if (stored === "light" || stored === "dark") setPreferenceState(stored);
-    });
+    // Light theme is temporarily disabled; always stay on dark.
+    // void AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
+    //   if (stored === "light" || stored === "dark") setPreferenceState(stored);
+    // });
+    setPreferenceState("dark");
+    void AsyncStorage.setItem(STORAGE_KEY, "dark");
   }, []);
 
   useEffect(() => {

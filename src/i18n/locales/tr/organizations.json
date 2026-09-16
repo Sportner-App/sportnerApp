@@ -107,8 +107,8 @@
     "submit": "Katıl",
     "invalidCodeTitle": "Kod geçersiz",
     "invalidCodeDescription": "Davet kodu 8 karakter olmalı.",
-    "requestSentTitle": "İstek gönderildi",
-    "requestSentDescription": "Kurucu veya yönetici onaylayınca üye olursun.",
+    "requestSentTitle": "Aramıza hoş geldin",
+    "requestSentDescription": "Organizasyona katıldın.",
     "joinFailed": "Katılınamadı"
   },
   "create": {

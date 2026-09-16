@@ -57,6 +57,16 @@ export const NOTIFICATION_TYPE = {
   organizationMemberBlocked: 21,
   eventReviewPrompt: 22,
   reviewReceived: 23,
+  organizationMemberJoined: 24,
+  eventInvitationAccepted: 25,
+  eventInvitationDeclined: 26,
+  eventParticipationCancelled: 27,
+  eventParticipantRemoved: 28,
+  eventScheduleUpdated: 29,
+  eventLocationUpdated: 30,
+  eventFeeUpdated: 31,
+  eventCapacityUpdated: 32,
+  conversationMemberAdded: 33,
 } as const;
 
 const NAMED_ACTION_TYPES = new Set<number>([

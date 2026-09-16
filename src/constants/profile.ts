@@ -93,12 +93,13 @@ export function useProfileMenuGroups(): ProfileMenuGroup[] {
       items: [
         { key: "edit", label: t("menu.editProfile"), icon: "user-pen" },
         { key: "notifications", label: t("menu.notifications"), icon: "bell" },
-        {
-          key: "appearance",
-          label: t("appearance.dark"),
-          icon: "moon",
-        },
-        { key: "language", label: t("menu.language"), icon: "globe" },
+        // Light/dark toggle is temporarily disabled; app stays on dark.
+        // {
+        //   key: "appearance",
+        //   label: t("appearance.dark"),
+        //   icon: "moon",
+        // },
+        { key: "language", label: t("language.tr"), icon: "globe" },
         { key: "privacy", label: t("menu.privacy"), icon: "shield-halved" },
         { key: "feedback", label: t("menu.feedback"), icon: "lightbulb" },
         { key: "help", label: t("menu.help"), icon: "circle-question" },

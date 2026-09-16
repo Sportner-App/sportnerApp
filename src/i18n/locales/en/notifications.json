@@ -65,7 +65,17 @@
     "20": "Removed from organization",
     "21": "Blocked from organization",
     "22": "Review reminder",
-    "23": "New reviews"
+    "23": "New reviews",
+    "24": "New member joined",
+    "25": "Invitation accepted",
+    "26": "Invitation declined",
+    "27": "Participant cancelled",
+    "28": "Removed from event",
+    "29": "Event rescheduled",
+    "30": "Event location changed",
+    "31": "Event fee changed",
+    "32": "Event capacity changed",
+    "33": "Added to group"
   },
   "push": {
     "channelName": "Sportner Notifications",

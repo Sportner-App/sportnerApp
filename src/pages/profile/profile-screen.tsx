@@ -68,7 +68,6 @@ export function ProfileScreen() {
       feed: "/feed",
       badges: "/badges",
       notifications: "/notifications",
-      language: "/profile/language",
       privacy: "/profile/privacy",
       feedback: "/feedback",
       help: "/help",

@@ -107,8 +107,8 @@
     "submit": "Join",
     "invalidCodeTitle": "Invalid code",
     "invalidCodeDescription": "Invite code must be 8 characters.",
-    "requestSentTitle": "Request sent",
-    "requestSentDescription": "You'll become a member once the founder or an admin approves.",
+    "requestSentTitle": "Welcome aboard",
+    "requestSentDescription": "You've joined the organization.",
     "joinFailed": "Could not join"
   },
   "create": {
