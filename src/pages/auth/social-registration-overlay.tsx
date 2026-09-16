@@ -84,7 +84,7 @@ export function SocialRegistrationOverlay({ social }: Props) {
             />
             <Button
               label={t("socialRegistration.cancel")}
-              variant="ghost"
+              variant="dangerOutline"
               onPress={social.cancelRegistration}
               disabled={social.isCompleting}
             />

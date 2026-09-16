@@ -9,7 +9,6 @@ import {
   DEFAULT_EVENT_FILTERS,
   type EventListFilters,
 } from "@/hooks/use-events";
-import { useCities } from "@/hooks/use-cities";
 import { AgeRangeSlider } from "@/pages/event-create/age-range-slider";
 import type { ApiOrganizationListItem } from "@/types/organizations";
 import type { Sport } from "@/types/sports";
@@ -37,19 +36,6 @@ export function EventFilterSheet({
   const [draft, setDraft] = useState(filters);
   const GENDER_OPTIONS = useGenderOptions();
   const SKILL_OPTIONS = useSkillLevelOptions();
-  const {
-    options: cityOptions,
-    isLoading: isCitiesLoading,
-    error: citiesError,
-  } = useCities();
-  const locationOptions = [
-    {
-      key: "",
-      label: t("filterSheet.location.allLabel"),
-      description: t("filterSheet.location.allDescription"),
-    },
-    ...cityOptions,
-  ];
   const organizationOptions = [
     {
       key: "",
@@ -97,28 +83,28 @@ export function EventFilterSheet({
       title={t("filterSheet.title")}
       subtitle={t("filterSheet.subtitle")}
       showCancel={false}
+      footer={
+        <View className="flex-row gap-3">
+          <View className="flex-1">
+            <Button
+              label={tCommon("clear")}
+              variant="secondary"
+              onPress={() => setDraft(DEFAULT_EVENT_FILTERS)}
+            />
+          </View>
+          <View className="flex-1">
+            <Button
+              label={tCommon("apply")}
+              onPress={() => {
+                onApply(draft);
+                onClose();
+              }}
+            />
+          </View>
+        </View>
+      }
     >
       <View className="gap-5">
-        <SelectField
-          label={t("filterSheet.location.label")}
-          placeholder={
-            isCitiesLoading
-              ? t("filterSheet.location.loading")
-              : t("filterSheet.location.placeholder")
-          }
-          icon="location-dot"
-          options={locationOptions}
-          value={draft.city ?? ""}
-          onChange={(city) =>
-            setDraft((current) => ({ ...current, city: city || null }))
-          }
-          disabled={isCitiesLoading || Boolean(citiesError)}
-          searchable
-          searchPlaceholder={t("filterSheet.location.searchPlaceholder")}
-          sheetTitle={t("filterSheet.location.sheetTitle")}
-          sheetSubtitle={t("filterSheet.location.sheetSubtitle")}
-        />
-
         {sports.length > 0 ? (
           <SelectField
             label={t("filterSheet.sport.label")}
@@ -254,24 +240,6 @@ export function EventFilterSheet({
           </View>
         </View>
 
-        <View className="flex-row gap-3">
-          <View className="flex-1">
-            <Button
-              label={tCommon("clear")}
-              variant="secondary"
-              onPress={() => setDraft(DEFAULT_EVENT_FILTERS)}
-            />
-          </View>
-          <View className="flex-1">
-            <Button
-              label={tCommon("apply")}
-              onPress={() => {
-                onApply(draft);
-                onClose();
-              }}
-            />
-          </View>
-        </View>
       </View>
     </BottomSheet>
   );

@@ -141,6 +141,28 @@ export function DatePickerSheet({
       title={resolvedTitle}
       subtitle={t("datePicker.subtitle")}
       showCancel={false}
+      footer={
+        <View className="flex-row gap-2">
+          <View className="flex-1">
+            <Pressable
+              onPress={onClose}
+              className="min-h-[52px] items-center justify-center rounded-2xl border border-border-default bg-surface-primary active:bg-surface-secondary"
+            >
+              <Text className="font-body-bold text-sm text-text-secondary">
+                {t("common:cancel")}
+              </Text>
+            </Pressable>
+          </View>
+          <View className="flex-1">
+            <Button
+              label={t("datePicker.confirm")}
+              disabled={!isValid}
+              haptic="light"
+              onPress={confirm}
+            />
+          </View>
+        </View>
+      }
     >
       <View className="mb-3 flex-row rounded-2xl border border-border-default bg-surface-primary p-1">
         {(["date", "time"] as const).map((item) => {
@@ -224,26 +246,6 @@ export function DatePickerSheet({
         ) : null}
       </View>
 
-      <View className="flex-row gap-2">
-        <View className="flex-1">
-          <Pressable
-            onPress={onClose}
-            className="min-h-[52px] items-center justify-center rounded-2xl border border-border-default bg-surface-primary active:bg-surface-secondary"
-          >
-            <Text className="font-body-bold text-sm text-text-secondary">
-              {t("common:cancel")}
-            </Text>
-          </Pressable>
-        </View>
-        <View className="flex-1">
-          <Button
-            label={t("datePicker.confirm")}
-            disabled={!isValid}
-            haptic="light"
-            onPress={confirm}
-          />
-        </View>
-      </View>
     </BottomSheet>
   );
 }

@@ -266,7 +266,7 @@ export function EventDetailScreen() {
               <View className="mt-sm">
                 <Button
                   label={t("report")}
-                  variant="ghost"
+                  variant="dangerOutline"
                   size="sm"
                   onPress={() =>
                     router.push({

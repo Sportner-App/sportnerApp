@@ -295,15 +295,29 @@ export function PrivacyScreen() {
             }}
             title={t("profile:privacy.deleteAccount.sheetTitle")}
             subtitle={t("profile:privacy.deleteAccount.sheetSubtitle")}
-          >
-            <Button
-              label={t("profile:privacy.deleteAccount.confirm")}
-              variant="danger"
-              isLoading={isDeleting}
-              disabled={isDeleting}
-              onPress={() => void handleDeleteAccount()}
-            />
-          </BottomSheet>
+            showCancel={false}
+            footer={
+              <View className="flex-row gap-3">
+                <View className="flex-1">
+                  <Button
+                    label={t("common:cancel")}
+                    variant="dangerOutline"
+                    disabled={isDeleting}
+                    onPress={() => setDeleteConfirmOpen(false)}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Button
+                    label={t("profile:privacy.deleteAccount.confirm")}
+                    variant="danger"
+                    isLoading={isDeleting}
+                    disabled={isDeleting}
+                    onPress={() => void handleDeleteAccount()}
+                  />
+                </View>
+              </View>
+            }
+          />
 
           <BottomSheet
             visible={verifyOpen}
@@ -316,6 +330,27 @@ export function PrivacyScreen() {
             subtitle={t("profile:privacy.emailVerification.sheetSubtitle", {
               email: profile.email,
             })}
+            showCancel={false}
+            footer={
+              <View className="flex-row gap-3">
+                <View className="flex-1">
+                  <Button
+                    label={t("common:cancel")}
+                    variant="dangerOutline"
+                    disabled={isVerifying}
+                    onPress={() => setVerifyOpen(false)}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Button
+                    label={t("profile:privacy.emailVerification.confirm")}
+                    isLoading={isVerifying}
+                    disabled={isVerifying || code.trim().length !== 6}
+                    onPress={() => void handleVerify()}
+                  />
+                </View>
+              </View>
+            }
           >
             <View className="gap-3">
               <Input
@@ -327,12 +362,6 @@ export function PrivacyScreen() {
                 }
                 keyboardType="number-pad"
                 maxLength={6}
-              />
-              <Button
-                label={t("profile:privacy.emailVerification.confirm")}
-                isLoading={isVerifying}
-                disabled={isVerifying || code.trim().length !== 6}
-                onPress={() => void handleVerify()}
               />
               <Pressable
                 onPress={() => void handleResend()}

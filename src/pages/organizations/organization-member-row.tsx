@@ -168,6 +168,7 @@ export function OrganizationMemberRow({
             <MemberActionChip
               label={t("organizations:memberRow.reject")}
               icon="xmark"
+              tone="danger"
               disabled={busy}
               onPress={() => onReject?.()}
             />
@@ -203,6 +204,7 @@ export function OrganizationMemberRow({
             <MemberActionChip
               label={t("organizations:memberRow.remove")}
               icon="user-minus"
+              tone="danger"
               disabled={busy}
               onPress={() =>
                 Alert.alert(

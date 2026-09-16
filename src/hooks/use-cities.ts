@@ -40,7 +40,6 @@ export function useCities() {
     const result: SelectOption<string>[] = cities.map((city) => ({
       key: city.name,
       label: city.name,
-      description: `${String(city.plateCode).padStart(2, "0")} plaka kodu`,
     }));
 
     return result;

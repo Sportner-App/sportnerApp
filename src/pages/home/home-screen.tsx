@@ -1,48 +1,39 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { useTranslation } from "react-i18next";
 
-import { SegmentedTabs, SportLoader, TabPage } from "@/components";
+import {
+  SegmentedTabs,
+  SelectSheet,
+  SportLoader,
+  TabPage,
+  TabScreenHeader,
+} from "@/components";
 import { shadows, themeColors } from "@/constants/theme";
 import { useAuth } from "@/contexts";
-import { useEntranceAnimationsReady } from "@/hooks/use-entrance-animations-ready";
+import { useCities } from "@/hooks/use-cities";
 import {
   DEFAULT_EVENT_FILTERS,
   type EventFeedScope,
   useEvents,
 } from "@/hooks/use-events";
 import { useMyOrganizations } from "@/hooks/use-organizations";
-import { useSportCatalog } from "@/hooks/use-sport-catalog";
-import { useSportCategories } from "@/hooks/use-sport-categories";
 import { useRequireAuth } from "@/hooks/use-require-auth";
+import { useSportCatalog } from "@/hooks/use-sport-catalog";
 import { useUserLocation } from "@/hooks/use-user-location";
 import { ORGANIZATION_STATUS } from "@/types/organizations";
 
 import { EventCard } from "./event-card";
 import { EventFilterSheet } from "./event-filter-sheet";
 import { EventsMap } from "./events-map";
-import { Hero } from "./hero";
-import { SportFilter } from "./sport-filter";
 
 type ViewMode = "list" | "map";
 
-/**
- * The list isn't virtualized (plain ScrollView + .map, so onEndReached-based
- * pagination keeps working), which means every fetched event mounts at once.
- * Only entrance-animate the cards that are actually visible when the list
- * first renders — staggering dozens of them at once adds up to little visible
- * benefit past the fold. (See useEntranceAnimationsReady for the cold-start
- * race that can leave an animated card stuck invisible — the actual cause of
- * the "blank gap" bug; this cap is a secondary, unrelated trim.)
- */
-const MAX_ENTRANCE_ANIMATED_CARDS = 6;
-
 export function HomeScreen() {
   const { t } = useTranslation("home");
-  const { t: tTabs } = useTranslation("tabs");
   const router = useRouter();
   const { scope: scopeParam, organizationId: organizationIdParam } =
     useLocalSearchParams<{ scope?: string; organizationId?: string }>();
@@ -53,14 +44,18 @@ export function HomeScreen() {
   const initialOrganizationId =
     initialScope === "organizations" ? (organizationIdParam ?? null) : null;
   const [filterOpen, setFilterOpen] = useState(false);
+  const [cityPickerOpen, setCityPickerOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
-  const entranceReady = useEntranceAnimationsReady();
   const { requireAuth } = useRequireAuth();
   const { isAuthenticated } = useAuth();
   const { items: myOrganizations, isLoading: isOrganizationsLoading } =
     useMyOrganizations(isAuthenticated);
-  const { categories: sportCategories } = useSportCategories();
   const { sports } = useSportCatalog();
+  const {
+    options: cityOptions,
+    isLoading: isCitiesLoading,
+    error: citiesError,
+  } = useCities();
   const {
     coordinates: userLocation,
     status: locationStatus,
@@ -72,8 +67,6 @@ export function HomeScreen() {
     isLoading,
     isRefreshing,
     isLoadingMore,
-    categoryFilter,
-    setCategoryFilter,
     scope,
     setScope,
     filters,
@@ -86,9 +79,21 @@ export function HomeScreen() {
     (organization) => organization.status === ORGANIZATION_STATUS.approved,
   );
   const hasOrganizations = approvedOrganizations.length > 0;
+  const isFriends = scope === "friends";
+  const isOrganizations = scope === "organizations";
   const selectedOrganizationName = approvedOrganizations.find(
     (organization) => organization.id === filters.organizationId,
   )?.name;
+  const locationContextLabel = isOrganizations
+    ? (selectedOrganizationName ??
+      t("contextLabel.organizationsFallback"))
+    : isFriends
+      ? filters.city
+        ? t("contextLabel.friendsWithCity", { city: filters.city })
+        : t("contextLabel.friends")
+      : filters.city
+        ? t("contextLabel.cityEvents", { city: filters.city })
+        : t("contextLabel.allCities");
 
   useEffect(() => {
     if (
@@ -112,8 +117,6 @@ export function HomeScreen() {
     }
   }, [applyFilters, approvedOrganizations, filters, isOrganizationsLoading]);
 
-  const isFriends = scope === "friends";
-  const isOrganizations = scope === "organizations";
   const hasActiveFilters =
     filters.city != null ||
     filters.minAge !== DEFAULT_EVENT_FILTERS.minAge ||
@@ -128,13 +131,15 @@ export function HomeScreen() {
     <View className="flex-row items-center gap-1 rounded-full border border-border-default bg-background-secondary p-1">
       <ViewModeButton
         icon="list"
-        label={t("viewMode.list")}
+        label={t("viewMode.listAccessibility")}
+        text={t("viewMode.list")}
         active={viewMode === "list"}
         onPress={() => setViewMode("list")}
       />
       <ViewModeButton
         icon="map-location-dot"
-        label={t("viewMode.map")}
+        label={t("viewMode.mapAccessibility")}
+        text={t("viewMode.map")}
         active={viewMode === "map"}
         onPress={() => setViewMode("map")}
       />
@@ -162,9 +167,16 @@ export function HomeScreen() {
         accessibilityRole="button"
         accessibilityLabel={t("filters.accessibility")}
         onPress={() => setFilterOpen(true)}
-        className="h-11 w-11 items-center justify-center rounded-full active:opacity-70"
+        className="h-11 flex-row items-center gap-2 rounded-xl border border-border-default bg-surface-primary px-4 active:opacity-70"
       >
-        <FontAwesome6 name="sliders" size={17} color={themeColors.text.primary} />
+        <FontAwesome6
+          name="filter"
+          size={14}
+          color={themeColors.text.primary}
+        />
+        <Text className="font-body-bold text-sm text-text-primary">
+          {t("filters.label")}
+        </Text>
         {hasActiveFilters ? (
           <View className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full border-2 border-background-primary bg-brand-primary" />
         ) : null}
@@ -183,15 +195,23 @@ export function HomeScreen() {
     />
   );
 
+  const locationOptions = [
+    {
+      key: "",
+      label: t("filterSheet.location.allLabel"),
+      description: t("filterSheet.location.allDescription"),
+    },
+    ...cityOptions,
+  ];
+
   if (viewMode === "map") {
-    // Full-screen map: a fixed-height map buried under Hero/filters/list controls
-    // in a scrolling page meant the tapped-marker preview card could render
-    // below the visible viewport, forcing a scroll to see it. The map now fills
-    // the whole screen and the controls float on top of it instead, so the
-    // preview card (anchored to the bottom of the map's own box) is always
-    // inside the visible area no matter where on the map it was opened.
     return (
-      <TabPage refreshing={isRefreshing} onRefresh={refresh} scroll={false}>
+      <TabPage
+        refreshing={isRefreshing}
+        onRefresh={refresh}
+        scroll={false}
+        showHeader={false}
+      >
         <View className="flex-1">
           <View className="flex-1">
             {isLoading ? (
@@ -209,35 +229,69 @@ export function HomeScreen() {
             )}
           </View>
 
-          <Animated.View
-            entering={FadeInDown.duration(400)}
+          <View
             pointerEvents="box-none"
             className="absolute inset-x-3 top-3"
           >
             <View
-              className="gap-sm rounded-[24px] border border-border-default bg-background-primary/80 p-3"
+              className="rounded-[26px] border border-border-default bg-background-primary/95 p-3"
               style={shadows.md}
             >
-              <View className="flex-row items-center justify-between">
-                <Text className="font-display text-[18px] leading-[24px] text-text-primary">
-                  {tTabs("events")}
-                </Text>
-                <View className="flex-row items-center gap-sm">
-                  {viewModeToggle}
-                  {filterButtons}
-                </View>
-              </View>
+              <TabScreenHeader />
 
-              <SportFilter
-                categories={sportCategories}
-                value={categoryFilter}
-                onChange={setCategoryFilter}
-              />
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t("filterSheet.location.label")}
+                disabled={isCitiesLoading || Boolean(citiesError)}
+                onPress={() => setCityPickerOpen(true)}
+                className="mt-1 flex-row items-center gap-2 rounded-xl bg-surface-secondary px-3 py-2.5 active:opacity-70 disabled:opacity-50"
+              >
+                <FontAwesome6
+                  name={
+                    isOrganizations
+                      ? "building"
+                      : isFriends
+                        ? "user-group"
+                        : "location-dot"
+                  }
+                  size={13}
+                  color={themeColors.brand.primary}
+                />
+                <Text
+                  numberOfLines={1}
+                  className="flex-1 font-body-bold text-sm text-text-primary"
+                >
+                  {locationContextLabel}
+                </Text>
+                <FontAwesome6
+                  name="chevron-down"
+                  size={9}
+                  color={themeColors.text.tertiary}
+                />
+              </Pressable>
+
+              <View className="mt-3 flex-row items-center justify-between gap-sm border-t border-border-default pt-3">
+                {viewModeToggle}
+                {filterButtons}
+              </View>
             </View>
-          </Animated.View>
+          </View>
         </View>
 
         {filterSheet}
+        <SelectSheet
+          visible={cityPickerOpen}
+          onClose={() => setCityPickerOpen(false)}
+          title={t("filterSheet.location.sheetTitle")}
+          subtitle={t("filterSheet.location.sheetSubtitle")}
+          options={locationOptions}
+          value={filters.city ?? ""}
+          onChange={(city) =>
+            applyFilters({ ...filters, city: city || null })
+          }
+          searchable
+          searchPlaceholder={t("filterSheet.location.searchPlaceholder")}
+        />
       </TabPage>
     );
   }
@@ -248,25 +302,41 @@ export function HomeScreen() {
       onRefresh={refresh}
       onEndReached={loadMore}
     >
-      <Hero
-        onCreatePress={() =>
-          requireAuth(tTabs("requireAuth.create")) &&
-          router.push("/events/create")
-        }
-      />
-
       <Animated.View
         entering={FadeInDown.duration(500).delay(60)}
         className="gap-md"
       >
-        <View className="flex-row items-center justify-between">
-          <Text className="font-display text-[24px] leading-[30px] text-text-primary">
-            {tTabs("events")}
-          </Text>
-          <View className="flex-row items-center gap-sm">
-            {viewModeToggle}
-            {filterButtons}
-          </View>
+        <View className="flex-row items-center">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t("filterSheet.location.label")}
+            disabled={isCitiesLoading || Boolean(citiesError)}
+            onPress={() => setCityPickerOpen(true)}
+            className="flex-1 flex-row items-center gap-sm active:opacity-70 disabled:opacity-50"
+          >
+            <FontAwesome6
+              name={
+                isOrganizations
+                  ? "building"
+                  : isFriends
+                    ? "user-group"
+                    : "location-dot"
+              }
+              size={14}
+              color={themeColors.brand.primary}
+            />
+            <Text
+              numberOfLines={1}
+              className="flex-shrink font-body-bold text-[15px] text-text-primary"
+            >
+              {locationContextLabel}
+            </Text>
+            <FontAwesome6
+              name="chevron-down"
+              size={10}
+              color={themeColors.text.tertiary}
+            />
+          </Pressable>
         </View>
 
         <SegmentedTabs
@@ -274,7 +344,12 @@ export function HomeScreen() {
             { key: "all", label: t("scope.all") },
             { key: "friends", label: t("scope.friends") },
             ...(hasOrganizations
-              ? [{ key: "organizations", label: t("scope.organizations") } as const]
+              ? [
+                  {
+                    key: "organizations",
+                    label: t("scope.organizations"),
+                  } as const,
+                ]
               : []),
           ]}
           value={scope}
@@ -293,39 +368,10 @@ export function HomeScreen() {
           }}
         />
 
-        <View className="flex-row items-center gap-sm">
-          <FontAwesome6
-            name={
-              isOrganizations
-                ? "building"
-                : isFriends
-                  ? "user-group"
-                  : "location-dot"
-            }
-            size={14}
-            color={themeColors.text.primary}
-          />
-          <Text className="font-body-bold text-[15px] text-text-primary">
-            {isOrganizations
-              ? (selectedOrganizationName ?? t("contextLabel.organizationsFallback"))
-              : isFriends
-                ? filters.city
-                  ? t("contextLabel.friendsWithCity", { city: filters.city })
-                  : t("contextLabel.friends")
-                : filters.city
-                  ? t("contextLabel.cityEvents", { city: filters.city })
-                  : t("contextLabel.allCities")}
-          </Text>
+        <View className="flex-row items-center justify-between gap-sm">
+          {viewModeToggle}
+          {filterButtons}
         </View>
-
-        <SportFilter
-          categories={sportCategories}
-          value={categoryFilter}
-          onChange={setCategoryFilter}
-        />
-        <Text className="font-mono text-caption text-text-tertiary">
-          {t("resultCount", { count: totalCount })}
-        </Text>
       </Animated.View>
 
       {isLoading ? (
@@ -349,12 +395,10 @@ export function HomeScreen() {
         </View>
       ) : (
         <View className="gap-lg">
-          {events.map((event, index) => (
+          {events.map((event) => (
             <EventCard
               key={event.id}
               event={event}
-              index={index}
-              animateEntrance={entranceReady && index < MAX_ENTRANCE_ANIMATED_CARDS}
               onPress={() => router.push(`/events/${event.id}`)}
             />
           ))}
@@ -367,6 +411,17 @@ export function HomeScreen() {
       )}
 
       {filterSheet}
+      <SelectSheet
+        visible={cityPickerOpen}
+        onClose={() => setCityPickerOpen(false)}
+        title={t("filterSheet.location.sheetTitle")}
+        subtitle={t("filterSheet.location.sheetSubtitle")}
+        options={locationOptions}
+        value={filters.city ?? ""}
+        onChange={(city) => applyFilters({ ...filters, city: city || null })}
+        searchable
+        searchPlaceholder={t("filterSheet.location.searchPlaceholder")}
+      />
     </TabPage>
   );
 }
@@ -374,11 +429,13 @@ export function HomeScreen() {
 function ViewModeButton({
   icon,
   label,
+  text,
   active,
   onPress,
 }: {
   icon: "list" | "map-location-dot";
   label: string;
+  text: string;
   active: boolean;
   onPress: () => void;
 }) {
@@ -388,7 +445,7 @@ function ViewModeButton({
       accessibilityLabel={label}
       accessibilityState={{ selected: active }}
       onPress={onPress}
-      className={`h-9 w-9 items-center justify-center rounded-full active:opacity-80 ${
+      className={`h-9 flex-row items-center justify-center gap-2 rounded-full px-3 active:opacity-80 ${
         active ? "bg-brand-primary" : ""
       }`}
     >
@@ -397,6 +454,13 @@ function ViewModeButton({
         size={14}
         color={active ? themeColors.text.onPrimary : themeColors.text.secondary}
       />
+      <Text
+        className={`font-body-bold text-xs ${
+          active ? "text-text-on-primary" : "text-text-secondary"
+        }`}
+      >
+        {text}
+      </Text>
     </Pressable>
   );
 }

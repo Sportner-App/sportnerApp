@@ -9,10 +9,13 @@
     "all": "All"
   },
   "viewMode": {
-    "list": "List view",
-    "map": "Map view"
+    "list": "List",
+    "map": "Map",
+    "listAccessibility": "List view",
+    "mapAccessibility": "Map view"
   },
   "filters": {
+    "label": "Filter",
     "clearAccessibility": "Clear filters",
     "accessibility": "Filters"
   },

@@ -272,7 +272,7 @@ function RequestList({
               <View className="flex-1">
                 <Button
                   label={t("manageSheet.reject")}
-                  variant="secondary"
+                  variant="danger"
                   size="sm"
                   haptic="light"
                   disabled={busyUserId != null}
@@ -389,8 +389,8 @@ function AttendanceList({
                 </View>
                 <View className="flex-1">
                   <Button
-                    label={t("manageSheet.absent")}
-                    variant="secondary"
+                  label={t("manageSheet.absent")}
+                  variant="danger"
                     size="sm"
                     haptic="light"
                     disabled={busyUserId != null}

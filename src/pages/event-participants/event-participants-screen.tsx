@@ -200,6 +200,27 @@ export function EventParticipantsScreen() {
         }
         tone="light"
         showCancel={false}
+        footer={
+          <View className="flex-row gap-3">
+            <View className="flex-1">
+              <Button
+                label={t("eventParticipants:removalSheet.cancel")}
+                variant="dangerOutline"
+                disabled={isRemoving}
+                onPress={closeRemoval}
+              />
+            </View>
+            <View className="flex-1">
+              <Button
+                label={t("eventParticipants:removalSheet.confirm")}
+                variant="danger"
+                disabled={!reasonId || isRemoving}
+                isLoading={isRemoving}
+                onPress={confirmRemoval}
+              />
+            </View>
+          </View>
+        }
       >
         <View className="gap-3">
           <ScrollView
@@ -236,25 +257,6 @@ export function EventParticipantsScreen() {
             maxLength={1000}
             multiline
           />
-          <View className="mt-2 flex-row gap-3">
-            <View className="flex-1">
-              <Button
-                label={t("eventParticipants:removalSheet.cancel")}
-                variant="secondary"
-                disabled={isRemoving}
-                onPress={closeRemoval}
-              />
-            </View>
-            <View className="flex-1">
-              <Button
-                label={t("eventParticipants:removalSheet.confirm")}
-                variant="danger"
-                disabled={!reasonId || isRemoving}
-                isLoading={isRemoving}
-                onPress={confirmRemoval}
-              />
-            </View>
-          </View>
         </View>
       </BottomSheet>
     </AppScreen>

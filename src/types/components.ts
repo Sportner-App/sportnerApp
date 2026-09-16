@@ -21,7 +21,12 @@ export type UiTone = "dark" | "light";
 
 // Button
 export type ButtonVariant =
-  "primary" | "secondary" | "outline" | "ghost" | "danger";
+  | "primary"
+  | "secondary"
+  | "outline"
+  | "ghost"
+  | "danger"
+  | "dangerOutline";
 
 export type ButtonSize = "sm" | "md" | "lg";
 
@@ -70,6 +75,8 @@ export type BottomSheetProps = PropsWithChildren<{
   subtitle?: string;
   /** true ise altta Vazgeç butonu gösterilir (varsayılan: true) */
   showCancel?: boolean;
+  /** Scroll alanının dışında, sheet'in altında sabit kalan birincil aksiyonlar. */
+  footer?: ReactNode;
   /** Açık ekranlarda warm-white sheet yüzeyi kullanır. */
   tone?: UiTone;
 }>;

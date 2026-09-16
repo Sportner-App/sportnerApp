@@ -2,7 +2,6 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
-  FadeInDown,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -40,9 +39,7 @@ import {
 
 type EventCardProps = {
   event: EventSummary;
-  index: number;
   onPress?: () => void;
-  animateEntrance?: boolean;
 };
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -52,9 +49,7 @@ const MIST = "#06111a";
 
 export function EventCard({
   event,
-  index,
   onPress,
-  animateEntrance = true,
 }: EventCardProps) {
   const { t } = useTranslation("home");
   const SKILL_LEVEL_LABELS = useSkillLevelLabels();
@@ -128,12 +123,7 @@ export function EventCard({
     .join(", ");
 
   return (
-    <Animated.View
-      entering={
-        animateEntrance ? FadeInDown.duration(400).delay(index * 70) : undefined
-      }
-      style={[shadows.md, { borderRadius: radius.xl }]}
-    >
+    <View style={[shadows.md, { borderRadius: radius.xl }]}>
       <AnimatedPressable
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}
@@ -308,7 +298,7 @@ export function EventCard({
           </View>
         </View>
       </AnimatedPressable>
-    </Animated.View>
+    </View>
   );
 }
 

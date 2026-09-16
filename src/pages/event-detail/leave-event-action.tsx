@@ -76,7 +76,7 @@ export function LeaveEventAction({ isLeaving, onLeave }: LeaveEventActionProps) 
         <View className="mb-1">
           <Button
             label={t("leave.action")}
-            variant="secondary"
+            variant="danger"
             size="md"
             pressScale={0.98}
             isLoading={isLeaving}

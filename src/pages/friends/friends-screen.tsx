@@ -173,7 +173,7 @@ export function FriendsScreen() {
                 />
                 <Button
                   label={t("actions.reject")}
-                  variant="outline"
+                  variant="dangerOutline"
                   size="sm"
                   onPress={async () => {
                     try {

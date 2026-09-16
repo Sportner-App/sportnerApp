@@ -10,14 +10,13 @@ export function BrandMark({ className, tone = "dark" }: BrandMarkProps) {
       accessible
       accessibilityRole="image"
       accessibilityLabel="Sportner"
-      className={`flex-row items-center gap-3 ${className ?? ""}`}
+      className={className}
     >
-      <View className="h-3.5 w-3.5 rounded-full bg-brand-primary" />
       <Text
         className={
           isLight
-            ? "font-display text-[18px] tracking-[6px] text-text-primary"
-            : "font-mono text-[18px] tracking-[10px] text-white/85"
+            ? "font-display text-[20px] tracking-[7px] text-text-primary"
+            : "font-mono text-[20px] tracking-[11px] text-white/85"
         }
       >
         SPORTNER

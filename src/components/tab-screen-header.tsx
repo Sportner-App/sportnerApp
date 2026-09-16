@@ -7,28 +7,45 @@ import { useTranslation } from "react-i18next";
 import { themeColors } from "@/constants/theme";
 import { useAppTour } from "@/contexts";
 import { useRequireAuth } from "@/hooks/use-require-auth";
+import { hasUnreadConversations } from "@/services/messaging-service";
 import { hasUnreadNotifications } from "@/services/notifications-service";
 import { BrandMark } from "./brand-mark";
 
 export function TabScreenHeader() {
   const { t } = useTranslation("components");
   const router = useRouter();
-  const [hasUnread, setHasUnread] = useState(false);
+  const [hasUnreadConversationMessages, setHasUnreadConversationMessages] =
+    useState(false);
+  const [hasUnreadNotificationItems, setHasUnreadNotificationItems] =
+    useState(false);
   const { registerTarget } = useAppTour();
   const { requireAuth } = useRequireAuth();
 
   useFocusEffect(
     useCallback(() => {
       let active = true;
-      void hasUnreadNotifications()
+
+      void hasUnreadConversations()
         .then((unread) => {
           if (active) {
-            setHasUnread(unread);
+            setHasUnreadConversationMessages(unread);
           }
         })
         .catch(() => {
           if (active) {
-            setHasUnread(false);
+            setHasUnreadConversationMessages(false);
+          }
+        });
+
+      void hasUnreadNotifications()
+        .then((unread) => {
+          if (active) {
+            setHasUnreadNotificationItems(unread);
+          }
+        })
+        .catch(() => {
+          if (active) {
+            setHasUnreadNotificationItems(false);
           }
         });
 
@@ -46,6 +63,7 @@ export function TabScreenHeader() {
           icon="comments"
           label={t("tabHeader.conversations")}
           tourTargetRef={registerTarget("conversations")}
+          showIndicator={hasUnreadConversationMessages}
           onPress={() =>
             requireAuth(t("tabHeader.conversationsAuthRequired")) &&
             router.push("/conversations")
@@ -54,7 +72,7 @@ export function TabScreenHeader() {
         <HeaderAction
           icon="bell"
           label={t("tabHeader.notifications")}
-          showIndicator={hasUnread}
+          showIndicator={hasUnreadNotificationItems}
           onPress={() =>
             requireAuth(t("tabHeader.notificationsAuthRequired")) &&
             router.push("/notifications")

@@ -11,6 +11,8 @@ type TabPageProps = PropsWithChildren<{
   onRefresh: () => void;
   keyboardAvoiding?: boolean;
   onEndReached?: () => void;
+  /** Full-bleed map/camera views render their own contextual header. */
+  showHeader?: boolean;
   /** false renders a plain flex-1 View instead of a ScrollView (e.g. a full-screen map). */
   scroll?: boolean;
 }>;
@@ -22,6 +24,7 @@ export function TabPage({
   onRefresh,
   keyboardAvoiding = true,
   onEndReached,
+  showHeader = true,
   scroll = true,
 }: TabPageProps) {
   return (
@@ -37,7 +40,7 @@ export function TabPage({
       onEndReached={scroll ? onEndReached : undefined}
     >
       <StatusBar style="auto" />
-      <TabScreenHeader />
+      {showHeader ? <TabScreenHeader /> : null}
       {children}
     </AppScreen>
   );

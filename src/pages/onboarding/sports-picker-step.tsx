@@ -374,6 +374,14 @@ function SportConfigSheet({
       title={draft?.sportName ?? ""}
       subtitle={configCopy.subtitle}
       showCancel={false}
+      footer={
+        draft ? (
+          <Button
+            label={configCopy.confirm}
+            onPress={() => form.setEditingSportId(null)}
+          />
+        ) : null
+      }
     >
       {draft ? (
         <View className="gap-4">
@@ -434,11 +442,6 @@ function SportConfigSheet({
               <FontAwesome6 name="circle-check" size={16} color="#ccff00" />
             ) : null}
           </Pressable>
-
-          <Button
-            label={configCopy.confirm}
-            onPress={() => form.setEditingSportId(null)}
-          />
         </View>
       ) : null}
     </BottomSheet>

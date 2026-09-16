@@ -9,10 +9,13 @@
     "all": "Tümü"
   },
   "viewMode": {
-    "list": "Liste görünümü",
-    "map": "Harita görünümü"
+    "list": "Liste",
+    "map": "Harita",
+    "listAccessibility": "Liste görünümü",
+    "mapAccessibility": "Harita görünümü"
   },
   "filters": {
+    "label": "Filtrele",
     "clearAccessibility": "Filtreleri temizle",
     "accessibility": "Filtreler"
   },

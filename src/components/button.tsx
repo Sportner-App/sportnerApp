@@ -22,6 +22,7 @@ const containerVariants: Record<ButtonVariant, string> = {
   outline: "border border-brand-primary/60 bg-brand-primary/[0.04]",
   ghost: "bg-transparent",
   danger: "bg-[#ef4444]",
+  dangerOutline: "border border-[#ef4444]/70 bg-[#ef4444]/[0.08]",
 };
 
 const labelVariants: Record<ButtonVariant, string> = {
@@ -30,6 +31,7 @@ const labelVariants: Record<ButtonVariant, string> = {
   outline: "text-brand-primary",
   ghost: "text-text-secondary",
   danger: "text-white",
+  dangerOutline: "text-[#f87171]",
 };
 
 const containerSizes: Record<ButtonSize, string> = {
@@ -50,6 +52,7 @@ const contentColors: Record<ButtonVariant, string> = {
   outline: themeColors.brand.primary,
   ghost: themeColors.text.secondary,
   danger: themeColors.text.inverse,
+  dangerOutline: "#f87171",
 };
 
 function triggerHaptic(haptic: NonNullable<ButtonProps["haptic"]>) {

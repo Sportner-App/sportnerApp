@@ -291,7 +291,7 @@ export function PublicProfileScreen() {
                 <View className="flex-1">
                   <Button
                     label={t("publicProfile.actions.reject")}
-                    variant="outline"
+                    variant="dangerOutline"
                     size="sm"
                     isLoading={friendAction === "reject"}
                     disabled={friendAction === "accept"}
@@ -364,7 +364,7 @@ export function PublicProfileScreen() {
             <View className="gap-2">
               <Button
                 label={t("publicProfile.actions.report")}
-                variant="outline"
+                variant="dangerOutline"
                 size="sm"
                 onPress={() => {
                   if (!requireAuth(t("publicProfile.auth.reportUser"))) return;
@@ -376,7 +376,7 @@ export function PublicProfileScreen() {
               />
               <Button
                 label={t("publicProfile.actions.block")}
-                variant="ghost"
+                variant="dangerOutline"
                 size="sm"
                 disabled={friendAction === "block"}
                 onPress={() => setBlockConfirmOpen(true)}
@@ -393,15 +393,29 @@ export function PublicProfileScreen() {
             }}
             title={t("publicProfile.blockSheet.title")}
             subtitle={t("publicProfile.blockSheet.subtitle")}
-          >
-            <Button
-              label={t("publicProfile.blockSheet.confirm")}
-              variant="danger"
-              isLoading={friendAction === "block"}
-              disabled={friendAction === "block"}
-              onPress={() => void handleBlock()}
-            />
-          </BottomSheet>
+            showCancel={false}
+            footer={
+              <View className="flex-row gap-3">
+                <View className="flex-1">
+                  <Button
+                    label={t("common:cancel")}
+                    variant="dangerOutline"
+                    disabled={friendAction === "block"}
+                    onPress={() => setBlockConfirmOpen(false)}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Button
+                    label={t("publicProfile.blockSheet.confirm")}
+                    variant="danger"
+                    isLoading={friendAction === "block"}
+                    disabled={friendAction === "block"}
+                    onPress={() => void handleBlock()}
+                  />
+                </View>
+              </View>
+            }
+          />
         </>
       )}
     </AppScreen>

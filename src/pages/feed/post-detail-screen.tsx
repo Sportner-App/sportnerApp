@@ -313,7 +313,7 @@ export function PostDetailScreen() {
 
             <Button
               label={t("social:report")}
-              variant="ghost"
+              variant="dangerOutline"
               size="sm"
               onPress={() =>
                 router.push({
