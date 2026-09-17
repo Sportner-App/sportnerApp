@@ -31,6 +31,7 @@ import { useSocialAuth } from "@/hooks/use-social-auth";
 import type { AuthMode } from "@/types/auth";
 
 import { AnimatedBackground } from "./animated-background";
+import { ForgotPasswordSheet } from "./forgot-password-sheet";
 import { LegalConsentModal } from "./legal-consent-modal";
 import { SocialAuthButton } from "./social-auth-button";
 import { SocialRegistrationOverlay } from "./social-registration-overlay";
@@ -96,6 +97,8 @@ export function AuthScreen() {
   const [isAppleAvailable, setIsAppleAvailable] = useState(false);
   const [isLegalConsentModalVisible, setIsLegalConsentModalVisible] =
     useState(false);
+  const [isForgotPasswordVisible, setIsForgotPasswordVisible] =
+    useState(false);
 
   useEffect(() => {
     hasMounted.current = true;
@@ -127,6 +130,10 @@ export function AuthScreen() {
           form.setHasAcceptedLegalTerms(true);
           setIsLegalConsentModalVisible(false);
         }}
+      />
+      <ForgotPasswordSheet
+        visible={isForgotPasswordVisible}
+        onClose={() => setIsForgotPasswordVisible(false)}
       />
       <AnimatedBackground />
 
@@ -267,6 +274,17 @@ export function AuthScreen() {
                   textContentType={form.isLogin ? "password" : "newPassword"}
                   error={form.fieldErrors.password}
                 />
+                {form.isLogin ? (
+                  <Pressable
+                    onPress={() => setIsForgotPasswordVisible(true)}
+                    hitSlop={8}
+                    className="items-end"
+                  >
+                    <Text className="font-body text-xs font-semibold text-brand-primary">
+                      {t("forgotPassword.link")}
+                    </Text>
+                  </Pressable>
+                ) : null}
               </View>
 
               {!form.isLogin ? (

@@ -2,7 +2,6 @@ export type StartupDestination =
   "tabs" | "profile-setup" | "verify-email" | "auth" | "first-launch";
 
 type StartupInput = {
-  authBypass: boolean;
   isAuthenticated: boolean;
   isEmailVerified: boolean;
   isOnboarded: boolean;
@@ -19,17 +18,12 @@ type StartupInput = {
  * server-side at registration so this never blocks them.
  */
 export function getStartupDestination({
-  authBypass,
   isAuthenticated,
   isEmailVerified,
   isOnboarded,
   hasSeenOnboarding,
   isEnteringAuth = false,
 }: StartupInput): StartupDestination {
-  if (authBypass) {
-    return "tabs";
-  }
-
   if (isAuthenticated) {
     if (!isEmailVerified) {
       return "verify-email";

@@ -2,7 +2,6 @@ import { Redirect, Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 import { AppTourOverlay, GlassTabBar } from "@/components";
-import { AUTH_BYPASS } from "@/constants/env";
 import { themeColors } from "@/constants/theme";
 import { AppTourProvider, useAuth, useFirstLaunch } from "@/contexts";
 import { getStartupDestination, STARTUP_HREF } from "@/utils/startup";
@@ -21,7 +20,6 @@ export default function TabsLayout() {
   }
 
   const destination = getStartupDestination({
-    authBypass: AUTH_BYPASS,
     isAuthenticated,
     isEmailVerified,
     isOnboarded,

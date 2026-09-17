@@ -1,6 +1,5 @@
 import { Redirect, Stack } from "expo-router";
 
-import { AUTH_BYPASS } from "@/constants/env";
 import { useAuth } from "@/contexts";
 import { useFirstLaunch } from "@/contexts/first-launch-context";
 import { getStartupDestination, STARTUP_HREF } from "@/utils/startup";
@@ -18,7 +17,6 @@ export default function FirstLaunchLayout() {
   }
 
   const destination = getStartupDestination({
-    authBypass: AUTH_BYPASS,
     isAuthenticated,
     isEmailVerified,
     isOnboarded,

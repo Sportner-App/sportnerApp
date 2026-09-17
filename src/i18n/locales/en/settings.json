@@ -27,7 +27,6 @@
   "logoutToasts": {
     "failed": "Could not log out",
     "success": "Logged out",
-    "bypassDescription": "Auth bypass is enabled; you were redirected to the login screen.",
     "farewell": "See you soon!"
   }
 }

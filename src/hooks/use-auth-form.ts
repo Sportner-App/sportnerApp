@@ -4,7 +4,6 @@ import { useCallback, useMemo, useState } from "react";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
-import { AUTH_BYPASS } from "@/constants/env";
 import { useAuth, useFirstLaunch, useSession, useToast } from "@/contexts";
 import type { AuthMode } from "@/types/auth";
 
@@ -187,10 +186,6 @@ export function useAuthForm() {
   }, []);
 
   const canSubmit = useMemo(() => {
-    if (AUTH_BYPASS) {
-      return true;
-    }
-
     const trimmedUsername = username.trim();
     if (!trimmedUsername || !password) {
       return false;
@@ -273,11 +268,6 @@ export function useAuthForm() {
   };
 
   const submit = async () => {
-    if (AUTH_BYPASS) {
-      router.replace("/(tabs)");
-      return;
-    }
-
     if (isLoading) {
       return;
     }

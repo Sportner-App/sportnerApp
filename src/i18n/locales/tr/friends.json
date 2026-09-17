@@ -13,12 +13,15 @@
   },
   "actions": {
     "accept": "Kabul",
-    "reject": "Reddet"
+    "reject": "Reddet",
+    "remove": "Kaldır"
   },
   "sharedSports": "{{count}} ortak spor",
   "toasts": {
     "loadFailedTitle": "Yüklenemedi",
     "acceptFailedTitle": "Kabul edilemedi",
-    "rejectFailedTitle": "Reddedilemedi"
+    "rejectFailedTitle": "Reddedilemedi",
+    "removeFailedTitle": "Kaldırılamadı",
+    "removedTitle": "Arkadaşlıktan çıkarıldı"
   }
 }

@@ -25,6 +25,7 @@ import {
   acceptFriendRequest,
   blockUser,
   rejectFriendRequest,
+  removeFriendship,
   resolveFriendshipWith,
   sameUserId,
   sendFriendRequest,
@@ -36,7 +37,14 @@ import { FRIENDSHIP_STATUS } from "@/types/social";
 import { errorNotification, successNotification } from "@/utils/haptics";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 
-type FriendAction = "send" | "accept" | "reject" | "block" | "message" | null;
+type FriendAction =
+  | "send"
+  | "accept"
+  | "reject"
+  | "remove"
+  | "block"
+  | "message"
+  | null;
 type ProfileTab = "activity" | "reviews";
 
 export function PublicProfileScreen() {
@@ -52,6 +60,7 @@ export function PublicProfileScreen() {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [friendAction, setFriendAction] = useState<FriendAction>(null);
   const [blockConfirmOpen, setBlockConfirmOpen] = useState(false);
+  const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>("activity");
 
   const profileTabs = useMemo(
@@ -232,6 +241,32 @@ export function PublicProfileScreen() {
     }
   };
 
+  const handleRemove = async () => {
+    if (!friendship || friendAction === "remove") {
+      return;
+    }
+
+    setFriendAction("remove");
+    try {
+      await removeFriendship(friendship.friendshipId);
+      setFriendship(null);
+      setRemoveConfirmOpen(false);
+      showToast({
+        type: "success",
+        title: t("publicProfile.toasts.removedTitle"),
+      });
+    } catch (error) {
+      errorNotification();
+      showToast({
+        type: "error",
+        title: t("publicProfile.toasts.removeFailedTitle"),
+        description: getApiErrorMessage(error),
+      });
+    } finally {
+      setFriendAction(null);
+    }
+  };
+
   const handleBlock = async () => {
     if (!profile || friendAction === "block") {
       return;
@@ -332,6 +367,17 @@ export function PublicProfileScreen() {
                     )}
                   </View>
                 ) : null}
+                {isAccepted ? (
+                  <View className="flex-1">
+                    <Button
+                      label={t("publicProfile.actions.removeFriend")}
+                      variant="dangerOutline"
+                      size="sm"
+                      disabled={friendAction !== null}
+                      onPress={() => setRemoveConfirmOpen(true)}
+                    />
+                  </View>
+                ) : null}
               </View>
             ) : null}
           </View>
@@ -411,6 +457,39 @@ export function PublicProfileScreen() {
                     isLoading={friendAction === "block"}
                     disabled={friendAction === "block"}
                     onPress={() => void handleBlock()}
+                  />
+                </View>
+              </View>
+            }
+          />
+
+          <BottomSheet
+            visible={removeConfirmOpen}
+            onClose={() => {
+              if (friendAction !== "remove") {
+                setRemoveConfirmOpen(false);
+              }
+            }}
+            title={t("publicProfile.removeFriendSheet.title")}
+            subtitle={t("publicProfile.removeFriendSheet.subtitle")}
+            showCancel={false}
+            footer={
+              <View className="flex-row gap-3">
+                <View className="flex-1">
+                  <Button
+                    label={t("common:cancel")}
+                    variant="dangerOutline"
+                    disabled={friendAction === "remove"}
+                    onPress={() => setRemoveConfirmOpen(false)}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Button
+                    label={t("publicProfile.removeFriendSheet.confirm")}
+                    variant="danger"
+                    isLoading={friendAction === "remove"}
+                    disabled={friendAction === "remove"}
+                    onPress={() => void handleRemove()}
                   />
                 </View>
               </View>

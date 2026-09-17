@@ -17,6 +17,7 @@
       "message": "Mesaj gönder",
       "requestSent": "İstek gönderildi",
       "addFriend": "Arkadaş ekle",
+      "removeFriend": "Arkadaşlıktan çıkar",
       "report": "Şikayet et",
       "block": "Engelle"
     },
@@ -24,6 +25,11 @@
       "title": "Bu kişiyi engellemek istiyor musun?",
       "subtitle": "Birbirinizi listelerde ve profilde göremezsiniz. İstediğin zaman Gizlilik'ten engeli kaldırabilirsin.",
       "confirm": "Engelle"
+    },
+    "removeFriendSheet": {
+      "title": "Arkadaşlıktan çıkarılsın mı?",
+      "subtitle": "Tekrar arkadaş olmak için yeniden istek göndermeniz gerekir.",
+      "confirm": "Çıkar"
     },
     "toasts": {
       "notFoundTitle": "Profil yok",
@@ -35,7 +41,9 @@
       "rejectFailedTitle": "Reddedilemedi",
       "chatFailedTitle": "Sohbet açılamadı",
       "blockedTitle": "Kullanıcı engellendi",
-      "blockFailedTitle": "Engellenemedi"
+      "blockFailedTitle": "Engellenemedi",
+      "removedTitle": "Arkadaşlıktan çıkarıldı",
+      "removeFailedTitle": "Çıkarılamadı"
     }
   }
 }

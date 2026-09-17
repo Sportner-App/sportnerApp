@@ -17,6 +17,7 @@
       "message": "Send message",
       "requestSent": "Request sent",
       "addFriend": "Add friend",
+      "removeFriend": "Remove friend",
       "report": "Report",
       "block": "Block"
     },
@@ -24,6 +25,11 @@
       "title": "Block this person?",
       "subtitle": "You won't see each other in lists or on profiles. You can unblock anytime from Privacy.",
       "confirm": "Block"
+    },
+    "removeFriendSheet": {
+      "title": "Remove this friend?",
+      "subtitle": "You'll need to send a new friend request to reconnect.",
+      "confirm": "Remove"
     },
     "toasts": {
       "notFoundTitle": "Profile unavailable",
@@ -35,7 +41,9 @@
       "rejectFailedTitle": "Could not decline",
       "chatFailedTitle": "Could not open chat",
       "blockedTitle": "User blocked",
-      "blockFailedTitle": "Could not block"
+      "blockFailedTitle": "Could not block",
+      "removedTitle": "Removed from friends",
+      "removeFailedTitle": "Could not remove"
     }
   }
 }

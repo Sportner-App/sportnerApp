@@ -4,6 +4,23 @@ import type {
   UserProfile,
 } from "@/types/profile";
 
+export function calculateAge(birthDate: string | null): number | null {
+  if (!birthDate) return null;
+
+  const birth = new Date(birthDate);
+  if (Number.isNaN(birth.getTime())) return null;
+
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const hasHadBirthdayThisYear =
+    today.getMonth() > birth.getMonth() ||
+    (today.getMonth() === birth.getMonth() &&
+      today.getDate() >= birth.getDate());
+  if (!hasHadBirthdayThisYear) age--;
+
+  return age;
+}
+
 export function mapMyProfile(api: ApiMyProfile): UserProfile {
   const firstName = api.firstName?.trim() || "";
   const lastName = api.lastName?.trim() || null;
@@ -18,6 +35,7 @@ export function mapMyProfile(api: ApiMyProfile): UserProfile {
     fullName,
     gender: api.gender,
     birthDate: api.birthDate,
+    age: calculateAge(api.birthDate),
     bio: api.bio,
     city: api.city,
     avatarUrl: api.profileImageUrl,
@@ -37,7 +55,6 @@ export function mapMyProfile(api: ApiMyProfile): UserProfile {
 export function mapPublicProfile(api: ApiPublicProfile): UserProfile {
   return {
     ...mapMyProfile({
-      gender: null,
       birthDate: null,
       isProfilePublic: true,
       usernameChangedAt: "",
@@ -46,6 +63,8 @@ export function mapPublicProfile(api: ApiPublicProfile): UserProfile {
       isEmailVerified: false,
       ...api,
     }),
+    // Public API returns a pre-computed age, never a raw birth date.
+    age: api.age ?? null,
     friendship: api.friendship ?? null,
   };
 }

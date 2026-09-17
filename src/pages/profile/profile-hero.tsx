@@ -12,7 +12,17 @@ type ProfileHeroProps = {
 };
 
 export function ProfileHero({ profile, onEdit }: ProfileHeroProps) {
-  const { t } = useTranslation("profile");
+  const { t } = useTranslation(["profile", "auth"]);
+
+  const genderLabel =
+    profile.gender === 1
+      ? t("auth:gender.female")
+      : profile.gender === 2
+        ? t("auth:gender.male")
+        : null;
+  const ageGenderLabel = [profile.age, genderLabel]
+    .filter((value) => value !== null && value !== undefined)
+    .join(" · ");
 
   return (
     <Animated.View
@@ -44,6 +54,14 @@ export function ProfileHero({ profile, onEdit }: ProfileHeroProps) {
             <FontAwesome6 name="lock" size={9} color="#6f7d86" />
           ) : null}
         </View>
+        {ageGenderLabel ? (
+          <View className="mt-2 flex-row items-center gap-1.5">
+            <FontAwesome6 name="cake-candles" size={9} color="#ccff00" />
+            <Text className="font-body text-[11px] text-text-tertiary">
+              {ageGenderLabel}
+            </Text>
+          </View>
+        ) : null}
         {profile.city ? (
           <View className="mt-2 flex-row items-center gap-1.5">
             <FontAwesome6 name="location-dot" size={9} color="#ccff00" />

@@ -66,6 +66,9 @@ export type ApiPublicProfile = {
   firstName: string;
   lastName: string | null;
   bio: string | null;
+  gender: number | null;
+  /** Derived server-side from birth date — raw birth date is never exposed publicly. */
+  age: number | null;
   city: string | null;
   profileImageUrl: string | null;
   averageRating: number;
@@ -84,6 +87,7 @@ export type UserProfile = {
   fullName: string;
   gender: number | null;
   birthDate: string | null;
+  age: number | null;
   bio: string | null;
   city: string | null;
   avatarUrl: string | null;

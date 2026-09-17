@@ -683,6 +683,72 @@ export async function resendEmailVerification(): Promise<AuthActionResult> {
 }
 
 /**
+ * POST /api/auth/password/forgot
+ *
+ * Always resolves without an error, whether or not the email belongs to an account — the
+ * backend intentionally responds the same way in both cases (account enumeration defense), so
+ * the UI should show a generic "check your email" message regardless of the outcome here.
+ */
+export async function requestPasswordReset(email: string): Promise<AuthActionResult> {
+  const emailError = validateEmail(email.trim().toLowerCase());
+  if (emailError) {
+    return { error: { message: emailError } };
+  }
+
+  try {
+    await apiClient.post("/api/auth/password/forgot", {
+      email: email.trim().toLowerCase(),
+    });
+    return { error: null };
+  } catch (error) {
+    return {
+      error: {
+        message: getApiErrorMessage(
+          error,
+          i18n.t("auth:service.requestPasswordResetFailed"),
+        ),
+      },
+    };
+  }
+}
+
+/**
+ * POST /api/auth/password/reset
+ */
+export async function resetPassword({
+  email,
+  code,
+  newPassword,
+}: {
+  email: string;
+  code: string;
+  newPassword: string;
+}): Promise<AuthActionResult> {
+  const passwordError = validatePassword(newPassword, true);
+  if (passwordError) {
+    return { error: { message: passwordError } };
+  }
+
+  try {
+    await apiClient.post("/api/auth/password/reset", {
+      email: email.trim().toLowerCase(),
+      code: code.trim(),
+      newPassword,
+    });
+    return { error: null };
+  } catch (error) {
+    return {
+      error: {
+        message: getApiErrorMessage(
+          error,
+          i18n.t("auth:service.resetPasswordFailed"),
+        ),
+      },
+    };
+  }
+}
+
+/**
  * PUT /api/auth/me/language — backend'in kullanıcıya özel ürettiği içerikler
  * (şimdilik rozet/görev bildirimleri) bu dile göre yazılsın diye senkronize eder.
  * Best-effort: başarısız olursa sessizce yutulur, uygulamanın kendi dili etkilenmez.

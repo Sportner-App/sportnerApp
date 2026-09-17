@@ -3,7 +3,6 @@ import { useRouter } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { AUTH_BYPASS } from "@/constants/env";
 import { useAuth, useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
@@ -74,7 +73,7 @@ export function useProfile() {
     try {
       const { error: signOutError } = await signOut();
 
-      if (signOutError && !AUTH_BYPASS) {
+      if (signOutError) {
         showToast({
           type: "error",
           title: t("settings:logoutToasts.failed"),
@@ -86,9 +85,7 @@ export function useProfile() {
       showToast({
         type: "success",
         title: t("settings:logoutToasts.success"),
-        description: AUTH_BYPASS
-          ? t("settings:logoutToasts.bypassDescription")
-          : t("settings:logoutToasts.farewell"),
+        description: t("settings:logoutToasts.farewell"),
       });
 
       router.replace("/(auth)/login");

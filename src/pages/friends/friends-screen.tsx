@@ -22,6 +22,7 @@ import {
   listFriendSuggestions,
   listPendingRequests,
   rejectFriendRequest,
+  removeFriendship,
 } from "@/services/social-service";
 import type {
   ApiFriend,
@@ -42,6 +43,7 @@ export function FriendsScreen() {
   const [suggestions, setSuggestions] = useState<ApiFriendSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [removingId, setRemovingId] = useState<string | null>(null);
   const hasLoaded = useRef(false);
 
   const load = useCallback(
@@ -79,6 +81,25 @@ export function FriendsScreen() {
     }, [load]),
   );
 
+  const handleRemove = async (friendshipId: string) => {
+    setRemovingId(friendshipId);
+    try {
+      await removeFriendship(friendshipId);
+      setFriends((current) =>
+        current.filter((item) => item.friendshipId !== friendshipId),
+      );
+      showToast({ type: "success", title: t("toasts.removedTitle") });
+    } catch (error) {
+      showToast({
+        type: "error",
+        title: t("toasts.removeFailedTitle"),
+        description: getApiErrorMessage(error),
+      });
+    } finally {
+      setRemovingId(null);
+    }
+  };
+
   return (
     <AppScreen
       header={<ScreenHeader title={t("title")} showBack />}
@@ -110,13 +131,27 @@ export function FriendsScreen() {
           </Text>
         ) : (
           friends.map((item) => (
-            <PersonRow
+            <View
               key={item.friendshipId}
-              username={item.username}
-              avatarUrl={item.profileImageUrl}
-              fallbackName={item.firstName}
-              onPress={() => router.push(`/users/${item.userId}`)}
-            />
+              className="flex-row items-center gap-2 rounded-2xl border border-border-default bg-surface-primary px-4 py-3"
+            >
+              <View className="min-w-0 flex-1">
+                <UserIdentity
+                  username={item.username}
+                  avatarUrl={item.profileImageUrl}
+                  fallbackName={item.firstName}
+                  onPress={() => router.push(`/users/${item.userId}`)}
+                />
+              </View>
+              <Button
+                label={t("actions.remove")}
+                variant="dangerOutline"
+                size="sm"
+                isLoading={removingId === item.friendshipId}
+                disabled={removingId !== null}
+                onPress={() => void handleRemove(item.friendshipId)}
+              />
+            </View>
           ))
         )
       ) : tab === "requests" ? (

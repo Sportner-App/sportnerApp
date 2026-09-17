@@ -3,7 +3,6 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { AUTH_BYPASS } from "@/constants/env";
 import { useAuth, useFirstLaunch, useSession, useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import type { ExternalRegistration } from "@/types/auth";
@@ -63,7 +62,6 @@ export function useSocialAuth() {
   };
 
   const signIn = async (provider: SocialProvider) => {
-    if (AUTH_BYPASS) return router.replace("/(tabs)");
     if (loadingProvider) return;
     setLoadingProvider(provider);
     try {

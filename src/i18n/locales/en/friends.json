@@ -13,12 +13,15 @@
   },
   "actions": {
     "accept": "Accept",
-    "reject": "Decline"
+    "reject": "Decline",
+    "remove": "Remove"
   },
   "sharedSports": "{{count}} shared sports",
   "toasts": {
     "loadFailedTitle": "Could not load",
     "acceptFailedTitle": "Could not accept",
-    "rejectFailedTitle": "Could not decline"
+    "rejectFailedTitle": "Could not decline",
+    "removeFailedTitle": "Could not remove",
+    "removedTitle": "Removed from friends"
   }
 }
