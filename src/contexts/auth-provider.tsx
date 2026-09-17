@@ -16,6 +16,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       isConfigured,
       isReady,
       isAuthenticated: Boolean(user?.id),
+      isEmailVerified: Boolean(user?.isEmailVerified),
       isOnboarded: Boolean(user?.isOnboarded),
       session,
       user,

@@ -108,6 +108,7 @@ function ThemedRootLayoutNav() {
               <Stack.Screen name="(first-launch)" />
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(verify-email)" />
               <Stack.Screen name="(onboarding)" />
               <Stack.Screen name="events" />
               <Stack.Screen name="users/[id]" />

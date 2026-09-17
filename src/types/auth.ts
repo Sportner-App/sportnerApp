@@ -132,6 +132,7 @@ export type AuthContextValue = AuthActions & {
   isConfigured: boolean;
   isReady: boolean;
   isAuthenticated: boolean;
+  isEmailVerified: boolean;
   isOnboarded: boolean;
   session: SessionData | null;
   user: SessionUser | null;

@@ -6,7 +6,7 @@ import { useFirstLaunch } from "@/contexts/first-launch-context";
 import { getStartupDestination, STARTUP_HREF } from "@/utils/startup";
 
 export default function FirstLaunchLayout() {
-  const { isReady, isAuthenticated, isOnboarded } = useAuth();
+  const { isReady, isAuthenticated, isEmailVerified, isOnboarded } = useAuth();
   const {
     isReady: isFirstLaunchReady,
     hasSeenOnboarding,
@@ -20,6 +20,7 @@ export default function FirstLaunchLayout() {
   const destination = getStartupDestination({
     authBypass: AUTH_BYPASS,
     isAuthenticated,
+    isEmailVerified,
     isOnboarded,
     hasSeenOnboarding,
     isEnteringAuth,

@@ -9,7 +9,7 @@ import { getStartupDestination, STARTUP_HREF } from "@/utils/startup";
 
 export default function TabsLayout() {
   const { t } = useTranslation("tabs");
-  const { isReady, isAuthenticated, isOnboarded } = useAuth();
+  const { isReady, isAuthenticated, isEmailVerified, isOnboarded } = useAuth();
   const {
     isReady: isFirstLaunchReady,
     hasSeenOnboarding,
@@ -23,6 +23,7 @@ export default function TabsLayout() {
   const destination = getStartupDestination({
     authBypass: AUTH_BYPASS,
     isAuthenticated,
+    isEmailVerified,
     isOnboarded,
     hasSeenOnboarding,
     isEnteringAuth,

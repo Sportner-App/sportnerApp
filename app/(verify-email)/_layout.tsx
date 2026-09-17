@@ -4,8 +4,9 @@ import { AUTH_BYPASS } from "@/constants/env";
 import { useAuth, useFirstLaunch } from "@/contexts";
 import { getStartupDestination, STARTUP_HREF } from "@/utils/startup";
 
-export default function OnboardingLayout() {
-  const { isReady, isAuthenticated, isEmailVerified, isOnboarded } = useAuth();
+export default function VerifyEmailLayout() {
+  const { isReady, isAuthenticated, isEmailVerified, isOnboarded } =
+    useAuth();
   const { isReady: isFirstLaunchReady, hasSeenOnboarding, isEnteringAuth } =
     useFirstLaunch();
 
@@ -22,7 +23,7 @@ export default function OnboardingLayout() {
     isEnteringAuth,
   });
 
-  if (destination !== "profile-setup") {
+  if (destination !== "verify-email") {
     return <Redirect href={STARTUP_HREF[destination]} />;
   }
 

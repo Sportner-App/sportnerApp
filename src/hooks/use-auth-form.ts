@@ -336,7 +336,11 @@ export function useAuthForm() {
       await markOnboardingSeen();
       await refreshSession?.();
       router.replace(
-        response.data.isOnboardingCompleted ? "/(tabs)" : "/(onboarding)",
+        !response.data.user.isEmailVerified
+          ? "/(verify-email)"
+          : response.data.isOnboardingCompleted
+            ? "/(tabs)"
+            : "/(onboarding)",
       );
     } finally {
       setIsLoading(false);
