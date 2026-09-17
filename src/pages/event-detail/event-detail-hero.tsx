@@ -11,6 +11,7 @@ import { resolveEventBadgeThemes } from "@/constants/badge-colors";
 import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
 import {
   media,
+  radius,
   shadows,
   sportAccentToken,
   themeColors,
@@ -33,7 +34,7 @@ type EventDetailHeroProps = {
   onPendingPress?: () => void;
 };
 
-const HERO_ASPECT = 1.08;
+const HERO_ASPECT = 1.65;
 const OVERLAY = themeColors.surface.dark;
 
 export function EventDetailHero({
@@ -94,7 +95,9 @@ export function EventDetailHero({
           style={{
             paddingTop: insets.top + 12,
             paddingHorizontal: 14,
-            paddingBottom: 14,
+            // Content card overlaps the hero's bottom radius.xl — keep the sport/date badges
+            // clear of that overlap instead of letting the card cover them.
+            paddingBottom: radius.xl + 14,
           }}
         >
           <View className="flex-row items-start justify-between">

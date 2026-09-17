@@ -12,6 +12,9 @@ export type ApiNotification = {
   isRead: boolean;
   readAt: string | null;
   createdAt: string;
+  /** How many occurrences are folded into this row (e.g. several DMs from the same person
+   * while still unread). 1 for a normal, ungrouped notification. */
+  occurrenceCount: number;
 };
 
 export type ApiNotificationSetting = {
@@ -101,6 +104,20 @@ function namedAction(type: number): string | undefined {
 
 export function notificationCopy(item: ApiNotification) {
   const actor = item.actorUsername?.trim();
+
+  if (
+    item.notificationType === NOTIFICATION_TYPE.newMessage &&
+    item.occurrenceCount > 1
+  ) {
+    return {
+      title: item.title,
+      body: i18n.t("notifications:copy.groupedMessages", {
+        count: item.occurrenceCount,
+        preview: item.body,
+      }),
+    };
+  }
+
   if (actor && item.title.includes(actor)) {
     return { title: item.title, body: item.body };
   }

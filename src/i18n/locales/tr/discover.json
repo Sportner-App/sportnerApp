@@ -15,8 +15,7 @@
   },
   "section": {
     "title": "Anı yakala",
-    "subtitle": "Topluluktan son paylaşımlar",
-    "postCount": "{{count}} GÖNDERİ"
+    "subtitle": "Topluluktan son paylaşımlar"
   },
   "empty": {
     "message": "Henüz paylaşım yok. İlk fotoğrafı sen ekle.",

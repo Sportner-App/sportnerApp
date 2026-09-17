@@ -93,10 +93,22 @@ export function EventDetailScreen() {
       header={
         detail.isLoading || !detail.event ? (
           <ScreenHeader showBack tone="light" />
-        ) : undefined
+        ) : (
+          <EventDetailHero
+            event={detail.event}
+            onBack={() => router.back()}
+            onShare={() => setShareSheetOpen(true)}
+            pendingCount={showPendingEntry ? pendingCount : 0}
+            onPendingPress={
+              showPendingEntry ? handleOpenPendingRequests : undefined
+            }
+          />
+        )
       }
       belowHeader={<LinearRefreshBar visible={detail.isRefreshing} />}
       contentClassName="flex-grow"
+      bodyStyle={detail.event ? { marginTop: -radius.xl } : undefined}
+      contentContainerStyle={detail.event ? { paddingBottom: 0 } : undefined}
       refreshControl={brandRefreshControl({
         refreshing: detail.isRefreshing,
         onRefresh: detail.refresh,
@@ -145,143 +157,130 @@ export function EventDetailScreen() {
           />
         </View>
       ) : (
-        <>
-          <EventDetailHero
+        <View
+          style={{
+            backgroundColor: themeColors.surface.primary,
+            borderTopLeftRadius: radius.xl,
+            borderTopRightRadius: radius.xl,
+            paddingTop: spacing.xl + radius.xl,
+            paddingBottom: spacing.lg + spacing["2xl"],
+            paddingHorizontal: spacing.xl,
+          }}
+        >
+          <EventPrimaryInfo
             event={detail.event}
-            onBack={() => router.back()}
-            onShare={() => setShareSheetOpen(true)}
-            pendingCount={showPendingEntry ? pendingCount : 0}
-            onPendingPress={
-              showPendingEntry ? handleOpenPendingRequests : undefined
+            isOrganizer={detail.isOrganizer}
+            onOpenParticipants={() =>
+              router.push(`/events/${detail.event?.id}/participants`)
+            }
+            onOpenReviews={
+              detail.event.status === EVENT_STATUS.completed
+                ? () => router.push(`/events/${detail.event?.id}/reviews`)
+                : undefined
             }
           />
 
-          <View
-            style={{
-              marginTop: -spacing.lg,
-              backgroundColor: themeColors.surface.primary,
-              borderTopLeftRadius: radius.xl,
-              borderTopRightRadius: radius.xl,
-              paddingTop: spacing.xl,
-              paddingBottom: spacing.lg,
-              paddingHorizontal: spacing.xl,
-            }}
-          >
-            <EventPrimaryInfo
-              event={detail.event}
-              isOrganizer={detail.isOrganizer}
-              onOpenParticipants={() =>
-                router.push(`/events/${detail.event?.id}/participants`)
-              }
-              onOpenReviews={
-                detail.event.status === EVENT_STATUS.completed
-                  ? () => router.push(`/events/${detail.event?.id}/reviews`)
-                  : undefined
-              }
-            />
+          <SectionDivider />
 
-            <SectionDivider />
+          <EventOrganizerSection
+            event={detail.event}
+            isOrganizer={detail.isOrganizer}
+            onOpenUser={(userId) => router.push(`/users/${userId}`)}
+            onChat={openChat}
+          />
 
-            <EventOrganizerSection
+          {detail.isOrganizer ? (
+            <View className="mt-lg">
+              <OrganizerPanel
+                event={detail.event}
+                canManage={detail.canManage}
+                canTakeAttendance={detail.canTakeAttendance}
+                busyUserId={detail.busyUserId}
+                isMutating={detail.isMutating}
+                onApprove={detail.approve}
+                onReject={detail.reject}
+                onPromote={detail.promote}
+                onAttended={detail.markAttended}
+                onAbsent={detail.markAbsent}
+                onCancel={detail.cancel}
+                onEdit={() => router.push(`/events/${detail.event?.id}/edit`)}
+                onOpenUser={(userId) => router.push(`/users/${userId}`)}
+                onOpenReviews={() =>
+                  router.push(`/events/${detail.event?.id}/reviews`)
+                }
+                onRateUser={(userId) => {
+                  if (!detail.event) {
+                    return;
+                  }
+                  router.push({
+                    pathname: "/events/[id]/reviews",
+                    params: { id: detail.event.id, userId },
+                  });
+                }}
+              />
+            </View>
+          ) : null}
+
+          <SectionDivider />
+
+          <AboutSection event={detail.event} />
+
+          <SectionDivider />
+
+          <View ref={registerSection("questions")}>
+            <EventQnASection
               event={detail.event}
               isOrganizer={detail.isOrganizer}
               onOpenUser={(userId) => router.push(`/users/${userId}`)}
-              onChat={openChat}
             />
+          </View>
 
-            {detail.isOrganizer ? (
-              <View className="mt-lg">
-                <OrganizerPanel
-                  event={detail.event}
-                  canManage={detail.canManage}
-                  canTakeAttendance={detail.canTakeAttendance}
-                  busyUserId={detail.busyUserId}
-                  isMutating={detail.isMutating}
-                  onApprove={detail.approve}
-                  onReject={detail.reject}
-                  onPromote={detail.promote}
-                  onAttended={detail.markAttended}
-                  onAbsent={detail.markAbsent}
-                  onCancel={detail.cancel}
-                  onEdit={() => router.push(`/events/${detail.event?.id}/edit`)}
-                  onOpenUser={(userId) => router.push(`/users/${userId}`)}
-                  onOpenReviews={() =>
-                    router.push(`/events/${detail.event?.id}/reviews`)
-                  }
-                  onRateUser={(userId) => {
-                    if (!detail.event) {
-                      return;
-                    }
-                    router.push({
-                      pathname: "/events/[id]/reviews",
-                      params: { id: detail.event.id, userId },
-                    });
-                  }}
-                />
-              </View>
-            ) : null}
+          <SectionDivider />
 
-            <SectionDivider />
+          <LocationMap event={detail.event} />
 
-            <AboutSection event={detail.event} />
-
-            <SectionDivider />
-
-            <View ref={registerSection("questions")}>
-              <EventQnASection
-                event={detail.event}
-                isOrganizer={detail.isOrganizer}
-                onOpenUser={(userId) => router.push(`/users/${userId}`)}
+          {!detail.isOrganizer &&
+          hasApprovedParticipation(detail.event.myParticipationStatus) &&
+          !hasEventEnded(detail.event) ? (
+            <View className="mt-lg">
+              <LeaveEventAction
+                isLeaving={detail.isLeaving}
+                onLeave={detail.leave}
               />
             </View>
+          ) : null}
 
-            <SectionDivider />
+          {!detail.isOrganizer && detail.canCancel ? (
+            <View className="mt-lg">
+              <Button
+                label={t("closeEvent")}
+                variant="danger"
+                onPress={detail.cancel}
+                isLoading={detail.isMutating}
+                disabled={detail.isMutating}
+              />
+            </View>
+          ) : null}
 
-            <LocationMap event={detail.event} />
-
-            {!detail.isOrganizer &&
-            hasApprovedParticipation(detail.event.myParticipationStatus) &&
-            !hasEventEnded(detail.event) ? (
-              <View className="mt-lg">
-                <LeaveEventAction
-                  isLeaving={detail.isLeaving}
-                  onLeave={detail.leave}
-                />
-              </View>
-            ) : null}
-
-            {!detail.isOrganizer && detail.canCancel ? (
-              <View className="mt-lg">
-                <Button
-                  label={t("closeEvent")}
-                  variant="danger"
-                  onPress={detail.cancel}
-                  isLoading={detail.isMutating}
-                  disabled={detail.isMutating}
-                />
-              </View>
-            ) : null}
-
-            {!detail.isOrganizer && isAuthenticated ? (
-              <View className="mt-sm">
-                <Button
-                  label={t("report")}
-                  variant="dangerOutline"
-                  size="sm"
-                  onPress={() =>
-                    router.push({
-                      pathname: "/report",
-                      params: {
-                        entityType: "1",
-                        entityId: detail.event?.id,
-                      },
-                    })
-                  }
-                />
-              </View>
-            ) : null}
-          </View>
-        </>
+          {!detail.isOrganizer && isAuthenticated ? (
+            <View className="mt-sm">
+              <Button
+                label={t("report")}
+                variant="dangerOutline"
+                size="sm"
+                onPress={() =>
+                  router.push({
+                    pathname: "/report",
+                    params: {
+                      entityType: "1",
+                      entityId: detail.event?.id,
+                    },
+                  })
+                }
+              />
+            </View>
+          ) : null}
+        </View>
       )}
       {detail.event && detail.isOrganizer ? (
         <PendingRequestsSheet

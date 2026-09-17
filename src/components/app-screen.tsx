@@ -34,6 +34,7 @@ export function AppScreen({
   refreshControl,
   contentClassName,
   contentContainerStyle,
+  bodyStyle,
   edgeToEdgeTop = false,
   backdrop = "default",
   tone = "dark",
@@ -64,6 +65,7 @@ export function AppScreen({
   const body = scroll ? (
     <ScrollContainer
       ref={scrollRef}
+      style={bodyStyle}
       onContentSizeChange={onContentSizeChange}
       contentContainerClassName={contentClassName}
       contentContainerStyle={[

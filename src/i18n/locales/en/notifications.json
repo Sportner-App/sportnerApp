@@ -19,7 +19,8 @@
   },
   "copy": {
     "namedUser": "{{username}} {{action}}",
-    "anonymousUser": "A user {{action}}"
+    "anonymousUser": "A user {{action}}",
+    "groupedMessages": "{{count}} new messages: {{preview}}"
   },
   "actions": {
     "0": "sent you a friend request",

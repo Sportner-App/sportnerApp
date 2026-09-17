@@ -1,6 +1,8 @@
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 
 import type { BrandMarkProps } from "@/types/components";
+
+const LOGO_MARK = require("../../assets/images/icon.png");
 
 export function BrandMark({ className, tone = "dark" }: BrandMarkProps) {
   const isLight = tone === "light";
@@ -10,8 +12,13 @@ export function BrandMark({ className, tone = "dark" }: BrandMarkProps) {
       accessible
       accessibilityRole="image"
       accessibilityLabel="Sportner"
-      className={className}
+      className={`flex-row items-center gap-2 ${className ?? ""}`}
     >
+      <Image
+        source={LOGO_MARK}
+        className="h-10 w-10 rounded-md"
+        resizeMode="cover"
+      />
       <Text
         className={
           isLight

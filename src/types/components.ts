@@ -204,6 +204,9 @@ export type AppScreenProps = PropsWithChildren<{
   refreshControl?: ReactElement<RefreshControlProps>;
   contentClassName?: string;
   contentContainerStyle?: StyleProp<ViewStyle>;
+  /** Style on the scroll body itself (not its content) — e.g. a negative marginTop to let
+   * rounded content corners overlap a fixed `header` instead of exposing the screen background. */
+  bodyStyle?: StyleProp<ViewStyle>;
   /** Hero/media ekranlarında içeriği status bar arkasına uzatır. */
   edgeToEdgeTop?: boolean;
   /** Light ekran için opsiyonel premium zeytin gradient zemini. */

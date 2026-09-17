@@ -19,7 +19,8 @@
   },
   "copy": {
     "namedUser": "{{username}} kullanıcısı {{action}}",
-    "anonymousUser": "Bir kullanıcı {{action}}"
+    "anonymousUser": "Bir kullanıcı {{action}}",
+    "groupedMessages": "{{count}} yeni mesaj: {{preview}}"
   },
   "actions": {
     "0": "arkadaşlık isteği gönderdi",

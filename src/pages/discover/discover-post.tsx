@@ -5,12 +5,12 @@ import { useTranslation } from "react-i18next";
 import {
   Image,
   Pressable,
-  ScrollView,
   Text,
   TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
+import { ScrollView as GestureScrollView } from "react-native-gesture-handler";
 
 import { Avatar, CommentThread } from "@/components";
 import { useToast } from "@/contexts";
@@ -195,13 +195,6 @@ export function DiscoverPost({
             @{athleteHandle} · {formatRelativeTime(post.createdAt)}
           </Text>
         </View>
-        <View className="h-8 w-8 items-center justify-center rounded-full bg-background-secondary">
-          <FontAwesome6
-            name="ellipsis"
-            size={12}
-            color={themeColors.text.tertiary}
-          />
-        </View>
       </Pressable>
 
       <Pressable
@@ -209,7 +202,7 @@ export function DiscoverPost({
         className="overflow-hidden rounded-[22px] bg-background-secondary"
       >
         {images.length > 0 ? (
-          <ScrollView
+          <GestureScrollView
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
@@ -226,7 +219,7 @@ export function DiscoverPost({
                 style={{ width: cardWidth, height: cardWidth * 1.03 }}
               />
             ))}
-          </ScrollView>
+          </GestureScrollView>
         ) : (
           <View
             className="justify-center bg-background-secondary px-6"
@@ -278,52 +271,43 @@ export function DiscoverPost({
       ) : null}
 
       <View className="gap-3 px-1 pt-3">
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center gap-2">
-            <Pressable
-              hitSlop={8}
-              onPress={() => void like()}
-              className={`min-h-9 flex-row items-center gap-2 rounded-full border px-3 ${
-                post.likedByMe
-                  ? "border-brand-primary/30 bg-brand-primary/10"
-                  : "border-border-default bg-background-secondary"
-              }`}
-            >
-              <FontAwesome6
-                name="heart"
-                size={20}
-                color={
-                  post.likedByMe
-                    ? themeColors.brand.primary
-                    : themeColors.text.primary
-                }
-              />
-              <Text className="font-mono text-xs text-text-primary">
-                {post.likeCount}
-              </Text>
-            </Pressable>
-            <Pressable
-              hitSlop={8}
-              onPress={() => setCommentsOpen((open) => !open)}
-              className="min-h-9 flex-row items-center gap-2 rounded-full border border-border-default bg-background-secondary px-3"
-            >
-              <FontAwesome6
-                name="comment"
-                size={17}
-                color={themeColors.text.primary}
-              />
-              <Text className="font-mono text-xs text-text-primary">
-                {post.commentCount}
-              </Text>
-            </Pressable>
-          </View>
-          <View className="h-9 w-9 items-center justify-center rounded-full border border-border-default bg-background-secondary">
+        <View className="flex-row items-center gap-2">
+          <Pressable
+            hitSlop={8}
+            onPress={() => void like()}
+            className={`min-h-9 flex-row items-center gap-2 rounded-full border px-3 ${
+              post.likedByMe
+                ? "border-brand-primary/30 bg-brand-primary/10"
+                : "border-border-default bg-background-secondary"
+            }`}
+          >
             <FontAwesome6
-              name="bookmark"
-              size={14}
-              color={themeColors.text.secondary}
+              name="heart"
+              size={20}
+              color={
+                post.likedByMe
+                  ? themeColors.brand.primary
+                  : themeColors.text.primary
+              }
             />
-          </View>
+            <Text className="font-mono text-xs text-text-primary">
+              {post.likeCount}
+            </Text>
+          </Pressable>
+          <Pressable
+            hitSlop={8}
+            onPress={() => setCommentsOpen((open) => !open)}
+            className="min-h-9 flex-row items-center gap-2 rounded-full border border-border-default bg-background-secondary px-3"
+          >
+            <FontAwesome6
+              name="comment"
+              size={17}
+              color={themeColors.text.primary}
+            />
+            <Text className="font-mono text-xs text-text-primary">
+              {post.commentCount}
+            </Text>
+          </Pressable>
         </View>
 
         {caption && images.length > 0 ? (

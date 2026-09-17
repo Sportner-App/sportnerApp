@@ -11,6 +11,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { ScrollView as GestureScrollView } from "react-native-gesture-handler";
 
 import {
   AppScreen,
@@ -49,6 +50,7 @@ export function PostDetailScreen() {
   const [isCommenting, setIsCommenting] = useState(false);
   const [replyingTo, setReplyingTo] = useState<ApiComment | null>(null);
   const [incomingReply, setIncomingReply] = useState<ApiComment | null>(null);
+  const [mediaPage, setMediaPage] = useState(0);
 
   const scrollRef = useRef<ScrollView>(null);
   const { registerSection, scrollToSection } = useScrollToSection(scrollRef);
@@ -153,19 +155,40 @@ export function PostDetailScreen() {
           </Pressable>
 
           {images.length > 0 ? (
-            <ScrollView
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-            >
-              {images.map((item) => (
-                <Image
-                  key={item.id}
-                  source={{ uri: resolveMediaUrl(item.storagePath) }}
-                  style={{ width, height: width }}
-                />
-              ))}
-            </ScrollView>
+            <>
+              <GestureScrollView
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={(event) => {
+                  setMediaPage(
+                    Math.round(event.nativeEvent.contentOffset.x / width),
+                  );
+                }}
+              >
+                {images.map((item) => (
+                  <Image
+                    key={item.id}
+                    source={{ uri: resolveMediaUrl(item.storagePath) }}
+                    style={{ width, height: width }}
+                  />
+                ))}
+              </GestureScrollView>
+              {images.length > 1 ? (
+                <View className="flex-row justify-center gap-1">
+                  {images.map((item, index) => (
+                    <View
+                      key={item.id}
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        index === mediaPage
+                          ? "bg-brand-primary"
+                          : "bg-border-strong"
+                      }`}
+                    />
+                  ))}
+                </View>
+              ) : null}
+            </>
           ) : null}
 
           <View className="gap-4 px-6">

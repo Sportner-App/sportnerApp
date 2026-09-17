@@ -1,10 +1,21 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, Pressable, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import {
+  ScrollView,
+  type ScrollView as GestureScrollViewType,
+} from "react-native-gesture-handler";
 
-import { AppScreen, Button, Input, ScreenHeader } from "@/components";
+import { AppScreen, Input, ScreenHeader } from "@/components";
 import { useToast } from "@/contexts";
 import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -15,16 +26,27 @@ import {
   type PickedMedia,
 } from "@/utils/media-picker";
 
+const MAX_PHOTOS = 10;
+
 export function CreatePostScreen() {
   const router = useRouter();
   const { showToast } = useToast();
   const { t } = useTranslation(["feed", "social"]);
   const { chooseSource, sourceSheet } = useMediaSourceChoice();
+  const { width } = useWindowDimensions();
+  const previewSize = width - 48; // matches the screen's px-6 (24px) horizontal padding
+  const mediaScrollRef = useRef<GestureScrollViewType>(null);
   const [content, setContent] = useState("");
   const [photos, setPhotos] = useState<PickedMedia[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [saving, setSaving] = useState(false);
 
   const canShare = Boolean(content.trim() || photos.length > 0);
+
+  const goToPhoto = (index: number) => {
+    setActiveIndex(index);
+    mediaScrollRef.current?.scrollTo({ x: index * previewSize, animated: true });
+  };
 
   const choosePhotos = async () => {
     const source = await chooseSource();
@@ -53,7 +75,15 @@ export function CreatePostScreen() {
           next.push(photo);
         }
       }
-      return next.slice(0, 10);
+      return next.slice(0, MAX_PHOTOS);
+    });
+  };
+
+  const removePhoto = (uri: string) => {
+    setPhotos((current) => {
+      const next = current.filter((item) => item.uri !== uri);
+      setActiveIndex((index) => Math.min(index, Math.max(next.length - 1, 0)));
+      return next;
     });
   };
 
@@ -88,72 +118,140 @@ export function CreatePostScreen() {
   return (
     <AppScreen
       keyboardAvoiding
-      header={<ScreenHeader title={t("feed:create.header")} showBack />}
+      header={
+        <ScreenHeader
+          title={t("feed:create.header")}
+          showBack
+          right={
+            <Pressable
+              hitSlop={8}
+              disabled={!canShare || saving}
+              onPress={() => void submit()}
+              className="min-w-[44px] items-end px-1 py-2"
+            >
+              {saving ? (
+                <ActivityIndicator size="small" color="#ccff00" />
+              ) : (
+                <Text
+                  className={`font-body text-sm font-semibold ${
+                    canShare ? "text-brand-primary" : "text-brand-neutral"
+                  }`}
+                >
+                  {t("feed:create.share")}
+                </Text>
+              )}
+            </Pressable>
+          }
+        />
+      }
       footer={sourceSheet}
       contentClassName="gap-4 px-6 pt-3"
     >
-      <Text className="font-display text-2xl text-text-primary">
-        {t("feed:create.title")}
-      </Text>
-      <Input
-        value={content}
-        onChangeText={setContent}
-        multiline
-        numberOfLines={5}
-        textAlignVertical="top"
-        style={{ minHeight: 120, paddingTop: 14 }}
-        placeholder={t("feed:create.placeholder")}
-      />
-
-      <Pressable
-        onPress={() => void choosePhotos()}
-        className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-3.5 active:opacity-80"
-      >
-        <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-primary/15">
-          <FontAwesome6 name="image" size={14} color="#ccff00" />
+      {photos.length > 0 ? (
+        <View
+          className="overflow-hidden rounded-2xl border border-border-default bg-surface-primary"
+          style={{ width: previewSize, height: previewSize }}
+        >
+          <ScrollView
+            ref={mediaScrollRef}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={(event) => {
+              setActiveIndex(
+                Math.round(event.nativeEvent.contentOffset.x / previewSize),
+              );
+            }}
+          >
+            {photos.map((photo) => (
+              <Image
+                key={photo.uri}
+                source={{ uri: photo.uri }}
+                resizeMode="cover"
+                style={{ width: previewSize, height: previewSize }}
+              />
+            ))}
+          </ScrollView>
+          {photos.length > 1 ? (
+            <View className="absolute right-3 top-3 rounded-pill bg-background-primary/70 px-2.5 py-1">
+              <Text className="font-body text-[11px] font-semibold text-white">
+                {activeIndex + 1}/{photos.length}
+              </Text>
+            </View>
+          ) : null}
+          <Pressable
+            hitSlop={8}
+            onPress={() => void choosePhotos()}
+            className="absolute bottom-3 right-3 h-10 w-10 items-center justify-center rounded-full bg-background-primary/70 active:opacity-80"
+          >
+            <FontAwesome6 name="plus" size={14} color="#f8fafc" />
+          </Pressable>
         </View>
-        <View className="flex-1">
-          <Text className="font-body text-sm font-semibold text-text-primary">
+      ) : (
+        <Pressable
+          onPress={() => void choosePhotos()}
+          className="aspect-square w-full items-center justify-center gap-3 overflow-hidden rounded-2xl border border-border-default bg-surface-primary px-8"
+        >
+          <View className="h-14 w-14 items-center justify-center rounded-full bg-brand-primary/15">
+            <FontAwesome6 name="camera" size={20} color="#ccff00" />
+          </View>
+          <Text className="text-center font-body text-sm font-semibold text-text-primary">
             {t("feed:create.addPhoto")}
           </Text>
-          <Text className="font-body text-xs text-brand-neutral">
-            {photos.length > 0
-              ? t("feed:create.photosSelected", { count: photos.length })
-              : t("feed:create.photoHint")}
+          <Text className="text-center font-body text-xs text-brand-neutral">
+            {t("feed:create.photoHint")}
           </Text>
-        </View>
-        <FontAwesome6 name="plus" size={12} color="#64748b" />
-      </Pressable>
+        </Pressable>
+      )}
 
       {photos.length > 0 ? (
-        <View className="flex-row flex-wrap gap-2">
-          {photos.map((photo) => (
-            <View key={photo.uri} className="relative">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerClassName="gap-2"
+        >
+          {photos.map((photo, index) => (
+            <Pressable
+              key={photo.uri}
+              onPress={() => goToPhoto(index)}
+              className="relative"
+            >
               <Image
                 source={{ uri: photo.uri }}
-                className="h-20 w-20 rounded-2xl"
+                className={`h-16 w-16 rounded-xl border-2 ${
+                  index === activeIndex
+                    ? "border-brand-primary"
+                    : "border-transparent"
+                }`}
               />
               <Pressable
                 hitSlop={8}
-                onPress={() =>
-                  setPhotos((current) =>
-                    current.filter((item) => item.uri !== photo.uri),
-                  )
-                }
+                onPress={() => removePhoto(photo.uri)}
                 className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-background-primary"
               >
                 <FontAwesome6 name="xmark" size={9} color="#f8fafc" />
               </Pressable>
-            </View>
+            </Pressable>
           ))}
-        </View>
+          {photos.length < MAX_PHOTOS ? (
+            <Pressable
+              onPress={() => void choosePhotos()}
+              className="h-16 w-16 items-center justify-center rounded-xl border border-dashed border-border-default active:opacity-70"
+            >
+              <FontAwesome6 name="plus" size={14} color="#64748b" />
+            </Pressable>
+          ) : null}
+        </ScrollView>
       ) : null}
 
-      <Button
-        label={t("feed:create.share")}
-        disabled={!canShare}
-        isLoading={saving}
-        onPress={() => void submit()}
+      <Input
+        value={content}
+        onChangeText={setContent}
+        multiline
+        numberOfLines={3}
+        textAlignVertical="top"
+        style={{ minHeight: 72, paddingTop: 14 }}
+        placeholder={t("feed:create.placeholder")}
       />
     </AppScreen>
   );

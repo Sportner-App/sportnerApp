@@ -85,20 +85,13 @@ export function DiscoverScreen() {
       ) : null}
 
       {!isLoading && !error && posts.length > 0 ? (
-        <View className="flex-row items-end justify-between">
-          <View>
-            <Text className="font-display text-[22px] text-text-primary">
-              {t("discover:section.title")}
-            </Text>
-            <Text className="mt-1 font-body text-xs text-text-secondary">
-              {t("discover:section.subtitle")}
-            </Text>
-          </View>
-          <View className="rounded-full border border-border-default bg-surface-primary px-3 py-1.5">
-            <Text className="font-mono text-[10px] text-brand-primary">
-              {t("discover:section.postCount", { count: posts.length })}
-            </Text>
-          </View>
+        <View>
+          <Text className="font-display text-[22px] text-text-primary">
+            {t("discover:section.title")}
+          </Text>
+          <Text className="mt-1 font-body text-xs text-text-secondary">
+            {t("discover:section.subtitle")}
+          </Text>
         </View>
       ) : null}
 

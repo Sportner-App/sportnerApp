@@ -15,8 +15,7 @@
   },
   "section": {
     "title": "Capture the moment",
-    "subtitle": "Latest from the community",
-    "postCount": "{{count}} POSTS"
+    "subtitle": "Latest from the community"
   },
   "empty": {
     "message": "No shares yet. Be the first to add a photo.",
