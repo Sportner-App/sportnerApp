@@ -12,7 +12,7 @@
       "appleTeamId": "MN3MXLT7QL",
       "supportsTablet": true,
       "bundleIdentifier": "com.yagizerdenler.sportner",
-      "buildNumber": "28",
+      "buildNumber": "29",
       "infoPlist": {
         "CFBundleDisplayName": "Sportner",
         "ITSAppUsesNonExemptEncryption": false,
