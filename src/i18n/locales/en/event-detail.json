@@ -76,11 +76,13 @@
   },
   "share": {
     "title": "Share event",
-    "subtitle": "Pick a ready-made Sportner image or send the event link.",
+    "subtitle": "Choose where you want to share your story.",
+    "instagramLabel": "Instagram",
     "instagramStory": "Instagram Story",
     "instagramStoryDescription": "Ready-made 9:16 story image",
-    "instagramPost": "Instagram Post",
-    "instagramPostDescription": "Ready-made 4:5 portrait post image",
+    "tiktokLabel": "TikTok",
+    "tiktokStory": "TikTok Story",
+    "tiktokStoryDescription": "Ready-made 9:16 story image",
     "linkOption": "Share link",
     "linkOptionDescription": "WhatsApp, Messages and other apps",
     "preparing": "Preparing…",
@@ -88,13 +90,21 @@
     "failedTitle": "Couldn't share",
     "linkFailedTitle": "Link couldn't be shared",
     "tryAgainGeneric": "You can try again.",
-    "storyDialogTitle": "Share story image",
-    "postDialogTitle": "Share post image",
+    "instagramStoryDialogTitle": "Share Instagram story image",
+    "tiktokStoryDialogTitle": "Share TikTok story image",
     "shareMessage": "Check out {{title}}: {{url}}",
     "artworkJoin": "Join on Sportner",
     "artworkScanHint": "Scan the QR code to open the event",
     "capacityWithMax": "{{count}}/{{max}} participants",
-    "capacityUnlimited": "{{count}} participants"
+    "capacityUnlimited": "{{count}} participants",
+    "templateTitle": "Choose your template",
+    "templateSubtitle": "Pick a look for your {{platform}} story.",
+    "backToPlatforms": "Back to platforms",
+    "templates": {
+      "night": "Night",
+      "energy": "Energy",
+      "minimal": "Minimal"
+    }
   },
   "location": {
     "heading": "Location",

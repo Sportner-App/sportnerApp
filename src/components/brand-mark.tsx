@@ -2,7 +2,7 @@ import { Image, Text, View } from "react-native";
 
 import type { BrandMarkProps } from "@/types/components";
 
-const LOGO_MARK = require("../../assets/images/icon.png");
+const LOGO_MARK = require("../../assets/images/icon-removebg.png");
 
 export function BrandMark({ className, tone = "dark" }: BrandMarkProps) {
   const isLight = tone === "light";

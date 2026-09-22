@@ -76,11 +76,13 @@
   },
   "share": {
     "title": "Etkinliği paylaş",
-    "subtitle": "Hazır Sportner görselini seç veya etkinlik bağlantısını gönder.",
+    "subtitle": "Hikâye paylaşacağın platformu seç.",
+    "instagramLabel": "Instagram",
     "instagramStory": "Instagram Hikâyesi",
     "instagramStoryDescription": "9:16 hazır hikâye görseli",
-    "instagramPost": "Instagram Gönderisi",
-    "instagramPostDescription": "4:5 dikey gönderi görseli",
+    "tiktokLabel": "TikTok",
+    "tiktokStory": "TikTok Hikâyesi",
+    "tiktokStoryDescription": "9:16 hazır hikâye görseli",
     "linkOption": "Bağlantıyı paylaş",
     "linkOptionDescription": "WhatsApp, Mesajlar ve diğer uygulamalar",
     "preparing": "Hazırlanıyor…",
@@ -88,13 +90,21 @@
     "failedTitle": "Paylaşılamadı",
     "linkFailedTitle": "Bağlantı paylaşılamadı",
     "tryAgainGeneric": "Tekrar deneyebilirsin.",
-    "storyDialogTitle": "Hikâye görselini paylaş",
-    "postDialogTitle": "Gönderi görselini paylaş",
+    "instagramStoryDialogTitle": "Instagram hikâye görselini paylaş",
+    "tiktokStoryDialogTitle": "TikTok hikâye görselini paylaş",
     "shareMessage": "{{title}} etkinliğine göz at: {{url}}",
     "artworkJoin": "Sportner’da katıl",
     "artworkScanHint": "QR kodu tara ve etkinliği aç",
     "capacityWithMax": "{{count}}/{{max}} katılımcı",
-    "capacityUnlimited": "{{count}} katılımcı"
+    "capacityUnlimited": "{{count}} katılımcı",
+    "templateTitle": "Şablonunu seç",
+    "templateSubtitle": "{{platform}} hikâyen için bir görünüm seç.",
+    "backToPlatforms": "Platformlara dön",
+    "templates": {
+      "night": "Gece",
+      "energy": "Enerji",
+      "minimal": "Minimal"
+    }
   },
   "location": {
     "heading": "Konum",
