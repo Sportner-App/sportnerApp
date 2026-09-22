@@ -68,7 +68,7 @@ export function useEvents(
 
   const fetchPage = useCallback(
     async (
-      mode: "initial" | "refresh" | "more",
+      mode: "initial" | "refresh" | "silent" | "more",
       activeCategoryId: string | null,
       nextPage: number,
       activeFilters: EventListFilters,
@@ -78,7 +78,7 @@ export function useEvents(
         setIsLoading(true);
       } else if (mode === "refresh") {
         setIsRefreshing(true);
-      } else {
+      } else if (mode === "more") {
         setIsLoadingMore(true);
       }
 
@@ -121,15 +121,19 @@ export function useEvents(
         setHasNext(result.hasNext);
       } catch (err) {
         setError(getApiErrorMessage(err, t("loadFailed")));
-        if (mode !== "more") {
+        if (mode === "initial") {
           setEvents([]);
           setTotalCount(0);
           setHasNext(false);
         }
       } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
-        setIsLoadingMore(false);
+        if (mode === "initial") {
+          setIsLoading(false);
+        } else if (mode === "refresh") {
+          setIsRefreshing(false);
+        } else if (mode === "more") {
+          setIsLoadingMore(false);
+        }
       }
     },
     [t],
@@ -176,7 +180,7 @@ export function useEvents(
 
           try {
             await fetchPage(
-              isFirstLoad ? "initial" : "refresh",
+              isFirstLoad ? "initial" : "silent",
               categoryFilterRef.current,
               1,
               filtersRef.current,

@@ -179,12 +179,14 @@ function CommentRow({
     <View className="flex-row items-start gap-2.5">
       <Pressable
         disabled={!onAuthorPress}
-        onPress={onAuthorPress ? () => onAuthorPress(comment.userId) : undefined}
+        onPress={
+          onAuthorPress ? () => onAuthorPress(comment.userId) : undefined
+        }
         className="mt-0.5"
       >
         <Avatar
           uri={comment.profileImageUrl}
-          name={username}
+          name={comment.firstName || username}
           size={indented ? 22 : 28}
           borderWidth={0}
         />
@@ -211,7 +213,9 @@ function CommentRow({
           onPress={() => onReply(comment)}
           className="mt-0.5 self-start py-0.5"
         >
-          <Text className={`font-body text-[11px] font-semibold ${actionColor}`}>
+          <Text
+            className={`font-body text-[11px] font-semibold ${actionColor}`}
+          >
             {t("components:commentThread.reply")}
           </Text>
         </Pressable>

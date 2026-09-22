@@ -1,15 +1,15 @@
-import { Text, View } from "react-native";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components";
-import { shadows } from "@/constants/theme";
+import { shadows, themeColors } from "@/constants/theme";
 import type { ButtonVariant } from "@/types/components";
 import type { EventDetail } from "@/types/events";
 import {
   canAccessEventChat,
-  formatEventFee,
   hasApprovedParticipation,
   hasEventEnded,
   hasPendingParticipation,
@@ -26,13 +26,14 @@ type JoinBarProps = {
   onJoin: () => void;
   onLeave: () => void;
   onChat: () => void;
+  onShare: () => void;
   isRespondingInvitation: boolean;
   onAcceptInvitation: () => void;
   onDeclineInvitation: () => void;
 };
 
 type BarContent = {
-  statusTitle: string;
+  statusTitle?: string;
   statusSubtitle?: string;
   actionLabel: string;
   action?: () => void;
@@ -83,10 +84,6 @@ function resolveBar({
     event.status,
   );
   const ended = hasEventEnded(event);
-  const spotsLeft =
-    event.maxParticipants == null
-      ? null
-      : Math.max(event.maxParticipants - event.participantCount, 0);
 
   if (isOrganizer) {
     return {
@@ -156,10 +153,6 @@ function resolveBar({
   }
 
   return {
-    statusTitle: spotsLeft == null ? t("join.spotsInfinite") : String(spotsLeft),
-    statusSubtitle: event.isPaid
-      ? `${t("join.spotsLeftSuffix")} · ${formatEventFee(true, event.feeAmount)}`
-      : t("join.spotsLeftSuffix"),
     actionLabel: t("join.join"),
     action: onJoin,
     variant: "primary",
@@ -174,6 +167,7 @@ export function JoinBar({
   isOrganizer,
   onJoin,
   onChat,
+  onShare,
   isRespondingInvitation,
   onAcceptInvitation,
   onDeclineInvitation,
@@ -198,22 +192,24 @@ export function JoinBar({
       className="flex-row items-center gap-4 border-t border-border-default bg-surface-primary px-5 pt-3"
       style={[shadows.md, { paddingBottom: insets.bottom + 10 }]}
     >
-      <View className="shrink">
-        <Text
-          className={
-            bar.statusSubtitle
-              ? "font-mono-bold text-lg text-text-primary"
-              : "max-w-[120px] font-body-bold text-sm text-text-primary"
-          }
-        >
-          {bar.statusTitle}
-        </Text>
-        {bar.statusSubtitle ? (
-          <Text className="font-body text-xs text-text-secondary">
-            {bar.statusSubtitle}
+      {bar.statusTitle ? (
+        <View className="shrink">
+          <Text
+            className={
+              bar.statusSubtitle
+                ? "font-mono-bold text-lg text-text-primary"
+                : "max-w-[120px] font-body-bold text-sm text-text-primary"
+            }
+          >
+            {bar.statusTitle}
           </Text>
-        ) : null}
-      </View>
+          {bar.statusSubtitle ? (
+            <Text className="font-body text-xs text-text-secondary">
+              {bar.statusSubtitle}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
 
       <View className="flex-1 flex-row gap-2">
         {bar.secondaryActionLabel ? (
@@ -241,6 +237,20 @@ export function JoinBar({
           />
         </View>
       </View>
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t("share.title")}
+        hitSlop={4}
+        onPress={onShare}
+        className="h-11 w-11 items-center justify-center rounded-full border border-border-default bg-background-secondary active:opacity-80"
+      >
+        <FontAwesome6
+          name="arrow-up-from-bracket"
+          size={15}
+          color={themeColors.brand.primary}
+        />
+      </Pressable>
     </View>
   );
 }

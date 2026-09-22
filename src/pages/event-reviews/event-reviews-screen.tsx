@@ -235,7 +235,7 @@ function OrganizerCard({
     >
       <Avatar
         uri={peer.profileImageUrl}
-        name={peer.username || peer.firstName}
+        name={peer.firstName || peer.username}
         size={48}
         borderWidth={0}
       />
@@ -270,7 +270,7 @@ function PeerRow({
     >
       <Avatar
         uri={peer.profileImageUrl}
-        name={peer.username || peer.firstName}
+        name={peer.firstName || peer.username}
         size={36}
         borderWidth={0}
       />
@@ -317,7 +317,7 @@ function RatingForm({
       <View className="flex-row items-center gap-3">
         <Avatar
           uri={peer.profileImageUrl}
-          name={peer.username || peer.firstName}
+          name={peer.firstName || peer.username}
           size={52}
           borderWidth={0}
         />
@@ -404,7 +404,7 @@ function ReviewList({ reviews }: { reviews: ApiReview[] }) {
             <View className="flex-row items-center gap-3">
               <Avatar
                 uri={review.reviewerProfileImageUrl}
-                name={review.reviewerUsername || review.reviewerFirstName}
+                name={review.reviewerFirstName || review.reviewerUsername}
                 size={36}
                 borderWidth={0}
               />

@@ -11,6 +11,7 @@ import {
   Button,
   LinearRefreshBar,
   ScreenHeader,
+  SegmentedTabs,
   SportLoader,
 } from "@/components";
 import { radius, spacing, themeColors } from "@/constants/theme";
@@ -24,6 +25,7 @@ import { AboutSection } from "./about-section";
 import { EventQnASection } from "./event-qna-section";
 import { EventDetailHero } from "./event-detail-hero";
 import { EventOrganizerSection } from "./event-organizer-section";
+import { EventParticipantsTab } from "./event-participants-tab";
 import { EventPrimaryInfo } from "./event-primary-info";
 import { EventShareSheet } from "./event-share-sheet";
 import { JoinBar } from "./join-bar";
@@ -32,12 +34,15 @@ import { LocationMap } from "./location-map";
 import { OrganizerPanel } from "./organizer-panel";
 import { PendingRequestsSheet } from "./pending-requests-sheet";
 
+type EventDetailTab = "overview" | "participants" | "questions";
+
 export function EventDetailScreen() {
   const { t } = useTranslation("eventDetail");
   const { id, focus } = useLocalSearchParams<{ id: string; focus?: string }>();
   const router = useRouter();
   const detail = useEventDetail(id);
   const { isAuthenticated, requireAuth } = useRequireAuth();
+  const [activeTab, setActiveTab] = useState<EventDetailTab>("overview");
 
   const scrollRef = useRef<ScrollView>(null);
   const { registerSection, scrollToSection } = useScrollToSection(scrollRef);
@@ -53,9 +58,8 @@ export function EventDetailScreen() {
       return;
     }
     hasAppliedFocusRef.current = true;
-    // Gives EventQnASection's own data fetch a head start so we scroll to its real height
-    // rather than a loading placeholder's.
-    const timeout = setTimeout(() => scrollToSection("questions"), 400);
+    setActiveTab("questions");
+    const timeout = setTimeout(() => scrollToSection("tabs"), 250);
     return () => clearTimeout(timeout);
   }, [detail.event, detail.isLoading, focus, scrollToSection]);
 
@@ -97,7 +101,6 @@ export function EventDetailScreen() {
           <EventDetailHero
             event={detail.event}
             onBack={() => router.back()}
-            onShare={() => setShareSheetOpen(true)}
             pendingCount={showPendingEntry ? pendingCount : 0}
             onPendingPress={
               showPendingEntry ? handleOpenPendingRequests : undefined
@@ -127,6 +130,7 @@ export function EventDetailScreen() {
             }
             onLeave={detail.leave}
             onChat={() => requireAuth(t("requireAuth.chat")) && openChat()}
+            onShare={() => setShareSheetOpen(true)}
             isRespondingInvitation={detail.isRespondingInvitation}
             onAcceptInvitation={detail.acceptInvitation}
             onDeclineInvitation={detail.declineInvitation}
@@ -180,17 +184,89 @@ export function EventDetailScreen() {
             }
           />
 
-          <SectionDivider />
+          <View ref={registerSection("tabs")} className="mt-xl">
+            <SegmentedTabs
+              options={[
+                { key: "overview", label: t("tabs.overview") },
+                { key: "participants", label: t("tabs.participants") },
+                { key: "questions", label: t("tabs.questions") },
+              ]}
+              value={activeTab}
+              onChange={setActiveTab}
+              indicatorMotion="timing"
+            />
+          </View>
 
-          <EventOrganizerSection
-            event={detail.event}
-            isOrganizer={detail.isOrganizer}
-            onOpenUser={(userId) => router.push(`/users/${userId}`)}
-            onChat={openChat}
-          />
+          <View
+            className="mt-lg gap-lg"
+            style={{ display: activeTab === "overview" ? "flex" : "none" }}
+          >
+            <View className="rounded-3xl border border-border-default bg-background-secondary p-4">
+              <EventOrganizerSection
+                event={detail.event}
+                isOrganizer={detail.isOrganizer}
+                onOpenUser={(userId) => router.push(`/users/${userId}`)}
+                onChat={openChat}
+              />
+            </View>
 
-          {detail.isOrganizer ? (
-            <View className="mt-lg">
+            <View className="rounded-3xl border border-border-default bg-background-secondary p-4">
+              <AboutSection event={detail.event} />
+            </View>
+
+            <LocationMap event={detail.event} />
+
+            {!detail.isOrganizer &&
+            hasApprovedParticipation(detail.event.myParticipationStatus) &&
+            !hasEventEnded(detail.event) ? (
+              <LeaveEventAction
+                isLeaving={detail.isLeaving}
+                onLeave={detail.leave}
+              />
+            ) : null}
+
+            {!detail.isOrganizer && detail.canCancel ? (
+              <Button
+                label={t("closeEvent")}
+                variant="danger"
+                onPress={detail.cancel}
+                isLoading={detail.isMutating}
+                disabled={detail.isMutating}
+              />
+            ) : null}
+
+            {!detail.isOrganizer && isAuthenticated ? (
+              <Button
+                label={t("report")}
+                variant="dangerOutline"
+                size="sm"
+                onPress={() =>
+                  router.push({
+                    pathname: "/report",
+                    params: {
+                      entityType: "1",
+                      entityId: detail.event?.id,
+                    },
+                  })
+                }
+              />
+            ) : null}
+          </View>
+
+          <View
+            className="mt-lg gap-lg"
+            style={{
+              display: activeTab === "participants" ? "flex" : "none",
+            }}
+          >
+            <EventParticipantsTab
+              event={detail.event}
+              pendingCount={pendingCount}
+              onOpenPendingRequests={handleOpenPendingRequests}
+              onOpenUser={(userId) => router.push(`/users/${userId}`)}
+            />
+
+            {detail.isOrganizer ? (
               <OrganizerPanel
                 event={detail.event}
                 canManage={detail.canManage}
@@ -209,77 +285,26 @@ export function EventDetailScreen() {
                   router.push(`/events/${detail.event?.id}/reviews`)
                 }
                 onRateUser={(userId) => {
-                  if (!detail.event) {
-                    return;
-                  }
+                  if (!detail.event) return;
                   router.push({
                     pathname: "/events/[id]/reviews",
                     params: { id: detail.event.id, userId },
                   });
                 }}
               />
-            </View>
-          ) : null}
+            ) : null}
+          </View>
 
-          <SectionDivider />
-
-          <AboutSection event={detail.event} />
-
-          <SectionDivider />
-
-          <View ref={registerSection("questions")}>
+          <View
+            className="mt-lg"
+            style={{ display: activeTab === "questions" ? "flex" : "none" }}
+          >
             <EventQnASection
               event={detail.event}
               isOrganizer={detail.isOrganizer}
               onOpenUser={(userId) => router.push(`/users/${userId}`)}
             />
           </View>
-
-          <SectionDivider />
-
-          <LocationMap event={detail.event} />
-
-          {!detail.isOrganizer &&
-          hasApprovedParticipation(detail.event.myParticipationStatus) &&
-          !hasEventEnded(detail.event) ? (
-            <View className="mt-lg">
-              <LeaveEventAction
-                isLeaving={detail.isLeaving}
-                onLeave={detail.leave}
-              />
-            </View>
-          ) : null}
-
-          {!detail.isOrganizer && detail.canCancel ? (
-            <View className="mt-lg">
-              <Button
-                label={t("closeEvent")}
-                variant="danger"
-                onPress={detail.cancel}
-                isLoading={detail.isMutating}
-                disabled={detail.isMutating}
-              />
-            </View>
-          ) : null}
-
-          {!detail.isOrganizer && isAuthenticated ? (
-            <View className="mt-sm">
-              <Button
-                label={t("report")}
-                variant="dangerOutline"
-                size="sm"
-                onPress={() =>
-                  router.push({
-                    pathname: "/report",
-                    params: {
-                      entityType: "1",
-                      entityId: detail.event?.id,
-                    },
-                  })
-                }
-              />
-            </View>
-          ) : null}
         </View>
       )}
       {detail.event && detail.isOrganizer ? (
@@ -304,14 +329,5 @@ export function EventDetailScreen() {
         />
       ) : null}
     </AppScreen>
-  );
-}
-
-function SectionDivider() {
-  return (
-    <View
-      className="my-lg h-px w-full"
-      style={{ backgroundColor: themeColors.border.default }}
-    />
   );
 }

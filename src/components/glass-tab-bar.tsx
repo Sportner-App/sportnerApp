@@ -4,12 +4,7 @@ import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Platform,
-  Pressable,
-  View,
-  type View as ViewType,
-} from "react-native";
+import { Platform, Pressable, View, type View as ViewType } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -77,7 +72,8 @@ function TabButton({
       <View
         ref={tourTargetRef}
         collapsable={false}
-        className="h-full flex-1 items-center justify-center"
+        className="z-10 h-full flex-1 items-center justify-center"
+        style={{ overflow: "visible" }}
       >
         <AnimatedPressable
           accessibilityRole="button"
@@ -86,26 +82,27 @@ function TabButton({
           onPressIn={pressIn}
           onPressOut={pressOut}
           style={animatedStyle}
-          className="h-[54px] w-[54px] items-center justify-center rounded-full border border-white/25 bg-white/10"
+          hitSlop={6}
+          className="h-[72px] w-[72px] items-center justify-center rounded-full border border-white/30 bg-background-primary/80"
         >
           <View
-            className="h-[44px] w-[44px] items-center justify-center overflow-hidden rounded-full bg-brand-primary"
+            className="h-[60px] w-[60px] items-center justify-center overflow-hidden rounded-full bg-brand-primary"
             style={{
               shadowColor: themeColors.brand.primary,
-              shadowOpacity: 0.32,
-              shadowRadius: 16,
-              shadowOffset: { width: 0, height: 6 },
-              elevation: 8,
+              shadowOpacity: 0.4,
+              shadowRadius: 18,
+              shadowOffset: { width: 0, height: 7 },
+              elevation: 14,
             }}
           >
             <Animated.View
               pointerEvents="none"
               style={glowStyle}
-              className="absolute h-11 w-11 rounded-full bg-white"
+              className="absolute h-[60px] w-[60px] rounded-full bg-white"
             />
             <FontAwesome6
               name={icon}
-              size={17}
+              size={20}
               color={themeColors.text.onPrimary}
             />
           </View>
@@ -194,9 +191,10 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
       style={{ paddingBottom: Math.max(insets.bottom, 9) }}
     >
       <View
-        className="overflow-hidden rounded-[30px] border border-white/30"
+        className="h-16 rounded-[30px] border border-white/30"
         style={{
           backgroundColor: "rgba(6, 17, 26, 0)",
+          overflow: "visible",
           shadowColor: "#000000",
           shadowOpacity: 0.3,
           shadowRadius: 24,
@@ -204,90 +202,88 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
           elevation: 12,
         }}
       >
-        <BlurView
-          intensity={Platform.OS === "ios" ? 26 : 18}
-          tint={Platform.OS === "ios" ? "systemUltraThinMaterialDark" : "dark"}
-          experimentalBlurMethod={
-            Platform.OS === "android" ? "dimezisBlurView" : undefined
-          }
-          style={{ overflow: "hidden" }}
+        <View
+          pointerEvents="none"
+          className="absolute inset-0 overflow-hidden rounded-[29px]"
         >
-          <View
-            pointerEvents="none"
-            className="absolute inset-0 bg-background-primary/5"
-          />
-          <View
-            pointerEvents="none"
-            className="absolute inset-x-5 top-0 h-px bg-white/50"
-          />
-          <View
-            pointerEvents="none"
-            className="absolute inset-x-8 bottom-0 h-px bg-white/10"
-          />
+          <BlurView
+            intensity={Platform.OS === "ios" ? 26 : 18}
+            tint={
+              Platform.OS === "ios" ? "systemUltraThinMaterialDark" : "dark"
+            }
+            experimentalBlurMethod={
+              Platform.OS === "android" ? "dimezisBlurView" : undefined
+            }
+            style={{ flex: 1 }}
+          >
+            <View className="absolute inset-0 bg-background-primary/5" />
+            <View className="absolute inset-x-5 top-0 h-px bg-white/50" />
+            <View className="absolute inset-x-8 bottom-0 h-px bg-white/10" />
+          </BlurView>
+        </View>
 
-          <View className="h-16 flex-row items-center px-1.5">
-            {TAB_ITEMS.map((item) => {
-              const routeIndex = state.routes.findIndex(
-                (route) => route.name === item.key,
-              );
-              const focused = !item.isAction && routeIndex === state.index;
+        <View className="h-16 flex-row items-center px-1.5">
+          {TAB_ITEMS.map((item) => {
+            const routeIndex = state.routes.findIndex(
+              (route) => route.name === item.key,
+            );
+            const focused = !item.isAction && routeIndex === state.index;
 
-              return (
-                <TabButton
-                  key={item.key}
-                  label={t(item.labelKey)}
-                  icon={item.icon}
-                  focused={focused}
-                  isAction={item.isAction}
-                  isProfile={item.key === "profile"}
-                  avatarUrl={item.key === "profile" ? avatarUrl : undefined}
-                  avatarName={item.key === "profile" ? avatarName : undefined}
-                  tourTargetRef={
-                    item.isAction
-                      ? registerTarget("create")
-                      : item.key === "discover"
-                        ? registerTarget("discover")
-                        : undefined
+            return (
+              <TabButton
+                key={item.key}
+                label={t(item.labelKey)}
+                icon={item.icon}
+                focused={focused}
+                isAction={item.isAction}
+                isProfile={item.key === "profile"}
+                avatarUrl={item.key === "profile" ? avatarUrl : undefined}
+                avatarName={item.key === "profile" ? avatarName : undefined}
+                tourTargetRef={
+                  item.isAction
+                    ? registerTarget("create")
+                    : item.key === "discover"
+                      ? registerTarget("discover")
+                      : undefined
+                }
+                onPress={() => {
+                  if (item.isAction) {
+                    if (!requireAuth(t("requireAuth.create"))) return;
+                    router.push("/events/create");
+                    return;
                   }
-                  onPress={() => {
-                    if (item.isAction) {
-                      if (!requireAuth(t("requireAuth.create"))) return;
-                      router.push("/events/create");
-                      return;
-                    }
 
-                    if (
-                      (item.key === "activity" || item.key === "profile") &&
-                      !requireAuth(
-                        t(
-                          item.key === "activity"
-                            ? "requireAuth.activity"
-                            : "requireAuth.profile",
-                        ),
-                      )
+                  if (
+                    (item.key === "activity" || item.key === "profile") &&
+                    !requireAuth(
+                      t(
+                        item.key === "activity"
+                          ? "requireAuth.activity"
+                          : "requireAuth.profile",
+                      ),
                     )
-                      return;
+                  )
+                    return;
 
-                    const route = state.routes[routeIndex];
-                    if (!route) {
-                      return;
-                    }
+                  const route = state.routes[routeIndex];
+                  if (!route) {
+                    return;
+                  }
 
-                    const event = navigation.emit({
-                      type: "tabPress",
-                      target: route.key,
-                      canPreventDefault: true,
-                    });
+                  const event = navigation.emit({
+                    type: "tabPress",
+                    target: route.key,
+                    canPreventDefault: true,
+                  });
 
-                    if (!focused && !event.defaultPrevented) {
-                      navigation.navigate(route.name, route.params);
-                    }
-                  }}
-                />
-              );
-            })}
-          </View>
-        </BlurView>
+                  if (!focused && !event.defaultPrevented) {
+                    navigation.navigate(route.name, route.params);
+                  }
+                }}
+              />
+            );
+          })}
+        </View>
       </View>
     </View>
   );

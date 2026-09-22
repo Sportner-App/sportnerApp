@@ -36,14 +36,14 @@ export function ProfileHero({ profile, onEdit }: ProfileHeroProps) {
         borderWidth={2}
       />
 
-      <View className="min-w-0 flex-1">
+      <View className="min-w-0 flex-1 gap-1.5">
         <Text
           numberOfLines={1}
           className="font-display text-[22px] text-text-primary"
         >
           @{profile.username}
         </Text>
-        <View className="mt-1 flex-row items-center gap-1.5">
+        <View className="flex-row items-center gap-1.5">
           <Text
             numberOfLines={1}
             className="shrink font-body text-sm text-text-secondary"
@@ -54,20 +54,24 @@ export function ProfileHero({ profile, onEdit }: ProfileHeroProps) {
             <FontAwesome6 name="lock" size={9} color="#6f7d86" />
           ) : null}
         </View>
-        {ageGenderLabel ? (
-          <View className="mt-2 flex-row items-center gap-1.5">
-            <FontAwesome6 name="cake-candles" size={9} color="#ccff00" />
-            <Text className="font-body text-[11px] text-text-tertiary">
-              {ageGenderLabel}
-            </Text>
-          </View>
-        ) : null}
-        {profile.city ? (
-          <View className="mt-2 flex-row items-center gap-1.5">
-            <FontAwesome6 name="location-dot" size={9} color="#ccff00" />
-            <Text className="font-body text-[11px] text-text-tertiary">
-              {profile.city}
-            </Text>
+        {ageGenderLabel || profile.city ? (
+          <View className="mt-0.5 flex-row flex-wrap items-center gap-x-3 gap-y-1.5">
+            {ageGenderLabel ? (
+              <View className="flex-row items-center gap-1.5">
+                <FontAwesome6 name="cake-candles" size={10} color="#ccff00" />
+                <Text className="font-body text-xs text-text-tertiary">
+                  {ageGenderLabel}
+                </Text>
+              </View>
+            ) : null}
+            {profile.city ? (
+              <View className="flex-row items-center gap-1.5">
+                <FontAwesome6 name="location-dot" size={10} color="#ccff00" />
+                <Text className="font-body text-xs text-text-tertiary">
+                  {profile.city}
+                </Text>
+              </View>
+            ) : null}
           </View>
         ) : null}
       </View>

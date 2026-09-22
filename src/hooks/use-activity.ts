@@ -8,7 +8,10 @@ import {
   getMyParticipatingEvents,
 } from "@/services/events-service";
 import type { EventListPage, EventSummary } from "@/types/events";
-import { hasEventStartedOrClosed, hasPendingParticipation } from "@/utils/events";
+import {
+  hasEventStartedOrClosed,
+  hasPendingParticipation,
+} from "@/utils/events";
 
 export type ActivityTab = "upcoming" | "past" | "pending" | "organized";
 
@@ -55,10 +58,10 @@ export function useActivity() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async (mode: "initial" | "refresh") => {
+  const load = useCallback(async (mode: "initial" | "refresh" | "silent") => {
     if (mode === "initial") {
       setIsLoading(true);
-    } else {
+    } else if (mode === "refresh") {
       setIsRefreshing(true);
     }
 
@@ -75,8 +78,11 @@ export function useActivity() {
     } catch (err) {
       setError(getApiErrorMessage(err, i18n.t("activity:errors.loadFailed")));
     } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
+      if (mode === "initial") {
+        setIsLoading(false);
+      } else if (mode === "refresh") {
+        setIsRefreshing(false);
+      }
     }
   }, []);
 
@@ -84,7 +90,7 @@ export function useActivity() {
 
   useFocusEffect(
     useCallback(() => {
-      void load(hasLoadedRef.current ? "refresh" : "initial").finally(() => {
+      void load(hasLoadedRef.current ? "silent" : "initial").finally(() => {
         hasLoadedRef.current = true;
       });
     }, [load]),
@@ -149,7 +155,9 @@ export function useActivity() {
         totalCount: prev.totalCount + next.items.length,
       }));
     } catch (err) {
-      setError(getApiErrorMessage(err, i18n.t("activity:errors.loadMoreFailed")));
+      setError(
+        getApiErrorMessage(err, i18n.t("activity:errors.loadMoreFailed")),
+      );
     } finally {
       setIsLoadingMore(false);
     }

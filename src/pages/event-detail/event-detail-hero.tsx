@@ -29,7 +29,6 @@ import { PendingRequestsHeaderAction } from "./pending-requests-entry";
 type EventDetailHeroProps = {
   event: EventDetail;
   onBack: () => void;
-  onShare: () => void;
   pendingCount?: number;
   onPendingPress?: () => void;
 };
@@ -40,7 +39,6 @@ const OVERLAY = themeColors.surface.dark;
 export function EventDetailHero({
   event,
   onBack,
-  onShare,
   pendingCount = 0,
   onPendingPress,
 }: EventDetailHeroProps) {
@@ -69,7 +67,6 @@ export function EventDetailHero({
         className="overflow-hidden"
         style={{
           aspectRatio: HERO_ASPECT,
-
           backgroundColor: sportSoft,
         }}
         onLayout={(layoutEvent) => {
@@ -113,11 +110,6 @@ export function EventDetailHero({
                   onPress={onPendingPress}
                 />
               ) : null}
-              <GlassControl
-                accessibilityLabel={t("share.title")}
-                icon="arrow-up-from-bracket"
-                onPress={onShare}
-              />
             </View>
           </View>
 

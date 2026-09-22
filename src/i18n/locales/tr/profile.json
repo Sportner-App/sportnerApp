@@ -130,16 +130,9 @@
   "privacy": {
     "title": "GİZLİLİK",
     "heading": "Gizlilik",
-    "subtitle": "Profilinin kimler tarafından görüleceğini seç.",
-    "publicTitle": "Herkese açık",
-    "publicDescription": "Sporcular profilini ve istatistiklerini görebilir.",
-    "privateTitle": "Gizli",
-    "privateDescription": "Yalnızca sen ve kısıtlı bağlantılar görür.",
+    "subtitle": "Hesabınla ilgili gizlilik ve güvenlik ayarları.",
     "blockedTitle": "Engellenenler",
     "blockedDescription": "Engellediğin kişileri gör ve engeli kaldır.",
-    "profilePublic": "Profil açık",
-    "profilePrivate": "Profil gizli",
-    "updateFailed": "Güncellenemedi",
     "emailVerification": {
       "sectionTitle": "Email",
       "verifiedTitle": "Email doğrulandı",

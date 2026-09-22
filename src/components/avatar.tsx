@@ -37,7 +37,6 @@ export function Avatar({
   uri,
   name,
   size = 40,
-  isGuest = false,
   fallbackIcon,
   onPress,
   previewable = true,
@@ -58,6 +57,7 @@ export function Avatar({
   }, [resolvedUri]);
 
   const hasPhoto = Boolean(resolvedUri && !imageFailed);
+  const hasFallbackName = Boolean(name?.trim());
   const canPreview = previewable && hasPhoto;
   const isInteractive = canPreview || Boolean(onPress);
 
@@ -83,7 +83,7 @@ export function Avatar({
         onError={() => setImageFailed(true)}
         style={{ width: "100%", height: "100%" }}
       />
-    ) : isGuest || fallbackIcon ? (
+    ) : fallbackIcon || !hasFallbackName ? (
       <FontAwesome6
         name={fallbackIcon ?? "user"}
         size={Math.max(size * 0.32, 10)}
@@ -146,24 +146,14 @@ function initials(value?: string | null) {
   const normalized = value?.trim();
   if (!normalized) return "S";
 
-  const result: string[] = [];
-  let isAtWordStart = true;
+  const parts = normalized.split(/\s+/).filter(Boolean);
+  const firstInitial = Array.from(parts[0] ?? "")[0] ?? "";
+  const lastInitial =
+    parts.length > 1
+      ? (Array.from(parts[parts.length - 1] ?? "")[0] ?? "")
+      : "";
 
-  for (const character of normalized) {
-    const isWhitespace =
-      character === " " ||
-      character === "\t" ||
-      character === "\n" ||
-      character === "\r";
-
-    if (isWhitespace) {
-      isAtWordStart = true;
-    } else if (isAtWordStart) {
-      result.push(character);
-      isAtWordStart = false;
-      if (result.length === 2) break;
-    }
-  }
-
-  return result.join("").toLocaleUpperCase(getCurrentLocale()) || "S";
+  return (
+    `${firstInitial}${lastInitial}`.toLocaleUpperCase(getCurrentLocale()) || "S"
+  );
 }

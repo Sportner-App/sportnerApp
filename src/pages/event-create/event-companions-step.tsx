@@ -178,7 +178,7 @@ export function EventCompanionsStep({
                   >
                     <Avatar
                       uri={friend.profileImageUrl}
-                      name={friend.username || friend.firstName}
+                      name={friend.firstName || friend.username}
                       size={44}
                       borderWidth={0}
                     />

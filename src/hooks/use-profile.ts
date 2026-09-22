@@ -5,10 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { useAuth, useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
-import {
-  getMyProfile,
-  ProfileNotFoundError,
-} from "@/services/profile-service";
+import { getMyProfile, ProfileNotFoundError } from "@/services/profile-service";
 import type { UserProfile } from "@/types/profile";
 
 export function useProfile() {
@@ -24,32 +21,40 @@ export function useProfile() {
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
 
-  const load = useCallback(async (mode: "initial" | "refresh") => {
-    if (mode === "initial") {
-      setIsLoading(true);
-    } else {
-      setIsRefreshing(true);
-    }
-
-    try {
-      setError(null);
-      setNotFound(false);
-      setProfile(await getMyProfile());
-    } catch (err) {
-      if (err instanceof ProfileNotFoundError) {
-        setNotFound(true);
-        setProfile(null);
-        setError(err.message);
-      } else {
-        setNotFound(false);
-        setProfile(null);
-        setError(getApiErrorMessage(err, t("profile:loadFailed")));
+  const load = useCallback(
+    async (mode: "initial" | "refresh" | "silent") => {
+      if (mode === "initial") {
+        setIsLoading(true);
+      } else if (mode === "refresh") {
+        setIsRefreshing(true);
       }
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [t]);
+
+      try {
+        setError(null);
+        setNotFound(false);
+        setProfile(await getMyProfile());
+      } catch (err) {
+        if (err instanceof ProfileNotFoundError) {
+          setNotFound(true);
+          setProfile(null);
+          setError(err.message);
+        } else {
+          setNotFound(false);
+          if (mode === "initial") {
+            setProfile(null);
+          }
+          setError(getApiErrorMessage(err, t("profile:loadFailed")));
+        }
+      } finally {
+        if (mode === "initial") {
+          setIsLoading(false);
+        } else if (mode === "refresh") {
+          setIsRefreshing(false);
+        }
+      }
+    },
+    [t],
+  );
 
   const refresh = useCallback(() => load("refresh"), [load]);
 
@@ -57,7 +62,7 @@ export function useProfile() {
 
   useFocusEffect(
     useCallback(() => {
-      void load(hasLoadedRef.current ? "refresh" : "initial").finally(() => {
+      void load(hasLoadedRef.current ? "silent" : "initial").finally(() => {
         hasLoadedRef.current = true;
       });
     }, [load]),

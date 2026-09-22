@@ -61,6 +61,10 @@ export function ProfileScreen() {
       setTimeout(startTour, 250);
       return;
     }
+    if (key === "logout") {
+      void logout();
+      return;
+    }
     const routes: Record<string, string> = {
       edit: "/profile/edit",
       sports: "/profile/sports",
@@ -147,16 +151,8 @@ export function ProfileScreen() {
           ) : null}
 
           {activeTab === "settings" ? (
-            <MenuSection onItemPress={openMenu} />
+            <MenuSection onItemPress={openMenu} isSigningOut={isSigningOut} />
           ) : null}
-
-          <Button
-            label={t("settings:logout")}
-            variant="danger"
-            icon="right-from-bracket"
-            isLoading={isSigningOut}
-            onPress={logout}
-          />
         </>
       )}
     </TabPage>

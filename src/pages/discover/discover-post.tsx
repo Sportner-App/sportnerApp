@@ -56,10 +56,9 @@ export function DiscoverPost({
   const [heartBurst, setHeartBurst] = useState(false);
 
   const author =
-    post.username || post.firstName || t("events:fallback.athlete");
+    post.firstName || post.username || t("events:fallback.athlete");
   const athleteHandle = post.username || t("events:fallback.athleteHandle");
-  const replyUsername =
-    replyingTo?.username || t("social:fallback.user");
+  const replyUsername = replyingTo?.username || t("social:fallback.user");
   const images = post.media.filter(
     (item) => item.mediaType === POST_MEDIA_TYPE.image,
   );

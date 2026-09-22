@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -8,9 +8,13 @@ import { useLanguagePreference } from "@/contexts";
 
 type MenuSectionProps = {
   onItemPress: (key: string) => void;
+  isSigningOut?: boolean;
 };
 
-export function MenuSection({ onItemPress }: MenuSectionProps) {
+export function MenuSection({
+  onItemPress,
+  isSigningOut = false,
+}: MenuSectionProps) {
   const { t } = useTranslation("settings");
   const menuGroups = useProfileMenuGroups();
   const { preference, setPreference } = useLanguagePreference();
@@ -29,9 +33,11 @@ export function MenuSection({ onItemPress }: MenuSectionProps) {
           <View className="overflow-hidden rounded-[22px] border border-border-default bg-surface-primary">
             {group.items.map((item, index) => {
               const isLanguage = item.key === "language";
+              const isBusy = item.danger && isSigningOut;
               return (
                 <Pressable
                   key={item.key}
+                  disabled={isBusy}
                   onPress={() =>
                     isLanguage
                       ? setPreference(isEnglish ? "tr" : "en")
@@ -43,10 +49,22 @@ export function MenuSection({ onItemPress }: MenuSectionProps) {
                       : ""
                   }`}
                 >
-                  <View className="h-8 w-8 items-center justify-center rounded-full bg-background-secondary">
-                    <FontAwesome6 name={item.icon} size={12} color="#ccff00" />
+                  <View
+                    className={`h-8 w-8 items-center justify-center rounded-full ${
+                      item.danger ? "bg-destructive/10" : "bg-background-secondary"
+                    }`}
+                  >
+                    <FontAwesome6
+                      name={item.icon}
+                      size={12}
+                      color={item.danger ? "#ef4444" : "#ccff00"}
+                    />
                   </View>
-                  <Text className="flex-1 font-body text-sm font-semibold text-text-primary">
+                  <Text
+                    className={`flex-1 font-body text-sm font-semibold ${
+                      item.danger ? "text-destructive" : "text-text-primary"
+                    }`}
+                  >
                     {isLanguage ? t(`language.${preference}`) : item.label}
                   </Text>
                   {isLanguage ? (
@@ -61,7 +79,9 @@ export function MenuSection({ onItemPress }: MenuSectionProps) {
                         }`}
                       />
                     </View>
-                  ) : (
+                  ) : isBusy ? (
+                    <ActivityIndicator size="small" color="#ef4444" />
+                  ) : item.danger ? null : (
                     <FontAwesome6
                       name="chevron-right"
                       size={10}

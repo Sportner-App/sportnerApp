@@ -8,6 +8,20 @@
   },
   "closeEvent": "Close event",
   "report": "Report",
+  "tabs": {
+    "overview": "Overview",
+    "participants": "Participants",
+    "questions": "Questions"
+  },
+  "participantTab": {
+    "heading": "Roster",
+    "count": "{{count}} people",
+    "empty": "There are no approved participants yet.",
+    "guest": "Guest participant",
+    "member": "Participant",
+    "pendingTitle": "{{count}} join requests pending",
+    "pendingSubtitle": "Review requests and add people to the roster."
+  },
   "about": {
     "heading": "About the Event",
     "showLess": "Show less",
@@ -34,11 +48,15 @@
   },
   "qna": {
     "heading": "Questions",
+    "ownerHeading": "Participant Questions",
     "countLabel": "{{count}} questions",
     "intro": "Ask the host before joining. Answers are public.",
+    "ownerIntro": "Answer questions from people interested in your event. Your answers are public.",
     "loading": "Loading questions…",
     "emptyEnded": "No questions were asked for this event.",
     "emptyOpen": "No questions yet. Be the first to ask.",
+    "ownerEmptyEnded": "No questions were received for this event.",
+    "ownerEmptyOpen": "No questions yet. When someone asks, you can answer here.",
     "askLabel": "Your question",
     "askPlaceholder": "Is there parking, should I bring a racket…",
     "ask": "Ask a question",

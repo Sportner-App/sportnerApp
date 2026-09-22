@@ -8,6 +8,20 @@
   },
   "closeEvent": "Etkinliği kapat",
   "report": "Şikayet et",
+  "tabs": {
+    "overview": "Genel",
+    "participants": "Katılımcılar",
+    "questions": "Sorular"
+  },
+  "participantTab": {
+    "heading": "Kadro",
+    "count": "{{count}} kişi",
+    "empty": "Henüz onaylanmış katılımcı yok.",
+    "guest": "Misafir katılımcı",
+    "member": "Katılımcı",
+    "pendingTitle": "{{count}} katılım isteği bekliyor",
+    "pendingSubtitle": "İstekleri incele ve kadroya ekle."
+  },
   "about": {
     "heading": "Etkinlik Hakkında",
     "showLess": "Daha az göster",
@@ -34,11 +48,15 @@
   },
   "qna": {
     "heading": "Sorular",
+    "ownerHeading": "Katılımcı Soruları",
     "countLabel": "{{count}} soru",
     "intro": "Katılmadan önce etkinlik sahibine sor. Cevaplar herkese açık.",
+    "ownerIntro": "Etkinlikle ilgilenenlerin sorularını buradan yanıtla. Yanıtların herkese açık.",
     "loading": "Sorular yükleniyor…",
     "emptyEnded": "Bu etkinlikte soru sorulmamış.",
     "emptyOpen": "Henüz soru yok. İlk soruyu sen sor.",
+    "ownerEmptyEnded": "Bu etkinlik için herhangi bir soru gelmemiş.",
+    "ownerEmptyOpen": "Henüz bir soru gelmedi. Sorular geldiğinde buradan yanıtlayabilirsin.",
     "askLabel": "Sorun",
     "askPlaceholder": "Park yeri var mı, raket getirmeli miyim…",
     "ask": "Soru sor",

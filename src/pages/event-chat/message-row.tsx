@@ -25,8 +25,10 @@ export function MessageRow({
   const isPending = mine && message.status === "sending";
   const isFailed = mine && message.status === "failed";
   const senderName =
+    [message.senderFirstName, message.senderLastName]
+      .filter(Boolean)
+      .join(" ") ||
     message.senderUsername ||
-    message.senderFirstName ||
     t("events:fallback.athlete");
   const name = mine
     ? t("messaging:message.you")
@@ -34,8 +36,7 @@ export function MessageRow({
 
   const body = message.isRedacted
     ? t("messaging:message.deleted")
-    : message.content ||
-      (message.mediaUrl ? t("messaging:message.media") : "");
+    : message.content || (message.mediaUrl ? t("messaging:message.media") : "");
 
   const avatar = showSender ? (
     <Avatar

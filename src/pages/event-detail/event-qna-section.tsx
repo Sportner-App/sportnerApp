@@ -127,10 +127,13 @@ export function EventQnASection({
   };
 
   return (
-    <Animated.View entering={FadeInDown.duration(400).delay(180)} className="gap-md">
+    <Animated.View
+      entering={FadeInDown.duration(400).delay(180)}
+      className="gap-md"
+    >
       <View className="flex-row items-end justify-between">
         <Text style={[typeStyles.label, { color: themeColors.text.secondary }]}>
-          {t("qna.heading")}
+          {isOrganizer ? t("qna.ownerHeading") : t("qna.heading")}
         </Text>
         {items.length > 0 ? (
           <Text className="font-body text-[12px] text-text-tertiary">
@@ -140,7 +143,7 @@ export function EventQnASection({
       </View>
 
       <Text className="font-body text-[13px] leading-5 text-text-secondary">
-        {t("qna.intro")}
+        {isOrganizer ? t("qna.ownerIntro") : t("qna.intro")}
       </Text>
 
       {isLoading ? (
@@ -149,7 +152,9 @@ export function EventQnASection({
         </Text>
       ) : items.length === 0 ? (
         <Text className="font-body text-[14px] text-text-secondary">
-          {ended ? t("qna.emptyEnded") : t("qna.emptyOpen")}
+          {ended
+            ? t(isOrganizer ? "qna.ownerEmptyEnded" : "qna.emptyEnded")
+            : t(isOrganizer ? "qna.ownerEmptyOpen" : "qna.emptyOpen")}
         </Text>
       ) : (
         <View className="gap-4">
@@ -224,7 +229,9 @@ export function EventQnASection({
             textAlignVertical="top"
           />
           <Button
-            label={isOrganizer ? t("qna.replyOrganizer") : t("qna.replyParticipant")}
+            label={
+              isOrganizer ? t("qna.replyOrganizer") : t("qna.replyParticipant")
+            }
             size="sm"
             disabled={replyDraft.trim().length < MIN_LENGTH}
             isLoading={saving && Boolean(replyingTo)}
@@ -295,7 +302,10 @@ function QnARow({
 
   return (
     <View className="flex-row items-start gap-2.5">
-      <Pressable onPress={() => onOpenUser(item.authorUserId)} className="mt-0.5">
+      <Pressable
+        onPress={() => onOpenUser(item.authorUserId)}
+        className="mt-0.5"
+      >
         <Avatar
           uri={item.profileImageUrl}
           name={name}
@@ -332,7 +342,9 @@ function QnARow({
         </View>
         <Text className="font-body text-[14px] leading-5 text-text-primary">
           {mention ? (
-            <Text className="font-body-bold text-brand-primary">@{mention} </Text>
+            <Text className="font-body-bold text-brand-primary">
+              @{mention}{" "}
+            </Text>
           ) : null}
           {item.content}
         </Text>

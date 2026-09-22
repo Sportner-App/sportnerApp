@@ -108,6 +108,12 @@ export function useProfileMenuGroups(): ProfileMenuGroup[] {
           label: t("menu.appTour"),
           icon: "route",
         },
+        {
+          key: "logout",
+          label: t("logout"),
+          icon: "right-from-bracket",
+          danger: true,
+        },
       ],
     },
   ];

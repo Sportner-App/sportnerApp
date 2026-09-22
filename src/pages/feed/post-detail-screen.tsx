@@ -57,7 +57,12 @@ export function PostDetailScreen() {
   const hasAppliedFocusRef = useRef(false);
 
   useEffect(() => {
-    if (focus !== "comments" || hasAppliedFocusRef.current || isLoading || !post) {
+    if (
+      focus !== "comments" ||
+      hasAppliedFocusRef.current ||
+      isLoading ||
+      !post
+    ) {
       return;
     }
     hasAppliedFocusRef.current = true;
@@ -122,11 +127,8 @@ export function PostDetailScreen() {
   };
 
   const author =
-    post?.username ||
-    post?.firstName ||
-    t("events:fallback.athlete");
-  const replyUsername =
-    replyingTo?.username || t("social:fallback.user");
+    post?.firstName || post?.username || t("events:fallback.athlete");
+  const replyUsername = replyingTo?.username || t("social:fallback.user");
   const images =
     post?.media.filter((item) => item.mediaType === POST_MEDIA_TYPE.image) ??
     [];

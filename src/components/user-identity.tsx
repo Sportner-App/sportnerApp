@@ -29,7 +29,7 @@ export function UserIdentity({
     <>
       <Avatar
         uri={avatarUrl}
-        name={normalizedUsername || fallbackName || "Sporcu"}
+        name={fallbackName?.trim() || normalizedUsername || "Sporcu"}
         size={avatarSize}
         borderWidth={0}
       />

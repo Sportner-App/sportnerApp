@@ -130,16 +130,9 @@
   "privacy": {
     "title": "PRIVACY",
     "heading": "Privacy",
-    "subtitle": "Choose who can see your profile.",
-    "publicTitle": "Public",
-    "publicDescription": "Athletes can see your profile and stats.",
-    "privateTitle": "Private",
-    "privateDescription": "Only you and limited connections can see it.",
+    "subtitle": "Privacy and security settings for your account.",
     "blockedTitle": "Blocked",
     "blockedDescription": "View blocked users and remove blocks.",
-    "profilePublic": "Profile is public",
-    "profilePrivate": "Profile is private",
-    "updateFailed": "Could not update",
     "emailVerification": {
       "sectionTitle": "Email",
       "verifiedTitle": "Email verified",

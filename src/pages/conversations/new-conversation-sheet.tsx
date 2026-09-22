@@ -179,7 +179,7 @@ export function NewConversationSheet({
               >
                 <Avatar
                   uri={friend.profileImageUrl}
-                  name={friend.username || friend.firstName}
+                  name={friend.firstName || friend.username}
                   size={46}
                   borderWidth={0}
                 />

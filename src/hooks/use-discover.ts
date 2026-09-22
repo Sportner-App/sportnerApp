@@ -21,10 +21,10 @@ export function useDiscover() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async (mode: "initial" | "refresh") => {
+  const load = useCallback(async (mode: "initial" | "refresh" | "silent") => {
     if (mode === "initial") {
       setIsLoading(true);
-    } else {
+    } else if (mode === "refresh") {
       setIsRefreshing(true);
     }
 
@@ -41,12 +41,13 @@ export function useDiscover() {
         setPeople(peopleResult.value);
       }
     } catch (err) {
-      setError(
-        getApiErrorMessage(err, i18n.t("discover:loadFailed")),
-      );
+      setError(getApiErrorMessage(err, i18n.t("discover:loadFailed")));
     } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
+      if (mode === "initial") {
+        setIsLoading(false);
+      } else if (mode === "refresh") {
+        setIsRefreshing(false);
+      }
     }
   }, []);
 
@@ -54,7 +55,7 @@ export function useDiscover() {
 
   useFocusEffect(
     useCallback(() => {
-      void load(hasLoadedRef.current ? "refresh" : "initial").finally(() => {
+      void load(hasLoadedRef.current ? "silent" : "initial").finally(() => {
         hasLoadedRef.current = true;
       });
     }, [load]),

@@ -14,8 +14,6 @@ import {
 } from "@/components";
 import { useAuth, useToast } from "@/contexts";
 import { useProfile } from "@/hooks/use-profile";
-import { getApiErrorMessage } from "@/lib/api/errors";
-import { updateVisibility } from "@/services/profile-service";
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
@@ -25,7 +23,6 @@ export function PrivacyScreen() {
   const { profile, isLoading, refresh } = useProfile();
   const { showToast } = useToast();
   const { deleteAccount, verifyEmail, resendEmailVerification } = useAuth();
-  const [saving, setSaving] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -140,32 +137,6 @@ export function PrivacyScreen() {
     }
   };
 
-  const toggle = async (isProfilePublic: boolean) => {
-    if (!profile || saving || profile.isProfilePublic === isProfilePublic) {
-      return;
-    }
-
-    setSaving(true);
-    try {
-      await updateVisibility(isProfilePublic);
-      await refresh();
-      showToast({
-        type: "success",
-        title: isProfilePublic
-          ? t("profile:privacy.profilePublic")
-          : t("profile:privacy.profilePrivate"),
-      });
-    } catch (error) {
-      showToast({
-        type: "error",
-        title: t("profile:privacy.updateFailed"),
-        description: getApiErrorMessage(error),
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
-
   return (
     <AppScreen
       header={<ScreenHeader title={t("profile:privacy.title")} showBack />}
@@ -183,19 +154,6 @@ export function PrivacyScreen() {
           <Text className="font-body text-sm text-brand-neutral">
             {t("profile:privacy.subtitle")}
           </Text>
-
-          <Option
-            title={t("profile:privacy.publicTitle")}
-            description={t("profile:privacy.publicDescription")}
-            active={profile.isProfilePublic}
-            onPress={() => toggle(true)}
-          />
-          <Option
-            title={t("profile:privacy.privateTitle")}
-            description={t("profile:privacy.privateDescription")}
-            active={!profile.isProfilePublic}
-            onPress={() => toggle(false)}
-          />
 
           {profile.email ? (
             <View className="gap-2">
@@ -381,35 +339,5 @@ export function PrivacyScreen() {
         </>
       )}
     </AppScreen>
-  );
-}
-
-function Option({
-  title,
-  description,
-  active,
-  onPress,
-}: {
-  title: string;
-  description: string;
-  active: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      className={`rounded-3xl border p-4 ${
-        active
-          ? "border-brand-primary/50 bg-brand-primary/10"
-          : "border-border-default bg-surface-primary"
-      }`}
-    >
-      <Text className="font-body text-base font-semibold text-text-primary">
-        {title}
-      </Text>
-      <Text className="mt-1 font-body text-xs text-brand-neutral">
-        {description}
-      </Text>
-    </Pressable>
   );
 }
