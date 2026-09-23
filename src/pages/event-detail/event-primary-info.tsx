@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
@@ -19,6 +19,7 @@ import {
 import { lightImpact } from "@/utils/haptics";
 
 import { InboxRow } from "./inbox-row";
+import { AppText as Text } from "@/components/app-text";
 
 type EventPrimaryInfoProps = {
   event: EventDetail;
@@ -72,6 +73,19 @@ export function EventPrimaryInfo({
             max: event.maxParticipantAge,
           })}
         />
+        {event.participantGender != null ? (
+          <>
+            <MetaDot />
+            <MetaPiece
+              icon="venus-mars"
+              label={t(
+                event.participantGender === 1
+                  ? "primaryInfo.womenOnly"
+                  : "primaryInfo.menOnly",
+              )}
+            />
+          </>
+        ) : null}
         {event.skillLevel != null ? (
           <>
             <MetaDot />
@@ -88,18 +102,18 @@ export function EventPrimaryInfo({
         />
       </View>
 
-        {event.organizationName ? (
-          <View className="flex-row items-center gap-2 rounded-full border border-brand-primary/30 bg-brand-primary/10 self-start px-3 py-1.5">
-            <FontAwesome6 name="users" size={10} color="#ccff00" />
-            <Text className="font-body text-xs font-semibold text-text-primary">
-              {event.organizationName}
-            </Text>
-          </View>
-        ) : null}
+      {event.organizationName ? (
+        <View className="flex-row items-center gap-2 rounded-full border border-brand-primary/30 bg-brand-primary/10 self-start px-3 py-1.5">
+          <FontAwesome6 name="users" size={10} color="#ccff00" />
+          <Text className="font-body text-caption font-semibold text-text-primary">
+            {event.organizationName}
+          </Text>
+        </View>
+      ) : null}
 
-        {event.isPaid ? (
+      {event.isPaid ? (
         <Text
-          className="font-body text-[12px] leading-5"
+          className="font-body text-caption leading-5"
           style={{ color: themeColors.text.tertiary }}
         >
           {t("primaryInfo.paymentDisclaimer")}
@@ -119,7 +133,7 @@ export function EventPrimaryInfo({
 function MetaDot() {
   return (
     <Text
-      className="font-body text-[12px]"
+      className="font-body text-caption"
       style={{ color: themeColors.text.tertiary }}
     >
       ·
@@ -135,7 +149,7 @@ function MetaPiece({ icon, label }: { icon: IconName; label: string }) {
       <FontAwesome6 name={icon} size={11} color={muted} />
       <Text
         numberOfLines={1}
-        className="max-w-[220px] font-body text-[13px]"
+        className="max-w-[220px] font-body text-label"
         style={{ color: muted }}
       >
         {label}
@@ -213,7 +227,7 @@ export function EventCapacitySummary({
                   }}
                 >
                   <Text
-                    className="font-body-bold text-[11px]"
+                    className="font-body-bold text-overline"
                     style={{ color: themeColors.text.primary }}
                   >
                     +{extra}
@@ -233,7 +247,7 @@ export function EventCapacitySummary({
 
         <View className="items-end">
           <View className="flex-row items-center gap-2">
-            <Text className="font-body-bold text-[18px] leading-6 text-text-primary">
+            <Text className="font-body-bold text-heading-sm leading-6 text-text-primary">
               {countLabel}
             </Text>
             {onOpenParticipants ? (
@@ -277,7 +291,7 @@ export function EventCapacitySummary({
         >
           <FontAwesome6 name="user" size={9} color={sportColor} />
           <Text
-            className="font-body-bold text-[10px]"
+            className="font-body-bold text-overline"
             style={{ color: sportColor }}
           >
             {t("primaryInfo.guestCount", { count: guestCount })}

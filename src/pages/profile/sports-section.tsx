@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
@@ -10,6 +10,7 @@ import {
 } from "@/constants/profile";
 import type { UserProfile } from "@/types/profile";
 import { sportIconForSlug } from "@/utils/events";
+import { AppText as Text } from "@/components/app-text";
 
 type SportsSectionProps = {
   profile: UserProfile;
@@ -36,7 +37,7 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
       className="gap-3"
     >
       <View className="flex-row items-center justify-between">
-        <Text className="font-display text-lg text-text-primary">
+        <Text className="font-display text-heading-sm text-text-primary">
           {PROFILE_COPY.sportsTitle}
         </Text>
         {onPress ? (
@@ -47,7 +48,7 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
             accessibilityLabel={t("sports.editAccessibility")}
             className="min-h-[36px] flex-row items-center gap-1.5 rounded-full px-2 active:opacity-65"
           >
-            <Text className="font-body text-xs font-semibold text-brand-primary">
+            <Text className="font-body text-caption font-semibold text-brand-primary">
               {t("sports.edit")}
             </Text>
           </Pressable>
@@ -60,7 +61,7 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
           onPress={onAdd ?? onPress}
           className="rounded-[20px] border border-dashed border-border-strong bg-surface-primary/50 px-4 py-5"
         >
-          <Text className="text-center font-body text-sm text-text-secondary">
+          <Text className="text-center font-body text-body-sm text-text-secondary">
             {onAdd || onPress
               ? PROFILE_COPY.emptySports
               : PROFILE_COPY.emptySportsPublic}
@@ -91,7 +92,7 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
                     size={11}
                     color="#ccff00"
                   />
-                  <Text className="font-body text-xs font-semibold text-text-primary">
+                  <Text className="font-body text-caption font-semibold text-text-primary">
                     {sport.sportName}
                   </Text>
                 </Pressable>
@@ -111,32 +112,32 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
 
           <View className="flex-row overflow-hidden rounded-[22px] border border-border-default bg-surface-primary">
             <View className="flex-1 items-center px-3 py-4">
-              <Text className="font-body text-[10px] uppercase tracking-[1.2px] text-text-tertiary">
+              <Text className="font-body text-overline uppercase tracking-[1.2px] text-text-tertiary">
                 {t("sports.primaryLevel")}
               </Text>
-              <Text className="mt-2 font-display text-xl text-brand-primary">
+              <Text className="mt-2 font-display text-heading-sm text-brand-primary">
                 {primarySport
                   ? SKILL_LEVEL_LABELS[
                       skillKeyFromCode(primarySport.skillLevel)
                     ]
                   : "—"}
               </Text>
-              <Text className="mt-1 font-body text-[10px] text-text-secondary">
+              <Text className="mt-1 font-body text-overline text-text-secondary">
                 {primarySport?.sportName ?? t("sports.noSportAdded")}
               </Text>
             </View>
             <View className="my-3 w-px bg-border-default" />
             <View className="flex-1 items-center px-3 py-4">
-              <Text className="font-body text-[10px] uppercase tracking-[1.2px] text-text-tertiary">
+              <Text className="font-body text-overline uppercase tracking-[1.2px] text-text-tertiary">
                 {t("sports.playerRating")}
               </Text>
               <View className="mt-2 flex-row items-center gap-1.5">
-                <Text className="font-display text-xl text-brand-primary">
+                <Text className="font-display text-heading-sm text-brand-primary">
                   {Number(rating).toFixed(1)}
                 </Text>
                 <FontAwesome6 name="star" size={12} color="#ccff00" />
               </View>
-              <Text className="mt-1 font-body text-[10px] text-text-secondary">
+              <Text className="mt-1 font-body text-overline text-text-secondary">
                 {t("sports.reviewCount", { count: reviewCount })}
               </Text>
             </View>

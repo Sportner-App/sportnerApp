@@ -1,6 +1,2 @@
 export type AppTabKey =
-  | "index"
-  | "discover"
-  | "create"
-  | "activity"
-  | "profile";
+  "index" | "discover" | "create" | "activity" | "profile";

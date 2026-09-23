@@ -1,10 +1,11 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, TextInput, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
 import { themeColors } from "@/constants/theme";
 import type { ApiFriend } from "@/types/social";
+import { AppText as Text } from "@/components/app-text";
 
 type GuestDraft = { localId: string; firstName: string; lastName: string };
 
@@ -45,14 +46,14 @@ export function EventCompanionsStep({
       <View className="rounded-[24px] border border-brand-primary/30 bg-brand-primary/10 p-4">
         <View className="flex-row items-center justify-between">
           <View>
-            <Text className="font-body-bold text-sm text-text-primary">
+            <Text className="font-body-bold text-body-sm text-text-primary">
               {t("companions.slotsAvailable", { count: remainingSlots })}
             </Text>
-            <Text className="mt-1 font-body text-xs text-text-secondary">
+            <Text className="mt-1 font-body text-caption text-text-secondary">
               {t("companions.reservedBreakdown", { count: reserved })}
             </Text>
           </View>
-          <Text className="font-mono-bold text-lg text-brand-primary">
+          <Text className="font-mono-bold text-heading-sm text-brand-primary">
             {1 + reserved}/{maxParticipants}
           </Text>
         </View>
@@ -61,10 +62,10 @@ export function EventCompanionsStep({
       <View className="gap-3">
         <View className="flex-row items-center justify-between">
           <View>
-            <Text className="font-body-bold text-sm text-text-primary">
+            <Text className="font-body-bold text-body-sm text-text-primary">
               {t("companions.guestsTitle")}
             </Text>
-            <Text className="mt-0.5 font-body text-xs text-text-tertiary">
+            <Text className="mt-0.5 font-body text-caption text-text-tertiary">
               {t("companions.guestsSubtitle")}
             </Text>
           </View>
@@ -95,7 +96,7 @@ export function EventCompanionsStep({
                     color={themeColors.text.secondary}
                   />
                 </View>
-                <Text className="font-body-bold text-xs text-text-secondary">
+                <Text className="font-body-bold text-caption text-text-secondary">
                   {t("companions.guestLabel", { number: index + 1 })}
                 </Text>
               </View>
@@ -129,7 +130,7 @@ export function EventCompanionsStep({
               />
             </View>
             {!guest.firstName.trim() || !guest.lastName.trim() ? (
-              <Text className="font-body text-[11px] text-destructive">
+              <Text className="font-body text-overline text-destructive">
                 {t("companions.guestRequiredError")}
               </Text>
             ) : null}
@@ -139,20 +140,20 @@ export function EventCompanionsStep({
 
       <View className="gap-3">
         <View>
-          <Text className="font-body-bold text-sm text-text-primary">
+          <Text className="font-body-bold text-body-sm text-text-primary">
             {t("companions.friendsTitle")}
           </Text>
-          <Text className="mt-0.5 font-body text-xs text-text-tertiary">
+          <Text className="mt-0.5 font-body text-caption text-text-tertiary">
             {t("companions.friendsSubtitle")}
           </Text>
         </View>
 
         {isFriendsLoading ? (
-          <Text className="py-4 text-center font-body text-sm text-text-secondary">
+          <Text className="py-4 text-center font-body text-body-sm text-text-secondary">
             {t("companions.friendsLoading")}
           </Text>
         ) : friends.length === 0 ? (
-          <Text className="rounded-2xl border border-border-default bg-surface-primary px-4 py-5 text-center font-body text-sm text-text-secondary">
+          <Text className="rounded-2xl border border-border-default bg-surface-primary px-4 py-5 text-center font-body text-body-sm text-text-secondary">
             {t("companions.friendsEmpty")}
           </Text>
         ) : (
@@ -183,7 +184,7 @@ export function EventCompanionsStep({
                       borderWidth={0}
                     />
                     <View className="flex-1">
-                      <Text className="font-body-bold text-sm text-text-primary">
+                      <Text className="font-body-bold text-body-sm text-text-primary">
                         @{friend.username || t("events:fallback.athleteHandle")}
                       </Text>
                     </View>
@@ -231,7 +232,7 @@ function GuestInput({
       maxLength={50}
       placeholder={placeholder}
       placeholderTextColor={themeColors.text.tertiary}
-      className={`min-h-[46px] flex-1 rounded-xl border bg-surface-secondary px-3 font-body text-sm text-text-primary ${
+      className={`min-h-[46px] flex-1 rounded-xl border bg-surface-secondary px-3 font-body text-body-sm text-text-primary ${
         hasError ? "border-destructive" : "border-border-default"
       }`}
     />

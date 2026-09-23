@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { AppScreen, Button, Input, ScreenHeader } from "@/components";
@@ -8,6 +8,7 @@ import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { joinOrganization } from "@/services/organizations-service";
 import { resolveRouteParam } from "@/utils/route-params";
+import { AppText as Text } from "@/components/app-text";
 
 export function OrganizationJoinScreen() {
   const { t } = useTranslation("organizations");
@@ -69,10 +70,10 @@ export function OrganizationJoinScreen() {
       header={<ScreenHeader title={t("join.title")} showBack />}
       contentClassName="gap-4 px-6 pt-3"
     >
-      <Text className="font-display text-3xl text-text-primary">
+      <Text className="font-display text-heading-lg text-text-primary">
         {t("join.heading")}
       </Text>
-      <Text className="font-body text-sm text-text-secondary">
+      <Text className="font-body text-body-sm text-text-secondary">
         {t("join.subtitle")}
       </Text>
       <Input

@@ -3,8 +3,7 @@ import type { AxiosRequestConfig } from "axios";
 import type { ToastPayload } from "@/types/toast";
 
 export type ApiFeedbackMessage =
-  | string
-  | Pick<ToastPayload, "title" | "description" | "durationMs">;
+  string | Pick<ToastPayload, "title" | "description" | "durationMs">;
 
 export type ApiRequestConfig<D = unknown> = AxiosRequestConfig<D> & {
   /** 401'de refresh + retry denemesini atla (ör. /auth/refresh'in kendisi) */

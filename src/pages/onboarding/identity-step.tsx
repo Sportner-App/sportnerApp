@@ -1,10 +1,11 @@
-import { ScrollView, Text } from "react-native";
+import { ScrollView } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { Button, Input } from "@/components";
 import type { useOnboarding } from "@/hooks/use-onboarding";
+import { AppText as Text } from "@/components/app-text";
 
 type IdentityStepProps = {
   form: ReturnType<typeof useOnboarding>;
@@ -21,10 +22,10 @@ export function IdentityStep({ form }: IdentityStepProps) {
       contentContainerStyle={{ paddingTop: Math.max(insets.top, 16) + 8 }}
     >
       <Animated.View entering={FadeInDown.duration(420)}>
-        <Text className="font-display text-5xl leading-[52px] text-text-primary">
+        <Text className="font-display text-display leading-[52px] text-text-primary">
           {t("identity.title")}
         </Text>
-        <Text className="mt-3 font-body text-base leading-6 text-brand-neutral">
+        <Text className="mt-3 font-body text-body leading-6 text-brand-neutral">
           {t("identity.subtitle")}
         </Text>
       </Animated.View>

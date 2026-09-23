@@ -1,3 +1,5 @@
+export { AppText } from "./app-text";
+export type { AppTextVariant } from "./app-text";
 export { AppScreen } from "./app-screen";
 export { AppTourOverlay } from "./app-tour-overlay";
 export { Avatar } from "./avatar";

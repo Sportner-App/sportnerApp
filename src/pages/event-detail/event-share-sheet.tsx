@@ -3,7 +3,7 @@ import * as Haptics from "expo-haptics";
 import * as Linking from "expo-linking";
 import * as Sharing from "expo-sharing";
 import { useEffect, useRef, useState } from "react";
-import { Pressable, ScrollView, Share, Text, View } from "react-native";
+import { Pressable, ScrollView, Share, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import ViewShot, { captureRef } from "react-native-view-shot";
 import { useTranslation } from "react-i18next";
@@ -13,6 +13,7 @@ import { sportAccentToken, themeColors } from "@/constants/theme";
 import { useToast } from "@/contexts";
 import type { EventDetail } from "@/types/events";
 import { currentDateLocale } from "@/utils/events";
+import { AppText as Text } from "@/components/app-text";
 
 type ShareTarget = "instagram" | "tiktok";
 type ShareTemplate = "night" | "energy" | "minimal";
@@ -142,7 +143,7 @@ export function EventShareSheet({
               size={11}
               color={themeColors.text.secondary}
             />
-            <Text className="font-body-bold text-xs text-text-secondary">
+            <Text className="font-body-bold text-caption text-text-secondary">
               {t("share.backToPlatforms")}
             </Text>
           </Pressable>
@@ -271,7 +272,7 @@ function TemplateOption({
           </View>
         ) : null}
       </View>
-      <Text className="text-center font-body-bold text-xs text-text-primary">
+      <Text className="text-center font-body-bold text-caption text-text-primary">
         {loading ? t("share.preparing") : t(`share.templates.${template}`)}
       </Text>
     </Pressable>
@@ -311,10 +312,10 @@ function ShareOption({
         />
       </View>
       <View className="min-w-0 flex-1 gap-0.5">
-        <Text className="font-body-bold text-[15px] text-text-primary">
+        <Text className="font-body-bold text-body text-text-primary">
           {loading ? t("share.preparing") : title}
         </Text>
-        <Text className="font-body text-xs text-text-tertiary">
+        <Text className="font-body text-caption text-text-tertiary">
           {description}
         </Text>
       </View>

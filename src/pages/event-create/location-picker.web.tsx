@@ -1,8 +1,9 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { themeColors } from "@/constants/theme";
 import type { SelectedLocation } from "@/types/location";
+import { AppText as Text } from "@/components/app-text";
 
 type LocationPickerProps = {
   addressText: string;
@@ -23,14 +24,14 @@ export function LocationPicker({
       className={`justify-center rounded-[28px] border border-border-default bg-surface-primary px-4 ${compact ? "h-40" : "h-56"}`}
     >
       <Text
-        className="font-body text-sm"
+        className="font-body text-body-sm"
         style={{ color: themeColors.text.secondary }}
       >
         {t("location.mapUnavailable")}
       </Text>
       {addressText ? (
         <Text
-          className="mt-2 font-body text-sm"
+          className="mt-2 font-body text-body-sm"
           style={{ color: themeColors.text.primary }}
         >
           {addressText}

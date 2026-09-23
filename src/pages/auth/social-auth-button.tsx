@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -7,6 +7,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { themeColors } from "@/constants/theme";
+import { AppText as Text } from "@/components/app-text";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -79,7 +80,7 @@ export function SocialAuthButton({
         />
       </View>
 
-      <Text className="flex-1 font-body-bold text-[15px] text-text-primary">
+      <Text className="flex-1 font-body-bold text-body text-text-primary">
         {label}
       </Text>
 

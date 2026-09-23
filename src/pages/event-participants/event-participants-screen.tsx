@@ -1,7 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, Pressable, ScrollView, Text, View } from "react-native";
+import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -27,6 +27,7 @@ import type { EventDetail, EventParticipant } from "@/types/events";
 import type { ApiReportReason } from "@/types/social";
 import { isCurrentParticipant } from "@/utils/events";
 import { lightImpact } from "@/utils/haptics";
+import { AppText as Text } from "@/components/app-text";
 
 export function EventParticipantsScreen() {
   const { t } = useTranslation(["eventParticipants", "events"]);
@@ -151,7 +152,7 @@ export function EventParticipantsScreen() {
           })}
           ListHeaderComponent={
             participants.length > 0 ? (
-              <Text className="pb-1 font-body text-xs text-text-secondary">
+              <Text className="pb-1 font-body text-caption text-text-secondary">
                 {t("eventParticipants:count", { count: participants.length })}
               </Text>
             ) : null
@@ -163,7 +164,7 @@ export function EventParticipantsScreen() {
                 size={24}
                 color={themeColors.text.secondary}
               />
-              <Text className="text-center font-body text-sm text-text-secondary">
+              <Text className="text-center font-body text-body-sm text-text-secondary">
                 {error ?? t("eventParticipants:empty")}
               </Text>
             </View>
@@ -238,11 +239,11 @@ export function EventParticipantsScreen() {
                     : "border-border-default bg-surface-primary"
                 }`}
               >
-                <Text className="font-body-bold text-sm text-text-primary">
+                <Text className="font-body-bold text-body-sm text-text-primary">
                   {reason.name}
                 </Text>
                 {reason.description ? (
-                  <Text className="mt-1 font-body text-xs text-text-secondary">
+                  <Text className="mt-1 font-body text-caption text-text-secondary">
                     {reason.description}
                   </Text>
                 ) : null}
@@ -287,13 +288,13 @@ function ParticipantRow({
       <View className="min-w-0 flex-1">
         <Text
           numberOfLines={1}
-          className="font-body-bold text-sm text-text-primary"
+          className="font-body-bold text-body-sm text-text-primary"
         >
           {participant.name}
         </Text>
         <Text
           numberOfLines={1}
-          className="mt-0.5 font-body text-xs text-text-secondary"
+          className="mt-0.5 font-body text-caption text-text-secondary"
         >
           {participant.isGuest
             ? t("eventParticipants:guestParticipant")

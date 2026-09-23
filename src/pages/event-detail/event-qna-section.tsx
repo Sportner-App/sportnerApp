@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
@@ -16,6 +16,7 @@ import { EVENT_QNA_ROLE, type ApiEventQuestion } from "@/types/event-qna";
 import type { EventDetail } from "@/types/events";
 import { hasEventEnded } from "@/utils/events";
 import { successNotification } from "@/utils/haptics";
+import { AppText as Text } from "@/components/app-text";
 
 const MIN_LENGTH = 5;
 const MAX_LENGTH = 1000;
@@ -136,22 +137,22 @@ export function EventQnASection({
           {isOrganizer ? t("qna.ownerHeading") : t("qna.heading")}
         </Text>
         {items.length > 0 ? (
-          <Text className="font-body text-[12px] text-text-tertiary">
+          <Text className="font-body text-caption text-text-tertiary">
             {t("qna.countLabel", { count: items.length })}
           </Text>
         ) : null}
       </View>
 
-      <Text className="font-body text-[13px] leading-5 text-text-secondary">
+      <Text className="font-body text-label leading-5 text-text-secondary">
         {isOrganizer ? t("qna.ownerIntro") : t("qna.intro")}
       </Text>
 
       {isLoading ? (
-        <Text className="font-body text-[13px] text-text-tertiary">
+        <Text className="font-body text-label text-text-tertiary">
           {t("qna.loading")}
         </Text>
       ) : items.length === 0 ? (
-        <Text className="font-body text-[14px] text-text-secondary">
+        <Text className="font-body text-body-sm text-text-secondary">
           {ended
             ? t(isOrganizer ? "qna.ownerEmptyEnded" : "qna.emptyEnded")
             : t(isOrganizer ? "qna.ownerEmptyOpen" : "qna.emptyOpen")}
@@ -197,7 +198,7 @@ export function EventQnASection({
       ) : null}
 
       {ended ? (
-        <Text className="font-body text-[12px] text-text-tertiary">
+        <Text className="font-body text-caption text-text-tertiary">
           {t("qna.endedNotice")}
         </Text>
       ) : null}
@@ -205,7 +206,7 @@ export function EventQnASection({
       {canReply && replyingTo ? (
         <View className="gap-2 rounded-2xl border border-border-default bg-background-secondary px-3 py-3">
           <View className="flex-row items-center justify-between">
-            <Text className="flex-1 font-body text-[12px] text-text-secondary">
+            <Text className="flex-1 font-body text-caption text-text-secondary">
               {t("qna.replyingTo", {
                 name:
                   replyingTo.username ||
@@ -214,7 +215,7 @@ export function EventQnASection({
               })}
             </Text>
             <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>
-              <Text className="font-body-bold text-[12px] text-text-secondary">
+              <Text className="font-body-bold text-caption text-text-secondary">
                 {t("qna.cancelReply")}
               </Text>
             </Pressable>
@@ -316,7 +317,7 @@ function QnARow({
       <View className="min-w-0 flex-1 gap-1">
         <View className="flex-row flex-wrap items-center gap-1.5">
           <Pressable onPress={() => onOpenUser(item.authorUserId)}>
-            <Text className="font-body-bold text-[13px] text-text-primary">
+            <Text className="font-body-bold text-label text-text-primary">
               {name}
             </Text>
           </Pressable>
@@ -329,7 +330,7 @@ function QnARow({
               }`}
             >
               <Text
-                className={`font-mono text-[9px] uppercase tracking-wide ${
+                className={`font-mono text-overline uppercase tracking-wide ${
                   badge.tone === "owner"
                     ? "text-brand-primary"
                     : "text-text-tertiary"
@@ -340,7 +341,7 @@ function QnARow({
             </View>
           ) : null}
         </View>
-        <Text className="font-body text-[14px] leading-5 text-text-primary">
+        <Text className="font-body text-body-sm leading-5 text-text-primary">
           {mention ? (
             <Text className="font-body-bold text-brand-primary">
               @{mention}{" "}
@@ -354,7 +355,7 @@ function QnARow({
             onPress={() => onReply(item)}
             className="self-start py-0.5"
           >
-            <Text className="font-body text-[12px] font-semibold text-text-secondary">
+            <Text className="font-body text-caption font-semibold text-text-secondary">
               {t("qna.reply")}
             </Text>
           </Pressable>

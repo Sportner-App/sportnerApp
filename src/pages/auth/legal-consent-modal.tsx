@@ -4,13 +4,13 @@ import {
   Modal,
   Pressable,
   ScrollView,
-  Text,
   View,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from "react-native";
 
 import { Button } from "@/components";
+import { AppText as Text } from "@/components/app-text";
 
 type LegalConsentModalProps = {
   visible: boolean;
@@ -50,10 +50,10 @@ export function LegalConsentModal({
       <View className="flex-1 bg-background-primary">
         <View className="flex-row items-center justify-between border-b border-border-default px-6 py-4">
           <View className="flex-1 pr-4">
-            <Text className="font-display text-xl text-text-primary">
+            <Text className="font-display text-heading-sm text-text-primary">
               {t("legalDocument.title")}
             </Text>
-            <Text className="mt-1 font-body text-xs text-brand-neutral">
+            <Text className="mt-1 font-body text-caption text-brand-neutral">
               {t("legalDocument.updatedAt")}
             </Text>
           </View>
@@ -63,7 +63,9 @@ export function LegalConsentModal({
             className="h-10 w-10 items-center justify-center rounded-full bg-surface-secondary"
             onPress={onClose}
           >
-            <Text className="font-body text-xl text-text-primary">×</Text>
+            <Text className="font-body text-heading-sm text-text-primary">
+              ×
+            </Text>
           </Pressable>
         </View>
 
@@ -73,32 +75,32 @@ export function LegalConsentModal({
           scrollEventThrottle={16}
           onScroll={handleScroll}
         >
-          <Text className="font-display text-3xl leading-9 text-text-primary">
+          <Text className="font-display text-heading-lg leading-9 text-text-primary">
             {t("legalDocument.heading")}
           </Text>
-          <Text className="mt-4 font-body text-sm leading-6 text-brand-neutral">
+          <Text className="mt-4 font-body text-body-sm leading-6 text-brand-neutral">
             {t("legalDocument.introduction")}
           </Text>
 
           {(["data", "usage", "sharing", "rights"] as const).map((section) => (
             <View key={section} className="mt-7">
-              <Text className="font-display text-lg text-text-primary">
+              <Text className="font-display text-heading-sm text-text-primary">
                 {t(`legalDocument.sections.${section}.title`)}
               </Text>
-              <Text className="mt-2 font-body text-sm leading-6 text-brand-neutral">
+              <Text className="mt-2 font-body text-body-sm leading-6 text-brand-neutral">
                 {t(`legalDocument.sections.${section}.body`)}
               </Text>
             </View>
           ))}
 
-          <Text className="mt-8 font-body text-xs leading-5 text-brand-neutral">
+          <Text className="mt-8 font-body text-caption leading-5 text-brand-neutral">
             {t("legalDocument.placeholderNote")}
           </Text>
         </ScrollView>
 
         <View className="border-t border-border-default px-6 pb-8 pt-4">
           {!hasReachedEnd ? (
-            <Text className="mb-3 text-center font-body text-xs text-brand-neutral">
+            <Text className="mb-3 text-center font-body text-caption text-brand-neutral">
               {t("legalDocument.scrollHint")}
             </Text>
           ) : null}

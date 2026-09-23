@@ -1,7 +1,8 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import { themeColors } from "@/constants/theme";
+import { AppText as Text } from "@/components/app-text";
 
 type MapUnavailableProps = {
   message: string;
@@ -16,7 +17,7 @@ export function MapUnavailable({ message }: MapUnavailableProps) {
         size={20}
         color={themeColors.text.tertiary}
       />
-      <Text className="text-center font-body text-xs text-text-secondary">
+      <Text className="text-center font-body text-caption text-text-secondary">
         {message}
       </Text>
     </View>

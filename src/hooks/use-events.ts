@@ -17,7 +17,10 @@ export const DEFAULT_EVENT_FILTERS: EventListFilters = {
   isPaid: null,
   organizationId: null,
   sportId: null,
+  sortBy: "location",
 };
+
+export type EventSortBy = "location" | "time";
 
 export type EventListFilters = {
   city: string | null;
@@ -29,6 +32,8 @@ export type EventListFilters = {
   organizationId: string | null;
   /** Tek bir spor branşı (filtre çekmecesinden seçilir). */
   sportId: string | null;
+  /** "location": konuma göre yakından uzağa, "time": tarihe göre. */
+  sortBy: EventSortBy;
 };
 
 export type EventFeedScope = "all" | "friends" | "organizations";
@@ -85,13 +90,15 @@ export function useEvents(
       try {
         setError(null);
         const activeOrigin = originRef.current;
+        // Konum verilirse backend listeyi yakından uzağa sıralar; "time" seçiliyken
+        // konumu hiç göndermiyoruz ki backend tarihe göre sıralamaya düşsün.
+        const useLocationSort = activeFilters.sortBy !== "time";
         const result = await getEvents({
           sportId: activeFilters.sportId ?? undefined,
           sportCategoryId: activeCategoryId ?? undefined,
           city: activeFilters.city ?? undefined,
-          // Konum verilirse backend listeyi yakından uzağa sıralar.
-          lat: activeOrigin?.latitude,
-          lng: activeOrigin?.longitude,
+          lat: useLocationSort ? activeOrigin?.latitude : undefined,
+          lng: useLocationSort ? activeOrigin?.longitude : undefined,
           page: nextPage,
           pageSize: PAGE_SIZE,
           minAge:
@@ -219,7 +226,7 @@ export function useEvents(
     }
     lastOriginKeyRef.current = originKey;
 
-    if (!hasLoadedRef.current) {
+    if (!hasLoadedRef.current || filtersRef.current.sortBy === "time") {
       return;
     }
 

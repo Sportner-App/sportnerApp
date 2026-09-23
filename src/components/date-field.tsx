@@ -1,12 +1,13 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { DatePickerSheet } from "@/components/date-picker-sheet";
 import { themeColors } from "@/constants/theme";
 import { getCurrentLocale } from "@/i18n";
 import type { DateFieldProps } from "@/types/components";
+import { AppText as Text } from "@/components/app-text";
 
 function formatEventDate(date: Date) {
   return date.toLocaleString(getCurrentLocale(), {
@@ -30,7 +31,7 @@ export function DateField({
 
   return (
     <View className="gap-2">
-      <Text className="font-body-bold text-[13px] text-text-secondary">
+      <Text className="font-body-bold text-label text-text-secondary">
         {resolvedLabel}
       </Text>
 
@@ -45,7 +46,7 @@ export function DateField({
             color={themeColors.brand.primary}
           />
         </View>
-        <Text className="flex-1 font-body text-base text-text-primary">
+        <Text className="flex-1 font-body text-body text-text-primary">
           {formatEventDate(value)}
         </Text>
         <FontAwesome6

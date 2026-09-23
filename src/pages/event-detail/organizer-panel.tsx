@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
@@ -14,6 +14,7 @@ import {
   OrganizerManageSheet,
   type OrganizerManageTab,
 } from "./organizer-manage-sheet";
+import { AppText as Text } from "@/components/app-text";
 
 type OrganizerPanelProps = {
   event: EventDetail;
@@ -87,7 +88,7 @@ export function OrganizerPanel({
               color={themeColors.text.primary}
             />
             <Text
-              className="font-body-bold text-sm"
+              className="font-body-bold text-body-sm"
               style={{ color: themeColors.text.primary }}
             >
               {t("organizerPanel.edit")}
@@ -105,7 +106,7 @@ export function OrganizerPanel({
             className="items-center py-2 active:opacity-70"
           >
             <Text
-              className="font-body text-sm"
+              className="font-body text-body-sm"
               style={{ color: themeColors.destructive }}
             >
               {isMutating
@@ -149,11 +150,11 @@ export function OrganizerPanel({
               size={16}
               color={themeColors.brand.primary}
             />
-            <Text className="font-body-bold text-sm text-text-primary">
+            <Text className="font-body-bold text-body-sm text-text-primary">
               {t("organizerPanel.attendanceCompleteTitle")}
             </Text>
           </View>
-          <Text className="font-body text-xs leading-5 text-brand-neutral">
+          <Text className="font-body text-caption leading-5 text-brand-neutral">
             {t("organizerPanel.attendanceCompleteSubtitle")}
           </Text>
           <Button

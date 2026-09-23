@@ -196,20 +196,20 @@ const fonts = {
 const typography = {
   display: {
     fontFamily: fonts.display,
-    fontSize: 40,
-    lineHeight: 44,
-    letterSpacing: -0.8,
+    fontSize: 36,
+    lineHeight: 40,
+    letterSpacing: -0.7,
   },
   headingLarge: {
     fontFamily: fonts.display,
-    fontSize: 30,
-    lineHeight: 36,
-    letterSpacing: -0.5,
+    fontSize: 26,
+    lineHeight: 32,
+    letterSpacing: -0.4,
   },
   headingMedium: {
     fontFamily: fonts.display,
-    fontSize: 24,
-    lineHeight: 30,
+    fontSize: 22,
+    lineHeight: 28,
     letterSpacing: -0.3,
   },
   headingSmall: {
@@ -226,8 +226,8 @@ const typography = {
   },
   body: {
     fontFamily: fonts.body,
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 15,
+    lineHeight: 22,
     letterSpacing: 0,
   },
   bodySmall: {

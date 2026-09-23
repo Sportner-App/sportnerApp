@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
@@ -15,6 +15,7 @@ import {
   updateSportSkill,
 } from "@/services/profile-service";
 import { sportIconForSlug } from "@/utils/events";
+import { AppText as Text } from "@/components/app-text";
 
 export function SportsEditScreen() {
   const { t } = useTranslation(["profile", "common"]);
@@ -49,10 +50,10 @@ export function SportsEditScreen() {
         </View>
       ) : (
         <>
-          <Text className="font-display text-3xl text-text-primary">
+          <Text className="font-display text-heading-lg text-text-primary">
             {t("profile:sportsEdit.heading")}
           </Text>
-          <Text className="font-body text-sm text-brand-neutral">
+          <Text className="font-body text-body-sm text-brand-neutral">
             {t("profile:sportsEdit.subtitle")}
           </Text>
 
@@ -70,10 +71,10 @@ export function SportsEditScreen() {
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-body text-sm font-semibold text-text-primary">
+                  <Text className="font-body text-body-sm font-semibold text-text-primary">
                     {sport.sportName}
                   </Text>
-                  <Text className="font-body text-xs text-brand-neutral">
+                  <Text className="font-body text-caption text-brand-neutral">
                     {SKILL_LEVEL_LABELS[skillKeyFromCode(sport.skillLevel)]}
                     {sport.isPrimary
                       ? ` · ${t("profile:sportsEdit.primaryBadge")}`
@@ -111,7 +112,7 @@ export function SportsEditScreen() {
                       }`}
                     >
                       <Text
-                        className={`font-body text-xs ${
+                        className={`font-body text-caption ${
                           active ? "text-brand-secondary" : "text-text-primary"
                         }`}
                       >

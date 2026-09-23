@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedReaction,
@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 
 import { CREATE_EVENT_LIMITS } from "@/constants/events";
 import { themeColors } from "@/constants/theme";
+import { AppText as Text } from "@/components/app-text";
 
 type AgeRangeSliderProps = {
   minValue: number;
@@ -141,22 +142,22 @@ export function AgeRangeSlider({
     >
       <View className="mb-6 flex-row items-center justify-between">
         <View>
-          <Text className="font-body-bold text-[13px] text-text-secondary">
+          <Text className="font-body-bold text-label text-text-secondary">
             {t("ageRange.label")}
           </Text>
-          <Text className="mt-1 font-body text-xs text-text-tertiary">
+          <Text className="mt-1 font-body text-caption text-text-tertiary">
             {t("ageRange.hint")}
           </Text>
         </View>
         <View className="flex-row items-center rounded-full bg-brand-primary/10 px-3 py-1.5">
-          <Text className="min-w-6 text-center font-mono text-sm text-brand-primary">
+          <Text className="min-w-6 text-center font-mono text-body-sm text-brand-primary">
             {previewRange.min}
           </Text>
-          <Text className="font-mono text-sm text-brand-primary">–</Text>
-          <Text className="min-w-6 text-center font-mono text-sm text-brand-primary">
+          <Text className="font-mono text-body-sm text-brand-primary">–</Text>
+          <Text className="min-w-6 text-center font-mono text-body-sm text-brand-primary">
             {previewRange.max}
           </Text>
-          <Text className="ml-1 font-body text-xs text-brand-primary">
+          <Text className="ml-1 font-body text-caption text-brand-primary">
             {t("ageRange.unit")}
           </Text>
         </View>
@@ -197,13 +198,13 @@ export function AgeRangeSlider({
 
       <View className="mt-1 flex-row justify-between">
         <Text
-          className="font-mono text-[11px]"
+          className="font-mono text-overline"
           style={{ color: themeColors.text.tertiary }}
         >
           {MIN_AGE}
         </Text>
         <Text
-          className="font-mono text-[11px]"
+          className="font-mono text-overline"
           style={{ color: themeColors.text.tertiary }}
         >
           {MAX_AGE}

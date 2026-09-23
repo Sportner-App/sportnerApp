@@ -2,7 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   Easing,
@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { resolveNotificationRoute } from "@/utils/notification-routing";
 import { markNotificationRead } from "@/services/notifications-service";
 import { listNotifications } from "@/services/notifications-service";
+import { AppText as Text } from "@/components/app-text";
 
 type BannerState = {
   id: string;
@@ -259,7 +260,7 @@ export function InAppNotificationBanner() {
               {!!banner.title && (
                 <Text
                   numberOfLines={1}
-                  className="font-body text-sm font-semibold text-white"
+                  className="font-body text-body-sm font-semibold text-white"
                 >
                   {banner.title}
                 </Text>
@@ -267,7 +268,7 @@ export function InAppNotificationBanner() {
               {!!banner.body && (
                 <Text
                   numberOfLines={2}
-                  className="mt-0.5 font-body text-xs text-brand-neutral"
+                  className="mt-0.5 font-body text-caption text-brand-neutral"
                 >
                   {banner.body}
                 </Text>

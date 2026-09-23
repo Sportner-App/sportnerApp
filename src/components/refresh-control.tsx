@@ -1,5 +1,9 @@
 import type { ReactElement } from "react";
-import { Platform, RefreshControl, type RefreshControlProps } from "react-native";
+import {
+  Platform,
+  RefreshControl,
+  type RefreshControlProps,
+} from "react-native";
 
 import type { BrandRefreshControlProps } from "@/types/components";
 

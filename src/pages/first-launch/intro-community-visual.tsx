@@ -1,9 +1,10 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Image, Text, View } from "react-native";
+import { Image, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import Animated from "react-native-reanimated";
 
 import { heroFadeScale, heroFadeUp } from "./hero-enter";
+import { AppText as Text } from "@/components/app-text";
 
 export function IntroCommunityVisual() {
   const { t } = useTranslation(["firstLaunch", "events"]);
@@ -17,11 +18,15 @@ export function IntroCommunityVisual() {
       >
         <View className="flex-row items-center gap-3 p-4">
           <View className="h-11 w-11 items-center justify-center rounded-full border border-brand-primary/30 bg-brand-primary/10">
-            <Text className="font-display text-sm text-brand-primary">DE</Text>
+            <Text className="font-display text-body-sm text-brand-primary">
+              DE
+            </Text>
           </View>
           <View className="flex-1">
-            <Text className="font-body-bold text-sm text-white">Deniz Er</Text>
-            <Text className="font-body text-xs text-brand-neutral">
+            <Text className="font-body-bold text-body-sm text-white">
+              Deniz Er
+            </Text>
+            <Text className="font-body text-caption text-brand-neutral">
               Koşu · {t("events:duration.minutes", { count: 12 })}
             </Text>
           </View>
@@ -35,12 +40,12 @@ export function IntroCommunityVisual() {
           />
           <View className="absolute inset-0 bg-brand-secondary/15" />
           <View className="absolute bottom-3 right-3 rounded-full bg-brand-secondary/80 px-3 py-1.5">
-            <Text className="font-mono text-[10px] text-white">
+            <Text className="font-mono text-overline text-white">
               5.2 KM · 28 DK
             </Text>
           </View>
         </View>
-        <Text className="px-4 pt-3 font-body text-sm leading-5 text-white">
+        <Text className="px-4 pt-3 font-body text-body-sm leading-5 text-white">
           {t("firstLaunch:visuals.community.postCaption")}
         </Text>
         <View className="flex-row items-center gap-5 px-4 py-4">
@@ -49,11 +54,11 @@ export function IntroCommunityVisual() {
             className="flex-row items-center gap-1.5"
           >
             <FontAwesome6 name="heart" size={14} color="#ccff00" />
-            <Text className="font-body-bold text-xs text-white">24</Text>
+            <Text className="font-body-bold text-caption text-white">24</Text>
           </Animated.View>
           <View className="flex-row items-center gap-1.5">
             <FontAwesome6 name="comment" size={14} color="#9aa7af" />
-            <Text className="font-body text-xs text-white/65">
+            <Text className="font-body text-caption text-white/65">
               {t("firstLaunch:visuals.community.commentsCount")}
             </Text>
           </View>
@@ -67,7 +72,7 @@ export function IntroCommunityVisual() {
         className="mt-3 flex-row items-center gap-2 self-start rounded-full border border-brand-primary/25 bg-brand-primary/10 px-3.5 py-2"
       >
         <FontAwesome6 name="users" size={11} color="#ccff00" />
-        <Text className="font-body text-sm text-brand-primary">
+        <Text className="font-body text-body-sm text-brand-primary">
           {t("firstLaunch:visuals.community.communityActive")}
         </Text>
       </Animated.View>

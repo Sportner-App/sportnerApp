@@ -432,7 +432,9 @@ export async function createEvent(
   ) {
     return {
       data: null,
-      error: { message: i18n.t("events:service.validation.coordinatesInvalid") },
+      error: {
+        message: i18n.t("events:service.validation.coordinatesInvalid"),
+      },
     };
   }
 
@@ -486,6 +488,7 @@ export async function createEvent(
       maxParticipants: payload.maxParticipants,
       minParticipantAge: payload.minParticipantAge,
       maxParticipantAge: payload.maxParticipantAge,
+      participantGender: payload.participantGender,
       skillLevel: payload.skillLevel,
       isPaid: payload.isPaid,
       feeAmount: payload.isPaid ? payload.feeAmount : null,
@@ -521,7 +524,10 @@ export async function createEvent(
     return {
       data: null,
       error: {
-        message: getApiErrorMessage(error, i18n.t("events:service.createFailed")),
+        message: getApiErrorMessage(
+          error,
+          i18n.t("events:service.createFailed"),
+        ),
       },
     };
   }

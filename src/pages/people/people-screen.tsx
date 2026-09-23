@@ -1,7 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -17,6 +17,7 @@ import { themeColors } from "@/constants/theme";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { discoverUsers } from "@/services/users-service";
 import type { DiscoverUser } from "@/types/users";
+import { AppText as Text } from "@/components/app-text";
 
 const PAGE_SIZE = 20;
 
@@ -31,21 +32,24 @@ export function PeopleScreen() {
   const [hasNext, setHasNext] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async (refresh = false) => {
-    refresh ? setIsRefreshing(true) : setIsLoading(true);
-    try {
-      setError(null);
-      const result = await discoverUsers({ page: 1, pageSize: PAGE_SIZE });
-      setPeople(result.items);
-      setPage(result.page);
-      setHasNext(result.hasNext);
-    } catch (reason) {
-      setError(getApiErrorMessage(reason, t("people:loadFailed")));
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [t]);
+  const load = useCallback(
+    async (refresh = false) => {
+      refresh ? setIsRefreshing(true) : setIsLoading(true);
+      try {
+        setError(null);
+        const result = await discoverUsers({ page: 1, pageSize: PAGE_SIZE });
+        setPeople(result.items);
+        setPage(result.page);
+        setHasNext(result.hasNext);
+      } catch (reason) {
+        setError(getApiErrorMessage(reason, t("people:loadFailed")));
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [t],
+  );
 
   const loadMore = useCallback(async () => {
     if (!hasNext || isLoading || isRefreshing || isLoadingMore) return;
@@ -91,7 +95,7 @@ export function PeopleScreen() {
         </View>
       ) : error && people.length === 0 ? (
         <View className="items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
-          <Text className="text-center font-body text-sm text-text-secondary">
+          <Text className="text-center font-body text-body-sm text-text-secondary">
             {error}
           </Text>
           <Button
@@ -108,7 +112,7 @@ export function PeopleScreen() {
             size={22}
             color={themeColors.text.tertiary}
           />
-          <Text className="text-center font-body text-sm text-text-secondary">
+          <Text className="text-center font-body text-body-sm text-text-secondary">
             {t("people:empty")}
           </Text>
         </View>
@@ -124,10 +128,10 @@ export function PeopleScreen() {
           })}
           ListHeaderComponent={
             <View className="mb-4">
-              <Text className="font-display text-[24px] text-text-primary">
+              <Text className="font-display text-heading-md text-text-primary">
                 {t("people:heading")}
               </Text>
-              <Text className="mt-0.5 font-body text-xs text-text-secondary">
+              <Text className="mt-0.5 font-body text-caption text-text-secondary">
                 {t("people:subtitle")}
               </Text>
             </View>
@@ -153,7 +157,7 @@ export function PeopleScreen() {
                 onPress={() => void loadMore()}
                 className="items-center py-5 active:opacity-70"
               >
-                <Text className="font-body text-xs text-text-secondary">
+                <Text className="font-body text-caption text-text-secondary">
                   {t("people:loadMoreRetry", { error })}
                 </Text>
               </Pressable>
@@ -188,7 +192,7 @@ function PersonCard({
       <View className="min-w-0 flex-1">
         <Text
           numberOfLines={1}
-          className="font-body-bold text-sm text-text-primary"
+          className="font-body-bold text-body-sm text-text-primary"
         >
           @{person.username || t("fallback.athleteHandle")}
         </Text>
@@ -203,7 +207,7 @@ function PersonCard({
             />
             <Text
               numberOfLines={1}
-              className="font-body text-[10px] text-text-secondary"
+              className="font-body text-overline text-text-secondary"
             >
               {person.city}
             </Text>

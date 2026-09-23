@@ -56,7 +56,11 @@ export async function joinOrganization(inviteCode: string) {
 
 export async function updateOrganization(
   organizationId: string,
-  payload: { name: string; description?: string | null; cityId?: string | null },
+  payload: {
+    name: string;
+    description?: string | null;
+    cityId?: string | null;
+  },
 ) {
   const response = await apiClient.patch<ApiOrganizationDetail>(
     `/api/organizations/${organizationId}`,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { AppScreen, Button, Input, ScreenHeader } from "@/components";
@@ -7,6 +7,7 @@ import { useToast } from "@/contexts";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { submitAppFeedback } from "@/services/feedback-service";
 import { successNotification } from "@/utils/haptics";
+import { AppText as Text } from "@/components/app-text";
 
 const MIN_LENGTH = 10;
 const MAX_LENGTH = 2000;
@@ -19,7 +20,8 @@ export function FeedbackScreen() {
   const [sent, setSent] = useState(false);
 
   const trimmed = content.trim();
-  const canSubmit = trimmed.length >= MIN_LENGTH && trimmed.length <= MAX_LENGTH;
+  const canSubmit =
+    trimmed.length >= MIN_LENGTH && trimmed.length <= MAX_LENGTH;
 
   const handleSubmit = async () => {
     if (!canSubmit || saving) {
@@ -58,20 +60,20 @@ export function FeedbackScreen() {
       contentClassName="gap-4 px-6 pt-3"
     >
       <View className="gap-2">
-        <Text className="font-display text-3xl text-white">
+        <Text className="font-display text-heading-lg text-white">
           {t("heading")}
         </Text>
-        <Text className="font-body text-sm leading-5 text-brand-neutral">
+        <Text className="font-body text-body-sm leading-5 text-brand-neutral">
           {t("subtitle")}
         </Text>
       </View>
 
       {sent ? (
         <View className="items-center gap-3 rounded-[28px] border border-brand-primary/30 bg-brand-primary/10 px-6 py-10">
-          <Text className="font-body-bold text-base text-text-primary">
+          <Text className="font-body-bold text-body text-text-primary">
             {t("success.title")}
           </Text>
-          <Text className="text-center font-body text-sm leading-5 text-text-tertiary">
+          <Text className="text-center font-body text-body-sm leading-5 text-text-tertiary">
             {t("success.description")}
           </Text>
           <Button

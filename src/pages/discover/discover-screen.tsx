@@ -1,7 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { Trans, useTranslation } from "react-i18next";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { Avatar, Button, SportLoader, TabPage } from "@/components";
 import { themeColors } from "@/constants/theme";
@@ -9,6 +9,7 @@ import { useDiscover } from "@/hooks/use-discover";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 
 import { DiscoverPost } from "./discover-post";
+import { AppText as Text } from "@/components/app-text";
 
 export function DiscoverScreen() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export function DiscoverScreen() {
       {people.length > 0 ? (
         <View>
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="font-body-bold text-sm text-text-primary">
+            <Text className="font-body-bold text-body-sm text-text-primary">
               {t("discover:people.title")}
             </Text>
             <Pressable
@@ -47,7 +48,7 @@ export function DiscoverScreen() {
               onPress={() => router.push("/people")}
               className="flex-row items-center gap-1.5 rounded-full border border-border-default bg-surface-primary px-3 py-1.5 active:opacity-75"
             >
-              <Text className="font-body-bold text-[11px] text-brand-primary">
+              <Text className="font-body-bold text-overline text-brand-primary">
                 {t("discover:people.seeAll")}
               </Text>
               <FontAwesome6
@@ -73,7 +74,7 @@ export function DiscoverScreen() {
                   />
                   <Text
                     numberOfLines={1}
-                    className="mt-1.5 w-full text-center font-body text-[11px] text-text-secondary"
+                    className="mt-1.5 w-full text-center font-body text-overline text-text-secondary"
                   >
                     @{person.username || t("events:fallback.athleteHandle")}
                   </Text>
@@ -86,10 +87,10 @@ export function DiscoverScreen() {
 
       {!isLoading && !error && posts.length > 0 ? (
         <View>
-          <Text className="font-display text-[22px] text-text-primary">
+          <Text className="font-display text-heading-md text-text-primary">
             {t("discover:section.title")}
           </Text>
-          <Text className="mt-1 font-body text-xs text-text-secondary">
+          <Text className="mt-1 font-body text-caption text-text-secondary">
             {t("discover:section.subtitle")}
           </Text>
         </View>
@@ -101,7 +102,7 @@ export function DiscoverScreen() {
         </View>
       ) : error ? (
         <View className="items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
-          <Text className="text-center font-body text-sm text-text-secondary">
+          <Text className="text-center font-body text-body-sm text-text-secondary">
             {error}
           </Text>
           <Button
@@ -118,7 +119,7 @@ export function DiscoverScreen() {
             size={22}
             color={themeColors.text.tertiary}
           />
-          <Text className="text-center font-body text-sm text-text-secondary">
+          <Text className="text-center font-body text-body-sm text-text-secondary">
             {t("discover:empty.message")}
           </Text>
           <Button
@@ -173,25 +174,23 @@ function DiscoverHero({
         <View className="flex-1">
           <View className="flex-row items-center gap-2">
             <View className="h-2 w-2 rounded-full bg-brand-primary" />
-            <Text className="font-mono-bold text-[8px] tracking-[1.8px] text-brand-primary">
+            <Text className="font-mono-bold text-overline tracking-[1.8px] text-brand-primary">
               {t("hero.eyebrow")}
             </Text>
-            <Text className="font-mono text-[8px] text-text-tertiary">
+            <Text className="font-mono text-overline text-text-tertiary">
               {t("hero.postCount", { count: postCount })}
             </Text>
           </View>
-          <Text className="mt-2 font-display text-[24px] leading-7 text-text-primary">
+          <Text className="mt-2 font-display text-heading-md leading-7 text-text-primary">
             <Trans
               ns="discover"
               i18nKey="hero.title"
               components={{
-                highlight: (
-                  <Text className="text-brand-primary" />
-                ),
+                highlight: <Text className="text-brand-primary" />,
               }}
             />
           </Text>
-          <Text className="mt-1.5 font-body text-xs text-text-secondary">
+          <Text className="mt-1.5 font-body text-caption text-text-secondary">
             {t("hero.subtitle")}
           </Text>
         </View>
@@ -206,7 +205,7 @@ function DiscoverHero({
             size={17}
             color={themeColors.background.primary}
           />
-          <Text className="font-body-bold text-[11px] text-background-primary">
+          <Text className="font-body-bold text-overline text-background-primary">
             {t("hero.createLabel")}
           </Text>
         </Pressable>

@@ -44,7 +44,9 @@
       "title": "Rate your teammates",
       "subtitle": "The event is over — share your feedback."
     },
-    "paymentDisclaimer": "Payment isn't collected through the app. The fee is paid at the event."
+    "paymentDisclaimer": "Payment isn't collected through the app. The fee is paid at the event.",
+    "womenOnly": "Women only",
+    "menOnly": "Men only"
   },
   "qna": {
     "heading": "Questions",

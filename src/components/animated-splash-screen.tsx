@@ -1,7 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import Animated, {
   Easing,
@@ -20,6 +20,7 @@ import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
 
 import { palette, themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
+import { AppText as Text } from "@/components/app-text";
 
 type AnimatedSplashScreenProps = {
   onFinish: () => void;
@@ -124,7 +125,13 @@ export function AnimatedSplashScreen({ onFinish }: AnimatedSplashScreenProps) {
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         <Svg width="100%" height="100%">
           <Defs>
-            <RadialGradient id="splash-glow" cx="50%" cy="42%" rx="58%" ry="48%">
+            <RadialGradient
+              id="splash-glow"
+              cx="50%"
+              cy="42%"
+              rx="58%"
+              ry="48%"
+            >
               <Stop offset="0" stopColor={palette.lime} stopOpacity="0.22" />
               <Stop offset="0.55" stopColor={palette.lime} stopOpacity="0.04" />
               <Stop offset="1" stopColor={palette.navy} stopOpacity="0" />
@@ -203,7 +210,10 @@ export function AnimatedSplashScreen({ onFinish }: AnimatedSplashScreenProps) {
         </Animated.View>
       </View>
 
-      <Animated.View entering={FadeIn.duration(480).delay(360)} style={styles.footer}>
+      <Animated.View
+        entering={FadeIn.duration(480).delay(360)}
+        style={styles.footer}
+      >
         <Text style={styles.tagline}>{t("splash.tagline")}</Text>
         <View style={styles.footerRule} />
         <Text style={styles.footerHint}>{t("splash.footerHint")}</Text>

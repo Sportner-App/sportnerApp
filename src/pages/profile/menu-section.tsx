@@ -1,10 +1,11 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { useProfileMenuGroups } from "@/constants/profile";
 import { useLanguagePreference } from "@/contexts";
+import { AppText as Text } from "@/components/app-text";
 
 type MenuSectionProps = {
   onItemPress: (key: string) => void;
@@ -27,7 +28,7 @@ export function MenuSection({
     >
       {menuGroups.map((group) => (
         <View key={group.key} className="gap-3">
-          <Text className="font-display text-lg text-text-primary">
+          <Text className="font-display text-heading-sm text-text-primary">
             {group.title}
           </Text>
           <View className="overflow-hidden rounded-[22px] border border-border-default bg-surface-primary">
@@ -51,7 +52,9 @@ export function MenuSection({
                 >
                   <View
                     className={`h-8 w-8 items-center justify-center rounded-full ${
-                      item.danger ? "bg-destructive/10" : "bg-background-secondary"
+                      item.danger
+                        ? "bg-destructive/10"
+                        : "bg-background-secondary"
                     }`}
                   >
                     <FontAwesome6
@@ -61,7 +64,7 @@ export function MenuSection({
                     />
                   </View>
                   <Text
-                    className={`flex-1 font-body text-sm font-semibold ${
+                    className={`flex-1 font-body text-body-sm font-semibold ${
                       item.danger ? "text-destructive" : "text-text-primary"
                     }`}
                   >

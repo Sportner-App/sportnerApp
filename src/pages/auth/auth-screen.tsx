@@ -7,7 +7,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Text,
   View,
 } from "react-native";
 import Animated, {
@@ -35,6 +34,7 @@ import { ForgotPasswordSheet } from "./forgot-password-sheet";
 import { LegalConsentModal } from "./legal-consent-modal";
 import { SocialAuthButton } from "./social-auth-button";
 import { SocialRegistrationOverlay } from "./social-registration-overlay";
+import { AppText as Text } from "@/components/app-text";
 
 const cardTransition = LinearTransition.duration(220);
 const SHIFT = 12;
@@ -97,8 +97,7 @@ export function AuthScreen() {
   const [isAppleAvailable, setIsAppleAvailable] = useState(false);
   const [isLegalConsentModalVisible, setIsLegalConsentModalVisible] =
     useState(false);
-  const [isForgotPasswordVisible, setIsForgotPasswordVisible] =
-    useState(false);
+  const [isForgotPasswordVisible, setIsForgotPasswordVisible] = useState(false);
 
   useEffect(() => {
     hasMounted.current = true;
@@ -160,10 +159,10 @@ export function AuthScreen() {
               }
               exiting={authExiting(shift)}
             >
-              <Text className="font-display text-5xl leading-[52px] text-text-primary">
+              <Text className="font-display text-display leading-[52px] text-text-primary">
                 {copy.title}
               </Text>
-              <Text className="mt-3 font-body text-base leading-6 text-brand-neutral">
+              <Text className="mt-3 font-body text-body leading-6 text-brand-neutral">
                 {copy.subtitle}
               </Text>
             </Animated.View>
@@ -242,7 +241,7 @@ export function AuthScreen() {
                         onChange={form.setGender}
                       />
                       {form.fieldErrors.gender ? (
-                        <Text className="mt-1.5 font-body text-xs text-status-error">
+                        <Text className="mt-1.5 font-body text-caption text-status-error">
                           {form.fieldErrors.gender}
                         </Text>
                       ) : null}
@@ -280,7 +279,7 @@ export function AuthScreen() {
                     hitSlop={8}
                     className="items-end"
                   >
-                    <Text className="font-body text-xs font-semibold text-brand-primary">
+                    <Text className="font-body text-caption font-semibold text-brand-primary">
                       {t("forgotPassword.link")}
                     </Text>
                   </Pressable>
@@ -306,12 +305,12 @@ export function AuthScreen() {
                       }
                     >
                       {form.hasAcceptedLegalTerms ? (
-                        <Text className="font-body text-xs font-bold text-white">
+                        <Text className="font-body text-caption font-bold text-white">
                           ✓
                         </Text>
                       ) : null}
                     </View>
-                    <Text className="flex-1 font-body text-xs leading-5 text-brand-neutral">
+                    <Text className="flex-1 font-body text-caption leading-5 text-brand-neutral">
                       {t("consent.prefix")}{" "}
                       <Text className="font-body font-semibold text-text-primary">
                         {t("consent.kvkk")}
@@ -324,7 +323,7 @@ export function AuthScreen() {
                     </Text>
                   </Pressable>
                   {form.fieldErrors.legalConsent ? (
-                    <Text className="mt-2 font-body text-xs text-status-error">
+                    <Text className="mt-2 font-body text-caption text-status-error">
                       {form.fieldErrors.legalConsent}
                     </Text>
                   ) : null}
@@ -353,7 +352,7 @@ export function AuthScreen() {
 
             <View className="mt-5 flex-row items-center gap-3">
               <View className="h-px flex-1 bg-border-default" />
-              <Text className="font-body text-xs text-brand-neutral">
+              <Text className="font-body text-caption text-brand-neutral">
                 {t("common:or")}
               </Text>
               <View className="h-px flex-1 bg-border-default" />

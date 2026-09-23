@@ -1,11 +1,12 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { SelectSheet } from "@/components/select-sheet";
 import { themeColors } from "@/constants/theme";
 import type { SelectFieldProps } from "@/types/components";
+import { AppText as Text } from "@/components/app-text";
 
 export function SelectField<T extends string>({
   label,
@@ -31,7 +32,7 @@ export function SelectField<T extends string>({
 
   return (
     <View className="gap-2">
-      <Text className="font-body-bold text-[13px] text-text-secondary">
+      <Text className="font-body-bold text-label text-text-secondary">
         {label}
       </Text>
 
@@ -50,7 +51,7 @@ export function SelectField<T extends string>({
           </View>
         ) : null}
         <Text
-          className={`flex-1 font-body text-base ${
+          className={`flex-1 font-body text-body ${
             selected ? "text-text-primary" : "text-text-secondary"
           }`}
         >

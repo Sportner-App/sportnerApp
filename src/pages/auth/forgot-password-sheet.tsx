@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { BottomSheet, Button, Input } from "@/components";
 import { useAuth, useToast } from "@/contexts";
+import { AppText as Text } from "@/components/app-text";
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
@@ -171,7 +172,9 @@ export function ForgotPasswordSheet({
             icon="key"
             placeholder={t("auth:forgotPassword.codePlaceholder")}
             value={code}
-            onChangeText={(value) => setCode(value.replace(/\D/g, "").slice(0, 6))}
+            onChangeText={(value) =>
+              setCode(value.replace(/\D/g, "").slice(0, 6))
+            }
             keyboardType="number-pad"
             maxLength={6}
           />
@@ -191,7 +194,7 @@ export function ForgotPasswordSheet({
             disabled={isSendingCode || cooldown > 0}
             className="items-center py-2"
           >
-            <Text className="font-body text-xs font-semibold text-brand-primary">
+            <Text className="font-body text-caption font-semibold text-brand-primary">
               {cooldown > 0
                 ? t("auth:forgotPassword.resendCooldown", { seconds: cooldown })
                 : t("auth:forgotPassword.resend")}

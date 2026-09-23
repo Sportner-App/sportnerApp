@@ -6,7 +6,6 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import Animated, {
@@ -25,6 +24,7 @@ import { createThemeVariables } from "@/contexts/theme-preference-provider";
 import type { IconName } from "@/types/components";
 
 import { OnboardingProgress } from "./onboarding-progress";
+import { AppText as Text } from "@/components/app-text";
 
 const DARK_THEME_VARIABLES = createThemeVariables(DARK_THEME_COLORS);
 
@@ -116,7 +116,7 @@ export function FirstLaunchScaffold({
             entering={reduceEnter ? undefined : FadeInDown.duration(380)}
             className="mt-10"
           >
-            <Text className="font-mono text-[28px] text-text-primary">
+            <Text className="font-mono text-heading-lg text-text-primary">
               0{progressStep}
             </Text>
             <View className="mt-2 h-0.5 w-7 bg-brand-primary" />
@@ -144,7 +144,7 @@ export function FirstLaunchScaffold({
             {title.split("\n").map((line, index) => (
               <Text
                 key={`${line}-${index}`}
-                className={`font-display text-[40px] leading-[42px] ${
+                className={`font-display text-display leading-[42px] ${
                   index === accentLine
                     ? "text-brand-primary"
                     : "text-text-primary"
@@ -154,7 +154,7 @@ export function FirstLaunchScaffold({
               </Text>
             ))}
           </View>
-          <Text className="mt-4 max-w-[310px] font-body text-[15px] leading-6 text-white/70">
+          <Text className="mt-4 max-w-[310px] font-body text-body leading-6 text-white/70">
             {subtitle}
           </Text>
         </Animated.View>
@@ -184,7 +184,7 @@ export function FirstLaunchScaffold({
                 disabled={secondaryLoading}
                 className="min-h-[48px] items-center justify-center rounded-pill border border-white/25 bg-black/15 active:opacity-75"
               >
-                <Text className="font-body text-sm text-white/70">
+                <Text className="font-body text-body-sm text-white/70">
                   {secondaryHint ? `${secondaryHint} ` : ""}
                   <Text className="font-body-bold text-white">
                     {secondaryLabel}

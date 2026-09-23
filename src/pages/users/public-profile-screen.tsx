@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -36,15 +36,10 @@ import type { ApiReview } from "@/types/reviews";
 import { FRIENDSHIP_STATUS } from "@/types/social";
 import { errorNotification, successNotification } from "@/utils/haptics";
 import { useRequireAuth } from "@/hooks/use-require-auth";
+import { AppText as Text } from "@/components/app-text";
 
 type FriendAction =
-  | "send"
-  | "accept"
-  | "reject"
-  | "remove"
-  | "block"
-  | "message"
-  | null;
+  "send" | "accept" | "reject" | "remove" | "block" | "message" | null;
 type ProfileTab = "activity" | "reviews";
 
 export function PublicProfileScreen() {
@@ -304,7 +299,7 @@ export function PublicProfileScreen() {
           <SportLoader size={140} label={t("publicProfile.loading")} />
         </View>
       ) : !profile ? (
-        <Text className="text-center font-body text-sm text-brand-neutral">
+        <Text className="text-center font-body text-body-sm text-brand-neutral">
           {t("publicProfile.notFound")}
         </Text>
       ) : (

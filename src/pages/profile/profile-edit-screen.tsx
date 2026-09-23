@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -32,6 +32,7 @@ import {
   pickProfileImage,
   type PickedMedia,
 } from "@/utils/media-picker";
+import { AppText as Text } from "@/components/app-text";
 
 export function ProfileEditScreen() {
   const { t } = useTranslation(["profile", "common"]);
@@ -201,10 +202,10 @@ export function ProfileEditScreen() {
           />
 
           <View className="gap-1">
-            <Text className="font-display text-xl text-text-primary">
+            <Text className="font-display text-heading-sm text-text-primary">
               {t("profile:edit.basicInfoTitle")}
             </Text>
-            <Text className="font-body text-xs text-text-tertiary">
+            <Text className="font-body text-caption text-text-tertiary">
               {t("profile:edit.basicInfoSubtitle")}
             </Text>
           </View>
@@ -250,9 +251,7 @@ export function ProfileEditScreen() {
             maxLength={10}
             disabled={isBirthDateLocked}
             helperText={
-              isBirthDateLocked
-                ? t("profile:edit.birthDateLocked")
-                : undefined
+              isBirthDateLocked ? t("profile:edit.birthDateLocked") : undefined
             }
           />
           <SelectField
@@ -266,10 +265,10 @@ export function ProfileEditScreen() {
           />
 
           <View className="mt-1 gap-1">
-            <Text className="font-display text-xl text-text-primary">
+            <Text className="font-display text-heading-sm text-text-primary">
               {t("profile:edit.detailsTitle")}
             </Text>
-            <Text className="font-body text-xs text-text-tertiary">
+            <Text className="font-body text-caption text-text-tertiary">
               {t("profile:edit.detailsSubtitle")}
             </Text>
           </View>

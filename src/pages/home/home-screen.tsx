@@ -2,12 +2,11 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import {
   SegmentedTabs,
-  SelectSheet,
   SportLoader,
   TabPage,
   TabScreenHeader,
@@ -29,6 +28,7 @@ import { ORGANIZATION_STATUS } from "@/types/organizations";
 import { EventCard } from "./event-card";
 import { EventFilterSheet } from "./event-filter-sheet";
 import { EventsMap } from "./events-map";
+import { AppText as Text } from "@/components/app-text";
 
 type ViewMode = "list" | "map";
 
@@ -44,18 +44,13 @@ export function HomeScreen() {
   const initialOrganizationId =
     initialScope === "organizations" ? (organizationIdParam ?? null) : null;
   const [filterOpen, setFilterOpen] = useState(false);
-  const [cityPickerOpen, setCityPickerOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const { requireAuth } = useRequireAuth();
   const { isAuthenticated } = useAuth();
   const { items: myOrganizations, isLoading: isOrganizationsLoading } =
     useMyOrganizations(isAuthenticated);
   const { sports } = useSportCatalog();
-  const {
-    options: cityOptions,
-    isLoading: isCitiesLoading,
-    error: citiesError,
-  } = useCities();
+  const { options: cityOptions, isLoading: isCitiesLoading } = useCities();
   const {
     coordinates: userLocation,
     status: locationStatus,
@@ -81,19 +76,11 @@ export function HomeScreen() {
   const hasOrganizations = approvedOrganizations.length > 0;
   const isFriends = scope === "friends";
   const isOrganizations = scope === "organizations";
-  const selectedOrganizationName = approvedOrganizations.find(
-    (organization) => organization.id === filters.organizationId,
-  )?.name;
-  const locationContextLabel = isOrganizations
-    ? (selectedOrganizationName ??
-      t("contextLabel.organizationsFallback"))
-    : isFriends
-      ? filters.city
-        ? t("contextLabel.friendsWithCity", { city: filters.city })
-        : t("contextLabel.friends")
-      : filters.city
-        ? t("contextLabel.cityEvents", { city: filters.city })
-        : t("contextLabel.allCities");
+  const toggleSort = () =>
+    applyFilters({
+      ...filters,
+      sortBy: filters.sortBy === "time" ? "location" : "time",
+    });
 
   useEffect(() => {
     if (
@@ -174,7 +161,7 @@ export function HomeScreen() {
           size={14}
           color={themeColors.text.primary}
         />
-        <Text className="font-body-bold text-sm text-text-primary">
+        <Text className="font-body-bold text-body-sm text-text-primary">
           {t("filters.label")}
         </Text>
         {hasActiveFilters ? (
@@ -192,17 +179,10 @@ export function HomeScreen() {
       onApply={applyFilters}
       organizations={isOrganizations ? approvedOrganizations : []}
       sports={sports}
+      cities={cityOptions}
+      isCitiesLoading={isCitiesLoading}
     />
   );
-
-  const locationOptions = [
-    {
-      key: "",
-      label: t("filterSheet.location.allLabel"),
-      description: t("filterSheet.location.allDescription"),
-    },
-    ...cityOptions,
-  ];
 
   if (viewMode === "map") {
     return (
@@ -229,10 +209,7 @@ export function HomeScreen() {
             )}
           </View>
 
-          <View
-            pointerEvents="box-none"
-            className="absolute inset-x-3 top-3"
-          >
+          <View pointerEvents="box-none" className="absolute inset-x-3 top-3">
             <View
               className="rounded-[26px] border border-border-default bg-background-primary/95 p-3"
               style={shadows.md}
@@ -241,30 +218,25 @@ export function HomeScreen() {
 
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={t("filterSheet.location.label")}
-                disabled={isCitiesLoading || Boolean(citiesError)}
-                onPress={() => setCityPickerOpen(true)}
-                className="mt-1 flex-row items-center gap-2 rounded-xl bg-surface-secondary px-3 py-2.5 active:opacity-70 disabled:opacity-50"
+                accessibilityLabel={t("sort.accessibility")}
+                onPress={toggleSort}
+                className="mt-1 flex-row items-center gap-2 rounded-xl bg-surface-secondary px-3 py-2.5 active:opacity-70"
               >
                 <FontAwesome6
-                  name={
-                    isOrganizations
-                      ? "building"
-                      : isFriends
-                        ? "user-group"
-                        : "location-dot"
-                  }
+                  name={filters.sortBy === "time" ? "clock" : "location-dot"}
                   size={13}
                   color={themeColors.brand.primary}
                 />
                 <Text
                   numberOfLines={1}
-                  className="flex-1 font-body-bold text-sm text-text-primary"
+                  className="flex-1 font-body-bold text-body-sm text-text-primary"
                 >
-                  {locationContextLabel}
+                  {filters.sortBy === "time"
+                    ? t("sort.timeLabel")
+                    : t("sort.locationLabel")}
                 </Text>
                 <FontAwesome6
-                  name="chevron-down"
+                  name="arrows-up-down"
                   size={9}
                   color={themeColors.text.tertiary}
                 />
@@ -279,19 +251,6 @@ export function HomeScreen() {
         </View>
 
         {filterSheet}
-        <SelectSheet
-          visible={cityPickerOpen}
-          onClose={() => setCityPickerOpen(false)}
-          title={t("filterSheet.location.sheetTitle")}
-          subtitle={t("filterSheet.location.sheetSubtitle")}
-          options={locationOptions}
-          value={filters.city ?? ""}
-          onChange={(city) =>
-            applyFilters({ ...filters, city: city || null })
-          }
-          searchable
-          searchPlaceholder={t("filterSheet.location.searchPlaceholder")}
-        />
       </TabPage>
     );
   }
@@ -309,30 +268,25 @@ export function HomeScreen() {
         <View className="flex-row items-center">
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={t("filterSheet.location.label")}
-            disabled={isCitiesLoading || Boolean(citiesError)}
-            onPress={() => setCityPickerOpen(true)}
-            className="flex-1 flex-row items-center gap-sm active:opacity-70 disabled:opacity-50"
+            accessibilityLabel={t("sort.accessibility")}
+            onPress={toggleSort}
+            className="flex-1 flex-row items-center gap-sm active:opacity-70"
           >
             <FontAwesome6
-              name={
-                isOrganizations
-                  ? "building"
-                  : isFriends
-                    ? "user-group"
-                    : "location-dot"
-              }
+              name={filters.sortBy === "time" ? "clock" : "location-dot"}
               size={14}
               color={themeColors.brand.primary}
             />
             <Text
               numberOfLines={1}
-              className="flex-shrink font-body-bold text-[15px] text-text-primary"
+              className="flex-shrink font-body-bold text-body text-text-primary"
             >
-              {locationContextLabel}
+              {filters.sortBy === "time"
+                ? t("sort.timeLabel")
+                : t("sort.locationLabel")}
             </Text>
             <FontAwesome6
-              name="chevron-down"
+              name="arrows-up-down"
               size={10}
               color={themeColors.text.tertiary}
             />
@@ -411,17 +365,6 @@ export function HomeScreen() {
       )}
 
       {filterSheet}
-      <SelectSheet
-        visible={cityPickerOpen}
-        onClose={() => setCityPickerOpen(false)}
-        title={t("filterSheet.location.sheetTitle")}
-        subtitle={t("filterSheet.location.sheetSubtitle")}
-        options={locationOptions}
-        value={filters.city ?? ""}
-        onChange={(city) => applyFilters({ ...filters, city: city || null })}
-        searchable
-        searchPlaceholder={t("filterSheet.location.searchPlaceholder")}
-      />
     </TabPage>
   );
 }
@@ -455,7 +398,7 @@ function ViewModeButton({
         color={active ? themeColors.text.onPrimary : themeColors.text.secondary}
       />
       <Text
-        className={`font-body-bold text-xs ${
+        className={`font-body-bold text-caption ${
           active ? "text-text-on-primary" : "text-text-secondary"
         }`}
       >

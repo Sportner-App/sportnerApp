@@ -1,10 +1,11 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { Trans, useTranslation } from "react-i18next";
 
 import { SelectField } from "@/components";
 import { themeColors } from "@/constants/theme";
 import type { ApiOrganizationListItem } from "@/types/organizations";
+import { AppText as Text } from "@/components/app-text";
 
 type OrganizationSelectStepProps = {
   isLocked: boolean;
@@ -39,12 +40,13 @@ export function OrganizationSelectStep({
             color={themeColors.brand.primary}
           />
         </View>
-        <Text className="flex-1 font-body text-sm text-text-secondary">
+        <Text className="flex-1 font-body text-body-sm text-text-secondary">
           <Trans
             t={t}
             i18nKey="organization.lockedText"
             values={{
-              name: lockedOrganizationName ?? t("organization.lockedFallbackName"),
+              name:
+                lockedOrganizationName ?? t("organization.lockedFallbackName"),
             }}
             components={{
               bold: <Text className="font-body-bold text-text-primary" />,
@@ -61,7 +63,7 @@ export function OrganizationSelectStep({
 
   return (
     <View className="mt-7 gap-3">
-      <Text className="font-body-bold text-[13px] text-text-secondary">
+      <Text className="font-body-bold text-label text-text-secondary">
         {t("organization.intentQuestion")}
       </Text>
       <View className="flex-row flex-wrap gap-2">
@@ -75,7 +77,7 @@ export function OrganizationSelectStep({
           }`}
         >
           <Text
-            className={`font-body-bold text-sm ${
+            className={`font-body-bold text-body-sm ${
               !wantsOrganizationEvent
                 ? "text-background-primary"
                 : "text-text-secondary"
@@ -94,7 +96,7 @@ export function OrganizationSelectStep({
           }`}
         >
           <Text
-            className={`font-body-bold text-sm ${
+            className={`font-body-bold text-body-sm ${
               wantsOrganizationEvent
                 ? "text-background-primary"
                 : "text-text-secondary"

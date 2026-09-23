@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -13,6 +13,7 @@ import Animated, {
 import { useTranslation } from "react-i18next";
 
 import type { IconName, SportLoaderProps } from "@/types/components";
+import { AppText as Text } from "@/components/app-text";
 
 const LIME = "#ccff00";
 const SLATE = "#64748b";
@@ -28,10 +29,7 @@ const ORBIT_ICONS: { name: IconName; color: string }[] = [
   { name: "baseball-bat-ball", color: SLATE },
 ];
 
-export function SportLoader({
-  size = 168,
-  label,
-}: SportLoaderProps) {
+export function SportLoader({ size = 168, label }: SportLoaderProps) {
   const { t } = useTranslation("common");
   const resolvedLabel = label === undefined ? t("loading") : label;
   const rotation = useSharedValue(0);
@@ -162,7 +160,7 @@ export function SportLoader({
 
       {resolvedLabel ? (
         <Animated.View style={labelStyle}>
-          <Text className="font-mono text-xs uppercase tracking-[4px] text-brand-primary">
+          <Text className="font-mono text-caption uppercase tracking-[4px] text-brand-primary">
             {resolvedLabel}
           </Text>
         </Animated.View>

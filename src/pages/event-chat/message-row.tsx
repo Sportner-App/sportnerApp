@@ -1,9 +1,10 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
 import type { ChatMessage } from "@/types/messaging";
 import { formatMessageTime } from "@/utils/messaging-time";
+import { AppText as Text } from "@/components/app-text";
 
 type MessageRowProps = {
   message: ChatMessage;
@@ -63,7 +64,7 @@ export function MessageRow({
       {mine ? null : avatar}
       <View className={mine ? "items-end" : "items-start"}>
         {showSender ? (
-          <Text className="mb-1 font-body text-xs font-semibold text-brand-primary">
+          <Text className="mb-1 font-body text-caption font-semibold text-brand-primary">
             {name}
           </Text>
         ) : null}
@@ -73,7 +74,7 @@ export function MessageRow({
           }`}
           style={isPending ? { opacity: 0.55 } : undefined}
         >
-          <Text className="font-body text-sm text-white">{body}</Text>
+          <Text className="font-body text-body-sm text-white">{body}</Text>
         </View>
         {isFailed ? (
           <Pressable
@@ -83,12 +84,12 @@ export function MessageRow({
             hitSlop={8}
             className="mt-1 active:opacity-70"
           >
-            <Text className="font-mono text-[10px] text-destructive">
+            <Text className="font-mono text-overline text-destructive">
               {t("messaging:message.failed")}
             </Text>
           </Pressable>
         ) : (
-          <Text className="mt-1 font-mono text-[10px] text-brand-neutral">
+          <Text className="mt-1 font-mono text-overline text-brand-neutral">
             {isPending
               ? t("messaging:message.sending")
               : formatMessageTime(message.createdAt)}

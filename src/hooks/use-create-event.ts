@@ -56,9 +56,8 @@ export function useCreateEvent(initialOrganizationId?: string) {
   const [organizationId, setOrganizationId] = useState<string | undefined>(
     initialOrganizationId,
   );
-  const [wantsOrganizationEvent, setWantsOrganizationEvent] = useState(
-    isOrganizationLocked,
-  );
+  const [wantsOrganizationEvent, setWantsOrganizationEvent] =
+    useState(isOrganizationLocked);
   const isOrganizationEvent = Boolean(organizationId);
 
   const setOrganizationIntent = (wants: boolean) => {
@@ -89,6 +88,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
     maxPlayers: "10",
     minParticipantAge: String(DEFAULT_EVENT_MIN_AGE),
     maxParticipantAge: String(DEFAULT_EVENT_MAX_AGE),
+    participantGender: null,
     skillLevel: null,
     isPaid: false,
     feeAmountText: "",
@@ -225,25 +225,22 @@ export function useCreateEvent(initialOrganizationId?: string) {
 
   const isStep2Valid = useMemo(() => {
     return (
-      values.durationMinutes > 0 &&
       Boolean(values.addressText.trim()) &&
       values.latitude != null &&
       values.longitude != null &&
       values.latitude >= -90 &&
       values.latitude <= 90 &&
       values.longitude >= -180 &&
-      values.longitude <= 180 &&
-      values.eventDate.getTime() > Date.now()
+      values.longitude <= 180
     );
-  }, [
-    values.addressText,
-    values.durationMinutes,
-    values.eventDate,
-    values.latitude,
-    values.longitude,
-  ]);
+  }, [values.addressText, values.latitude, values.longitude]);
 
-  const isStep3Valid = useMemo(() => {
+  const isStep3Valid = useMemo(
+    () => values.durationMinutes > 0 && values.eventDate.getTime() > Date.now(),
+    [values.durationMinutes, values.eventDate],
+  );
+
+  const isStep4Valid = useMemo(() => {
     const feeAmount = parseFeeAmount(values.feeAmountText);
     const feeOk = values.isPaid
       ? feeAmount != null &&
@@ -275,7 +272,11 @@ export function useCreateEvent(initialOrganizationId?: string) {
       guest.firstName.trim().length > 0 && guest.lastName.trim().length > 0,
   );
   const canSubmit =
-    isStep1Valid && isStep2Valid && isStep3Valid && areGuestsValid;
+    isStep1Valid &&
+    isStep2Valid &&
+    isStep3Valid &&
+    isStep4Valid &&
+    areGuestsValid;
   const reservedCount = guests.length + selectedFriendIds.length;
   const remainingCompanionSlots = Math.max(
     maxPlayersNumber - 1 - reservedCount,
@@ -283,7 +284,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
   );
 
   useEffect(() => {
-    if (!isStep3Valid) return;
+    if (!isStep4Valid) return;
 
     const allowed = Math.max(Math.floor(maxPlayersNumber) - 1, 0);
     if (reservedCount <= allowed) return;
@@ -293,7 +294,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
       return current.slice(0, friendAllowance);
     });
     setGuests((current) => current.slice(0, allowed));
-  }, [guests.length, isStep3Valid, maxPlayersNumber, reservedCount]);
+  }, [guests.length, isStep4Valid, maxPlayersNumber, reservedCount]);
 
   const addGuest = () => {
     if (remainingCompanionSlots <= 0) return;
@@ -370,6 +371,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
         maxParticipants: maxPlayersNumber,
         minParticipantAge: minParticipantAgeNumber,
         maxParticipantAge: maxParticipantAgeNumber,
+        participantGender: values.participantGender,
         skillLevel: values.skillLevel,
         isPaid: values.isPaid,
         feeAmount: values.isPaid ? parseFeeAmount(values.feeAmountText) : null,
@@ -494,6 +496,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
     isStep1Valid,
     isStep2Valid,
     isStep3Valid,
+    isStep4Valid,
     areGuestsValid,
     canSubmit,
     isSubmitting,

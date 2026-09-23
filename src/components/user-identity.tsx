@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { Avatar } from "./avatar";
+import { AppText as Text } from "@/components/app-text";
 
 type UserIdentityProps = {
   username?: string | null;
@@ -36,14 +37,14 @@ export function UserIdentity({
       <View className="min-w-0 flex-1">
         <Text
           numberOfLines={1}
-          className="font-body-bold text-sm text-text-primary"
+          className="font-body-bold text-body-sm text-text-primary"
         >
           {label}
         </Text>
         {meta ? (
           <Text
             numberOfLines={1}
-            className="mt-0.5 font-body text-[11px] text-text-secondary"
+            className="mt-0.5 font-body text-overline text-text-secondary"
           >
             {meta}
           </Text>

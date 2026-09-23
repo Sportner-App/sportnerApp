@@ -36,12 +36,17 @@ export async function shareOrganizationInvite(
   organizationName: string,
   inviteCode: string,
 ) {
-  const message = buildOrganizationInviteShareMessage(organizationName, inviteCode);
+  const message = buildOrganizationInviteShareMessage(
+    organizationName,
+    inviteCode,
+  );
   const joinUrl = buildOrganizationJoinUrl(inviteCode);
   const title = inviteShareTitle(organizationName);
 
   await Share.share(
-    Platform.OS === "ios" ? { message, url: joinUrl, title } : { message, title },
+    Platform.OS === "ios"
+      ? { message, url: joinUrl, title }
+      : { message, title },
   );
 }
 
@@ -49,7 +54,10 @@ export async function shareOrganizationInviteViaWhatsApp(
   organizationName: string,
   inviteCode: string,
 ) {
-  const message = buildOrganizationInviteShareMessage(organizationName, inviteCode);
+  const message = buildOrganizationInviteShareMessage(
+    organizationName,
+    inviteCode,
+  );
   const encoded = encodeURIComponent(message);
   const whatsappUrl = `whatsapp://send?text=${encoded}`;
   const webUrl = `https://wa.me/?text=${encoded}`;

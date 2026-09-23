@@ -1,11 +1,12 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
+import { ImageBackground, Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 import { useTranslation } from "react-i18next";
 
 import { shadows, themeColors } from "@/constants/theme";
 import { lightImpact } from "@/utils/haptics";
+import { AppText as Text } from "@/components/app-text";
 
 type HeroProps = {
   onCreatePress: () => void;
@@ -35,7 +36,7 @@ export function Hero({ onCreatePress }: HeroProps) {
           <View className="mr-3 flex-1">
             <Text
               numberOfLines={1}
-              className="font-display text-[20px] leading-6 text-text-inverse"
+              className="font-display text-heading-sm leading-6 text-text-inverse"
             >
               {t("hero.titlePrefix")}
               <Text className="text-brand-primary">
@@ -44,7 +45,7 @@ export function Hero({ onCreatePress }: HeroProps) {
             </Text>
             <Text
               numberOfLines={1}
-              className="mt-1 font-body text-[13px] leading-4 text-white/75"
+              className="mt-1 font-body text-label leading-4 text-white/75"
             >
               {t("hero.subtitle")}
             </Text>
@@ -65,7 +66,7 @@ export function Hero({ onCreatePress }: HeroProps) {
               color={themeColors.text.onPrimary}
             />
             <Text
-              className="font-body-bold text-[13px]"
+              className="font-body-bold text-label"
               style={{ color: themeColors.text.onPrimary }}
             >
               {t("hero.createLabel")}

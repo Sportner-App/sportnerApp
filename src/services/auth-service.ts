@@ -574,7 +574,10 @@ export async function register({
     return {
       data: null,
       error: {
-        message: getApiErrorMessage(error, i18n.t("auth:service.registerFailed")),
+        message: getApiErrorMessage(
+          error,
+          i18n.t("auth:service.registerFailed"),
+        ),
       },
     };
   }
@@ -689,7 +692,9 @@ export async function resendEmailVerification(): Promise<AuthActionResult> {
  * backend intentionally responds the same way in both cases (account enumeration defense), so
  * the UI should show a generic "check your email" message regardless of the outcome here.
  */
-export async function requestPasswordReset(email: string): Promise<AuthActionResult> {
+export async function requestPasswordReset(
+  email: string,
+): Promise<AuthActionResult> {
   const emailError = validateEmail(email.trim().toLowerCase());
   if (emailError) {
     return { error: { message: emailError } };
@@ -753,7 +758,9 @@ export async function resetPassword({
  * (şimdilik rozet/görev bildirimleri) bu dile göre yazılsın diye senkronize eder.
  * Best-effort: başarısız olursa sessizce yutulur, uygulamanın kendi dili etkilenmez.
  */
-export async function syncPreferredLanguage(language: "tr" | "en"): Promise<void> {
+export async function syncPreferredLanguage(
+  language: "tr" | "en",
+): Promise<void> {
   try {
     await apiClient.put("/api/auth/me/language", {
       language: language === "en" ? 1 : 0,

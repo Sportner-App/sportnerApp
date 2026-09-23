@@ -5,7 +5,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Text,
   View,
 } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
@@ -19,6 +18,7 @@ import { AnimatedBackground } from "@/pages/auth/animated-background";
 
 import { MediaFields } from "./media-fields";
 import { SportsPickerStep } from "./sports-picker-step";
+import { AppText as Text } from "@/components/app-text";
 
 export function OnboardingScreen() {
   const { t } = useTranslation(["onboarding", "profile"]);
@@ -64,23 +64,23 @@ export function OnboardingScreen() {
 
               <View className="flex-1 flex-row items-center gap-2.5">
                 <View className="h-2.5 w-2.5 rounded-full bg-brand-primary" />
-                <Text className="font-mono text-xs tracking-[4px] text-brand-neutral">
+                <Text className="font-mono text-caption tracking-[4px] text-brand-neutral">
                   {ONBOARDING_COPY.eyebrow}
                 </Text>
               </View>
 
               <View className="rounded-full border border-brand-primary/25 bg-brand-primary/10 px-3 py-1.5">
-                <Text className="font-mono text-[10px] tracking-wide text-brand-primary">
+                <Text className="font-mono text-overline tracking-wide text-brand-primary">
                   {detailsCopy.stepLabel}
                 </Text>
               </View>
             </Animated.View>
 
             <Animated.View entering={FadeInDown.duration(420)}>
-              <Text className="font-display text-5xl leading-[52px] text-text-primary">
+              <Text className="font-display text-display leading-[52px] text-text-primary">
                 {detailsCopy.title}
               </Text>
-              <Text className="mt-3 font-body text-base leading-6 text-brand-neutral">
+              <Text className="mt-3 font-body text-body leading-6 text-brand-neutral">
                 {detailsCopy.subtitle}
               </Text>
             </Animated.View>

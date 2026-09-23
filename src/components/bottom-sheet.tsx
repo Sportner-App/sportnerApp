@@ -6,7 +6,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Text,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -25,6 +24,7 @@ import { scheduleOnRN } from "react-native-worklets";
 
 import type { BottomSheetProps } from "@/types/components";
 import { Button } from "./button";
+import { AppText as Text } from "@/components/app-text";
 
 const CLOSE_DURATION_MS = 280;
 const TOP_GUTTER = 16;
@@ -113,17 +113,21 @@ export function BottomSheet({
 
           if (shouldDismiss) {
             dragY.set(
-              withSpring(slideDistance.get(), {
-                duration: 260,
-                dampingRatio: 1,
-                velocity: event.velocityY,
-                overshootClamping: true,
-                reduceMotion,
-              }, (finished) => {
-                if (finished) {
-                  scheduleOnRN(dismissFromGesture);
-                }
-              }),
+              withSpring(
+                slideDistance.get(),
+                {
+                  duration: 260,
+                  dampingRatio: 1,
+                  velocity: event.velocityY,
+                  overshootClamping: true,
+                  reduceMotion,
+                },
+                (finished) => {
+                  if (finished) {
+                    scheduleOnRN(dismissFromGesture);
+                  }
+                },
+              ),
             );
             return;
           }
@@ -154,8 +158,7 @@ export function BottomSheet({
   const sheetStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        translateY:
-          (1 - progress.get()) * slideDistance.get() + dragY.get(),
+        translateY: (1 - progress.get()) * slideDistance.get() + dragY.get(),
       },
     ],
   }));
@@ -200,11 +203,11 @@ export function BottomSheet({
             <GestureDetector gesture={panGesture}>
               <View className="mb-4 items-center pb-1">
                 <View className="mb-4 h-1 w-10 rounded-full bg-brand-primary" />
-                <Text className="font-display text-lg text-text-primary">
+                <Text className="font-display text-heading-sm text-text-primary">
                   {title}
                 </Text>
                 {subtitle ? (
-                  <Text className="mt-1 text-center font-body text-xs text-text-secondary">
+                  <Text className="mt-1 text-center font-body text-caption text-text-secondary">
                     {subtitle}
                   </Text>
                 ) : null}

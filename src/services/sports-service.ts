@@ -8,7 +8,9 @@ import type {
 
 const DEFAULT_PAGE_SIZE = 50;
 
-function normalizeSportsPage(data: SportsPage | Sport[] | null | undefined): SportsPage {
+function normalizeSportsPage(
+  data: SportsPage | Sport[] | null | undefined,
+): SportsPage {
   if (Array.isArray(data)) {
     return {
       items: data,

@@ -35,6 +35,11 @@
     "cityEvents": "Events in {{city}}",
     "allCities": "Events in all cities"
   },
+  "sort": {
+    "locationLabel": "By location",
+    "timeLabel": "By time",
+    "accessibility": "Change sort order"
+  },
   "resultCount": "{{count}} events found",
   "loadingEvents": "Loading events",
   "loadFailed": "Events couldn't load.",
@@ -68,8 +73,10 @@
       "unlimitedCapacity": "unlimited capacity",
       "capacity": "capacity {{count}} people",
       "myStatusApproved": "you're in",
-      "myStatusPending": "pending approval"
-    }
+      "myStatusPending": "pending approval",
+      "ended": "event ended"
+    },
+    "ended": "Ended"
   },
   "filterSheet": {
     "title": "Event filters",
@@ -107,6 +114,11 @@
       "label": "Fee",
       "free": "Free",
       "paid": "Paid"
+    },
+    "sort": {
+      "label": "Sort by",
+      "location": "By location",
+      "time": "By time"
     },
     "skillLabel": "Level",
     "organizerGenderLabel": "Organizer gender"

@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
@@ -7,6 +7,7 @@ import { themeColors } from "@/constants/theme";
 import type { EventDetail } from "@/types/events";
 import { isCurrentParticipant } from "@/utils/events";
 import { lightImpact } from "@/utils/haptics";
+import { AppText as Text } from "@/components/app-text";
 
 type EventParticipantsTabProps = {
   event: EventDetail;
@@ -45,10 +46,10 @@ export function EventParticipantsTab({
             />
           </View>
           <View className="min-w-0 flex-1">
-            <Text className="font-body-bold text-sm text-text-primary">
+            <Text className="font-body-bold text-body-sm text-text-primary">
               {t("participantTab.pendingTitle", { count: pendingCount })}
             </Text>
-            <Text className="mt-0.5 font-body text-xs text-text-secondary">
+            <Text className="mt-0.5 font-body text-caption text-text-secondary">
               {t("participantTab.pendingSubtitle")}
             </Text>
           </View>
@@ -62,10 +63,10 @@ export function EventParticipantsTab({
 
       <View className="overflow-hidden rounded-3xl border border-border-default bg-background-secondary">
         <View className="flex-row items-center justify-between border-b border-border-default px-4 py-3.5">
-          <Text className="font-body-bold text-base text-text-primary">
+          <Text className="font-body-bold text-body text-text-primary">
             {t("participantTab.heading")}
           </Text>
-          <Text className="font-mono text-xs text-text-secondary">
+          <Text className="font-mono text-caption text-text-secondary">
             {t("participantTab.count", { count: participants.length })}
           </Text>
         </View>
@@ -77,7 +78,7 @@ export function EventParticipantsTab({
               size={20}
               color={themeColors.text.tertiary}
             />
-            <Text className="text-center font-body text-sm text-text-secondary">
+            <Text className="text-center font-body text-body-sm text-text-secondary">
               {t("participantTab.empty")}
             </Text>
           </View>
@@ -108,11 +109,11 @@ export function EventParticipantsTab({
               <View className="min-w-0 flex-1">
                 <Text
                   numberOfLines={1}
-                  className="font-body-bold text-sm text-text-primary"
+                  className="font-body-bold text-body-sm text-text-primary"
                 >
                   {participant.name}
                 </Text>
-                <Text className="mt-0.5 font-body text-xs text-text-secondary">
+                <Text className="mt-0.5 font-body text-caption text-text-secondary">
                   {participant.isGuest
                     ? t("participantTab.guest")
                     : participant.username

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { AppScreen, ScreenHeader, SportLoader } from "@/components";
@@ -11,6 +11,7 @@ import {
   listMyQuests,
 } from "@/services/gamification-service";
 import type { ApiBadge, ApiQuest } from "@/types/social";
+import { AppText as Text } from "@/components/app-text";
 
 export function BadgesScreen() {
   const { t } = useTranslation("badges");
@@ -48,11 +49,11 @@ export function BadgesScreen() {
         </View>
       ) : (
         <>
-          <Text className="font-display text-2xl text-text-primary">
+          <Text className="font-display text-heading-md text-text-primary">
             {t("sections.earned")}
           </Text>
           {badges.length === 0 ? (
-            <Text className="font-body text-sm text-brand-neutral">
+            <Text className="font-body text-body-sm text-brand-neutral">
               {t("empty.badges")}
             </Text>
           ) : (
@@ -65,7 +66,7 @@ export function BadgesScreen() {
             ))
           )}
 
-          <Text className="mt-2 font-display text-2xl text-text-primary">
+          <Text className="mt-2 font-display text-heading-md text-text-primary">
             {t("sections.progress")}
           </Text>
           {progress.map((badge) => (
@@ -80,11 +81,11 @@ export function BadgesScreen() {
             />
           ))}
 
-          <Text className="mt-2 font-display text-2xl text-text-primary">
+          <Text className="mt-2 font-display text-heading-md text-text-primary">
             {t("sections.quests")}
           </Text>
           {quests.length === 0 ? (
-            <Text className="font-body text-sm text-brand-neutral">
+            <Text className="font-body text-body-sm text-brand-neutral">
               {t("empty.quests")}
             </Text>
           ) : (
@@ -108,10 +109,12 @@ export function BadgesScreen() {
 function Card({ title, body }: { title: string; body: string }) {
   return (
     <View className="rounded-2xl border border-border-default bg-surface-primary p-4">
-      <Text className="font-body text-sm font-semibold text-text-primary">
+      <Text className="font-body text-body-sm font-semibold text-text-primary">
         {title}
       </Text>
-      <Text className="mt-1 font-body text-xs text-brand-neutral">{body}</Text>
+      <Text className="mt-1 font-body text-caption text-brand-neutral">
+        {body}
+      </Text>
     </View>
   );
 }

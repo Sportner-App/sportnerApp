@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import {
   AppScreen,
@@ -21,6 +21,7 @@ import {
   unlikePost,
 } from "@/services/social-service";
 import type { ApiPost } from "@/types/social";
+import { AppText as Text } from "@/components/app-text";
 
 type Tab = "home" | "explore";
 
@@ -87,7 +88,7 @@ export function FeedScreen() {
               onPress={() => router.push("/posts/create")}
               className="px-1"
             >
-              <Text className="font-body text-xs text-brand-primary">
+              <Text className="font-body text-caption text-brand-primary">
                 {t("feed:header.write")}
               </Text>
             </Pressable>
@@ -119,7 +120,7 @@ export function FeedScreen() {
           <SportLoader size={120} label={t("feed:loading")} />
         </View>
       ) : posts.length === 0 ? (
-        <Text className="py-10 text-center font-body text-sm text-brand-neutral">
+        <Text className="py-10 text-center font-body text-body-sm text-brand-neutral">
           {t("feed:empty")}
         </Text>
       ) : (
@@ -136,7 +137,7 @@ export function FeedScreen() {
               avatarSize={38}
               onPress={() => router.push(`/users/${post.userId}`)}
             />
-            <Text className="font-body text-sm text-text-primary">
+            <Text className="font-body text-body-sm text-text-primary">
               {post.content || t("social:fallback.post")}
             </Text>
             <View className="flex-row gap-4">
@@ -158,11 +159,11 @@ export function FeedScreen() {
                   }
                 }}
               >
-                <Text className="font-mono text-xs text-brand-primary">
+                <Text className="font-mono text-caption text-brand-primary">
                   {t("social:likesCount", { count: post.likeCount })}
                 </Text>
               </Pressable>
-              <Text className="font-mono text-xs text-brand-neutral">
+              <Text className="font-mono text-caption text-brand-neutral">
                 {t("social:commentsCount", { count: post.commentCount })}
               </Text>
             </View>

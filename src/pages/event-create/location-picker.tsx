@@ -1,12 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRef } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { ActivityIndicator, Pressable, TextInput, View } from "react-native";
 import MapView, {
   Marker,
   PROVIDER_GOOGLE,
@@ -25,6 +19,7 @@ import {
   isNativeMapAvailable,
 } from "@/services/location-service";
 import type { LocationSuggestion, SelectedLocation } from "@/types/location";
+import { AppText as Text } from "@/components/app-text";
 
 type LocationPickerProps = {
   addressText: string;
@@ -32,6 +27,7 @@ type LocationPickerProps = {
   longitude: number | null;
   onSelect: (location: SelectedLocation) => void;
   compact?: boolean;
+  expanded?: boolean;
 };
 
 export function LocationPicker({
@@ -40,6 +36,7 @@ export function LocationPicker({
   longitude,
   onSelect,
   compact = false,
+  expanded = false,
 }: LocationPickerProps) {
   const { t } = useTranslation("eventCreate");
   const { t: tLocation } = useTranslation("location");
@@ -104,7 +101,7 @@ export function LocationPicker({
       entering={FadeInDown.duration(420).delay(140)}
       className="z-10 gap-2"
     >
-      <Text className="font-body-bold text-[13px] text-text-secondary">
+      <Text className="font-body-bold text-label text-text-secondary">
         {t("location.label")}
       </Text>
 
@@ -122,7 +119,7 @@ export function LocationPicker({
               onChangeText={setQuery}
               placeholder={t("location.searchPlaceholder")}
               placeholderTextColor={themeColors.text.tertiary}
-              className="flex-1 font-body text-base text-text-primary"
+              className="flex-1 font-body text-body text-text-primary"
               autoCorrect={false}
               returnKeyType="search"
             />
@@ -173,13 +170,13 @@ export function LocationPicker({
                   </View>
                   <View className="flex-1">
                     <Text
-                      className="font-body text-sm font-semibold text-text-primary"
+                      className="font-body text-body-sm font-semibold text-text-primary"
                       numberOfLines={1}
                     >
                       {item.title}
                     </Text>
                     <Text
-                      className="mt-0.5 font-body text-xs text-text-secondary"
+                      className="mt-0.5 font-body text-caption text-text-secondary"
                       numberOfLines={2}
                     >
                       {item.subtitle}
@@ -192,7 +189,9 @@ export function LocationPicker({
         </View>
 
         {/* Harita */}
-        <View className={`relative ${compact ? "h-40" : "h-56"}`}>
+        <View
+          className={`relative ${expanded ? "h-[420px]" : compact ? "h-40" : "h-56"}`}
+        >
           {mapAvailable ? (
             <MapView
               ref={mapRef}
@@ -234,7 +233,7 @@ export function LocationPicker({
                 color={themeColors.brand.primary}
               />
               <Text
-                className="flex-1 font-body text-xs text-text-secondary"
+                className="flex-1 font-body text-caption text-text-secondary"
                 numberOfLines={2}
               >
                 {hasSelection

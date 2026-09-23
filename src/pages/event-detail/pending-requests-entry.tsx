@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect, useRef } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 
 import { themeColors } from "@/constants/theme";
 import { lightImpact } from "@/utils/haptics";
+import { AppText as Text } from "@/components/app-text";
 
 type PendingRequestsEntryProps = {
   count: number;
@@ -78,7 +79,7 @@ export function PendingRequestsHeaderAction({
           style={{ backgroundColor: themeColors.brand.primary }}
         >
           <Text
-            className="font-body-bold text-[10px]"
+            className="font-body-bold text-overline"
             style={{ color: themeColors.text.onPrimary }}
           >
             {count}
@@ -118,7 +119,7 @@ export function PendingRequestsBanner({
       <View className="h-8 w-8 items-center justify-center rounded-full bg-brand-primary/15">
         <FontAwesome6 name="user-group" size={12} color="#ccff00" />
       </View>
-      <Text className="flex-1 font-body text-sm text-text-primary">
+      <Text className="flex-1 font-body text-body-sm text-text-primary">
         <Text className="font-mono text-brand-primary">{count}</Text>{" "}
         {t("pendingEntry.bannerText")}
       </Text>

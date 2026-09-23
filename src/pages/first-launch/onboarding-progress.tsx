@@ -60,7 +60,10 @@ export function OnboardingProgress({ step }: OnboardingProgressProps) {
           }}
         >
           {STEPS.map((index) => (
-            <View key={index} style={{ flexDirection: "row", alignItems: "center" }}>
+            <View
+              key={index}
+              style={{ flexDirection: "row", alignItems: "center" }}
+            >
               <View
                 style={{
                   width: SLOT,

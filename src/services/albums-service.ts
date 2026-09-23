@@ -7,7 +7,9 @@ export async function listMyAlbums() {
 }
 
 export async function getAlbum(albumId: string) {
-  const response = await apiClient.get<ApiAlbumDetail>(`/api/albums/${albumId}`);
+  const response = await apiClient.get<ApiAlbumDetail>(
+    `/api/albums/${albumId}`,
+  );
   return response.data;
 }
 

@@ -1,7 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useRef, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -29,6 +29,7 @@ import type {
   ApiFriendship,
   ApiFriendSuggestion,
 } from "@/types/social";
+import { AppText as Text } from "@/components/app-text";
 
 type Tab = "friends" | "requests" | "suggestions";
 
@@ -126,7 +127,7 @@ export function FriendsScreen() {
         </View>
       ) : tab === "friends" ? (
         friends.length === 0 ? (
-          <Text className="py-8 text-center font-body text-sm text-brand-neutral">
+          <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
             {t("empty.friends")}
           </Text>
         ) : (
@@ -156,7 +157,7 @@ export function FriendsScreen() {
         )
       ) : tab === "requests" ? (
         requests.length === 0 ? (
-          <Text className="py-8 text-center font-body text-sm text-brand-neutral">
+          <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
             {t("empty.requests")}
           </Text>
         ) : (
@@ -228,7 +229,7 @@ export function FriendsScreen() {
           })
         )
       ) : suggestions.length === 0 ? (
-        <Text className="py-8 text-center font-body text-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
           {t("empty.suggestions")}
         </Text>
       ) : (

@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -14,6 +14,7 @@ import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { createReport, listReportReasons } from "@/services/reports-service";
 import type { ApiReportReason } from "@/types/social";
+import { AppText as Text } from "@/components/app-text";
 
 export function ReportScreen() {
   const { t } = useTranslation("report");
@@ -47,7 +48,7 @@ export function ReportScreen() {
         </View>
       ) : (
         <>
-          <Text className="font-display text-2xl text-text-primary">
+          <Text className="font-display text-heading-md text-text-primary">
             {t("heading")}
           </Text>
           {reasons.map((reason) => (
@@ -60,7 +61,7 @@ export function ReportScreen() {
                   : "border-border-default"
               }`}
             >
-              <Text className="font-body text-sm text-text-primary">
+              <Text className="font-body text-body-sm text-text-primary">
                 {reason.name}
               </Text>
             </Pressable>

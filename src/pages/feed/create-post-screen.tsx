@@ -6,7 +6,6 @@ import {
   ActivityIndicator,
   Image,
   Pressable,
-  Text,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -25,6 +24,7 @@ import {
   pickPostImages,
   type PickedMedia,
 } from "@/utils/media-picker";
+import { AppText as Text } from "@/components/app-text";
 
 const MAX_PHOTOS = 10;
 
@@ -45,7 +45,10 @@ export function CreatePostScreen() {
 
   const goToPhoto = (index: number) => {
     setActiveIndex(index);
-    mediaScrollRef.current?.scrollTo({ x: index * previewSize, animated: true });
+    mediaScrollRef.current?.scrollTo({
+      x: index * previewSize,
+      animated: true,
+    });
   };
 
   const choosePhotos = async () => {
@@ -133,7 +136,7 @@ export function CreatePostScreen() {
                 <ActivityIndicator size="small" color="#ccff00" />
               ) : (
                 <Text
-                  className={`font-body text-sm font-semibold ${
+                  className={`font-body text-body-sm font-semibold ${
                     canShare ? "text-brand-primary" : "text-brand-neutral"
                   }`}
                 >
@@ -174,7 +177,7 @@ export function CreatePostScreen() {
           </ScrollView>
           {photos.length > 1 ? (
             <View className="absolute right-3 top-3 rounded-pill bg-background-primary/70 px-2.5 py-1">
-              <Text className="font-body text-[11px] font-semibold text-white">
+              <Text className="font-body text-overline font-semibold text-white">
                 {activeIndex + 1}/{photos.length}
               </Text>
             </View>
@@ -195,10 +198,10 @@ export function CreatePostScreen() {
           <View className="h-14 w-14 items-center justify-center rounded-full bg-brand-primary/15">
             <FontAwesome6 name="camera" size={20} color="#ccff00" />
           </View>
-          <Text className="text-center font-body text-sm font-semibold text-text-primary">
+          <Text className="text-center font-body text-body-sm font-semibold text-text-primary">
             {t("feed:create.addPhoto")}
           </Text>
-          <Text className="text-center font-body text-xs text-brand-neutral">
+          <Text className="text-center font-body text-caption text-brand-neutral">
             {t("feed:create.photoHint")}
           </Text>
         </Pressable>

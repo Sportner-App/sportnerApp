@@ -1,11 +1,12 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { BottomSheet } from "@/components/bottom-sheet";
 import { useMediaSourceOptions } from "@/constants/components";
 import { themeColors } from "@/constants/theme";
 import type { MediaSource } from "@/utils/media-picker";
+import { AppText as Text } from "@/components/app-text";
 
 type MediaSourceSheetProps = {
   visible: boolean;
@@ -43,10 +44,10 @@ export function MediaSourceSheet({
               />
             </View>
             <View className="flex-1">
-              <Text className="font-body text-sm font-semibold text-text-primary">
+              <Text className="font-body text-body-sm font-semibold text-text-primary">
                 {option.label}
               </Text>
-              <Text className="mt-0.5 font-body text-xs text-text-secondary">
+              <Text className="mt-0.5 font-body text-caption text-text-secondary">
                 {option.description}
               </Text>
             </View>

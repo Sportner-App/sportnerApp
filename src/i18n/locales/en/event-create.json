@@ -1,10 +1,26 @@
 {
   "header": "NEW EVENT",
   "steps": {
-    "1": { "title": "Create your event", "subtitle": "Pick your sport and describe your event." },
-    "2": { "title": "Plan it out", "subtitle": "Decide where, when and how long it will last." },
-    "3": { "title": "Build your team", "subtitle": "Decide how many people can join." },
-    "4": { "title": "Who's coming with you?", "subtitle": "You can add guests or friends. You can skip this step." }
+    "1": {
+      "title": "Create your event",
+      "subtitle": "Pick your sport and describe your event."
+    },
+    "2": {
+      "title": "Choose the location",
+      "subtitle": "Use the larger map to pick where the event will take place."
+    },
+    "3": {
+      "title": "Plan it out",
+      "subtitle": "Set the date, time, duration and repeat options."
+    },
+    "4": {
+      "title": "Build your team",
+      "subtitle": "Set capacity and participation requirements."
+    },
+    "5": {
+      "title": "Who's coming with you?",
+      "subtitle": "You can add guests or friends. You can skip this step."
+    }
   },
   "submit": "Publish Event",
   "publishing": "Publishing...",
@@ -15,7 +31,8 @@
     "details": "Details",
     "plan": "Plan",
     "capacity": "Capacity",
-    "roster": "Roster"
+    "roster": "Roster",
+    "location": "Location"
   },
   "sport": {
     "label": "Sport",
@@ -141,5 +158,15 @@
     "waitingForPlayers": "Players are waiting for you.",
     "invitesFailedDescription": "{{reason}} You can resend invites from the event details.",
     "invitesGenericFailure": "Invites couldn't be sent."
+  },
+  "participantGender": {
+    "label": "Who can join?",
+    "placeholder": "Select participants",
+    "sheetTitle": "Participant gender",
+    "sheetSubtitle": "Choose who can send a participation request for this event",
+    "everyone": "Everyone",
+    "womenOnly": "Women only",
+    "menOnly": "Men only",
+    "hint": "This selection applies to participation requests and friend invitations."
   }
 }

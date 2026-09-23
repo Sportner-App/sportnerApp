@@ -1,21 +1,22 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 
 type EventCreateProgressProps = {
-  step: 1 | 2 | 3 | 4;
+  step: 1 | 2 | 3 | 4 | 5;
 };
 
 export function EventCreateProgress({ step }: EventCreateProgressProps) {
   const { t } = useTranslation("eventCreate");
-  const STEPS: { step: 1 | 2 | 3 | 4; label: string; icon: IconName }[] = [
+  const STEPS: { step: 1 | 2 | 3 | 4 | 5; label: string; icon: IconName }[] = [
     { step: 1, label: t("progress.details"), icon: "pen" },
-    { step: 2, label: t("progress.plan"), icon: "location-dot" },
-    { step: 3, label: t("progress.capacity"), icon: "users" },
-    { step: 4, label: t("progress.roster"), icon: "check" },
+    { step: 2, label: t("progress.location"), icon: "location-dot" },
+    { step: 3, label: t("progress.plan"), icon: "calendar-days" },
+    { step: 4, label: t("progress.capacity"), icon: "users" },
+    { step: 5, label: t("progress.roster"), icon: "check" },
   ];
 
   return (
@@ -27,7 +28,8 @@ export function EventCreateProgress({ step }: EventCreateProgressProps) {
         return (
           <View
             key={item.step}
-            className={`min-h-[46px] flex-1 flex-row items-center justify-center gap-2 rounded-[17px] ${
+            accessibilityLabel={item.label}
+            className={`min-h-[46px] flex-1 items-center justify-center rounded-[17px] ${
               active ? "bg-brand-primary" : "bg-transparent"
             }`}
           >
@@ -52,18 +54,6 @@ export function EventCreateProgress({ step }: EventCreateProgressProps) {
                 }
               />
             </View>
-            <Text
-              className="font-body-bold text-[11px]"
-              style={{
-                color: active
-                  ? themeColors.text.onPrimary
-                  : complete
-                    ? themeColors.text.primary
-                    : themeColors.text.secondary,
-              }}
-            >
-              {item.label}
-            </Text>
           </View>
         );
       })}

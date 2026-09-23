@@ -1,10 +1,11 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
 import type { UserProfile } from "@/types/profile";
+import { AppText as Text } from "@/components/app-text";
 
 type ProfileHeroProps = {
   profile: UserProfile;
@@ -39,14 +40,14 @@ export function ProfileHero({ profile, onEdit }: ProfileHeroProps) {
       <View className="min-w-0 flex-1 gap-1.5">
         <Text
           numberOfLines={1}
-          className="font-display text-[22px] text-text-primary"
+          className="font-display text-heading-md text-text-primary"
         >
           @{profile.username}
         </Text>
         <View className="flex-row items-center gap-1.5">
           <Text
             numberOfLines={1}
-            className="shrink font-body text-sm text-text-secondary"
+            className="shrink font-body text-body-sm text-text-secondary"
           >
             {profile.fullName}
           </Text>
@@ -59,7 +60,7 @@ export function ProfileHero({ profile, onEdit }: ProfileHeroProps) {
             {ageGenderLabel ? (
               <View className="flex-row items-center gap-1.5">
                 <FontAwesome6 name="cake-candles" size={10} color="#ccff00" />
-                <Text className="font-body text-xs text-text-tertiary">
+                <Text className="font-body text-caption text-text-tertiary">
                   {ageGenderLabel}
                 </Text>
               </View>
@@ -67,7 +68,7 @@ export function ProfileHero({ profile, onEdit }: ProfileHeroProps) {
             {profile.city ? (
               <View className="flex-row items-center gap-1.5">
                 <FontAwesome6 name="location-dot" size={10} color="#ccff00" />
-                <Text className="font-body text-xs text-text-tertiary">
+                <Text className="font-body text-caption text-text-tertiary">
                   {profile.city}
                 </Text>
               </View>

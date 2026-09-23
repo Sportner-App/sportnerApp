@@ -1,8 +1,9 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { useStatItems } from "@/constants/profile";
 import type { ProfileStatistics } from "@/types/profile";
+import { AppText as Text } from "@/components/app-text";
 
 type StatsSectionProps = {
   statistics: ProfileStatistics | null;
@@ -27,10 +28,10 @@ export function StatsSection({ statistics }: StatsSectionProps) {
             index > 0 ? "border-l border-border-default" : ""
           }`}
         >
-          <Text className="font-mono-bold text-lg text-text-primary">
+          <Text className="font-mono-bold text-heading-sm text-text-primary">
             {statistics[item.field]}
           </Text>
-          <Text className="mt-1 font-body text-[9px] uppercase tracking-wide text-text-tertiary">
+          <Text className="mt-1 font-body text-overline uppercase tracking-wide text-text-tertiary">
             {item.label}
           </Text>
         </View>

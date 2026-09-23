@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { useToast } from "@/contexts";
@@ -8,6 +8,7 @@ import { listReplies } from "@/services/social-service";
 import type { ApiComment } from "@/types/social";
 
 import { Avatar } from "./avatar";
+import { AppText as Text } from "@/components/app-text";
 
 type CommentThreadProps = {
   postId: string;
@@ -118,7 +119,7 @@ export function CommentThread({
                   }`}
                 />
                 <Text
-                  className={`font-body text-[11px] font-semibold ${
+                  className={`font-body text-overline font-semibold ${
                     variant === "detail"
                       ? "text-white/50"
                       : "text-text-secondary"
@@ -192,7 +193,7 @@ function CommentRow({
         />
       </Pressable>
       <View className="min-w-0 flex-1">
-        <Text className={`font-body text-[13px] leading-[18px] ${bodyColor}`}>
+        <Text className={`font-body text-label leading-[18px] ${bodyColor}`}>
           <Text
             className={`font-body-bold ${nameColor}`}
             onPress={
@@ -214,7 +215,7 @@ function CommentRow({
           className="mt-0.5 self-start py-0.5"
         >
           <Text
-            className={`font-body text-[11px] font-semibold ${actionColor}`}
+            className={`font-body text-overline font-semibold ${actionColor}`}
           >
             {t("components:commentThread.reply")}
           </Text>

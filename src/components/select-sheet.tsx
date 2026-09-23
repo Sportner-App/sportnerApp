@@ -5,7 +5,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Text,
   TextInput,
   useWindowDimensions,
   View,
@@ -16,6 +15,7 @@ import { sportAccentToken, themeColors } from "@/constants/theme";
 import { getCurrentLocale } from "@/i18n";
 import type { SelectOption, SelectSheetProps } from "@/types/components";
 import { useTranslation } from "react-i18next";
+import { AppText as Text } from "@/components/app-text";
 
 const GRID_COLUMNS = 3;
 const GRID_GAP = 10;
@@ -142,7 +142,7 @@ export function SelectSheet<T extends string>({
             placeholderTextColor={themeColors.text.tertiary}
             autoCorrect={false}
             autoCapitalize="none"
-            className="flex-1 font-body text-base text-text-primary"
+            className="flex-1 font-body text-body text-text-primary"
           />
           {query.length > 0 ? (
             <Pressable
@@ -201,7 +201,7 @@ export function SelectSheet<T extends string>({
               size={20}
               color={themeColors.text.tertiary}
             />
-            <Text className="mt-3 text-center font-body text-sm text-text-secondary">
+            <Text className="mt-3 text-center font-body text-body-sm text-text-secondary">
               {t("components:select.noResults")}
             </Text>
           </View>
@@ -261,7 +261,7 @@ function GroupChip({
       }`}
     >
       <Text
-        className={`font-body text-xs font-semibold ${
+        className={`font-body text-caption font-semibold ${
           isActive ? "text-brand-primary" : "text-text-secondary"
         }`}
       >
@@ -304,14 +304,14 @@ function ListRow<T extends string>({
 
       <View className="flex-1">
         <Text
-          className={`font-body text-sm font-semibold ${
+          className={`font-body text-body-sm font-semibold ${
             isActive ? "text-brand-primary" : "text-text-primary"
           }`}
         >
           {option.label}
         </Text>
         {option.description ? (
-          <Text className="mt-0.5 font-body text-xs text-text-secondary">
+          <Text className="mt-0.5 font-body text-caption text-text-secondary">
             {option.description}
           </Text>
         ) : null}
@@ -399,7 +399,7 @@ function GridTile<T extends string>({
       </View>
       <Text
         numberOfLines={2}
-        className="min-h-[32px] text-center font-body-bold text-[12px] leading-4 text-text-primary"
+        className="min-h-[32px] text-center font-body-bold text-caption leading-4 text-text-primary"
       >
         {option.label}
       </Text>

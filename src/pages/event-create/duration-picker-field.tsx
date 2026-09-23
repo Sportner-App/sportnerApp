@@ -6,7 +6,6 @@ import {
   NativeSyntheticEvent,
   Pressable,
   ScrollView,
-  Text,
   View,
 } from "react-native";
 import type { TFunction } from "i18next";
@@ -14,6 +13,7 @@ import { useTranslation } from "react-i18next";
 
 import { BottomSheet, Button } from "@/components";
 import { themeColors } from "@/constants/theme";
+import { AppText as Text } from "@/components/app-text";
 
 const ITEM_HEIGHT = 54;
 const VISIBLE_ITEMS = 5;
@@ -38,7 +38,7 @@ export function DurationPickerField({
 
   return (
     <View className="gap-2">
-      <Text className="font-body-bold text-[13px] text-text-secondary">
+      <Text className="font-body-bold text-label text-text-secondary">
         {t("duration.label")}
       </Text>
       <Pressable
@@ -53,7 +53,7 @@ export function DurationPickerField({
             color={themeColors.brand.primary}
           />
         </View>
-        <Text className="flex-1 font-body text-base text-text-primary">
+        <Text className="flex-1 font-body text-body text-text-primary">
           {formatDuration(t, value)}
         </Text>
         <FontAwesome6
@@ -175,7 +175,7 @@ function DurationPickerSheet({
           size={12}
           color={themeColors.brand.primary}
         />
-        <Text className="font-body-bold text-sm text-brand-primary">
+        <Text className="font-body-bold text-body-sm text-brand-primary">
           {totalMinutes > 0
             ? formatDuration(t, totalMinutes)
             : t("duration.chooseHint")}
@@ -256,7 +256,7 @@ const Wheel = forwardRef<
               className="flex-row items-center justify-center gap-2"
             >
               <Text
-                className={`font-mono text-[30px] ${
+                className={`font-mono text-heading-lg ${
                   active
                     ? "font-mono-bold text-brand-primary"
                     : "text-text-tertiary"
@@ -265,7 +265,7 @@ const Wheel = forwardRef<
                 {String(item).padStart(2, "0")}
               </Text>
               <Text
-                className={`w-8 font-body text-[11px] ${
+                className={`w-8 font-body text-overline ${
                   active ? "text-brand-primary" : "text-text-tertiary"
                 }`}
               >

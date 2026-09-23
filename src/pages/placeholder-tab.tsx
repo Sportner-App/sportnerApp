@@ -1,9 +1,10 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { AppScreen } from "@/components";
 import type { IconName } from "@/types/components";
+import { AppText as Text } from "@/components/app-text";
 
 type PlaceholderTabProps = {
   title: string;
@@ -29,8 +30,10 @@ export function PlaceholderTab({
         <View className="h-16 w-16 items-center justify-center rounded-3xl border border-brand-primary/25 bg-brand-primary/10">
           <FontAwesome6 name={icon} size={24} color="#ccff00" />
         </View>
-        <Text className="font-display text-2xl text-text-primary">{title}</Text>
-        <Text className="max-w-[260px] text-center font-body text-sm leading-5 text-brand-neutral">
+        <Text className="font-display text-heading-md text-text-primary">
+          {title}
+        </Text>
+        <Text className="max-w-[260px] text-center font-body text-body-sm leading-5 text-brand-neutral">
           {description}
         </Text>
       </Animated.View>

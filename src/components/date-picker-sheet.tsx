@@ -5,7 +5,6 @@ import {
   NativeSyntheticEvent,
   Pressable,
   ScrollView,
-  Text,
   View,
 } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -15,6 +14,7 @@ import { Button } from "@/components/button";
 import { themeColors } from "@/constants/theme";
 import { getCurrentLocale } from "@/i18n";
 import type { DatePickerSheetProps } from "@/types/components";
+import { AppText as Text } from "@/components/app-text";
 
 type PickerMode = "date" | "time";
 type WheelItem = { value: number; label: string };
@@ -148,7 +148,7 @@ export function DatePickerSheet({
               onPress={onClose}
               className="min-h-[52px] items-center justify-center rounded-2xl border border-border-default bg-surface-primary active:bg-surface-secondary"
             >
-              <Text className="font-body-bold text-sm text-text-secondary">
+              <Text className="font-body-bold text-body-sm text-text-secondary">
                 {t("common:cancel")}
               </Text>
             </Pressable>
@@ -176,7 +176,7 @@ export function DatePickerSheet({
               }`}
             >
               <Text
-                className={`font-body-bold text-sm ${
+                className={`font-body-bold text-body-sm ${
                   active ? "text-background-primary" : "text-text-secondary"
                 }`}
               >
@@ -236,16 +236,15 @@ export function DatePickerSheet({
       </View>
 
       <View className="mb-3 items-center">
-        <Text className="font-body-bold text-sm text-brand-primary">
+        <Text className="font-body-bold text-body-sm text-brand-primary">
           {formatDraft(draft, locale)}
         </Text>
         {!isValid ? (
-          <Text className="mt-1 font-body text-xs text-warning">
+          <Text className="mt-1 font-body text-caption text-warning">
             {t("datePicker.pastDateError")}
           </Text>
         ) : null}
       </View>
-
     </BottomSheet>
   );
 }
@@ -325,7 +324,7 @@ function PickerWheel({
             >
               <Text
                 numberOfLines={1}
-                className={`font-mono text-[25px] ${
+                className={`font-mono text-heading-md ${
                   active
                     ? "font-mono-bold text-brand-primary"
                     : "text-text-tertiary"
@@ -335,7 +334,7 @@ function PickerWheel({
               </Text>
               {suffix ? (
                 <Text
-                  className={`font-body text-[10px] ${
+                  className={`font-body text-overline ${
                     active ? "text-brand-primary" : "text-text-tertiary"
                   }`}
                 >

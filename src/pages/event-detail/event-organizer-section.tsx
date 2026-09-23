@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
@@ -8,6 +8,7 @@ import { themeColors, typeStyles } from "@/constants/theme";
 import type { EventDetail } from "@/types/events";
 import { canAccessEventChat } from "@/utils/events";
 import { lightImpact } from "@/utils/haptics";
+import { AppText as Text } from "@/components/app-text";
 
 type EventOrganizerSectionProps = {
   event: EventDetail;
@@ -69,7 +70,7 @@ export function EventOrganizerSection({
         >
           <Text
             numberOfLines={1}
-            className="font-body-bold text-[15px]"
+            className="font-body-bold text-body"
             style={{ color: themeColors.text.primary }}
           >
             @{username || t("events:fallback.athleteHandle")}

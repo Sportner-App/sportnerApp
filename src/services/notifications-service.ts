@@ -5,11 +5,13 @@ import type {
   ApiNotificationSetting,
 } from "@/types/notifications";
 
-export async function listNotifications(params: {
-  unreadOnly?: boolean;
-  before?: string;
-  limit?: number;
-} = {}): Promise<CursorPagedResult<ApiNotification>> {
+export async function listNotifications(
+  params: {
+    unreadOnly?: boolean;
+    before?: string;
+    limit?: number;
+  } = {},
+): Promise<CursorPagedResult<ApiNotification>> {
   const response = await apiClient.get<CursorPagedResult<ApiNotification>>(
     "/api/notifications",
     {

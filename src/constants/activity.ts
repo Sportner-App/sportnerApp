@@ -2,14 +2,18 @@ import { useTranslation } from "react-i18next";
 
 import type { ActivityTab } from "@/hooks/use-activity";
 
-export function useActivityCopy() {
+export function useActivityCopy(counts: Record<ActivityTab, number>) {
   const { t } = useTranslation("activity");
 
-  const tabs: { key: ActivityTab; label: string }[] = [
-    { key: "upcoming", label: t("tabs.upcoming") },
-    { key: "pending", label: t("tabs.pending") },
-    { key: "past", label: t("tabs.past") },
-    { key: "organized", label: t("tabs.organized") },
+  const tabs: { key: ActivityTab; label: string; badge: number }[] = [
+    { key: "upcoming", label: t("tabs.upcoming"), badge: counts.upcoming },
+    { key: "pending", label: t("tabs.pending"), badge: counts.pending },
+    { key: "past", label: t("tabs.past"), badge: counts.past },
+    {
+      key: "organized",
+      label: t("tabs.organized"),
+      badge: counts.organized,
+    },
   ];
 
   const emptyCopy: Record<

@@ -1,16 +1,10 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import {
-  Dimensions,
-  Image,
-  Modal,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { Dimensions, Image, Modal, Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { radius, themeColors } from "@/constants/theme";
+import { AppText as Text } from "@/components/app-text";
 
 type AvatarPhotoPreviewProps = {
   visible: boolean;
@@ -74,7 +68,7 @@ export function AvatarPhotoPreview({
 
           {name?.trim() ? (
             <Text
-              className="mb-4 font-body-bold text-base"
+              className="mb-4 font-body-bold text-body"
               style={{ color: themeColors.text.inverse }}
               numberOfLines={1}
             >

@@ -8,10 +8,7 @@ import {
   useState,
 } from "react";
 
-import i18n, {
-  detectDeviceLanguage,
-  type AppLanguage,
-} from "@/i18n";
+import i18n, { detectDeviceLanguage, type AppLanguage } from "@/i18n";
 
 const STORAGE_KEY = "sportner:language-preference";
 

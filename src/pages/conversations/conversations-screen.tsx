@@ -2,7 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import {
   AppScreen,
@@ -24,6 +24,7 @@ import {
 import { formatConversationTime } from "@/utils/messaging-time";
 
 import { NewConversationSheet } from "./new-conversation-sheet";
+import { AppText as Text } from "@/components/app-text";
 
 type InboxTab = "events" | "friends";
 
@@ -39,23 +40,26 @@ export function ConversationsScreen() {
   const [error, setError] = useState<string | null>(null);
   const [composeOpen, setComposeOpen] = useState(false);
 
-  const load = useCallback(async (refresh = false) => {
-    refresh ? setIsRefreshing(true) : setIsLoading(true);
-    try {
-      setError(null);
-      const [events, friends] = await Promise.all([
-        listMyConversations({ type: CONVERSATION_TYPE.event }),
-        listMyConversations({ type: CONVERSATION_TYPE.direct }),
-      ]);
-      setEventItems(events.items);
-      setFriendItems(friends.items);
-    } catch (loadError) {
-      setError(getApiErrorMessage(loadError, t("messaging:loadFailed")));
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [t]);
+  const load = useCallback(
+    async (refresh = false) => {
+      refresh ? setIsRefreshing(true) : setIsLoading(true);
+      try {
+        setError(null);
+        const [events, friends] = await Promise.all([
+          listMyConversations({ type: CONVERSATION_TYPE.event }),
+          listMyConversations({ type: CONVERSATION_TYPE.direct }),
+        ]);
+        setEventItems(events.items);
+        setFriendItems(friends.items);
+      } catch (loadError) {
+        setError(getApiErrorMessage(loadError, t("messaging:loadFailed")));
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [t],
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -99,10 +103,10 @@ export function ConversationsScreen() {
       })}
     >
       <View className="gap-1 pb-2">
-        <Text className="font-display text-[28px] text-text-primary">
+        <Text className="font-display text-heading-lg text-text-primary">
           {t("messaging:screen.title")}
         </Text>
-        <Text className="font-body text-sm leading-5 text-text-tertiary">
+        <Text className="font-body text-body-sm leading-5 text-text-tertiary">
           {copy.subtitle}
         </Text>
       </View>
@@ -127,14 +131,14 @@ export function ConversationsScreen() {
             size={24}
             color={themeColors.destructive}
           />
-          <Text className="text-center font-body text-sm text-text-secondary">
+          <Text className="text-center font-body text-body-sm text-text-secondary">
             {error}
           </Text>
           <Pressable
             onPress={() => void load()}
             className="rounded-full bg-brand-primary px-5 py-3 active:opacity-75"
           >
-            <Text className="font-body-bold text-sm text-text-on-primary">
+            <Text className="font-body-bold text-body-sm text-text-on-primary">
               {t("common:retry")}
             </Text>
           </Pressable>
@@ -148,10 +152,10 @@ export function ConversationsScreen() {
               color={themeColors.brand.primary}
             />
           </View>
-          <Text className="font-body-bold text-base text-text-primary">
+          <Text className="font-body-bold text-body text-text-primary">
             {copy.emptyTitle}
           </Text>
-          <Text className="text-center font-body text-sm leading-5 text-text-tertiary">
+          <Text className="text-center font-body text-body-sm leading-5 text-text-tertiary">
             {copy.emptyBody}
           </Text>
           {tab === "friends" ? (
@@ -159,7 +163,7 @@ export function ConversationsScreen() {
               onPress={() => setComposeOpen(true)}
               className="mt-1 rounded-full bg-brand-primary px-5 py-3 active:opacity-75"
             >
-              <Text className="font-body-bold text-sm text-text-on-primary">
+              <Text className="font-body-bold text-body-sm text-text-on-primary">
                 {t("messaging:newChat")}
               </Text>
             </Pressable>
@@ -227,19 +231,19 @@ function ConversationRow({
         <View className="flex-row items-center gap-2">
           <Text
             numberOfLines={1}
-            className="min-w-0 flex-1 font-body-bold text-[15px] text-text-primary"
+            className="min-w-0 flex-1 font-body-bold text-body text-text-primary"
           >
             {title}
           </Text>
           {isEvent && item.isClosed ? (
             <View className="rounded-full bg-white/10 px-2 py-0.5">
-              <Text className="font-mono text-[9px] uppercase tracking-wide text-text-tertiary">
+              <Text className="font-mono text-overline uppercase tracking-wide text-text-tertiary">
                 {t("messaging:row.closed")}
               </Text>
             </View>
           ) : null}
           {item.lastMessageAt ? (
-            <Text className="font-mono text-[10px] text-text-tertiary">
+            <Text className="font-mono text-overline text-text-tertiary">
               {formatConversationTime(item.lastMessageAt)}
             </Text>
           ) : null}
@@ -247,7 +251,7 @@ function ConversationRow({
         <View className="flex-row items-center gap-2">
           <Text
             numberOfLines={1}
-            className={`min-w-0 flex-1 font-body text-[13px] ${
+            className={`min-w-0 flex-1 font-body text-label ${
               item.unreadCount > 0 ? "text-text-primary" : "text-text-tertiary"
             }`}
           >
@@ -255,7 +259,7 @@ function ConversationRow({
           </Text>
           {item.unreadCount > 0 ? (
             <View className="min-w-5 items-center justify-center rounded-full bg-brand-primary px-1.5 py-0.5">
-              <Text className="font-mono text-[10px] text-text-on-primary">
+              <Text className="font-mono text-overline text-text-on-primary">
                 {item.unreadCount > 99 ? "99+" : item.unreadCount}
               </Text>
             </View>

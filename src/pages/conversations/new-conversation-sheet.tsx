@@ -2,14 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Platform, Pressable, ScrollView, TextInput, View } from "react-native";
 
 import { Avatar, BottomSheet, SportLoader } from "@/components";
 import { themeColors } from "@/constants/theme";
@@ -19,6 +12,7 @@ import { createDirectConversation } from "@/services/messaging-service";
 import { listFriends } from "@/services/social-service";
 import type { ApiFriend } from "@/types/social";
 import { normalizeSearch } from "@/utils/messaging-time";
+import { AppText as Text } from "@/components/app-text";
 
 type NewConversationSheetProps = {
   visible: boolean;
@@ -122,7 +116,7 @@ export function NewConversationSheet({
           placeholderTextColor={themeColors.text.tertiary}
           autoCorrect={false}
           autoCapitalize="none"
-          className="flex-1 font-body text-base text-text-primary"
+          className="flex-1 font-body text-body text-text-primary"
         />
         {query.length > 0 ? (
           <Pressable
@@ -153,7 +147,7 @@ export function NewConversationSheet({
             size={20}
             color={themeColors.text.tertiary}
           />
-          <Text className="text-center font-body text-sm text-text-secondary">
+          <Text className="text-center font-body text-body-sm text-text-secondary">
             {friends.length === 0
               ? t("messaging:compose.emptyFriends")
               : t("messaging:compose.noMatch")}
@@ -186,14 +180,14 @@ export function NewConversationSheet({
                 <View className="min-w-0 flex-1">
                   <Text
                     numberOfLines={1}
-                    className="font-body-bold text-sm text-text-primary"
+                    className="font-body-bold text-body-sm text-text-primary"
                   >
                     @{friend.username || t("events:fallback.athleteHandle")}
                   </Text>
                   {friend.firstName ? (
                     <Text
                       numberOfLines={1}
-                      className="mt-0.5 font-body text-xs text-text-tertiary"
+                      className="mt-0.5 font-body text-caption text-text-tertiary"
                     >
                       {friend.firstName}
                     </Text>

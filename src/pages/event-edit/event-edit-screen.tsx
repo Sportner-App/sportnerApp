@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -23,6 +23,7 @@ import {
   updateEventSchedule,
 } from "@/services/events-service";
 import { noDescriptionLabel, parseFeeAmount } from "@/utils/events";
+import { AppText as Text } from "@/components/app-text";
 
 export function EventEditScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -140,10 +141,10 @@ export function EventEditScreen() {
       }
     >
       <View className="gap-1.5">
-        <Text className="font-display text-3xl text-text-primary">
+        <Text className="font-display text-heading-lg text-text-primary">
           {t("edit.heading")}
         </Text>
-        <Text className="font-body text-sm text-brand-neutral">
+        <Text className="font-body text-body-sm text-brand-neutral">
           {t("edit.subtitle")}
         </Text>
       </View>
@@ -189,10 +190,10 @@ export function EventEditScreen() {
         keyboardType="number-pad"
       />
       <View className="gap-2">
-        <Text className="font-body-bold text-[13px] text-text-secondary">
+        <Text className="font-body-bold text-label text-text-secondary">
           {t("edit.feeLabel")}
         </Text>
-        <Text className="font-body text-xs text-text-tertiary">
+        <Text className="font-body text-caption text-text-tertiary">
           {t("edit.feeDisclaimer")}
         </Text>
         <View className="flex-row flex-wrap gap-2">
@@ -208,7 +209,7 @@ export function EventEditScreen() {
             }`}
           >
             <Text
-              className={`font-body-bold text-sm ${
+              className={`font-body-bold text-body-sm ${
                 !isPaid ? "text-background-primary" : "text-text-secondary"
               }`}
             >
@@ -224,7 +225,7 @@ export function EventEditScreen() {
             }`}
           >
             <Text
-              className={`font-body-bold text-sm ${
+              className={`font-body-bold text-body-sm ${
                 isPaid ? "text-background-primary" : "text-text-secondary"
               }`}
             >

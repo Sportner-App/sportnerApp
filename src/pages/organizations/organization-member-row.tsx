@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { ActivityIndicator, Alert, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { UserIdentity } from "@/components";
@@ -13,6 +13,7 @@ import {
   type ApiOrganizationMember,
   canModerateOrganizationMember,
 } from "@/types/organizations";
+import { AppText as Text } from "@/components/app-text";
 
 function normalizeSearch(value: string) {
   return value.trim().toLocaleLowerCase(getCurrentLocale());
@@ -25,11 +26,7 @@ export function memberMatchesSearch(
   const needle = normalizeSearch(query);
   if (!needle) return true;
 
-  const haystack = [
-    member.username,
-    member.firstName,
-    member.lastName,
-  ]
+  const haystack = [member.username, member.firstName, member.lastName]
     .filter(Boolean)
     .join(" ");
 
@@ -97,7 +94,7 @@ function MemberActionChip({
       ) : (
         <FontAwesome6 name={icon} size={10} color={iconColor} />
       )}
-      <Text className={`font-body text-[10px] font-semibold ${labelClass}`}>
+      <Text className={`font-body text-overline font-semibold ${labelClass}`}>
         {label}
       </Text>
     </Pressable>
@@ -143,14 +140,14 @@ export function OrganizationMemberRow({
   const isApproved = member.status === ORGANIZATION_STATUS.approved;
 
   const canModerate =
-    organization.canManageMembers
-    && isApproved
-    && canModerateOrganizationMember(organization.myRole, currentUserId, member);
+    organization.canManageMembers &&
+    isApproved &&
+    canModerateOrganizationMember(organization.myRole, currentUserId, member);
 
   const canToggleAdmin =
-    organization.canRotateInviteCode
-    && isApproved
-    && member.role !== ORGANIZATION_ROLE.founder;
+    organization.canRotateInviteCode &&
+    isApproved &&
+    member.role !== ORGANIZATION_ROLE.founder;
 
   const trailing =
     showActions && organization.canManageMembers ? (

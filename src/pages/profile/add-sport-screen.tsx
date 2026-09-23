@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, TextInput, View } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useTranslation } from "react-i18next";
 
@@ -15,6 +15,7 @@ import { listSports } from "@/services/sports-service";
 import type { Sport } from "@/types/sports";
 import { sportIconForSlug } from "@/utils/events";
 import { groupSportsByCategory } from "@/utils/sports";
+import { AppText as Text } from "@/components/app-text";
 
 export function AddSportScreen() {
   const { t } = useTranslation("profile");
@@ -111,10 +112,10 @@ export function AddSportScreen() {
       contentClassName="gap-5 px-5 pt-3"
     >
       <View className="gap-1 px-1">
-        <Text className="font-display text-3xl text-text-primary">
+        <Text className="font-display text-heading-lg text-text-primary">
           {t("addSport.heading")}
         </Text>
-        <Text className="font-body text-sm leading-5 text-text-secondary">
+        <Text className="font-body text-body-sm leading-5 text-text-secondary">
           {t("addSport.subtitle")}
         </Text>
       </View>
@@ -126,7 +127,7 @@ export function AddSportScreen() {
           onChangeText={setQuery}
           placeholder={t("addSport.searchPlaceholder")}
           placeholderTextColor="#64748b"
-          className="min-h-[52px] flex-1 font-body text-base text-text-primary"
+          className="min-h-[52px] flex-1 font-body text-body text-text-primary"
         />
         {query ? (
           <Pressable onPress={() => setQuery("")} hitSlop={8}>
@@ -139,15 +140,15 @@ export function AddSportScreen() {
         <View className="gap-4 rounded-[22px] border border-brand-primary/30 bg-brand-primary/5 p-4">
           <View className="flex-row items-center justify-between">
             <View>
-              <Text className="font-display text-lg text-text-primary">
+              <Text className="font-display text-heading-sm text-text-primary">
                 {t("addSport.teamBuilding")}
               </Text>
-              <Text className="mt-1 font-body text-xs text-text-tertiary">
+              <Text className="mt-1 font-body text-caption text-text-tertiary">
                 {t("addSport.selectLevelHint")}
               </Text>
             </View>
             <View className="rounded-full bg-brand-primary px-2.5 py-1">
-              <Text className="font-mono-bold text-[10px] text-brand-secondary">
+              <Text className="font-mono-bold text-overline text-brand-secondary">
                 {t("addSport.selectedCount", { count: selectedSports.length })}
               </Text>
             </View>
@@ -180,7 +181,7 @@ export function AddSportScreen() {
                         color="#ccff00"
                       />
                     </View>
-                    <Text className="font-body text-xs font-semibold text-text-primary">
+                    <Text className="font-body text-caption font-semibold text-text-primary">
                       {sport.name}
                     </Text>
                   </Pressable>
@@ -207,12 +208,12 @@ export function AddSportScreen() {
                   size={12}
                   color="#ccff00"
                 />
-                <Text className="font-body text-sm font-semibold text-text-primary">
+                <Text className="font-body text-body-sm font-semibold text-text-primary">
                   {t("addSport.levelForSport", {
                     name: activeSelection.sport.name,
                   })}
                 </Text>
-                <Text className="ml-auto font-body text-[10px] text-text-tertiary">
+                <Text className="ml-auto font-body text-overline text-text-tertiary">
                   {t("addSport.tapToChange")}
                 </Text>
               </View>
@@ -234,7 +235,7 @@ export function AddSportScreen() {
                     }`}
                   >
                     <Text
-                      className={`font-body text-xs font-semibold ${
+                      className={`font-body text-caption font-semibold ${
                         activeSelection.level === option.level
                           ? "text-brand-secondary"
                           : "text-text-primary"
@@ -265,10 +266,10 @@ export function AddSportScreen() {
             <FontAwesome6 name="plus" size={13} color="#ccff00" />
           </View>
           <View className="flex-1">
-            <Text className="font-display text-lg text-text-primary">
+            <Text className="font-display text-heading-sm text-text-primary">
               {t("addSport.multiSelectTitle")}
             </Text>
-            <Text className="mt-1 font-body text-xs text-text-tertiary">
+            <Text className="mt-1 font-body text-caption text-text-tertiary">
               {t("addSport.multiSelectHint")}
             </Text>
           </View>
@@ -278,10 +279,10 @@ export function AddSportScreen() {
       {groupedSports.map((group) => (
         <View key={group.key} className="gap-3">
           <View className="flex-row items-baseline gap-2 px-1">
-            <Text className="font-body-bold text-[13px] text-text-secondary">
+            <Text className="font-body-bold text-label text-text-secondary">
               {group.label}
             </Text>
-            <Text className="font-mono text-[10px] text-text-tertiary">
+            <Text className="font-mono text-overline text-text-tertiary">
               {group.sports.length}
             </Text>
           </View>
@@ -310,7 +311,7 @@ export function AddSportScreen() {
                       color={active ? "#06111a" : "#ccff00"}
                     />
                   </View>
-                  <Text className="text-center font-body text-sm font-semibold text-text-primary">
+                  <Text className="text-center font-body text-body-sm font-semibold text-text-primary">
                     {sport.name}
                   </Text>
                   {active ? (
@@ -332,7 +333,7 @@ export function AddSportScreen() {
       {filtered.length === 0 ? (
         <View className="items-center gap-2 rounded-[22px] border border-dashed border-border-strong px-5 py-8">
           <FontAwesome6 name="person-running" size={22} color="#ccff00" />
-          <Text className="font-body text-sm text-text-secondary">
+          <Text className="font-body text-body-sm text-text-secondary">
             {t("addSport.emptyResults")}
           </Text>
         </View>

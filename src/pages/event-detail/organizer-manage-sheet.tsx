@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
@@ -11,6 +11,7 @@ import {
   type EventWaitlistEntry,
 } from "@/types/events";
 import { participantStatusLabel } from "@/utils/events";
+import { AppText as Text } from "@/components/app-text";
 
 export type OrganizerManageTab = "requests" | "waitlist" | "attendance";
 
@@ -214,10 +215,12 @@ function PersonHeader({
     >
       <Avatar uri={profileImageUrl} name={name} size={44} />
       <View className="flex-1">
-        <Text className="font-body text-sm font-semibold text-text-primary">
+        <Text className="font-body text-body-sm font-semibold text-text-primary">
           {name}
         </Text>
-        <Text className="font-body text-xs text-text-secondary">{detail}</Text>
+        <Text className="font-body text-caption text-text-secondary">
+          {detail}
+        </Text>
       </View>
     </Pressable>
   );
@@ -389,8 +392,8 @@ function AttendanceList({
                 </View>
                 <View className="flex-1">
                   <Button
-                  label={t("manageSheet.absent")}
-                  variant="danger"
+                    label={t("manageSheet.absent")}
+                    variant="danger"
                     size="sm"
                     haptic="light"
                     disabled={busyUserId != null}
@@ -417,7 +420,7 @@ function AttendanceList({
 function EmptyState({ text }: { text: string }) {
   return (
     <View className="items-center px-4 py-10">
-      <Text className="text-center font-body text-sm text-text-secondary">
+      <Text className="text-center font-body text-body-sm text-text-secondary">
         {text}
       </Text>
     </View>

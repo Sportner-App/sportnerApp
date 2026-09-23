@@ -6,7 +6,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Text,
   View,
 } from "react-native";
 
@@ -14,6 +13,7 @@ import { BrandMark, Button, Input } from "@/components";
 import { useAuth, useToast } from "@/contexts";
 
 import { AnimatedBackground } from "./animated-background";
+import { AppText as Text } from "@/components/app-text";
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
@@ -123,10 +123,10 @@ export function VerifyEmailScreen() {
             <BrandMark tone="light" />
           </View>
 
-          <Text className="font-display text-5xl leading-[52px] text-text-primary">
+          <Text className="font-display text-display leading-[52px] text-text-primary">
             {t("verifyEmail.title")}
           </Text>
-          <Text className="mt-3 font-body text-base leading-6 text-brand-neutral">
+          <Text className="mt-3 font-body text-body leading-6 text-brand-neutral">
             {t("verifyEmail.subtitle", { email: userEmail })}
           </Text>
 
@@ -160,7 +160,7 @@ export function VerifyEmailScreen() {
               disabled={isResending || cooldown > 0}
               className="mt-4 items-center py-2"
             >
-              <Text className="font-body text-xs font-semibold text-brand-primary">
+              <Text className="font-body text-caption font-semibold text-brand-primary">
                 {cooldown > 0
                   ? t("verifyEmail.resendCooldown", { seconds: cooldown })
                   : t("verifyEmail.resend")}
@@ -173,7 +173,7 @@ export function VerifyEmailScreen() {
             disabled={isChangingAccount}
             className="mt-8 items-center py-2"
           >
-            <Text className="font-body text-xs text-brand-neutral">
+            <Text className="font-body text-caption text-brand-neutral">
               {t("verifyEmail.changeAccount")}
             </Text>
           </Pressable>

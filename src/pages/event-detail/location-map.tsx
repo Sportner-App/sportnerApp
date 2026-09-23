@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import Animated, {
   FadeInDown,
@@ -21,6 +21,7 @@ import type { EventDetail } from "@/types/events";
 import type { DirectionsTarget } from "@/utils/open-directions";
 import { lightImpact } from "@/utils/haptics";
 import { noLocationLabel } from "@/utils/events";
+import { AppText as Text } from "@/components/app-text";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -92,7 +93,7 @@ export function LocationMap({ event }: LocationMapProps) {
             className="flex-row items-center gap-1.5"
           >
             <Text
-              className="font-body text-xs"
+              className="font-body text-caption"
               style={{ color: themeColors.text.primary }}
             >
               {t("location.directions")}
@@ -171,7 +172,7 @@ export function LocationMap({ event }: LocationMapProps) {
             </View>
             <View className="flex-1">
               <Text
-                className="font-body text-sm font-semibold"
+                className="font-body text-body-sm font-semibold"
                 style={{ color: themeColors.text.primary }}
                 numberOfLines={1}
               >
@@ -179,7 +180,7 @@ export function LocationMap({ event }: LocationMapProps) {
               </Text>
               {secondaryAddress ? (
                 <Text
-                  className="mt-0.5 font-body text-xs leading-4"
+                  className="mt-0.5 font-body text-caption leading-4"
                   style={{ color: themeColors.text.secondary }}
                   numberOfLines={2}
                 >

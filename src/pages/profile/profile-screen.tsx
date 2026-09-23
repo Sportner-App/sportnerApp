@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { Button, SegmentedTabs, SportLoader, TabPage } from "@/components";
@@ -19,6 +19,7 @@ import { ProfileHero } from "./profile-hero";
 import { ReviewsSection } from "./reviews-section";
 import { SportsSection } from "./sports-section";
 import { StatsSection } from "./stats-section";
+import { AppText as Text } from "@/components/app-text";
 
 type ProfileTab = "activity" | "reviews" | "settings";
 
@@ -95,7 +96,7 @@ export function ProfileScreen() {
             size={24}
             color="#64748b"
           />
-          <Text className="text-center font-body text-sm text-brand-neutral">
+          <Text className="text-center font-body text-body-sm text-brand-neutral">
             {error ?? PROFILE_COPY.notFound}
           </Text>
           <Button

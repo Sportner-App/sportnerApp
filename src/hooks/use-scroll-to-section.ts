@@ -7,7 +7,9 @@ import { View, type ScrollView } from "react-native";
  * would otherwise open at the top, leaving the user to scroll down and hunt for what the
  * notification was actually about.
  */
-export function useScrollToSection(scrollRef: React.RefObject<ScrollView | null>) {
+export function useScrollToSection(
+  scrollRef: React.RefObject<ScrollView | null>,
+) {
   const sectionRefs = useRef<Partial<Record<string, View | null>>>({});
 
   const registerSection = useCallback(
@@ -29,7 +31,10 @@ export function useScrollToSection(scrollRef: React.RefObject<ScrollView | null>
       node.measureLayout(
         scrollableNode as unknown as View,
         (_x: number, y: number) => {
-          scrollView.scrollTo({ y: Math.max(y - topOffset, 0), animated: true });
+          scrollView.scrollTo({
+            y: Math.max(y - topOffset, 0),
+            animated: true,
+          });
         },
         () => undefined,
       );

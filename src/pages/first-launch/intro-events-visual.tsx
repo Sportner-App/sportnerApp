@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect } from "react";
-import { Text, useWindowDimensions, View } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import Animated, {
   useAnimatedStyle,
@@ -10,6 +10,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { heroFadeUp } from "./hero-enter";
+import { AppText as Text } from "@/components/app-text";
 
 function TimeSlot({
   time,
@@ -32,14 +33,14 @@ function TimeSlot({
       }`}
     >
       <Text
-        className={`font-mono text-[11px] ${
+        className={`font-mono text-overline ${
           active ? "text-brand-primary" : "text-brand-neutral"
         }`}
       >
         {time}
       </Text>
       <Text
-        className={`mt-1 font-body text-xs ${
+        className={`mt-1 font-body text-caption ${
           active ? "text-white" : "text-brand-neutral"
         }`}
       >
@@ -91,11 +92,11 @@ export function IntroEventsVisual() {
       >
         <View className="flex-row items-center gap-2">
           <View className="h-1.5 w-1.5 rounded-full bg-brand-primary" />
-          <Text className="font-mono text-[11px] tracking-[2px] text-white/70">
+          <Text className="font-mono text-overline tracking-[2px] text-white/70">
             {t("visuals.events.today")}
           </Text>
         </View>
-        <Text className="font-body text-xs text-brand-neutral">
+        <Text className="font-body text-caption text-brand-neutral">
           {t("visuals.events.openMatchesCount")}
         </Text>
       </Animated.View>
@@ -106,19 +107,19 @@ export function IntroEventsVisual() {
       >
         <View className="flex-row items-start justify-between">
           <View>
-            <Text className="font-display text-[34px] leading-[34px] text-brand-primary">
+            <Text className="font-display text-heading-lg leading-[34px] text-brand-primary">
               20:30
             </Text>
-            <Text className="mt-2 font-body text-lg font-semibold text-white">
+            <Text className="mt-2 font-body text-heading-sm font-semibold text-white">
               {t("visuals.events.venueTurf")}
             </Text>
-            <Text className="mt-1 font-body text-sm text-brand-neutral">
+            <Text className="mt-1 font-body text-body-sm text-brand-neutral">
               Kadıköy · Futbol
             </Text>
           </View>
           <View className="items-end gap-2">
             <View className="rounded-full bg-brand-primary px-2.5 py-1">
-              <Text className="font-mono text-[10px] text-brand-secondary">
+              <Text className="font-mono text-overline text-brand-secondary">
                 {t("visuals.events.openBadge")}
               </Text>
             </View>
@@ -130,9 +131,11 @@ export function IntroEventsVisual() {
 
         <View className="mt-4 flex-row items-center gap-3">
           <CapacityBar />
-          <Text className="font-mono text-xs text-brand-primary">3 / 5</Text>
+          <Text className="font-mono text-caption text-brand-primary">
+            3 / 5
+          </Text>
         </View>
-        <Text className="mt-2 font-body text-xs text-brand-neutral">
+        <Text className="mt-2 font-body text-caption text-brand-neutral">
           {t("visuals.events.spotsRemaining")}
         </Text>
       </Animated.View>
@@ -150,7 +153,7 @@ export function IntroEventsVisual() {
         className="mt-3 flex-row items-center gap-2 self-start rounded-full border border-brand-primary/25 bg-brand-primary/10 px-3.5 py-2"
       >
         <FontAwesome6 name="bolt" size={11} color="#ccff00" />
-        <Text className="font-body text-sm text-brand-primary">
+        <Text className="font-body text-body-sm text-brand-primary">
           {t("visuals.events.neighborhoodOpen")}
         </Text>
       </Animated.View>

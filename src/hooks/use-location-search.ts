@@ -5,10 +5,7 @@ import {
   reverseGeocode,
   searchLocations,
 } from "@/services/location-service";
-import type {
-  LocationSuggestion,
-  SelectedLocation,
-} from "@/types/location";
+import type { LocationSuggestion, SelectedLocation } from "@/types/location";
 
 const DEBOUNCE_MS = 380;
 

@@ -1,9 +1,10 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { themeColors, typeStyles } from "@/constants/theme";
 import type { EventDetail } from "@/types/events";
 import { noLocationLabel } from "@/utils/events";
+import { AppText as Text } from "@/components/app-text";
 
 type LocationMapProps = {
   event: EventDetail;
@@ -19,7 +20,7 @@ export function LocationMap({ event }: LocationMapProps) {
       </Text>
       <View className="rounded-xlarge border border-border-default bg-surface-primary px-4 py-3.5">
         <Text
-          className="font-body text-sm"
+          className="font-body text-body-sm"
           style={{ color: themeColors.text.primary }}
         >
           {event.address || noLocationLabel()}

@@ -1,5 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import i18n from "@/i18n";
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -9,7 +9,9 @@ import {
 } from "@/services/events-service";
 import type { EventListPage, EventSummary } from "@/types/events";
 import {
-  hasEventStartedOrClosed,
+  hasApprovedParticipation,
+  hasEventEnded,
+  hasEventInvitation,
   hasPendingParticipation,
 } from "@/utils/events";
 
@@ -31,15 +33,22 @@ const EMPTY: ListState = {
   totalCount: 0,
 };
 
-function applyActivityScope(
-  page: EventListPage,
-  tab: Exclude<ActivityTab, "organized">,
-): ListState {
-  const items = page.items.filter((event) => {
-    const past = hasEventStartedOrClosed(event);
-    return tab === "past" ? past : !past;
-  });
+function uniqueEvents(items: EventSummary[]): EventSummary[] {
+  return Array.from(new Map(items.map((event) => [event.id, event])).values());
+}
 
+function sortUpcoming(items: EventSummary[]): EventSummary[] {
+  return [...items].sort(
+    (left, right) =>
+      new Date(left.eventDate).getTime() - new Date(right.eventDate).getTime(),
+  );
+}
+
+function filterPage(
+  page: EventListPage,
+  predicate: (event: EventSummary) => boolean,
+): ListState {
+  const items = page.items.filter(predicate);
   return {
     items,
     page: page.page,
@@ -48,10 +57,26 @@ function applyActivityScope(
   };
 }
 
+function isAwaitingResponse(event: EventSummary): boolean {
+  return (
+    !hasEventEnded(event) &&
+    (hasPendingParticipation(event.myParticipationStatus) ||
+      hasEventInvitation(event.myParticipationStatus))
+  );
+}
+
+function isConfirmedActive(event: EventSummary): boolean {
+  return (
+    !hasEventEnded(event) &&
+    hasApprovedParticipation(event.myParticipationStatus)
+  );
+}
+
 export function useActivity() {
   const [tab, setTab] = useState<ActivityTab>("upcoming");
   const [upcoming, setUpcoming] = useState<ListState>(EMPTY);
   const [past, setPast] = useState<ListState>(EMPTY);
+  const [pending, setPending] = useState<ListState>(EMPTY);
   const [organized, setOrganized] = useState<ListState>(EMPTY);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -72,8 +97,52 @@ export function useActivity() {
         getMyParticipatingEvents(1, PAGE_SIZE, "past"),
         getMyOrganizedEvents(1, PAGE_SIZE),
       ]);
-      setUpcoming(applyActivityScope(live, "upcoming"));
-      setPast(applyActivityScope(history, "past"));
+
+      // Backend scope'ları tarih bazlı daraltabilse de gerçek sekme kararı etkinliğin
+      // bitiş zamanı ve kullanıcının katılım durumuyla verilir.
+      const participatingItems = uniqueEvents([
+        ...live.items,
+        ...history.items,
+      ]);
+      const hostedActive = hosted.items.filter(
+        (event) => !hasEventEnded(event),
+      );
+      const upcomingItems = sortUpcoming(
+        uniqueEvents([
+          ...participatingItems.filter(isConfirmedActive),
+          ...hostedActive,
+        ]),
+      );
+      const pendingItems = sortUpcoming(
+        participatingItems.filter(isAwaitingResponse),
+      );
+      const pastItems = uniqueEvents([
+        ...participatingItems.filter((event) => hasEventEnded(event)),
+        ...hosted.items.filter((event) => hasEventEnded(event)),
+      ]).sort(
+        (left, right) =>
+          new Date(right.eventDate).getTime() -
+          new Date(left.eventDate).getTime(),
+      );
+
+      setUpcoming({
+        items: upcomingItems,
+        page: live.page,
+        hasNext: live.hasNext,
+        totalCount: upcomingItems.length,
+      });
+      setPending({
+        items: pendingItems,
+        page: live.page,
+        hasNext: live.hasNext,
+        totalCount: pendingItems.length,
+      });
+      setPast({
+        items: pastItems,
+        page: history.page,
+        hasNext: history.hasNext,
+        totalCount: pastItems.length,
+      });
       setOrganized(hosted);
     } catch (err) {
       setError(getApiErrorMessage(err, i18n.t("activity:errors.loadFailed")));
@@ -95,20 +164,6 @@ export function useActivity() {
       });
     }, [load]),
   );
-
-  // "Onay bekliyor" sekmesi ayrı bir uçtan değil, zaten yüklenmiş "upcoming"
-  // listesinden süzülerek türetilir — Pending katılımlar da o listenin içinde.
-  const pending = useMemo<ListState>(() => {
-    const items = upcoming.items.filter((event) =>
-      hasPendingParticipation(event.myParticipationStatus),
-    );
-    return {
-      items,
-      page: upcoming.page,
-      hasNext: upcoming.hasNext,
-      totalCount: items.length,
-    };
-  }, [upcoming]);
 
   const current =
     tab === "upcoming"
@@ -136,24 +191,55 @@ export function useActivity() {
               tab === "past" ? "past" : "upcoming",
             );
 
+      const next =
+        tab === "organized"
+          ? {
+              items: result.items,
+              page: result.page,
+              hasNext: result.hasNext,
+              totalCount: result.items.length,
+            }
+          : filterPage(
+              result,
+              tab === "past"
+                ? (event) => hasEventEnded(event)
+                : tab === "pending"
+                  ? isAwaitingResponse
+                  : isConfirmedActive,
+            );
+
+      if (tab === "organized") {
+        const hostedPast = result.items.filter((event) => hasEventEnded(event));
+        if (hostedPast.length > 0) {
+          setPast((prev) => {
+            const items = uniqueEvents([...prev.items, ...hostedPast]).sort(
+              (left, right) =>
+                new Date(right.eventDate).getTime() -
+                new Date(left.eventDate).getTime(),
+            );
+            return { ...prev, items, totalCount: items.length };
+          });
+        }
+      }
+
       const setter =
         tab === "past"
           ? setPast
-          : tab === "organized"
-            ? setOrganized
-            : setUpcoming;
+          : tab === "pending"
+            ? setPending
+            : tab === "organized"
+              ? setOrganized
+              : setUpcoming;
 
-      const next =
-        tab === "organized"
-          ? result
-          : applyActivityScope(result, tab === "past" ? "past" : "upcoming");
-
-      setter((prev) => ({
-        items: [...prev.items, ...next.items],
-        page: next.page,
-        hasNext: next.hasNext,
-        totalCount: prev.totalCount + next.items.length,
-      }));
+      setter((prev) => {
+        const items = uniqueEvents([...prev.items, ...next.items]);
+        return {
+          items,
+          page: next.page,
+          hasNext: next.hasNext,
+          totalCount: items.length,
+        };
+      });
     } catch (err) {
       setError(
         getApiErrorMessage(err, i18n.t("activity:errors.loadMoreFailed")),
@@ -168,6 +254,12 @@ export function useActivity() {
     setTab,
     events: current.items,
     totalCount: current.totalCount,
+    tabCounts: {
+      upcoming: upcoming.totalCount,
+      pending: pending.totalCount,
+      past: past.totalCount,
+      organized: organized.totalCount,
+    },
     hasNext: current.hasNext,
     isLoading,
     isRefreshing,

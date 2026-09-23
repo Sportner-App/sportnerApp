@@ -1,13 +1,11 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { BottomSheet } from "@/components/bottom-sheet";
 import { useDirectionsOptions } from "@/constants/components";
-import {
-  openDirections,
-  type DirectionsTarget,
-} from "@/utils/open-directions";
+import { openDirections, type DirectionsTarget } from "@/utils/open-directions";
+import { AppText as Text } from "@/components/app-text";
 
 type DirectionsSheetProps = {
   visible: boolean;
@@ -50,10 +48,10 @@ export function DirectionsSheet({
               <FontAwesome6 name={option.icon} size={16} color="#ccff00" />
             </View>
             <View className="flex-1">
-              <Text className="font-body text-sm font-semibold text-text-primary">
+              <Text className="font-body text-body-sm font-semibold text-text-primary">
                 {option.label}
               </Text>
-              <Text className="mt-0.5 font-body text-xs text-brand-neutral">
+              <Text className="mt-0.5 font-body text-caption text-brand-neutral">
                 {option.description}
               </Text>
             </View>

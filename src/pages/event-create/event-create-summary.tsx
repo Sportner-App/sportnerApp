@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { useDurationOptions } from "@/constants/events";
@@ -13,6 +13,7 @@ import { sportAccentToken, themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { CreateEventFormValues } from "@/types/events";
 import type { SportOption } from "@/types/sports";
+import { AppText as Text } from "@/components/app-text";
 
 type EventCreateSummaryProps = {
   values: CreateEventFormValues;
@@ -55,7 +56,7 @@ function SummaryRow({
     <View className="flex-row items-center gap-2.5">
       <FontAwesome6 name={icon} size={12} color={accent} />
       <Text
-        className="flex-1 font-body text-sm text-text-secondary"
+        className="flex-1 font-body text-body-sm text-text-secondary"
         numberOfLines={1}
       >
         {children}
@@ -92,7 +93,7 @@ export function EventCreateSummary({
 
   return (
     <View>
-      <Text className="mb-2 font-body-bold text-[13px] text-text-secondary">
+      <Text className="mb-2 font-body-bold text-label text-text-secondary">
         {t("summary.heading")}
       </Text>
 
@@ -106,7 +107,7 @@ export function EventCreateSummary({
               <FontAwesome6 name={sport.icon} size={14} color={accent} />
             </View>
             <Text
-              className="font-body-bold text-sm text-text-primary"
+              className="font-body-bold text-body-sm text-text-primary"
               numberOfLines={1}
             >
               {sport.label}
@@ -116,7 +117,7 @@ export function EventCreateSummary({
 
         {title ? (
           <Text
-            className={`font-display text-lg text-text-primary ${sport ? "mt-2" : ""}`}
+            className={`font-display text-heading-sm text-text-primary ${sport ? "mt-2" : ""}`}
             numberOfLines={1}
           >
             {title}
@@ -145,6 +146,13 @@ export function EventCreateSummary({
                 min: values.minParticipantAge,
                 max: values.maxParticipantAge,
               })}
+            </SummaryRow>
+            <SummaryRow icon="venus-mars" accent={accent}>
+              {values.participantGender === 1
+                ? t("participantGender.womenOnly")
+                : values.participantGender === 2
+                  ? t("participantGender.menOnly")
+                  : t("participantGender.everyone")}
             </SummaryRow>
             {values.isRecurring ? (
               <SummaryRow icon="repeat" accent={accent}>

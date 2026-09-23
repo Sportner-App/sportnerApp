@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as Haptics from "expo-haptics";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 
 import { CREATE_EVENT_LIMITS } from "@/constants/events";
 import { themeColors } from "@/constants/theme";
+import { AppText as Text } from "@/components/app-text";
 
 type PlayersStepperProps = {
   value: string;
@@ -75,7 +76,7 @@ export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
 
   return (
     <View className="rounded-[28px] border border-border-default bg-surface-primary p-5">
-      <Text className="mb-5 text-center font-body-bold text-[13px] text-text-secondary">
+      <Text className="mb-5 text-center font-body-bold text-label text-text-secondary">
         {t("players.capacityLabel")}
       </Text>
       <View className="flex-row items-center justify-between">
@@ -119,7 +120,7 @@ export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
               cursorColor={themeColors.brand.primary}
             />
           </Animated.View>
-          <Text className="font-body text-sm text-text-secondary">
+          <Text className="font-body text-body-sm text-text-secondary">
             {t("players.unit")}
           </Text>
         </View>
@@ -147,7 +148,7 @@ export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
         </AnimatedPressable>
       </View>
 
-      <Text className="mt-5 text-center font-body text-xs text-text-tertiary">
+      <Text className="mt-5 text-center font-body text-caption text-text-tertiary">
         {t("players.hint")}
       </Text>
     </View>

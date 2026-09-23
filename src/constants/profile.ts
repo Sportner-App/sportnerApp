@@ -45,8 +45,16 @@ export function useProfileQuickActions() {
   const { t } = useTranslation("profile");
 
   return [
-    { key: "friends" as const, label: t("about.friends"), icon: "user-group" as const },
-    { key: "badges" as const, label: t("about.badges"), icon: "trophy" as const },
+    {
+      key: "friends" as const,
+      label: t("about.friends"),
+      icon: "user-group" as const,
+    },
+    {
+      key: "badges" as const,
+      label: t("about.badges"),
+      icon: "trophy" as const,
+    },
   ];
 }
 
@@ -75,9 +83,7 @@ export function useProfileSocialActions(): ProfileMenuItem[] {
     { key: "albums", label: t("social.albums"), icon: "images" },
   ];
 
-  return items.filter(
-    (item) => item.key !== "albums" || FEATURE_FLAGS.albums,
-  );
+  return items.filter((item) => item.key !== "albums" || FEATURE_FLAGS.albums);
 }
 
 /**

@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 
 import { BottomSheet, Button } from "@/components";
 import { lightImpact } from "@/utils/haptics";
+import { AppText as Text } from "@/components/app-text";
 
 type LeaveEventActionProps = {
   isLeaving: boolean;
@@ -18,7 +19,10 @@ type LeaveEventActionProps = {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export function LeaveEventAction({ isLeaving, onLeave }: LeaveEventActionProps) {
+export function LeaveEventAction({
+  isLeaving,
+  onLeave,
+}: LeaveEventActionProps) {
   const { t } = useTranslation("eventDetail");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const scale = useSharedValue(1);
@@ -57,8 +61,12 @@ export function LeaveEventAction({ isLeaving, onLeave }: LeaveEventActionProps) 
         style={pressStyle}
         className="flex-row items-center justify-center gap-2 py-2"
       >
-        <FontAwesome6 name="arrow-right-from-bracket" size={12} color="#ef4444" />
-        <Text className="font-body text-sm text-[#ef4444]">
+        <FontAwesome6
+          name="arrow-right-from-bracket"
+          size={12}
+          color="#ef4444"
+        />
+        <Text className="font-body text-body-sm text-[#ef4444]">
           {isLeaving ? t("leave.leaving") : t("leave.action")}
         </Text>
       </AnimatedPressable>

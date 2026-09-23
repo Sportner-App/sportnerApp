@@ -5,7 +5,6 @@ import {
   Platform,
   Pressable,
   StatusBar,
-  Text,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -14,6 +13,7 @@ import { useTranslation } from "react-i18next";
 
 import { useAppTourCopy } from "@/constants/components";
 import { useAppTour } from "@/contexts/app-tour-context";
+import { AppText as Text } from "@/components/app-text";
 
 type TargetRect = { x: number; y: number; width: number; height: number };
 
@@ -79,7 +79,11 @@ export function AppTourOverlay() {
             />
             <View
               className="absolute left-0 bg-black/80"
-              style={{ top: focus.top, width: focus.left, height: focus.height }}
+              style={{
+                top: focus.top,
+                width: focus.left,
+                height: focus.height,
+              }}
             />
             <View
               className="absolute right-0 bg-black/80"
@@ -122,7 +126,7 @@ export function AppTourOverlay() {
           }
         >
           <View className="flex-row items-center justify-between">
-            <Text className="font-mono text-xs tracking-[2px] text-brand-primary">
+            <Text className="font-mono text-caption tracking-[2px] text-brand-primary">
               {copy.eyebrow}
             </Text>
             <Pressable
@@ -131,15 +135,15 @@ export function AppTourOverlay() {
               onPress={dismiss}
               hitSlop={8}
             >
-              <Text className="font-body-bold text-sm text-white/60">
+              <Text className="font-body-bold text-body-sm text-white/60">
                 {t("appTour.skip")}
               </Text>
             </Pressable>
           </View>
-          <Text className="mt-3 font-display text-2xl text-white">
+          <Text className="mt-3 font-display text-heading-md text-white">
             {copy.title}
           </Text>
-          <Text className="mt-2 font-body text-sm leading-6 text-white/65">
+          <Text className="mt-2 font-body text-body-sm leading-6 text-white/65">
             {copy.body}
           </Text>
           <Pressable
@@ -147,7 +151,7 @@ export function AppTourOverlay() {
             onPress={next}
             className="mt-5 flex-row items-center justify-center gap-2 rounded-full bg-brand-primary px-5 py-3.5 active:opacity-80"
           >
-            <Text className="font-body-bold text-sm text-brand-secondary">
+            <Text className="font-body-bold text-body-sm text-brand-secondary">
               {step === 2 ? t("appTour.finish") : t("appTour.continue")}
             </Text>
             <FontAwesome6

@@ -4,7 +4,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Text,
   TextInput,
   useWindowDimensions,
   View,
@@ -22,6 +21,7 @@ import type { useOnboarding } from "@/hooks/use-onboarding";
 import type { OnboardingSportDraft } from "@/types/onboarding";
 import type { Sport } from "@/types/sports";
 import { sportIconForSlug } from "@/utils/events";
+import { AppText as Text } from "@/components/app-text";
 
 type Form = ReturnType<typeof useOnboarding>;
 
@@ -67,14 +67,14 @@ function SportTile({
       </View>
       <Text
         numberOfLines={2}
-        className="min-h-[32px] text-center font-body text-[12px] font-semibold leading-4 text-text-primary"
+        className="min-h-[32px] text-center font-body text-caption font-semibold leading-4 text-text-primary"
       >
         {sport.name}
       </Text>
       {isPrimary ? (
         <View className="mt-1.5 flex-row items-center gap-1">
           <FontAwesome6 name="star" size={9} color="#ccff00" />
-          <Text className="font-mono text-[9px] tracking-wide text-brand-primary">
+          <Text className="font-mono text-overline tracking-wide text-brand-primary">
             {primaryBadge}
           </Text>
         </View>
@@ -111,21 +111,21 @@ export function SportsPickerStep({ form }: { form: Form }) {
         <View className="mb-5 flex-row items-center justify-between">
           <View className="flex-row items-center gap-2.5">
             <View className="h-2.5 w-2.5 rounded-full bg-brand-primary" />
-            <Text className="font-mono text-xs tracking-[4px] text-brand-neutral">
+            <Text className="font-mono text-caption tracking-[4px] text-brand-neutral">
               {ONBOARDING_COPY.eyebrow}
             </Text>
           </View>
           <View className="rounded-full border border-brand-primary/25 bg-brand-primary/10 px-3 py-1.5">
-            <Text className="font-mono text-[10px] tracking-wide text-brand-primary">
+            <Text className="font-mono text-overline tracking-wide text-brand-primary">
               {copy.stepLabel}
             </Text>
           </View>
         </View>
 
-        <Text className="font-display text-[40px] leading-[44px] text-text-primary">
+        <Text className="font-display text-display leading-[44px] text-text-primary">
           {copy.title}
         </Text>
-        <Text className="mt-2 font-body text-sm leading-5 text-brand-neutral">
+        <Text className="mt-2 font-body text-body-sm leading-5 text-brand-neutral">
           {copy.subtitle}
         </Text>
 
@@ -138,7 +138,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
             placeholderTextColor="#64748b"
             autoCorrect={false}
             autoCapitalize="none"
-            className="flex-1 font-body text-base text-text-primary"
+            className="flex-1 font-body text-body text-text-primary"
           />
           {form.query.length > 0 ? (
             <Pressable
@@ -151,7 +151,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
           ) : null}
         </View>
         {form.isSearchTooShort ? (
-          <Text className="mt-2 font-body text-xs text-brand-neutral">
+          <Text className="mt-2 font-body text-caption text-brand-neutral">
             {copy.searchHint}
           </Text>
         ) : null}
@@ -182,7 +182,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
                 }`}
               >
                 <Text
-                  className={`font-body text-xs font-semibold ${
+                  className={`font-body text-caption font-semibold ${
                     active ? "text-brand-primary" : "text-brand-neutral"
                   }`}
                 >
@@ -196,7 +196,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
 
       <View className="min-h-0 flex-1 px-4">
         {form.isSportsLoading ? (
-          <Text className="mt-6 px-1 font-body text-sm text-brand-neutral">
+          <Text className="mt-6 px-1 font-body text-body-sm text-brand-neutral">
             {copy.loading}
           </Text>
         ) : (
@@ -221,7 +221,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
                   size={22}
                   color="#64748b"
                 />
-                <Text className="mt-3 text-center font-body text-sm text-brand-neutral">
+                <Text className="mt-3 text-center font-body text-body-sm text-brand-neutral">
                   {copy.noResults}
                 </Text>
               </View>
@@ -247,13 +247,13 @@ export function SportsPickerStep({ form }: { form: Form }) {
         style={{ paddingBottom: Math.max(insets.bottom, 12) }}
       >
         <View className="mb-3 flex-row items-center justify-between">
-          <Text className="font-body text-xs text-brand-neutral">
+          <Text className="font-body text-caption text-brand-neutral">
             {form.selected.length > 0
               ? copy.selectedCount(form.selected.length)
               : copy.selectedEmpty}
           </Text>
           {form.selected.length > 0 ? (
-            <Text className="font-mono text-[10px] tracking-wide text-brand-primary/80">
+            <Text className="font-mono text-overline tracking-wide text-brand-primary/80">
               {copy.tapForLevel}
             </Text>
           ) : null}
@@ -285,7 +285,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
           </ScrollView>
         ) : (
           <View className="mb-3 h-11 justify-center rounded-2xl border border-dashed border-border-default px-3">
-            <Text className="font-body text-xs text-brand-neutral/80">
+            <Text className="font-body text-caption text-brand-neutral/80">
               {copy.selectedHint}
             </Text>
           </View>
@@ -337,11 +337,11 @@ function SelectedSportChip({
         size={12}
         color="#ccff00"
       />
-      <Text className="font-body text-xs font-semibold text-text-primary">
+      <Text className="font-body text-caption font-semibold text-text-primary">
         {draft.sportName}
       </Text>
       <View className="rounded-full bg-white/10 px-1.5 py-0.5">
-        <Text className="font-mono text-[10px] text-brand-neutral">
+        <Text className="font-mono text-overline text-brand-neutral">
           {skillShortLabel}
         </Text>
       </View>
@@ -386,7 +386,7 @@ function SportConfigSheet({
       {draft ? (
         <View className="gap-4">
           <View className="gap-2">
-            <Text className="font-body text-sm text-brand-neutral">
+            <Text className="font-body text-body-sm text-brand-neutral">
               {configCopy.levelLabel}
             </Text>
             <View className="flex-row flex-wrap gap-2">
@@ -405,7 +405,7 @@ function SportConfigSheet({
                     }`}
                   >
                     <Text
-                      className={`font-body text-xs font-semibold ${
+                      className={`font-body text-caption font-semibold ${
                         active ? "text-brand-secondary" : "text-text-primary"
                       }`}
                     >
@@ -431,10 +431,10 @@ function SportConfigSheet({
               color={isPrimary ? "#ccff00" : "#64748b"}
             />
             <View className="flex-1">
-              <Text className="font-body text-sm font-semibold text-text-primary">
+              <Text className="font-body text-body-sm font-semibold text-text-primary">
                 {configCopy.primaryTitle}
               </Text>
-              <Text className="mt-0.5 font-body text-xs text-brand-neutral">
+              <Text className="mt-0.5 font-body text-caption text-brand-neutral">
                 {configCopy.primaryDescription}
               </Text>
             </View>

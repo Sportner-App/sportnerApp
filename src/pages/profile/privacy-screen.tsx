@@ -1,7 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -14,6 +14,7 @@ import {
 } from "@/components";
 import { useAuth, useToast } from "@/contexts";
 import { useProfile } from "@/hooks/use-profile";
+import { AppText as Text } from "@/components/app-text";
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
@@ -148,16 +149,16 @@ export function PrivacyScreen() {
         </View>
       ) : (
         <>
-          <Text className="font-display text-3xl text-text-primary">
+          <Text className="font-display text-heading-lg text-text-primary">
             {t("profile:privacy.heading")}
           </Text>
-          <Text className="font-body text-sm text-brand-neutral">
+          <Text className="font-body text-body-sm text-brand-neutral">
             {t("profile:privacy.subtitle")}
           </Text>
 
           {profile.email ? (
             <View className="gap-2">
-              <Text className="font-body text-xs font-semibold uppercase tracking-wide text-brand-neutral">
+              <Text className="font-body text-caption font-semibold uppercase tracking-wide text-brand-neutral">
                 {t("profile:privacy.emailVerification.sectionTitle")}
               </Text>
               <Pressable
@@ -179,16 +180,19 @@ export function PrivacyScreen() {
                   />
                 </View>
                 <View className="min-w-0 flex-1">
-                  <Text className="font-body text-base font-semibold text-text-primary">
+                  <Text className="font-body text-body font-semibold text-text-primary">
                     {profile.isEmailVerified
                       ? t("profile:privacy.emailVerification.verifiedTitle")
                       : t("profile:privacy.emailVerification.unverifiedTitle")}
                   </Text>
-                  <Text className="mt-0.5 font-body text-xs text-brand-neutral">
+                  <Text className="mt-0.5 font-body text-caption text-brand-neutral">
                     {profile.isEmailVerified
-                      ? t("profile:privacy.emailVerification.verifiedDescription", {
-                          email: profile.email,
-                        })
+                      ? t(
+                          "profile:privacy.emailVerification.verifiedDescription",
+                          {
+                            email: profile.email,
+                          },
+                        )
                       : t(
                           "profile:privacy.emailVerification.unverifiedDescription",
                           { email: profile.email },
@@ -196,7 +200,7 @@ export function PrivacyScreen() {
                   </Text>
                 </View>
                 {!profile.isEmailVerified ? (
-                  <Text className="font-body text-xs font-semibold text-brand-primary">
+                  <Text className="font-body text-caption font-semibold text-brand-primary">
                     {t("profile:privacy.emailVerification.verifyButton")}
                   </Text>
                 ) : null}
@@ -212,10 +216,10 @@ export function PrivacyScreen() {
               <FontAwesome6 name="ban" size={12} color="#ccff00" />
             </View>
             <View className="min-w-0 flex-1">
-              <Text className="font-body text-base font-semibold text-text-primary">
+              <Text className="font-body text-body font-semibold text-text-primary">
                 {t("profile:privacy.blockedTitle")}
               </Text>
-              <Text className="mt-0.5 font-body text-xs text-brand-neutral">
+              <Text className="mt-0.5 font-body text-caption text-brand-neutral">
                 {t("profile:privacy.blockedDescription")}
               </Text>
             </View>
@@ -223,7 +227,7 @@ export function PrivacyScreen() {
           </Pressable>
 
           <View className="mt-4 gap-2">
-            <Text className="font-body text-xs font-semibold uppercase tracking-wide text-destructive">
+            <Text className="font-body text-caption font-semibold uppercase tracking-wide text-destructive">
               {t("profile:privacy.deleteAccount.sectionTitle")}
             </Text>
             <Pressable
@@ -234,10 +238,10 @@ export function PrivacyScreen() {
                 <FontAwesome6 name="trash" size={12} color="#ef4444" />
               </View>
               <View className="min-w-0 flex-1">
-                <Text className="font-body text-base font-semibold text-destructive">
+                <Text className="font-body text-body font-semibold text-destructive">
                   {t("profile:privacy.deleteAccount.title")}
                 </Text>
-                <Text className="mt-0.5 font-body text-xs text-brand-neutral">
+                <Text className="mt-0.5 font-body text-caption text-brand-neutral">
                   {t("profile:privacy.deleteAccount.description")}
                 </Text>
               </View>
@@ -313,7 +317,9 @@ export function PrivacyScreen() {
             <View className="gap-3">
               <Input
                 icon="key"
-                placeholder={t("profile:privacy.emailVerification.codePlaceholder")}
+                placeholder={t(
+                  "profile:privacy.emailVerification.codePlaceholder",
+                )}
                 value={code}
                 onChangeText={(value) =>
                   setCode(value.replace(/\D/g, "").slice(0, 6))
@@ -326,7 +332,7 @@ export function PrivacyScreen() {
                 disabled={isResending || cooldown > 0}
                 className="items-center py-2"
               >
-                <Text className="font-body text-xs font-semibold text-brand-primary">
+                <Text className="font-body text-caption font-semibold text-brand-primary">
                   {cooldown > 0
                     ? t("profile:privacy.emailVerification.resendCooldown", {
                         seconds: cooldown,

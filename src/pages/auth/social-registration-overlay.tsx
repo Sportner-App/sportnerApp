@@ -4,12 +4,12 @@ import {
   Modal,
   Platform,
   ScrollView,
-  Text,
   View,
 } from "react-native";
 
 import { Button, Input } from "@/components";
 import type { useSocialAuth } from "@/hooks/use-social-auth";
+import { AppText as Text } from "@/components/app-text";
 
 type Props = { social: ReturnType<typeof useSocialAuth> };
 
@@ -34,10 +34,10 @@ export function SocialRegistrationOverlay({ social }: Props) {
           }
           contentContainerClassName="flex-grow justify-center px-6 py-12"
         >
-          <Text className="font-display text-4xl text-text-primary">
+          <Text className="font-display text-heading-lg text-text-primary">
             {t("socialRegistration.title")}
           </Text>
-          <Text className="mt-3 font-body text-base leading-6 text-brand-neutral">
+          <Text className="mt-3 font-body text-body leading-6 text-brand-neutral">
             {t("socialRegistration.subtitle")}
           </Text>
           <View className="mt-8 gap-3 rounded-[28px] border border-border-default bg-surface-primary p-5">

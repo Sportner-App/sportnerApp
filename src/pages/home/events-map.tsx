@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useMemo, useRef, useState } from "react";
-import { ImageBackground, Pressable, Text, View } from "react-native";
+import { ImageBackground, Pressable, View } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import MapView, {
   Marker,
@@ -10,9 +10,15 @@ import MapView, {
 import { useTranslation } from "react-i18next";
 
 import { DARK_MAP_STYLE, MAP_INITIAL_REGION } from "@/constants/map";
-import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
+import {
+  FALLBACK_SPORT_IMAGE,
+  resolveEventPhoto,
+} from "@/constants/sport-images";
 import { shadows, sportAccentToken, themeColors } from "@/constants/theme";
-import type { UserCoordinates, UserLocationStatus } from "@/hooks/use-user-location";
+import type {
+  UserCoordinates,
+  UserLocationStatus,
+} from "@/hooks/use-user-location";
 import {
   isGooglePlacesEnabled,
   isNativeMapAvailable,
@@ -25,6 +31,7 @@ import {
   formatEventTime,
   relativeEventBadge,
 } from "@/utils/events";
+import { AppText as Text } from "@/components/app-text";
 
 type EventsMapProps = {
   events: EventSummary[];
@@ -197,7 +204,7 @@ export function EventsMap({
             size={13}
             color={themeColors.text.tertiary}
           />
-          <Text className="flex-1 font-body text-xs text-text-secondary">
+          <Text className="flex-1 font-body text-caption text-text-secondary">
             {t("map.noResults")}
           </Text>
         </View>
@@ -330,15 +337,12 @@ function EventMapPreviewCard({
           onError={() => setPhotoFailed(true)}
           style={{ flex: 1 }}
         >
-          <View
-            pointerEvents="none"
-            className="absolute inset-0 bg-black/55"
-          />
+          <View pointerEvents="none" className="absolute inset-0 bg-black/55" />
 
           <View className="flex-1 justify-between p-3.5">
             {sportLabel ? (
               <View className="flex-row items-center self-start rounded-pill bg-white/90 px-2 py-1">
-                <Text className="font-body text-[10px] font-bold tracking-[1.2px] text-text-secondary">
+                <Text className="font-body text-overline font-bold tracking-[1.2px] text-text-secondary">
                   {sportLabel}
                 </Text>
               </View>
@@ -350,7 +354,7 @@ function EventMapPreviewCard({
               <View className="min-w-0 flex-1 gap-1">
                 <Text
                   numberOfLines={1}
-                  className="font-display text-[17px] text-white"
+                  className="font-display text-body-lg text-white"
                 >
                   {event.title.trim() || t("eventCard.untitled")}
                 </Text>
@@ -363,14 +367,14 @@ function EventMapPreviewCard({
                     />
                     <Text
                       numberOfLines={1}
-                      className="flex-1 font-body text-xs text-white/75"
+                      className="flex-1 font-body text-caption text-white/75"
                     >
                       {place}
                     </Text>
                   </View>
                 ) : null}
                 {whenLabel ? (
-                  <Text className="font-mono text-[11px] text-white/75">
+                  <Text className="font-mono text-overline text-white/75">
                     {whenLabel}
                   </Text>
                 ) : null}

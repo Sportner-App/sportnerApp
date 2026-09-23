@@ -1,8 +1,9 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
+import { AppText as Text } from "@/components/app-text";
 
 /** Tappable icon + title/subtitle row with an optional badge, used for event-detail inbox-style entries (waitlist, attendance, reviews). */
 export function InboxRow({
@@ -42,7 +43,7 @@ export function InboxRow({
 
       <View className="flex-1">
         <Text
-          className="font-body-bold text-sm"
+          className="font-body-bold text-body-sm"
           style={{ color: themeColors.text.primary }}
         >
           {title}
@@ -61,7 +62,7 @@ export function InboxRow({
           style={{ backgroundColor: themeColors.brand.primary }}
         >
           <Text
-            className="font-body-bold text-[11px]"
+            className="font-body-bold text-overline"
             style={{ color: themeColors.text.onPrimary }}
           >
             {badge}

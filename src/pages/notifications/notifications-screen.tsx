@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -20,6 +20,7 @@ import {
 import type { ApiNotification } from "@/types/notifications";
 import { NOTIFICATION_TYPE, notificationCopy } from "@/types/notifications";
 import { resolveNotificationRoute } from "@/utils/notification-routing";
+import { AppText as Text } from "@/components/app-text";
 
 export function NotificationsScreen() {
   const router = useRouter();
@@ -111,7 +112,7 @@ export function NotificationsScreen() {
               }}
               className="px-2"
             >
-              <Text className="font-body text-xs text-brand-primary">
+              <Text className="font-body text-caption text-brand-primary">
                 {t("notifications:markAllRead")}
               </Text>
             </Pressable>
@@ -131,7 +132,7 @@ export function NotificationsScreen() {
           <SportLoader size={120} label={t("notifications:loading")} />
         </View>
       ) : items.length === 0 ? (
-        <Text className="py-12 text-center font-body text-sm text-brand-neutral">
+        <Text className="py-12 text-center font-body text-body-sm text-brand-neutral">
           {t("notifications:empty")}
         </Text>
       ) : (
@@ -147,11 +148,11 @@ export function NotificationsScreen() {
                   : "border-brand-primary/30 bg-brand-primary/10"
               }`}
             >
-              <Text className="font-body text-sm font-semibold text-text-primary">
+              <Text className="font-body text-body-sm font-semibold text-text-primary">
                 {copy.title}
               </Text>
               {copy.body && copy.body !== copy.title ? (
-                <Text className="mt-1 font-body text-xs text-brand-neutral">
+                <Text className="mt-1 font-body text-caption text-brand-neutral">
                   {copy.body}
                 </Text>
               ) : null}

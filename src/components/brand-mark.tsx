@@ -1,6 +1,7 @@
-import { Image, Text, View } from "react-native";
+import { Image, View } from "react-native";
 
 import type { BrandMarkProps } from "@/types/components";
+import { AppText as Text } from "@/components/app-text";
 
 const LOGO_MARK = require("../../assets/images/icon-removebg.png");
 
@@ -22,8 +23,8 @@ export function BrandMark({ className, tone = "dark" }: BrandMarkProps) {
       <Text
         className={
           isLight
-            ? "font-display text-[20px] tracking-[7px] text-text-primary"
-            : "font-mono text-[20px] tracking-[11px] text-white/85"
+            ? "font-display text-heading-sm tracking-[7px] text-text-primary"
+            : "font-mono text-heading-sm tracking-[11px] text-white/85"
         }
       >
         SPORTNER

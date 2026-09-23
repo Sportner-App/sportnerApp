@@ -7,10 +7,10 @@ import {
   useRef,
   useState,
 } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { Avatar, BottomSheet, Button } from "@/components";
+import { AppText as Text, Avatar, BottomSheet, Button } from "@/components";
 import { themeColors } from "@/constants/theme";
 import {
   confirmAllAttendance,
@@ -144,7 +144,7 @@ export function PendingAttendancePrompt({ children }: PropsWithChildren) {
                 disabled={isSubmitting}
                 className="items-center py-2"
               >
-                <Text className="font-body text-sm font-semibold text-brand-primary">
+                <Text className="font-body text-body-sm font-semibold text-brand-primary">
                   {t("pendingAttendance.someoneAbsent")}
                 </Text>
               </Pressable>
@@ -153,7 +153,7 @@ export function PendingAttendancePrompt({ children }: PropsWithChildren) {
                 disabled={isSubmitting}
                 className="items-center py-1"
               >
-                <Text className="font-body text-xs text-text-secondary">
+                <Text className="font-body text-caption text-text-secondary">
                   {t("pendingAttendance.later")}
                 </Text>
               </Pressable>
@@ -175,7 +175,7 @@ export function PendingAttendancePrompt({ children }: PropsWithChildren) {
                         size={36}
                       />
                       <Text
-                        className="flex-1 font-body text-sm text-text-primary"
+                        className="flex-1 font-body text-body-sm text-text-primary"
                         numberOfLines={1}
                       >
                         {participant.name}

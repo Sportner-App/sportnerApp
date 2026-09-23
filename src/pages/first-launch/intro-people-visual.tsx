@@ -1,9 +1,10 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import Animated from "react-native-reanimated";
 
 import { heroFadeScale, heroFadeUp } from "./hero-enter";
+import { AppText as Text } from "@/components/app-text";
 
 export function IntroPeopleVisual() {
   const { t } = useTranslation("firstLaunch");
@@ -21,16 +22,16 @@ export function IntroPeopleVisual() {
               <FontAwesome6 name="calendar-plus" size={15} color="#ccff00" />
             </View>
             <View>
-              <Text className="font-body-bold text-base text-white">
+              <Text className="font-body-bold text-body text-white">
                 {t("visuals.people.eveningMatch")}
               </Text>
-              <Text className="font-body text-xs text-brand-neutral">
+              <Text className="font-body text-caption text-brand-neutral">
                 20:30 · Kadıköy
               </Text>
             </View>
           </View>
           <View className="rounded-full bg-brand-primary px-2.5 py-1">
-            <Text className="font-mono text-[10px] text-brand-secondary">
+            <Text className="font-mono text-overline text-brand-secondary">
               {t("visuals.people.createdBadge")}
             </Text>
           </View>
@@ -43,12 +44,12 @@ export function IntroPeopleVisual() {
               className="h-10 w-10 items-center justify-center rounded-full border-2 border-brand-surface bg-brand-raised"
               style={{ marginLeft: index ? -8 : 0 }}
             >
-              <Text className="font-display text-xs text-brand-primary">
+              <Text className="font-display text-caption text-brand-primary">
                 {name}
               </Text>
             </Animated.View>
           ))}
-          <Text className="ml-3 font-body text-xs text-white/65">
+          <Text className="ml-3 font-body text-caption text-white/65">
             {t("visuals.people.invitesSent")}
           </Text>
         </View>
@@ -58,7 +59,7 @@ export function IntroPeopleVisual() {
         className="ml-8 flex-row items-center gap-2 self-start rounded-full border border-brand-primary/25 bg-brand-primary/10 px-3.5 py-2"
       >
         <FontAwesome6 name="users" size={11} color="#ccff00" />
-        <Text className="font-body text-sm text-brand-primary">
+        <Text className="font-body text-body-sm text-brand-primary">
           {t("visuals.people.teamReady")}
         </Text>
       </Animated.View>

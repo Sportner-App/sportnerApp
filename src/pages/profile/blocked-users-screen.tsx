@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -15,6 +15,7 @@ import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { listBlockedUsers, unblockUser } from "@/services/social-service";
 import type { ApiBlockedUser } from "@/types/social";
+import { AppText as Text } from "@/components/app-text";
 
 export function BlockedUsersScreen() {
   const { t } = useTranslation("profile");
@@ -76,7 +77,7 @@ export function BlockedUsersScreen() {
         onRefresh: () => load("refresh"),
       })}
     >
-      <Text className="font-body text-sm text-brand-neutral">
+      <Text className="font-body text-body-sm text-brand-neutral">
         {t("blocked.description")}
       </Text>
 
@@ -85,7 +86,7 @@ export function BlockedUsersScreen() {
           <SportLoader size={120} />
         </View>
       ) : items.length === 0 ? (
-        <Text className="py-8 text-center font-body text-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
           {t("blocked.empty")}
         </Text>
       ) : (

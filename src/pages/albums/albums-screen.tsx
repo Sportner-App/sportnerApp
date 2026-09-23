@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -14,6 +14,7 @@ import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { createAlbum, listMyAlbums } from "@/services/albums-service";
 import type { ApiAlbum } from "@/types/social";
+import { AppText as Text } from "@/components/app-text";
 
 export function AlbumsScreen() {
   const { t } = useTranslation("albums");
@@ -74,10 +75,10 @@ export function AlbumsScreen() {
               onPress={() => router.push(`/albums/${album.id}`)}
               className="rounded-2xl border border-border-default bg-surface-primary p-4"
             >
-              <Text className="font-body text-sm font-semibold text-text-primary">
+              <Text className="font-body text-body-sm font-semibold text-text-primary">
                 {album.title}
               </Text>
-              <Text className="font-body text-xs text-brand-neutral">
+              <Text className="font-body text-caption text-brand-neutral">
                 {t("list.photoCount", { count: album.mediaCount })}
               </Text>
             </Pressable>

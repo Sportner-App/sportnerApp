@@ -1,9 +1,10 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
 import { useProfileQuickActions } from "@/constants/profile";
+import { AppText as Text } from "@/components/app-text";
 
 type ProfileAboutSectionProps = {
   bio: string | null;
@@ -25,7 +26,7 @@ export function ProfileAboutSection({
 
   return (
     <Animated.View entering={FadeInDown.duration(320)} className="gap-4 px-1">
-      <Text className="font-body text-sm leading-5 text-text-secondary">
+      <Text className="font-body text-body-sm leading-5 text-text-secondary">
         {bio?.trim() || t("about.emptyBio")}
       </Text>
 
@@ -40,7 +41,7 @@ export function ProfileAboutSection({
               className="min-h-[44px] flex-1 flex-row items-center justify-center gap-2 rounded-2xl border border-border-default bg-surface-primary px-3 active:opacity-65"
             >
               <FontAwesome6 name={item.icon} size={12} color="#ccff00" />
-              <Text className="font-body text-xs font-semibold text-text-primary">
+              <Text className="font-body text-caption font-semibold text-text-primary">
                 {item.label}
               </Text>
             </Pressable>

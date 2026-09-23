@@ -1,15 +1,26 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { AppScreen, Button, Input, ScreenHeader, SelectField, SportLoader } from "@/components";
+import {
+  AppScreen,
+  Button,
+  Input,
+  ScreenHeader,
+  SelectField,
+  SportLoader,
+} from "@/components";
 import { useToast } from "@/contexts";
 import { useCities } from "@/hooks/use-cities";
 import { getApiErrorMessage } from "@/lib/api/errors";
-import { getOrganization, updateOrganization } from "@/services/organizations-service";
+import {
+  getOrganization,
+  updateOrganization,
+} from "@/services/organizations-service";
 import type { SelectOption } from "@/types/components";
 import { resolveRouteParam } from "@/utils/route-params";
+import { AppText as Text } from "@/components/app-text";
 
 export function OrganizationEditScreen() {
   const { t } = useTranslation(["organizations", "profile", "common"]);
@@ -93,7 +104,7 @@ export function OrganizationEditScreen() {
         </View>
       ) : (
         <>
-          <Text className="font-display text-3xl text-text-primary">
+          <Text className="font-display text-heading-lg text-text-primary">
             {t("organizations:edit.heading")}
           </Text>
           <Input

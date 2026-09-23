@@ -21,12 +21,7 @@ export type UiTone = "dark" | "light";
 
 // Button
 export type ButtonVariant =
-  | "primary"
-  | "secondary"
-  | "outline"
-  | "ghost"
-  | "danger"
-  | "dangerOutline";
+  "primary" | "secondary" | "outline" | "ghost" | "danger" | "dangerOutline";
 
 export type ButtonSize = "sm" | "md" | "lg";
 
@@ -57,6 +52,7 @@ export type InputProps = TextInputProps & {
 export type SegmentedTabOption<T extends string> = {
   key: T;
   label: string;
+  badge?: number;
 };
 
 export type SegmentedTabsProps<T extends string> = {

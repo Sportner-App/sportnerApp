@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect, useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
 import Animated, {
   interpolateColor,
   Keyframe,
@@ -13,6 +13,7 @@ import Animated, {
 import { colorPalette } from "@/constants/colors";
 import { themeColors } from "@/constants/theme";
 import type { InputProps } from "@/types/components";
+import { AppText as Text } from "@/components/app-text";
 
 const ERROR_COLOR = colorPalette.warning;
 const FOCUS_COLOR = colorPalette.primary;
@@ -73,7 +74,7 @@ export function Input({
   return (
     <View className={disabled ? "opacity-50" : undefined}>
       {label && (
-        <Text className="mb-2 font-body-bold text-[13px] text-text-secondary">
+        <Text className="mb-2 font-body-bold text-label text-text-secondary">
           {label}
         </Text>
       )}
@@ -89,7 +90,7 @@ export function Input({
           editable={!disabled && inputProps.editable !== false}
           secureTextEntry={isPassword && isHidden}
           placeholderTextColor={IDLE_COLOR}
-          className="flex-1 font-body text-base text-text-primary"
+          className="flex-1 font-body text-body text-text-primary"
           onFocus={(event) => {
             setIsFocused(true);
             focusProgress.value = withTiming(1, { duration: ACCENT_DURATION });
@@ -122,12 +123,12 @@ export function Input({
             <Animated.Text
               key={error}
               entering={errorEntering}
-              className="mt-2 font-body text-sm text-[#fda4af]"
+              className="mt-2 font-body text-body-sm text-[#fda4af]"
             >
               {error}
             </Animated.Text>
           ) : (
-            <Text className="mt-2 font-body text-sm text-text-secondary">
+            <Text className="mt-2 font-body text-body-sm text-text-secondary">
               {helperText}
             </Text>
           )}

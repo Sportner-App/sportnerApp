@@ -116,9 +116,7 @@ export function AppScreen({
       {keyboardAvoiding ? (
         <>
           <View className="flex-1">{mainContent}</View>
-          {footer ? (
-            <KeyboardStickyView>{footer}</KeyboardStickyView>
-          ) : null}
+          {footer ? <KeyboardStickyView>{footer}</KeyboardStickyView> : null}
         </>
       ) : (
         <>

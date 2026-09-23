@@ -21,6 +21,7 @@ export function useCreateEventSteps() {
     2: { title: t("steps.2.title"), subtitle: t("steps.2.subtitle") },
     3: { title: t("steps.3.title"), subtitle: t("steps.3.subtitle") },
     4: { title: t("steps.4.title"), subtitle: t("steps.4.subtitle") },
+    5: { title: t("steps.5.title"), subtitle: t("steps.5.subtitle") },
   } as const;
 }
 
@@ -50,8 +51,16 @@ export function useDurationOptions(): DurationOption[] {
   const { t } = useTranslation("eventCreate");
 
   return [
-    { key: "30", label: t("duration.minutesShort", { count: 30 }), minutes: 30 },
-    { key: "45", label: t("duration.minutesShort", { count: 45 }), minutes: 45 },
+    {
+      key: "30",
+      label: t("duration.minutesShort", { count: 30 }),
+      minutes: 30,
+    },
+    {
+      key: "45",
+      label: t("duration.minutesShort", { count: 45 }),
+      minutes: 45,
+    },
     { key: "60", label: t("duration.hoursShort", { count: 1 }), minutes: 60 },
     { key: "90", label: t("duration.hoursShort", { count: 1.5 }), minutes: 90 },
     { key: "120", label: t("duration.hoursShort", { count: 2 }), minutes: 120 },

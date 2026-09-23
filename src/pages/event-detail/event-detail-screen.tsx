@@ -2,7 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -33,6 +33,7 @@ import { LeaveEventAction } from "./leave-event-action";
 import { LocationMap } from "./location-map";
 import { OrganizerPanel } from "./organizer-panel";
 import { PendingRequestsSheet } from "./pending-requests-sheet";
+import { AppText as Text } from "@/components/app-text";
 
 type EventDetailTab = "overview" | "participants" | "questions";
 
@@ -150,7 +151,7 @@ export function EventDetailScreen() {
             size={24}
             color={themeColors.text.secondary}
           />
-          <Text className="font-body text-sm text-text-secondary">
+          <Text className="font-body text-body-sm text-text-secondary">
             {t("notFound")}
           </Text>
           <Button

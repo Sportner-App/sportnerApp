@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import {
   Image,
   Pressable,
-  Text,
   View,
   type StyleProp,
   type ViewStyle,
@@ -16,6 +15,7 @@ import type { IconName } from "@/types/components";
 import { resolveMediaUrl } from "@/utils/media-url";
 
 import { AvatarPhotoPreview } from "./avatar-photo-preview";
+import { AppText as Text } from "@/components/app-text";
 
 type AvatarProps = {
   uri?: string | null;

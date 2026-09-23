@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
@@ -15,6 +15,7 @@ import {
   hasPendingParticipation,
   hasEventInvitation,
 } from "@/utils/events";
+import { AppText as Text } from "@/components/app-text";
 
 type JoinBarProps = {
   event: EventDetail;
@@ -187,70 +188,82 @@ export function JoinBar({
     onDeclineInvitation,
   });
 
+  // Two action buttons (accept/decline) need the full row width, so the status
+  // text moves above them instead of squeezing in beside the buttons + share icon.
+  const hasTwoActions = Boolean(bar.secondaryActionLabel);
+
   return (
     <View
-      className="flex-row items-center gap-4 border-t border-border-default bg-surface-primary px-5 pt-3"
+      className="gap-3 border-t border-border-default bg-surface-primary px-5 pt-3"
       style={[shadows.md, { paddingBottom: insets.bottom + 10 }]}
     >
-      {bar.statusTitle ? (
-        <View className="shrink">
-          <Text
-            className={
-              bar.statusSubtitle
-                ? "font-mono-bold text-lg text-text-primary"
-                : "max-w-[120px] font-body-bold text-sm text-text-primary"
-            }
-          >
-            {bar.statusTitle}
-          </Text>
-          {bar.statusSubtitle ? (
-            <Text className="font-body text-xs text-text-secondary">
-              {bar.statusSubtitle}
-            </Text>
-          ) : null}
-        </View>
+      {bar.statusTitle && hasTwoActions ? (
+        <Text className="font-body-bold text-body-sm text-text-primary">
+          {bar.statusTitle}
+        </Text>
       ) : null}
 
-      <View className="flex-1 flex-row gap-2">
-        {bar.secondaryActionLabel ? (
-          <View className="flex-1">
-            <Button
-              label={bar.secondaryActionLabel}
-              size="lg"
-              variant="outline"
-              disabled={bar.loading}
-              onPress={bar.secondaryAction}
-            />
+      <View className="flex-row items-center gap-4">
+        {bar.statusTitle && !hasTwoActions ? (
+          <View className="shrink">
+            <Text
+              className={
+                bar.statusSubtitle
+                  ? "font-mono-bold text-heading-sm text-text-primary"
+                  : "max-w-[120px] font-body-bold text-body-sm text-text-primary"
+              }
+            >
+              {bar.statusTitle}
+            </Text>
+            {bar.statusSubtitle ? (
+              <Text className="font-body text-caption text-text-secondary">
+                {bar.statusSubtitle}
+              </Text>
+            ) : null}
           </View>
         ) : null}
-        <View className="flex-1">
-          <Button
-            label={bar.actionLabel}
-            size="lg"
-            variant={bar.variant}
-            glow="subtle"
-            isLoading={bar.loading}
-            disabled={!bar.action}
-            pressScale={0.98}
-            haptic={bar.action ? "light" : undefined}
-            onPress={bar.action}
-          />
-        </View>
-      </View>
 
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t("share.title")}
-        hitSlop={4}
-        onPress={onShare}
-        className="h-11 w-11 items-center justify-center rounded-full border border-border-default bg-background-secondary active:opacity-80"
-      >
-        <FontAwesome6
-          name="arrow-up-from-bracket"
-          size={15}
-          color={themeColors.brand.primary}
-        />
-      </Pressable>
+        <View className="flex-1 flex-row gap-2">
+          {bar.secondaryActionLabel ? (
+            <View className="flex-1">
+              <Button
+                label={bar.secondaryActionLabel}
+                size="lg"
+                variant="outline"
+                disabled={bar.loading}
+                onPress={bar.secondaryAction}
+              />
+            </View>
+          ) : null}
+          <View className="flex-1">
+            <Button
+              label={bar.actionLabel}
+              size="lg"
+              variant={bar.variant}
+              glow="subtle"
+              isLoading={bar.loading}
+              disabled={!bar.action}
+              pressScale={0.98}
+              haptic={bar.action ? "light" : undefined}
+              onPress={bar.action}
+            />
+          </View>
+        </View>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t("share.title")}
+          hitSlop={4}
+          onPress={onShare}
+          className="h-11 w-11 items-center justify-center rounded-full border border-border-default bg-background-secondary active:opacity-80"
+        >
+          <FontAwesome6
+            name="arrow-up-from-bracket"
+            size={15}
+            color={themeColors.brand.primary}
+          />
+        </Pressable>
+      </View>
     </View>
   );
 }

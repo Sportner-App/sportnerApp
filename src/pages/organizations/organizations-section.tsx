@@ -1,11 +1,12 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
 import { useProfileCopy } from "@/constants/profile";
 import { useMyOrganizations } from "@/hooks/use-organizations";
 import { ORGANIZATION_STATUS } from "@/types/organizations";
+import { AppText as Text } from "@/components/app-text";
 
 type OrganizationsSectionProps = {
   onPressList?: () => void;
@@ -28,12 +29,12 @@ export function OrganizationsSection({
       className="gap-3"
     >
       <View className="flex-row items-center justify-between">
-        <Text className="font-display text-lg text-text-primary">
+        <Text className="font-display text-heading-sm text-text-primary">
           {PROFILE_COPY.organizationsTitle}
         </Text>
         {onPressList ? (
           <Pressable onPress={onPressList} hitSlop={8}>
-            <Text className="font-body text-[11px] font-semibold text-brand-primary">
+            <Text className="font-body text-overline font-semibold text-brand-primary">
               {items.length === 0
                 ? t("profile:organizations.add")
                 : t("common:all")}
@@ -48,7 +49,7 @@ export function OrganizationsSection({
           onPress={onPressList}
           className="rounded-[20px] border border-dashed border-border-strong bg-surface-primary/50 px-4 py-5"
         >
-          <Text className="text-center font-body text-sm text-text-secondary">
+          <Text className="text-center font-body text-body-sm text-text-secondary">
             {PROFILE_COPY.emptyOrganizations}
           </Text>
         </Pressable>
@@ -65,11 +66,11 @@ export function OrganizationsSection({
               }`}
             >
               <FontAwesome6 name="users" size={11} color="#ccff00" />
-              <Text className="font-body text-xs font-semibold text-text-primary">
+              <Text className="font-body text-caption font-semibold text-text-primary">
                 {item.name}
               </Text>
               {item.status === ORGANIZATION_STATUS.pending ? (
-                <Text className="font-body text-[9px] text-amber-300">
+                <Text className="font-body text-overline text-amber-300">
                   {t("profile:organizations.pending")}
                 </Text>
               ) : null}
@@ -80,7 +81,7 @@ export function OrganizationsSection({
               onPress={onPressList}
               className="rounded-full border border-border-default bg-surface-primary px-3 py-2.5"
             >
-              <Text className="font-mono text-xs text-text-secondary">
+              <Text className="font-mono text-caption text-text-secondary">
                 +{remaining}
               </Text>
             </Pressable>

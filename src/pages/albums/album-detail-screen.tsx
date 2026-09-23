@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Image, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { AppScreen, Button, ScreenHeader, SportLoader } from "@/components";
@@ -10,6 +10,7 @@ import { getApiErrorMessage } from "@/lib/api/errors";
 import { addAlbumMedia, getAlbum } from "@/services/albums-service";
 import type { ApiAlbumDetail } from "@/types/social";
 import { mediaDeniedMessage, pickSingleImage } from "@/utils/media-picker";
+import { AppText as Text } from "@/components/app-text";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:5139";
 
@@ -88,7 +89,7 @@ export function AlbumDetailScreen() {
         </View>
       ) : (
         <>
-          <Text className="font-display text-2xl text-text-primary">
+          <Text className="font-display text-heading-md text-text-primary">
             {album.title}
           </Text>
           <Button label={t("detail.addPhoto")} onPress={upload} />

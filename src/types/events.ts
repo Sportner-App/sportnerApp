@@ -26,6 +26,7 @@ export type ApiEventListItem = {
   maxParticipants: number | null;
   minParticipantAge: number;
   maxParticipantAge: number;
+  participantGender: number | null;
   skillLevel: number | null;
   isPaid: boolean;
   feeAmount: number | null;
@@ -62,6 +63,7 @@ export type ApiEventDetail = {
   maxParticipants: number | null;
   minParticipantAge: number;
   maxParticipantAge: number;
+  participantGender: number | null;
   skillLevel: number | null;
   isPaid: boolean;
   feeAmount: number | null;
@@ -163,6 +165,7 @@ export type EventSummary = {
   maxParticipants: number | null;
   minParticipantAge: number;
   maxParticipantAge: number;
+  participantGender: number | null;
   skillLevel: number | null;
   isPaid: boolean;
   feeAmount: number | null;
@@ -270,6 +273,7 @@ export type CreateEventPayload = {
   maxParticipants: number;
   minParticipantAge: number;
   maxParticipantAge: number;
+  participantGender: number | null;
   skillLevel: number | null;
   isPaid: boolean;
   feeAmount: number | null;
@@ -295,6 +299,7 @@ export type CreateEventFormValues = {
   maxPlayers: string;
   minParticipantAge: string;
   maxParticipantAge: string;
+  participantGender: number | null;
   skillLevel: number | null;
   isPaid: boolean;
   feeAmountText: string;

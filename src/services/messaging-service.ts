@@ -30,7 +30,9 @@ export async function listMyConversations(options?: {
 
 /** Header rozeti için tüm konuşmalarda en az bir okunmamış mesaj olup olmadığını döner. */
 export async function hasUnreadConversations(): Promise<boolean> {
-  const response = await apiClient.get<boolean>("/api/conversations/unread-status");
+  const response = await apiClient.get<boolean>(
+    "/api/conversations/unread-status",
+  );
   return response.data === true;
 }
 

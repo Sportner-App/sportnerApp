@@ -1,8 +1,9 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
 import type { PickedMedia } from "@/utils/media-picker";
+import { AppText as Text } from "@/components/app-text";
 
 type MediaFieldsProps = {
   avatar: PickedMedia | null;
@@ -35,18 +36,18 @@ export function MediaFields({
           accessibilityLabel={t("media.selectPhotoAccessibility")}
         />
         <Pressable onPress={onPickAvatar} hitSlop={8}>
-          <Text className="font-body text-xs text-brand-primary">
+          <Text className="font-body text-caption text-brand-primary">
             {avatarUri ? t("media.changePhoto") : t("media.addPhotoRequired")}
           </Text>
         </Pressable>
         {hasExistingAvatar ? (
-          <Text className="text-center font-body text-xs text-brand-neutral">
+          <Text className="text-center font-body text-caption text-brand-neutral">
             {t("media.googlePhotoReady")}
           </Text>
         ) : null}
         {avatar && onClearAvatar ? (
           <Pressable onPress={onClearAvatar} hitSlop={8}>
-            <Text className="font-body text-xs text-brand-neutral">
+            <Text className="font-body text-caption text-brand-neutral">
               {existingAvatarUrl
                 ? t("media.revertToGoogle")
                 : t("media.remove")}

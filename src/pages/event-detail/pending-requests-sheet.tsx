@@ -1,11 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -22,6 +16,7 @@ import {
   type EventParticipant,
 } from "@/types/events";
 import { errorNotification, successNotification } from "@/utils/haptics";
+import { AppText as Text } from "@/components/app-text";
 
 type PendingRequestsSheetProps = {
   visible: boolean;
@@ -204,7 +199,7 @@ function RequestRow({
           borderWidth={0}
         />
         <View className="flex-1">
-          <Text className="font-body text-sm font-semibold text-text-primary">
+          <Text className="font-body text-body-sm font-semibold text-text-primary">
             @{person.username || t("events:fallback.athleteHandle")}
           </Text>
         </View>
@@ -222,7 +217,7 @@ function RequestRow({
             {busy && busyKind === "reject" ? (
               <ActivityIndicator color={themeColors.text.secondary} />
             ) : (
-              <Text className="font-body-bold text-sm text-text-primary">
+              <Text className="font-body-bold text-body-sm text-text-primary">
                 {t("pendingSheet.reject")}
               </Text>
             )}
@@ -260,10 +255,10 @@ function EmptyState() {
 
   return (
     <Animated.View style={style} className="items-center gap-2 px-4 py-10">
-      <Text className="text-center font-body text-sm font-semibold text-text-primary">
+      <Text className="text-center font-body text-body-sm font-semibold text-text-primary">
         {t("pendingSheet.emptyTitle")}
       </Text>
-      <Text className="text-center font-body text-xs text-text-secondary">
+      <Text className="text-center font-body text-caption text-text-secondary">
         {t("pendingSheet.emptySubtitle")}
       </Text>
     </Animated.View>

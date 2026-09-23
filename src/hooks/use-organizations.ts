@@ -43,5 +43,11 @@ export function useMyOrganizations(enabled = true) {
     }, [enabled, load]),
   );
 
-  return { items, isLoading, isRefreshing, error, refresh: () => load("refresh") };
+  return {
+    items,
+    isLoading,
+    isRefreshing,
+    error,
+    refresh: () => load("refresh"),
+  };
 }

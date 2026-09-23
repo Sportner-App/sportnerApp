@@ -2,7 +2,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -39,6 +39,7 @@ import {
   OrganizationMemberRow,
   memberMatchesSearch,
 } from "./organization-member-row";
+import { AppText as Text } from "@/components/app-text";
 
 type MembersTab = "members" | "pending" | "blocked";
 
@@ -60,9 +61,8 @@ export function OrganizationMembersScreen() {
   const organizationId = useMemo(() => resolveRouteParam(rawId), [rawId]);
   const initialTab = useMemo(() => resolveMembersTab(tabParam), [tabParam]);
 
-  const [organization, setOrganization] = useState<ApiOrganizationDetail | null>(
-    null,
-  );
+  const [organization, setOrganization] =
+    useState<ApiOrganizationDetail | null>(null);
   const [members, setMembers] = useState<ApiOrganizationMember[]>([]);
   const [blockedMembers, setBlockedMembers] = useState<ApiOrganizationMember[]>(
     [],
@@ -137,7 +137,9 @@ export function OrganizationMembersScreen() {
 
   const approvedMembers = useMemo(
     () =>
-      members.filter((member) => member.status === ORGANIZATION_STATUS.approved),
+      members.filter(
+        (member) => member.status === ORGANIZATION_STATUS.approved,
+      ),
     [members],
   );
   const pendingMembers = useMemo(
@@ -190,7 +192,7 @@ export function OrganizationMembersScreen() {
   if (!organizationId) {
     return (
       <AppScreen header={<ScreenHeader title={t("members.title")} showBack />}>
-        <Text className="py-8 text-center font-body text-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
           {t("members.notFound")}
         </Text>
       </AppScreen>
@@ -208,7 +210,7 @@ export function OrganizationMembersScreen() {
       })}
     >
       {organization ? (
-        <Text className="font-body text-sm text-text-secondary">
+        <Text className="font-body text-body-sm text-text-secondary">
           {organization.name}
         </Text>
       ) : null}
@@ -230,7 +232,7 @@ export function OrganizationMembersScreen() {
           placeholderTextColor={themeColors.text.tertiary}
           autoCorrect={false}
           autoCapitalize="none"
-          className="flex-1 font-body text-base text-text-primary"
+          className="flex-1 font-body text-body text-text-primary"
         />
         {query.length > 0 ? (
           <Pressable hitSlop={8} onPress={() => setQuery("")}>
@@ -248,11 +250,11 @@ export function OrganizationMembersScreen() {
           <SportLoader size={120} />
         </View>
       ) : !organization ? (
-        <Text className="py-8 text-center font-body text-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
           {t("members.notFound")}
         </Text>
       ) : visibleMembers.length === 0 ? (
-        <Text className="py-8 text-center font-body text-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
           {query.trim()
             ? t("members.emptySearch")
             : tab === "pending"

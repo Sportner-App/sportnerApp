@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
@@ -8,6 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import type { SegmentedTabsProps } from "@/types/components";
+import { AppText as Text } from "@/components/app-text";
 
 // p-1 (4px) padding + 1px border, iki taraftan
 const TRACK_INSET = 10;
@@ -60,12 +61,24 @@ export function SegmentedTabs<T extends string>({
         <Pressable
           key={option.key}
           disabled={disabled}
-          className="min-h-[44px] flex-1 items-center justify-center"
+          accessibilityRole="tab"
+          accessibilityState={{ selected: option.key === value }}
+          accessibilityLabel={
+            option.badge == null
+              ? option.label
+              : `${option.label}, ${option.badge}`
+          }
+          className="min-h-[44px] min-w-0 flex-1 items-center justify-center px-1"
           onPress={() => onChange(option.key)}
         >
           <Text
-            className={`text-center font-body font-semibold ${
-              options.length >= 3 ? "text-[11px]" : "text-sm"
+            numberOfLines={1}
+            className={`max-w-full text-center font-body font-semibold ${
+              options.length >= 4
+                ? "text-overline"
+                : options.length >= 3
+                  ? "text-overline"
+                  : "text-body-sm"
             } ${
               option.key === value
                 ? "text-brand-secondary"
@@ -74,6 +87,30 @@ export function SegmentedTabs<T extends string>({
           >
             {option.label}
           </Text>
+          {option.badge != null ? (
+            <View
+              className={`absolute right-1 top-1 h-4 min-w-4 items-center justify-center rounded-full px-1 ${
+                option.key === value
+                  ? "bg-brand-secondary/15"
+                  : option.badge > 0
+                    ? "bg-brand-primary/15"
+                    : "bg-surface-secondary"
+              }`}
+            >
+              <Text
+                style={{ fontVariant: ["tabular-nums"] }}
+                className={`font-mono text-overline leading-[10px] ${
+                  option.key === value
+                    ? "text-brand-secondary"
+                    : option.badge > 0
+                      ? "text-brand-primary"
+                      : "text-text-tertiary"
+                }`}
+              >
+                {option.badge}
+              </Text>
+            </View>
+          ) : null}
         </Pressable>
       ))}
     </View>

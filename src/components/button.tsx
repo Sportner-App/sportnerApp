@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as Haptics from "expo-haptics";
-import { ActivityIndicator, Pressable, Text } from "react-native";
+import { ActivityIndicator, Pressable } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -13,6 +13,7 @@ import type {
   ButtonVariant,
 } from "@/types/components";
 import { themeColors } from "@/constants/theme";
+import { AppText as Text } from "@/components/app-text";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -41,9 +42,9 @@ const containerSizes: Record<ButtonSize, string> = {
 };
 
 const labelSizes: Record<ButtonSize, string> = {
-  sm: "font-body text-sm font-semibold",
-  md: "font-body text-base font-semibold",
-  lg: "font-display text-base tracking-wide",
+  sm: "font-body text-body-sm font-semibold",
+  md: "font-body text-body font-semibold",
+  lg: "font-display text-body tracking-wide",
 };
 
 const contentColors: Record<ButtonVariant, string> = {

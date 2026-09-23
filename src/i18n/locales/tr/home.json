@@ -35,6 +35,11 @@
     "cityEvents": "{{city}} etkinlikleri",
     "allCities": "Tüm şehirlerdeki etkinlikler"
   },
+  "sort": {
+    "locationLabel": "Konuma göre",
+    "timeLabel": "Zamana göre",
+    "accessibility": "Sıralamayı değiştir"
+  },
   "resultCount": "{{count}} etkinlik bulundu",
   "loadingEvents": "Etkinlikler yükleniyor",
   "loadFailed": "Etkinlikler yüklenemedi.",
@@ -68,8 +73,10 @@
       "unlimitedCapacity": "sınırsız kapasite",
       "capacity": "kapasite {{count}} kişi",
       "myStatusApproved": "katılıyorsun",
-      "myStatusPending": "onay bekliyor"
-    }
+      "myStatusPending": "onay bekliyor",
+      "ended": "etkinlik sona erdi"
+    },
+    "ended": "Sona erdi"
   },
   "filterSheet": {
     "title": "Etkinlik filtreleri",
@@ -107,6 +114,11 @@
       "label": "Ücret",
       "free": "Ücretsiz",
       "paid": "Ücretli"
+    },
+    "sort": {
+      "label": "Sıralama",
+      "location": "Konuma göre",
+      "time": "Zamana göre"
     },
     "skillLabel": "Seviye",
     "organizerGenderLabel": "Organizatör cinsiyeti"

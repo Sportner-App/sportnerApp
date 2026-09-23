@@ -4,7 +4,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { Alert, Pressable, Text, View } from "react-native";
+import { Alert, Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -45,6 +45,7 @@ import {
   OrganizationMemberRow,
   buildMemberPreview,
 } from "./organization-member-row";
+import { AppText as Text } from "@/components/app-text";
 
 export function OrganizationDetailScreen() {
   const { t } = useTranslation(["organizations", "common"]);
@@ -247,7 +248,7 @@ export function OrganizationDetailScreen() {
           <SportLoader size={120} />
         </View>
       ) : !organization ? (
-        <Text className="py-8 text-center font-body text-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
           {t("organizations:detail.notFound")}
         </Text>
       ) : (
@@ -264,10 +265,10 @@ export function OrganizationDetailScreen() {
 
           {organization.myStatus === ORGANIZATION_STATUS.pending ? (
             <View className="rounded-3xl border border-amber-300/30 bg-amber-400/10 p-4">
-              <Text className="font-body text-sm font-semibold text-amber-200">
+              <Text className="font-body text-body-sm font-semibold text-amber-200">
                 {t("organizations:detail.pendingTitle")}
               </Text>
-              <Text className="mt-1 font-body text-sm text-text-secondary">
+              <Text className="mt-1 font-body text-body-sm text-text-secondary">
                 {t("organizations:detail.pendingDescription")}
               </Text>
             </View>
@@ -275,7 +276,7 @@ export function OrganizationDetailScreen() {
             <>
               {organization.inviteCode ? (
                 <View className="rounded-3xl border border-border-default bg-surface-primary p-4">
-                  <Text className="font-body text-xs text-text-tertiary">
+                  <Text className="font-body text-caption text-text-tertiary">
                     {t("organizations:detail.inviteCodeLabel")}
                   </Text>
                   <View className="mt-2 flex-row items-center gap-2">
@@ -285,7 +286,7 @@ export function OrganizationDetailScreen() {
                     >
                       <Text
                         selectable
-                        className="font-mono text-2xl tracking-[0.2em] text-text-primary"
+                        className="font-mono text-heading-md tracking-[0.2em] text-text-primary"
                       >
                         {organization.inviteCode}
                       </Text>
@@ -306,7 +307,7 @@ export function OrganizationDetailScreen() {
                       />
                     </Pressable>
                   </View>
-                  <Text className="mt-2 font-body text-xs text-text-tertiary">
+                  <Text className="mt-2 font-body text-caption text-text-tertiary">
                     {t("organizations:detail.copyCodeHint")}
                   </Text>
                   <View className="mt-3 flex-row gap-2">
@@ -340,7 +341,7 @@ export function OrganizationDetailScreen() {
               ) : null}
 
               <View className="flex-row items-center justify-between">
-                <Text className="font-display text-lg text-text-primary">
+                <Text className="font-display text-heading-sm text-text-primary">
                   {t("organizations:detail.eventsTitle")}
                 </Text>
                 {organization.canCreateEvents ? (
@@ -353,7 +354,7 @@ export function OrganizationDetailScreen() {
                     }
                     hitSlop={8}
                   >
-                    <Text className="font-body text-[11px] font-semibold text-brand-primary">
+                    <Text className="font-body text-overline font-semibold text-brand-primary">
                       {t("organizations:detail.createEvent")}
                     </Text>
                   </Pressable>
@@ -361,7 +362,7 @@ export function OrganizationDetailScreen() {
               </View>
 
               {events.length === 0 ? (
-                <Text className="font-body text-sm text-text-tertiary">
+                <Text className="font-body text-body-sm text-text-tertiary">
                   {t("organizations:detail.noEvents")}
                 </Text>
               ) : (
@@ -383,10 +384,10 @@ export function OrganizationDetailScreen() {
 
               <View className="flex-row items-center justify-between">
                 <View>
-                  <Text className="font-display text-lg text-text-primary">
+                  <Text className="font-display text-heading-sm text-text-primary">
                     {t("organizations:detail.membersTitle")}
                   </Text>
-                  <Text className="font-body text-xs text-text-tertiary">
+                  <Text className="font-body text-caption text-text-tertiary">
                     {t("organizations:detail.memberCount", {
                       count: approvedCount,
                     })}
@@ -411,7 +412,7 @@ export function OrganizationDetailScreen() {
                       })
                     }
                   >
-                    <Text className="font-body text-[11px] font-semibold text-brand-primary">
+                    <Text className="font-body text-overline font-semibold text-brand-primary">
                       {t("organizations:detail.seeAll")}
                     </Text>
                   </Pressable>
@@ -419,7 +420,7 @@ export function OrganizationDetailScreen() {
               </View>
 
               {memberPreview.length === 0 ? (
-                <Text className="font-body text-sm text-text-tertiary">
+                <Text className="font-body text-body-sm text-text-tertiary">
                   {t("organizations:detail.noMembers")}
                 </Text>
               ) : (
@@ -446,7 +447,7 @@ export function OrganizationDetailScreen() {
                   }
                   className="items-center rounded-2xl border border-border-default bg-surface-primary py-3 active:bg-surface-secondary"
                 >
-                  <Text className="font-body text-sm font-semibold text-brand-primary">
+                  <Text className="font-body text-body-sm font-semibold text-brand-primary">
                     {t("organizations:detail.moreMembers", {
                       count: members.length - memberPreview.length,
                     })}
@@ -479,9 +480,10 @@ function OrganizationHero({
   onEdit?: () => void;
 }) {
   const { t } = useTranslation("organizations");
-  const organizationName =
-    organization.name?.trim() || t("fallback.name");
-  const initial = organizationName.charAt(0).toLocaleUpperCase(getCurrentLocale());
+  const organizationName = organization.name?.trim() || t("fallback.name");
+  const initial = organizationName
+    .charAt(0)
+    .toLocaleUpperCase(getCurrentLocale());
 
   return (
     <View className="relative overflow-hidden rounded-[30px] border border-border-default bg-surface-primary p-5">
@@ -490,7 +492,7 @@ function OrganizationHero({
 
       <View className="flex-row items-start gap-4">
         <View className="h-[68px] w-[68px] items-center justify-center rounded-[22px] border border-brand-primary/30 bg-brand-primary/10">
-          <Text className="font-display text-[30px] text-brand-primary">
+          <Text className="font-display text-heading-lg text-brand-primary">
             {initial || "O"}
           </Text>
         </View>
@@ -498,7 +500,7 @@ function OrganizationHero({
         <View className="min-w-0 flex-1 pt-0.5">
           <Text
             numberOfLines={2}
-            className="font-display text-[26px] leading-8 text-text-primary"
+            className="font-display text-heading-lg leading-8 text-text-primary"
           >
             {organizationName}
           </Text>
@@ -532,11 +534,11 @@ function OrganizationHero({
       </View>
 
       {organization.description ? (
-        <Text className="mt-5 font-body text-sm leading-5 text-text-secondary">
+        <Text className="mt-5 font-body text-body-sm leading-5 text-text-secondary">
           {organization.description}
         </Text>
       ) : (
-        <Text className="mt-5 font-body text-sm leading-5 text-text-tertiary">
+        <Text className="mt-5 font-body text-body-sm leading-5 text-text-tertiary">
           {t("detail.defaultDescription")}
         </Text>
       )}
@@ -568,7 +570,7 @@ function InfoPill({
   return (
     <View className="flex-row items-center gap-1.5 rounded-full border border-border-default bg-background-secondary/70 px-2.5 py-1.5">
       <FontAwesome6 name={icon} size={9} color={themeColors.brand.primary} />
-      <Text className="font-body-bold text-[10px] text-text-secondary">
+      <Text className="font-body-bold text-overline text-text-secondary">
         {label}
       </Text>
     </View>
@@ -586,10 +588,12 @@ function OrganizationStat({
 }) {
   return (
     <View className="flex-1">
-      <Text className="font-mono-bold text-lg text-text-primary">{value}</Text>
+      <Text className="font-mono-bold text-heading-sm text-text-primary">
+        {value}
+      </Text>
       <View className="mt-0.5 flex-row items-center gap-1.5">
         <FontAwesome6 name={icon} size={9} color={themeColors.brand.primary} />
-        <Text className="font-body text-[10px] text-text-tertiary">
+        <Text className="font-body text-overline text-text-tertiary">
           {label}
         </Text>
       </View>

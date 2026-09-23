@@ -1,7 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -20,6 +20,7 @@ import {
 } from "@/services/reviews-service";
 import type { ApiReview, ApiReviewablePeer } from "@/types/reviews";
 import { lightImpact } from "@/utils/haptics";
+import { AppText as Text } from "@/components/app-text";
 
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -155,10 +156,10 @@ export function EventReviewsScreen() {
       ) : peers.length > 0 ? (
         <>
           <View className="gap-1">
-            <Text className="font-display text-xl text-text-primary">
+            <Text className="font-display text-heading-sm text-text-primary">
               {t("eventReviews:choose.heading")}
             </Text>
-            <Text className="font-body text-sm leading-5 text-brand-neutral">
+            <Text className="font-body text-body-sm leading-5 text-brand-neutral">
               {t("eventReviews:choose.hint")}
             </Text>
           </View>
@@ -175,12 +176,12 @@ export function EventReviewsScreen() {
                   <FontAwesome6 name="people-group" size={15} color="#cbd5e1" />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-body text-sm font-semibold text-text-primary">
+                  <Text className="font-body text-body-sm font-semibold text-text-primary">
                     {t("eventReviews:choose.teammatesTitle", {
                       count: teammates.length,
                     })}
                   </Text>
-                  <Text className="font-body text-xs text-brand-neutral">
+                  <Text className="font-body text-caption text-brand-neutral">
                     {t("eventReviews:choose.teammatesHint")}
                   </Text>
                 </View>
@@ -206,10 +207,10 @@ export function EventReviewsScreen() {
         </>
       ) : (
         <View className="gap-2 rounded-3xl border border-border-default bg-surface-primary p-5">
-          <Text className="font-display text-base text-text-primary">
+          <Text className="font-display text-body text-text-primary">
             {t("eventReviews:emptyPeers.title")}
           </Text>
-          <Text className="font-body text-sm leading-5 text-brand-neutral">
+          <Text className="font-body text-body-sm leading-5 text-brand-neutral">
             {t("eventReviews:emptyPeers.description")}
           </Text>
         </View>
@@ -240,13 +241,13 @@ function OrganizerCard({
         borderWidth={0}
       />
       <View className="flex-1 gap-0.5">
-        <Text className="font-mono text-[10px] text-brand-primary">
+        <Text className="font-mono text-overline text-brand-primary">
           {t("eventReviews:choose.organizerEyebrow")}
         </Text>
-        <Text className="font-body text-base font-semibold text-text-primary">
+        <Text className="font-body text-body font-semibold text-text-primary">
           @{peer.username || t("events:fallback.athleteHandle")}
         </Text>
-        <Text className="font-body text-xs text-brand-neutral">
+        <Text className="font-body text-caption text-brand-neutral">
           {t("eventReviews:choose.organizerHint")}
         </Text>
       </View>
@@ -274,7 +275,7 @@ function PeerRow({
         size={36}
         borderWidth={0}
       />
-      <Text className="flex-1 font-body text-sm text-text-primary">
+      <Text className="flex-1 font-body text-body-sm text-text-primary">
         @{peer.username || t("fallback.athleteHandle")}
       </Text>
       <FontAwesome6 name="chevron-right" size={11} color="#94a3b8" />
@@ -310,7 +311,7 @@ function RatingForm({
   return (
     <View className="gap-4 rounded-3xl border border-border-default bg-surface-primary p-5">
       <Pressable onPress={onBack} className="self-start py-1 active:opacity-70">
-        <Text className="font-body text-sm font-semibold text-brand-primary">
+        <Text className="font-body text-body-sm font-semibold text-brand-primary">
           {t("eventReviews:form.back")}
         </Text>
       </Pressable>
@@ -322,15 +323,15 @@ function RatingForm({
           borderWidth={0}
         />
         <View className="flex-1">
-          <Text className="font-mono text-[10px] text-brand-primary">
+          <Text className="font-mono text-overline text-brand-primary">
             {t(`eventReviews:form.${context}Eyebrow`)}
           </Text>
-          <Text className="font-display text-lg text-text-primary">
+          <Text className="font-display text-heading-sm text-text-primary">
             @{peer.username || t("events:fallback.athleteHandle")}
           </Text>
         </View>
       </View>
-      <Text className="font-body text-sm leading-5 text-brand-neutral">
+      <Text className="font-body text-body-sm leading-5 text-brand-neutral">
         {t(`eventReviews:form.${context}Question`)}
       </Text>
       <View className="flex-row justify-between gap-2">
@@ -351,7 +352,7 @@ function RatingForm({
               className={`h-11 w-11 items-center justify-center rounded-full border ${active ? "border-brand-primary bg-brand-primary" : "border-border-default bg-white/5"}`}
             >
               <Text
-                className={`font-mono text-sm ${active ? "text-brand-secondary" : "text-text-primary"}`}
+                className={`font-mono text-body-sm ${active ? "text-brand-secondary" : "text-text-primary"}`}
               >
                 {value}
               </Text>
@@ -359,7 +360,7 @@ function RatingForm({
           );
         })}
       </View>
-      <Text className="text-center font-body text-xs text-brand-neutral">
+      <Text className="text-center font-body text-caption text-brand-neutral">
         {ratingLabel}
       </Text>
       <TextInput
@@ -377,7 +378,7 @@ function RatingForm({
         isLoading={saving}
         onPress={onSubmit}
       />
-      <Text className="text-center font-body text-[11px] leading-4 text-text-secondary">
+      <Text className="text-center font-body text-overline leading-4 text-text-secondary">
         {t("eventReviews:form.visibilityNote")}
       </Text>
     </View>
@@ -388,11 +389,11 @@ function ReviewList({ reviews }: { reviews: ApiReview[] }) {
   const { t } = useTranslation(["eventReviews", "events"]);
   return (
     <View className="gap-3">
-      <Text className="font-display text-base text-text-primary">
+      <Text className="font-display text-body text-text-primary">
         {t("eventReviews:list.heading")}
       </Text>
       {reviews.length === 0 ? (
-        <Text className="font-body text-sm text-brand-neutral">
+        <Text className="font-body text-body-sm text-brand-neutral">
           {t("eventReviews:list.empty")}
         </Text>
       ) : (
@@ -408,17 +409,17 @@ function ReviewList({ reviews }: { reviews: ApiReview[] }) {
                 size={36}
                 borderWidth={0}
               />
-              <Text className="flex-1 font-body text-sm font-semibold text-text-primary">
+              <Text className="flex-1 font-body text-body-sm font-semibold text-text-primary">
                 @{review.reviewerUsername || t("events:fallback.athleteHandle")}{" "}
                 → @
                 {review.reviewedUsername || t("events:fallback.athleteHandle")}
               </Text>
-              <Text className="font-mono text-xs text-amber-300">
+              <Text className="font-mono text-caption text-amber-300">
                 {review.rating}/5
               </Text>
             </View>
             {review.comment ? (
-              <Text className="mt-2 font-body text-sm text-brand-neutral">
+              <Text className="mt-2 font-body text-body-sm text-brand-neutral">
                 {review.comment}
               </Text>
             ) : null}

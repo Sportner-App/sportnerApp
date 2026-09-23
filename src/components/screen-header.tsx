@@ -1,12 +1,13 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { colorPalette } from "@/constants/colors";
 import { themeColors } from "@/constants/theme";
 import type { ScreenHeaderProps } from "@/types/components";
 
 import { BrandMark } from "./brand-mark";
+import { AppText as Text } from "@/components/app-text";
 
 function HeaderSpacer() {
   return <View className="h-10 w-10" />;
@@ -64,7 +65,7 @@ export function ScreenHeader({
 
         {!brand && title ? (
           <Text
-            className={`font-mono text-xs tracking-[4px] ${
+            className={`font-mono text-caption tracking-[4px] ${
               isLight ? "text-text-secondary" : "text-brand-neutral"
             }`}
           >

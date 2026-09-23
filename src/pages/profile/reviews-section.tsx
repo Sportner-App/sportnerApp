@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
@@ -6,6 +6,7 @@ import { UserIdentity } from "@/components";
 import { useProfileCopy } from "@/constants/profile";
 import { getCurrentLocale } from "@/i18n";
 import type { ApiReview } from "@/types/reviews";
+import { AppText as Text } from "@/components/app-text";
 
 type ReviewsSectionProps = {
   reviews: ApiReview[];
@@ -44,32 +45,32 @@ export function ReviewsSection({
     >
       <View className="flex-row items-end justify-between">
         <View>
-          <Text className="font-display text-lg text-text-primary">
+          <Text className="font-display text-heading-sm text-text-primary">
             {PROFILE_COPY.reviewsTitle}
           </Text>
-          <Text className="mt-1 font-body text-[11px] text-text-tertiary">
+          <Text className="mt-1 font-body text-overline text-text-tertiary">
             {t("reviews.subtitle")}
           </Text>
         </View>
         <View className="items-end">
           <View className="flex-row items-center gap-1">
-            <Text className="font-display text-2xl text-brand-primary">
+            <Text className="font-display text-heading-md text-brand-primary">
               {Number(averageRating).toFixed(1)}
             </Text>
-            <Text className="text-sm text-brand-primary">★</Text>
+            <Text className="text-body-sm text-brand-primary">★</Text>
           </View>
-          <Text className="font-body text-[9px] text-text-tertiary">
+          <Text className="font-body text-overline text-text-tertiary">
             {t("reviews.commentCount", { count })}
           </Text>
         </View>
       </View>
 
       {isLoading ? (
-        <Text className="font-body text-sm text-text-secondary">
+        <Text className="font-body text-body-sm text-text-secondary">
           {t("reviews.loading")}
         </Text>
       ) : reviews.length === 0 ? (
-        <Text className="font-body text-sm text-text-secondary">
+        <Text className="font-body text-body-sm text-text-secondary">
           {PROFILE_COPY.emptyReviews}
         </Text>
       ) : (
@@ -93,18 +94,18 @@ export function ReviewsSection({
                   />
                 </View>
                 <View className="flex-row items-center gap-1 rounded-full bg-brand-primary/10 px-2 py-1">
-                  <Text className="font-mono-bold text-[10px] text-brand-primary">
+                  <Text className="font-mono-bold text-overline text-brand-primary">
                     {Number(review.rating).toFixed(1)}
                   </Text>
-                  <Text className="text-[9px] text-brand-primary">★</Text>
+                  <Text className="text-overline text-brand-primary">★</Text>
                 </View>
               </View>
               {review.comment ? (
-                <Text className="font-body text-sm leading-5 text-text-secondary">
+                <Text className="font-body text-body-sm leading-5 text-text-secondary">
                   {review.comment}
                 </Text>
               ) : null}
-              <Text className="font-body text-[10px] text-text-tertiary">
+              <Text className="font-body text-overline text-text-tertiary">
                 {formatReviewDate(review.createdAt)}
               </Text>
             </View>

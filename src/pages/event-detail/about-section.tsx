@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
 import { themeColors, typeStyles } from "@/constants/theme";
 import type { EventDetail } from "@/types/events";
 import { noDescriptionLabel } from "@/utils/events";
+import { AppText as Text } from "@/components/app-text";
 
 type AboutSectionProps = {
   event: EventDetail;
@@ -22,14 +23,17 @@ export function AboutSection({ event }: AboutSectionProps) {
   const isLong = !isEmpty && description.length > 180;
 
   return (
-    <Animated.View entering={FadeInDown.duration(400).delay(160)} className="gap-md">
+    <Animated.View
+      entering={FadeInDown.duration(400).delay(160)}
+      className="gap-md"
+    >
       <Text style={[typeStyles.label, { color: themeColors.text.secondary }]}>
         {t("about.heading")}
       </Text>
 
       {isEmpty ? (
         <Text
-          className="font-body text-[15px] leading-6"
+          className="font-body text-body leading-6"
           style={{ color: themeColors.text.secondary }}
         >
           {emptyDescription}
@@ -38,15 +42,18 @@ export function AboutSection({ event }: AboutSectionProps) {
         <View className="gap-sm">
           <Text
             numberOfLines={expanded || !isLong ? undefined : COLLAPSED_LINES}
-            className="font-body text-[15px] leading-6"
+            className="font-body text-body leading-6"
             style={{ color: themeColors.text.primary }}
           >
             {description}
           </Text>
           {isLong ? (
-            <Pressable onPress={() => setExpanded((value) => !value)} hitSlop={8}>
+            <Pressable
+              onPress={() => setExpanded((value) => !value)}
+              hitSlop={8}
+            >
               <Text
-                className="font-body-bold text-[13px]"
+                className="font-body-bold text-label"
                 style={{ color: themeColors.text.secondary }}
               >
                 {expanded ? t("about.showLess") : t("about.showMore")}

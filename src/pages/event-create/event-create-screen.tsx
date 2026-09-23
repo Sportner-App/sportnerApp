@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Keyboard, Pressable, Text, View } from "react-native";
+import { Keyboard, Pressable, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Animated, {
   useSharedValue,
@@ -34,8 +34,9 @@ import { LocationPicker } from "./location-picker";
 import { OrganizationSelectStep } from "./organization-select-step";
 import { PlayersStepper } from "./players-stepper";
 import { SubmitBar } from "./submit-bar";
+import { AppText as Text } from "@/components/app-text";
 
-type CreateEventStep = 1 | 2 | 3 | 4;
+type CreateEventStep = 1 | 2 | 3 | 4 | 5;
 
 const STEP_SHIFT = 20;
 const ENTER_MS = 210;
@@ -86,6 +87,23 @@ export function EventCreateScreen() {
   const CREATE_EVENT_COPY = useCreateEventCopy();
   const CREATE_EVENT_STEPS = useCreateEventSteps();
   const ONBOARDING_SKILL_OPTIONS = useSkillLevelOptions();
+  const participantGenderOptions = [
+    {
+      key: "all",
+      label: t("participantGender.everyone"),
+      icon: "users" as const,
+    },
+    {
+      key: "1",
+      label: t("participantGender.womenOnly"),
+      icon: "person-dress" as const,
+    },
+    {
+      key: "2",
+      label: t("participantGender.menOnly"),
+      icon: "person" as const,
+    },
+  ];
   const { organizationId: routeOrganizationId } = useLocalSearchParams<{
     organizationId?: string;
   }>();
@@ -104,6 +122,8 @@ export function EventCreateScreen() {
     isOrganizationLocked,
     isStep1Valid,
     isStep2Valid,
+    isStep3Valid,
+    isStep4Valid,
     canSubmit,
     isSubmitting,
     isSportsLoading,
@@ -141,6 +161,14 @@ export function EventCreateScreen() {
     }
 
     if (isForward && step === 3 && !isStep2Valid) {
+      return;
+    }
+
+    if (isForward && step === 4 && !isStep3Valid) {
+      return;
+    }
+
+    if (isForward && step === 5 && !isStep4Valid) {
       return;
     }
 
@@ -185,12 +213,24 @@ export function EventCreateScreen() {
             label={CREATE_EVENT_COPY.continue}
             backLabel={CREATE_EVENT_COPY.back}
             showIcon={false}
-            disabled={!canSubmit || isSubmitting}
+            disabled={!isStep3Valid || isSubmitting}
             isLoading={false}
             pressScale={0.98}
             haptic="light"
             onBack={() => goToStep(2)}
             onSubmit={() => goToStep(4)}
+          />
+        ) : currentStep === 4 ? (
+          <SubmitBar
+            label={CREATE_EVENT_COPY.continue}
+            backLabel={CREATE_EVENT_COPY.back}
+            showIcon={false}
+            disabled={!canSubmit || isSubmitting}
+            isLoading={false}
+            pressScale={0.98}
+            haptic="light"
+            onBack={() => goToStep(3)}
+            onSubmit={() => goToStep(5)}
           />
         ) : (
           <SubmitBar
@@ -205,7 +245,7 @@ export function EventCreateScreen() {
             loadingLabel={CREATE_EVENT_COPY.publishing}
             pressScale={0.98}
             haptic="light"
-            onBack={() => goToStep(3)}
+            onBack={() => goToStep(4)}
             onSubmit={submit}
           />
         )
@@ -219,14 +259,20 @@ export function EventCreateScreen() {
         entering={hasMounted.current ? stepEntering(direction) : undefined}
         exiting={stepExiting(direction)}
       >
-        <View className="mt-7 gap-2">
-          <Text className="font-display text-[32px] leading-[38px] text-text-primary">
-            {copy.title}
-          </Text>
-          <Text className="max-w-[320px] font-body text-sm leading-5 text-text-secondary">
+        {currentStep === 2 ? (
+          <Text className="mt-4 font-body text-body-sm leading-5 text-text-secondary">
             {copy.subtitle}
           </Text>
-        </View>
+        ) : (
+          <View className="mt-7 gap-2">
+            <Text className="font-display text-heading-lg leading-[38px] text-text-primary">
+              {copy.title}
+            </Text>
+            <Text className="max-w-[320px] font-body text-body-sm leading-5 text-text-secondary">
+              {copy.subtitle}
+            </Text>
+          </View>
+        )}
 
         {currentStep === 1 ? (
           <View>
@@ -280,10 +326,10 @@ export function EventCreateScreen() {
 
               <View>
                 <View className="mb-2 flex-row items-baseline gap-2">
-                  <Text className="font-body text-sm text-text-secondary">
+                  <Text className="font-body text-body-sm text-text-secondary">
                     {t("description.label")}
                   </Text>
-                  <Text className="rounded-pill bg-surface-secondary px-2 py-0.5 font-body text-[10px] text-text-tertiary">
+                  <Text className="rounded-pill bg-surface-secondary px-2 py-0.5 font-body text-overline text-text-tertiary">
                     {t("description.optional")}
                   </Text>
                 </View>
@@ -306,34 +352,35 @@ export function EventCreateScreen() {
         ) : null}
 
         {currentStep === 2 ? (
-          <View>
-            <View className="mt-7">
-              <LocationPicker
-                compact
-                addressText={values.addressText}
-                latitude={values.latitude}
-                longitude={values.longitude}
-                onSelect={setLocation}
-              />
-            </View>
+          <View className="mt-4">
+            <LocationPicker
+              expanded
+              addressText={values.addressText}
+              latitude={values.latitude}
+              longitude={values.longitude}
+              onSelect={setLocation}
+            />
+          </View>
+        ) : null}
 
-            <View className="mt-4 gap-4">
-              <DateField
-                label={t("dateTime.label")}
-                value={values.eventDate}
-                onChange={(eventDate) => update("eventDate", eventDate)}
-                minimumDate={new Date()}
-              />
+        {currentStep === 3 ? (
+          <View className="mt-7 gap-4">
+            <DateField
+              label={t("dateTime.label")}
+              value={values.eventDate}
+              onChange={(eventDate) => update("eventDate", eventDate)}
+              minimumDate={new Date()}
+            />
 
-              <DurationPickerField
-                value={values.durationMinutes}
-                onChange={(durationMinutes) =>
-                  update("durationMinutes", durationMinutes)
-                }
-                disabled={isSubmitting}
-              />
+            <DurationPickerField
+              value={values.durationMinutes}
+              onChange={(durationMinutes) =>
+                update("durationMinutes", durationMinutes)
+              }
+              disabled={isSubmitting}
+            />
 
-              {isOrganizationEvent ? null : (
+            {isOrganizationEvent ? null : (
               <View className="rounded-[24px] border border-border-default bg-surface-primary p-4">
                 <Pressable
                   accessibilityRole="switch"
@@ -342,10 +389,10 @@ export function EventCreateScreen() {
                   className="flex-row items-center justify-between active:opacity-80"
                 >
                   <View className="flex-1 pr-4">
-                    <Text className="font-body-bold text-sm text-text-primary">
+                    <Text className="font-body-bold text-body-sm text-text-primary">
                       {t("recurring.toggleTitle")}
                     </Text>
-                    <Text className="mt-1 font-body text-xs leading-5 text-text-tertiary">
+                    <Text className="mt-1 font-body text-caption leading-5 text-text-tertiary">
                       {t("recurring.toggleDescription")}
                     </Text>
                   </View>
@@ -361,7 +408,7 @@ export function EventCreateScreen() {
                 {values.isRecurring ? (
                   <View className="mt-4 gap-4 border-t border-border-default pt-4">
                     <View>
-                      <Text className="mb-2 font-body-bold text-xs text-text-secondary">
+                      <Text className="mb-2 font-body-bold text-caption text-text-secondary">
                         {t("recurring.frequencyLabel")}
                       </Text>
                       <View className="flex-row gap-2">
@@ -380,7 +427,7 @@ export function EventCreateScreen() {
                             className={`flex-1 items-center rounded-full border px-2 py-2.5 ${values.recurrenceIntervalWeeks === option.value ? "border-brand-primary bg-brand-primary" : "border-border-default bg-surface-secondary"}`}
                           >
                             <Text
-                              className={`text-center font-body-bold text-[11px] ${values.recurrenceIntervalWeeks === option.value ? "text-background-primary" : "text-text-secondary"}`}
+                              className={`text-center font-body-bold text-overline ${values.recurrenceIntervalWeeks === option.value ? "text-background-primary" : "text-text-secondary"}`}
                             >
                               {option.label}
                             </Text>
@@ -390,10 +437,10 @@ export function EventCreateScreen() {
                     </View>
                     <View className="flex-row items-center justify-between">
                       <View>
-                        <Text className="font-body-bold text-sm text-text-primary">
+                        <Text className="font-body-bold text-body-sm text-text-primary">
                           {t("recurring.countLabel")}
                         </Text>
-                        <Text className="mt-1 font-body text-xs text-text-tertiary">
+                        <Text className="mt-1 font-body text-caption text-text-tertiary">
                           {t("recurring.countHint")}
                         </Text>
                       </View>
@@ -408,11 +455,11 @@ export function EventCreateScreen() {
                           }
                           className="h-9 w-9 items-center justify-center rounded-full bg-surface-secondary disabled:opacity-35"
                         >
-                          <Text className="font-display text-xl text-text-primary">
+                          <Text className="font-display text-heading-sm text-text-primary">
                             −
                           </Text>
                         </Pressable>
-                        <Text className="w-7 text-center font-mono text-base text-brand-primary">
+                        <Text className="w-7 text-center font-mono text-body text-brand-primary">
                           {values.recurrenceCount}
                         </Text>
                         <Pressable
@@ -425,7 +472,7 @@ export function EventCreateScreen() {
                           }
                           className="h-9 w-9 items-center justify-center rounded-full bg-surface-secondary disabled:opacity-35"
                         >
-                          <Text className="font-display text-xl text-text-primary">
+                          <Text className="font-display text-heading-sm text-text-primary">
                             +
                           </Text>
                         </Pressable>
@@ -434,12 +481,11 @@ export function EventCreateScreen() {
                   </View>
                 ) : null}
               </View>
-              )}
-            </View>
+            )}
           </View>
         ) : null}
 
-        {currentStep === 3 ? (
+        {currentStep === 4 ? (
           <View className="mt-7">
             <PlayersStepper
               value={values.maxPlayers}
@@ -458,11 +504,36 @@ export function EventCreateScreen() {
               />
             </View>
 
+            <View className="mt-6">
+              <SelectField
+                label={t("participantGender.label")}
+                placeholder={t("participantGender.placeholder")}
+                options={participantGenderOptions}
+                value={
+                  values.participantGender == null
+                    ? "all"
+                    : String(values.participantGender)
+                }
+                onChange={(value) =>
+                  update(
+                    "participantGender",
+                    value === "all" ? null : Number(value),
+                  )
+                }
+                sheetTitle={t("participantGender.sheetTitle")}
+                sheetSubtitle={t("participantGender.sheetSubtitle")}
+                disabled={isSubmitting}
+              />
+              <Text className="mt-2 font-body text-caption text-text-tertiary">
+                {t("participantGender.hint")}
+              </Text>
+            </View>
+
             <View className="mt-6 gap-2">
-              <Text className="font-body-bold text-[13px] text-text-secondary">
+              <Text className="font-body-bold text-label text-text-secondary">
                 {t("fee.label")}
               </Text>
-              <Text className="font-body text-xs text-text-tertiary">
+              <Text className="font-body text-caption text-text-tertiary">
                 {t("fee.disclaimer")}
               </Text>
               <View className="flex-row flex-wrap gap-2">
@@ -478,7 +549,7 @@ export function EventCreateScreen() {
                   }`}
                 >
                   <Text
-                    className={`font-body-bold text-sm ${
+                    className={`font-body-bold text-body-sm ${
                       !values.isPaid
                         ? "text-background-primary"
                         : "text-text-secondary"
@@ -496,7 +567,7 @@ export function EventCreateScreen() {
                   }`}
                 >
                   <Text
-                    className={`font-body-bold text-sm ${
+                    className={`font-body-bold text-body-sm ${
                       values.isPaid
                         ? "text-background-primary"
                         : "text-text-secondary"
@@ -523,10 +594,10 @@ export function EventCreateScreen() {
             </View>
 
             <View className="mt-6 gap-2">
-              <Text className="font-body-bold text-[13px] text-text-secondary">
+              <Text className="font-body-bold text-label text-text-secondary">
                 {t("skill.label")}
               </Text>
-              <Text className="font-body text-xs text-text-tertiary">
+              <Text className="font-body text-caption text-text-tertiary">
                 {t("skill.disclaimer")}
               </Text>
               <View className="flex-row flex-wrap gap-2">
@@ -539,7 +610,7 @@ export function EventCreateScreen() {
                   }`}
                 >
                   <Text
-                    className={`font-body-bold text-sm ${
+                    className={`font-body-bold text-body-sm ${
                       values.skillLevel == null
                         ? "text-background-primary"
                         : "text-text-secondary"
@@ -561,7 +632,7 @@ export function EventCreateScreen() {
                       }`}
                     >
                       <Text
-                        className={`font-body-bold text-sm ${
+                        className={`font-body-bold text-body-sm ${
                           active
                             ? "text-background-primary"
                             : "text-text-secondary"
@@ -581,7 +652,7 @@ export function EventCreateScreen() {
           </View>
         ) : null}
 
-        {currentStep === 4 ? (
+        {currentStep === 5 ? (
           <>
             <EventCompanionsStep
               maxParticipants={Number(values.maxPlayers)}

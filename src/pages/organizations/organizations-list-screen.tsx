@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -17,11 +17,13 @@ import {
   organizationRoleLabel,
   organizationStatusLabel,
 } from "@/types/organizations";
+import { AppText as Text } from "@/components/app-text";
 
 export function OrganizationsListScreen() {
   const { t } = useTranslation("organizations");
   const router = useRouter();
-  const { items, isLoading, isRefreshing, error, refresh } = useMyOrganizations();
+  const { items, isLoading, isRefreshing, error, refresh } =
+    useMyOrganizations();
 
   return (
     <AppScreen
@@ -70,11 +72,11 @@ export function OrganizationsListScreen() {
           <SportLoader size={120} />
         </View>
       ) : error ? (
-        <Text className="py-8 text-center font-body text-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
           {error}
         </Text>
       ) : items.length === 0 ? (
-        <Text className="py-8 text-center font-body text-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
           {t("list.empty")}
         </Text>
       ) : (
@@ -84,16 +86,16 @@ export function OrganizationsListScreen() {
             onPress={() => router.push(`/organizations/${item.id}`)}
             className="rounded-3xl border border-border-default bg-surface-primary p-4"
           >
-            <Text className="font-body text-base font-semibold text-text-primary">
+            <Text className="font-body text-body font-semibold text-text-primary">
               {item.name}
             </Text>
-            <Text className="mt-1 font-body text-xs text-text-tertiary">
+            <Text className="mt-1 font-body text-caption text-text-tertiary">
               {[item.cityName, organizationRoleLabel(item.role)]
                 .filter(Boolean)
                 .join(" · ")}
             </Text>
             <Text
-              className={`mt-2 font-body text-xs ${
+              className={`mt-2 font-body text-caption ${
                 item.status === ORGANIZATION_STATUS.pending
                   ? "text-amber-300"
                   : "text-text-secondary"

@@ -9,7 +9,7 @@ import {
   useState,
   type PropsWithChildren,
 } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -22,6 +22,7 @@ import Svg, { Line } from "react-native-svg";
 import { toastService } from "@/services/toast-service";
 import type { IconName } from "@/types/components";
 import type { ToastContextValue, ToastPayload, ToastType } from "@/types/toast";
+import { AppText as Text } from "@/components/app-text";
 
 type ToastState = {
   id: number;
@@ -189,12 +190,12 @@ export function ToastProvider({ children }: PropsWithChildren) {
                 </View>
 
                 <View className="flex-1">
-                  <Text className="font-body text-sm font-semibold text-white">
+                  <Text className="font-body text-body-sm font-semibold text-white">
                     {toast.title}
                   </Text>
 
                   {!!toast.description && (
-                    <Text className="mt-0.5 font-body text-xs text-brand-neutral">
+                    <Text className="mt-0.5 font-body text-caption text-brand-neutral">
                       {toast.description}
                     </Text>
                   )}

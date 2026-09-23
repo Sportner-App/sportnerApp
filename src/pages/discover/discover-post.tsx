@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import {
   Image,
   Pressable,
-  Text,
   TextInput,
   useWindowDimensions,
   View,
@@ -22,6 +21,7 @@ import { POST_MEDIA_TYPE } from "@/types/social";
 import { lightImpact } from "@/utils/haptics";
 import { resolveMediaUrl } from "@/utils/media-url";
 import { formatRelativeTime } from "@/utils/relative-time";
+import { AppText as Text } from "@/components/app-text";
 
 type DiscoverPostProps = {
   post: ApiPost;
@@ -187,10 +187,10 @@ export function DiscoverPost({
       >
         <Avatar uri={post.profileImageUrl} name={author} size={40} />
         <View className="flex-1">
-          <Text className="font-body-bold text-sm text-text-primary">
+          <Text className="font-body-bold text-body-sm text-text-primary">
             @{athleteHandle}
           </Text>
-          <Text className="mt-0.5 font-mono text-[9px] text-text-tertiary">
+          <Text className="mt-0.5 font-mono text-overline text-text-tertiary">
             @{athleteHandle} · {formatRelativeTime(post.createdAt)}
           </Text>
         </View>
@@ -233,12 +233,12 @@ export function DiscoverPost({
                     color={themeColors.brand.primary}
                   />
                 </View>
-                <Text className="text-center font-body text-sm text-text-secondary">
+                <Text className="text-center font-body text-body-sm text-text-secondary">
                   {t("social:videoShare")}
                 </Text>
               </View>
             ) : (
-              <Text className="font-display text-2xl text-text-primary">
+              <Text className="font-display text-heading-md text-text-primary">
                 {caption || t("social:fallback.post")}
               </Text>
             )}
@@ -289,7 +289,7 @@ export function DiscoverPost({
                   : themeColors.text.primary
               }
             />
-            <Text className="font-mono text-xs text-text-primary">
+            <Text className="font-mono text-caption text-text-primary">
               {post.likeCount}
             </Text>
           </Pressable>
@@ -303,14 +303,14 @@ export function DiscoverPost({
               size={17}
               color={themeColors.text.primary}
             />
-            <Text className="font-mono text-xs text-text-primary">
+            <Text className="font-mono text-caption text-text-primary">
               {post.commentCount}
             </Text>
           </Pressable>
         </View>
 
         {caption && images.length > 0 ? (
-          <Text className="font-body text-sm leading-5 text-text-primary">
+          <Text className="font-body text-body-sm leading-5 text-text-primary">
             <Text className="font-semibold">{author} </Text>
             {caption}
           </Text>
@@ -318,7 +318,7 @@ export function DiscoverPost({
 
         {post.commentCount > 0 && !commentsOpen ? (
           <Pressable onPress={() => setCommentsOpen(true)}>
-            <Text className="font-body text-sm text-text-secondary">
+            <Text className="font-body text-body-sm text-text-secondary">
               {t("social:viewComments", { count: post.commentCount })}
             </Text>
           </Pressable>
@@ -327,11 +327,11 @@ export function DiscoverPost({
         {commentsOpen ? (
           <View className="gap-2">
             {isLoadingComments ? (
-              <Text className="font-body text-xs text-text-secondary">
+              <Text className="font-body text-caption text-text-secondary">
                 {t("social:comments.loading")}
               </Text>
             ) : comments.length === 0 ? (
-              <Text className="font-body text-xs text-text-secondary">
+              <Text className="font-body text-caption text-text-secondary">
                 {t("social:comments.firstComment")}
               </Text>
             ) : (
@@ -351,11 +351,11 @@ export function DiscoverPost({
 
         {replyingTo ? (
           <View className="flex-row items-center justify-between px-1">
-            <Text className="flex-1 font-body text-xs text-text-secondary">
+            <Text className="flex-1 font-body text-caption text-text-secondary">
               {t("social:comments.replyTo", { username: replyUsername })}
             </Text>
             <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>
-              <Text className="font-body text-xs font-semibold text-brand-primary">
+              <Text className="font-body text-caption font-semibold text-brand-primary">
                 {t("common:cancel")}
               </Text>
             </Pressable>
@@ -375,7 +375,7 @@ export function DiscoverPost({
                 : t("social:comments.placeholder")
             }
             placeholderTextColor={themeColors.text.tertiary}
-            className="min-h-[44px] flex-1 font-body text-sm text-text-primary"
+            className="min-h-[44px] flex-1 font-body text-body-sm text-text-primary"
           />
           <Pressable
             hitSlop={8}
@@ -383,7 +383,7 @@ export function DiscoverPost({
             onPress={() => void submitComment()}
           >
             <Text
-              className={`font-body text-sm font-semibold ${
+              className={`font-body text-body-sm font-semibold ${
                 draft.trim() ? "text-brand-primary" : "text-text-tertiary"
               }`}
             >

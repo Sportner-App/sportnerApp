@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, TextInput, View } from "react-native";
 
 import { AppScreen, ScreenHeader } from "@/components";
 import { useSession, useToast } from "@/contexts";
@@ -23,6 +23,7 @@ import {
 } from "@/types/messaging";
 
 import { MessageRow } from "./message-row";
+import { AppText as Text } from "@/components/app-text";
 
 /**
  * Sunucu yanıtı gelince iyimser baloncuğu gerçeğiyle değiştirir. SignalR
@@ -210,10 +211,7 @@ export function EventChatScreen({
     );
   };
 
-  const dispatchSend = async (
-    targetConversationId: string,
-    text: string,
-  ) => {
+  const dispatchSend = async (targetConversationId: string, text: string) => {
     const pendingId = `pending-${Date.now()}-${Math.random()
       .toString(36)
       .slice(2, 8)}`;
@@ -318,7 +316,7 @@ export function EventChatScreen({
       footer={
         isClosed ? (
           <View className="border-t border-border-default px-6 py-4">
-            <Text className="text-center font-body text-sm leading-5 text-brand-neutral">
+            <Text className="text-center font-body text-body-sm leading-5 text-brand-neutral">
               {t("chat.closedFooter")}
             </Text>
           </View>
@@ -343,7 +341,7 @@ export function EventChatScreen({
                 paddingTop: 0,
                 paddingBottom: 0,
               }}
-              className="flex-1 rounded-2xl border border-border-default bg-surface-primary px-4 font-body text-base text-text-primary"
+              className="flex-1 rounded-2xl border border-border-default bg-surface-primary px-4 font-body text-body text-text-primary"
             />
             <Pressable
               accessibilityRole="button"
@@ -363,10 +361,8 @@ export function EventChatScreen({
       }
     >
       {sorted.length === 0 ? (
-        <Text className="py-10 text-center font-body text-sm text-brand-neutral">
-          {isClosed
-            ? t("chat.emptyClosed")
-            : t("chat.emptyOpen")}
+        <Text className="py-10 text-center font-body text-body-sm text-brand-neutral">
+          {isClosed ? t("chat.emptyClosed") : t("chat.emptyOpen")}
         </Text>
       ) : (
         sorted.map((message, index) => {

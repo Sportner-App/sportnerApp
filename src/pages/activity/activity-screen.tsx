@@ -1,22 +1,23 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import { Button, SegmentedTabs, SportLoader, TabPage } from "@/components";
 import { useActivityCopy } from "@/constants/activity";
 import { useActivity } from "@/hooks/use-activity";
 import { EventCard } from "@/pages/home/event-card";
+import { AppText as Text } from "@/components/app-text";
 
 export function ActivityScreen() {
   const router = useRouter();
   const { t } = useTranslation("common");
-  const copy = useActivityCopy();
   const {
     tab,
     setTab,
     events,
     totalCount,
+    tabCounts,
     isLoading,
     isRefreshing,
     isLoadingMore,
@@ -24,6 +25,7 @@ export function ActivityScreen() {
     refresh,
     loadMore,
   } = useActivity();
+  const copy = useActivityCopy(tabCounts);
 
   const empty = copy.emptyCopy[tab];
 
@@ -34,10 +36,10 @@ export function ActivityScreen() {
       onEndReached={loadMore}
     >
       <View className="gap-2">
-        <Text className="font-display text-3xl text-text-primary">
+        <Text className="font-display text-heading-lg text-text-primary">
           {copy.title}
         </Text>
-        <Text className="font-body text-sm text-brand-neutral">
+        <Text className="font-body text-body-sm text-brand-neutral">
           {copy.subtitle}
         </Text>
       </View>
@@ -51,7 +53,7 @@ export function ActivityScreen() {
       ) : error && events.length === 0 ? (
         <View className="items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
           <FontAwesome6 name="triangle-exclamation" size={22} color="#64748b" />
-          <Text className="text-center font-body text-sm text-brand-neutral">
+          <Text className="text-center font-body text-body-sm text-brand-neutral">
             {error}
           </Text>
           <Button
@@ -64,7 +66,7 @@ export function ActivityScreen() {
       ) : events.length === 0 ? (
         <View className="items-center gap-2 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
           <FontAwesome6 name="calendar-check" size={22} color="#64748b" />
-          <Text className="text-center font-body text-sm text-brand-neutral">
+          <Text className="text-center font-body text-body-sm text-brand-neutral">
             {empty.message}
           </Text>
           <Button
@@ -76,7 +78,7 @@ export function ActivityScreen() {
         </View>
       ) : (
         <View className="gap-3">
-          <Text className="font-mono text-xs text-brand-neutral">
+          <Text className="font-mono text-caption text-brand-neutral">
             {copy.eventCount(totalCount)}
           </Text>
           {events.map((event) => (

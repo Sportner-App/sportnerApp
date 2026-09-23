@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
@@ -8,7 +8,10 @@ import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 import { useTranslation } from "react-i18next";
 
 import { resolveEventBadgeThemes } from "@/constants/badge-colors";
-import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
+import {
+  FALLBACK_SPORT_IMAGE,
+  resolveEventPhoto,
+} from "@/constants/sport-images";
 import {
   media,
   radius,
@@ -25,6 +28,7 @@ import {
 } from "@/utils/events";
 
 import { PendingRequestsHeaderAction } from "./pending-requests-entry";
+import { AppText as Text } from "@/components/app-text";
 
 type EventDetailHeroProps = {
   event: EventDetail;
@@ -76,11 +80,7 @@ export function EventDetailHero({
           }
         }}
       >
-        <HeroPhoto
-          image={photo}
-          width={size.width}
-          height={size.height}
-        />
+        <HeroPhoto image={photo} width={size.width} height={size.height} />
         <HeroReadabilityOverlay
           fadeId={event.id}
           width={size.width}
@@ -126,7 +126,7 @@ export function EventDetailHero({
                 />
                 <Text
                   numberOfLines={1}
-                  className="ml-1.5 font-body-bold text-[10px] tracking-[1.2px]"
+                  className="ml-1.5 font-body-bold text-overline tracking-[1.2px]"
                   style={{ color: onAccent }}
                 >
                   {sportLabel}
@@ -141,7 +141,7 @@ export function EventDetailHero({
                 style={{ backgroundColor: badgeThemes.date.background }}
               >
                 <Text
-                  className="font-body-bold text-[10px] tracking-wide"
+                  className="font-body-bold text-overline tracking-wide"
                   style={{ color: badgeThemes.date.foreground }}
                 >
                   {dateBadge}

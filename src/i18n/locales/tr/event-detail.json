@@ -44,7 +44,9 @@
       "title": "Katılımcıları değerlendir",
       "subtitle": "Etkinlik sona erdi — geri bildirimini paylaş."
     },
-    "paymentDisclaimer": "Uygulama üzerinden ödeme alınmaz. Ücret etkinlikte ödenir."
+    "paymentDisclaimer": "Uygulama üzerinden ödeme alınmaz. Ücret etkinlikte ödenir.",
+    "womenOnly": "Sadece kadınlar",
+    "menOnly": "Sadece erkekler"
   },
   "qna": {
     "heading": "Sorular",

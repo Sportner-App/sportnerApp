@@ -96,6 +96,7 @@ export function canModerateOrganizationMember(
     return true;
   }
   return (
-    myRole === ORGANIZATION_ROLE.admin && member.role === ORGANIZATION_ROLE.member
+    myRole === ORGANIZATION_ROLE.admin &&
+    member.role === ORGANIZATION_ROLE.member
   );
 }

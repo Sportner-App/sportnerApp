@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { BottomSheet, Button, SelectField } from "@/components";
@@ -10,9 +10,11 @@ import {
   type EventListFilters,
 } from "@/hooks/use-events";
 import { AgeRangeSlider } from "@/pages/event-create/age-range-slider";
+import type { SelectOption } from "@/types/components";
 import type { ApiOrganizationListItem } from "@/types/organizations";
 import type { Sport } from "@/types/sports";
 import { sportIconForSlug } from "@/utils/events";
+import { AppText as Text } from "@/components/app-text";
 
 type EventFilterSheetProps = {
   visible: boolean;
@@ -21,6 +23,8 @@ type EventFilterSheetProps = {
   onApply: (filters: EventListFilters) => void;
   organizations?: ApiOrganizationListItem[];
   sports?: Sport[];
+  cities?: SelectOption<string>[];
+  isCitiesLoading?: boolean;
 };
 
 export function EventFilterSheet({
@@ -30,12 +34,22 @@ export function EventFilterSheet({
   onApply,
   organizations = [],
   sports = [],
+  cities = [],
+  isCitiesLoading = false,
 }: EventFilterSheetProps) {
   const { t } = useTranslation("home");
   const { t: tCommon } = useTranslation("common");
   const [draft, setDraft] = useState(filters);
   const GENDER_OPTIONS = useGenderOptions();
   const SKILL_OPTIONS = useSkillLevelOptions();
+  const cityOptions = [
+    {
+      key: "",
+      label: t("filterSheet.location.allLabel"),
+      description: t("filterSheet.location.allDescription"),
+    },
+    ...cities,
+  ];
   const organizationOptions = [
     {
       key: "",
@@ -67,7 +81,10 @@ export function EventFilterSheet({
         .filter((sport) => sport.categoryId && sport.categoryName)
         .map((sport) => [
           sport.categoryId as string,
-          { key: sport.categoryId as string, label: sport.categoryName as string },
+          {
+            key: sport.categoryId as string,
+            label: sport.categoryName as string,
+          },
         ]),
     ).values(),
   ];
@@ -105,6 +122,47 @@ export function EventFilterSheet({
       }
     >
       <View className="gap-5">
+        <SelectField
+          label={t("filterSheet.location.label")}
+          placeholder={
+            isCitiesLoading
+              ? t("filterSheet.location.loading")
+              : t("filterSheet.location.placeholder")
+          }
+          icon="location-dot"
+          options={cityOptions}
+          value={draft.city ?? ""}
+          onChange={(city) =>
+            setDraft((current) => ({ ...current, city: city || null }))
+          }
+          searchable
+          searchPlaceholder={t("filterSheet.location.searchPlaceholder")}
+          sheetTitle={t("filterSheet.location.sheetTitle")}
+          sheetSubtitle={t("filterSheet.location.sheetSubtitle")}
+        />
+
+        <View className="gap-2">
+          <Text className="font-body-bold text-label text-text-secondary">
+            {t("filterSheet.sort.label")}
+          </Text>
+          <View className="flex-row flex-wrap gap-2">
+            <GenderOption
+              label={t("filterSheet.sort.location")}
+              selected={draft.sortBy === "location"}
+              onPress={() =>
+                setDraft((current) => ({ ...current, sortBy: "location" }))
+              }
+            />
+            <GenderOption
+              label={t("filterSheet.sort.time")}
+              selected={draft.sortBy === "time"}
+              onPress={() =>
+                setDraft((current) => ({ ...current, sortBy: "time" }))
+              }
+            />
+          </View>
+        </View>
+
         {sports.length > 0 ? (
           <SelectField
             label={t("filterSheet.sport.label")}
@@ -156,7 +214,7 @@ export function EventFilterSheet({
         />
 
         <View className="gap-2">
-          <Text className="font-body-bold text-[13px] text-text-secondary">
+          <Text className="font-body-bold text-label text-text-secondary">
             {t("filterSheet.fee.label")}
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -185,7 +243,7 @@ export function EventFilterSheet({
         </View>
 
         <View className="gap-2">
-          <Text className="font-body-bold text-[13px] text-text-secondary">
+          <Text className="font-body-bold text-label text-text-secondary">
             {t("filterSheet.skillLabel")}
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -213,7 +271,7 @@ export function EventFilterSheet({
         </View>
 
         <View className="gap-2">
-          <Text className="font-body-bold text-[13px] text-text-secondary">
+          <Text className="font-body-bold text-label text-text-secondary">
             {t("filterSheet.organizerGenderLabel")}
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -239,7 +297,6 @@ export function EventFilterSheet({
             ))}
           </View>
         </View>
-
       </View>
     </BottomSheet>
   );
@@ -266,7 +323,7 @@ function GenderOption({
       }`}
     >
       <Text
-        className={`font-body-bold text-sm ${
+        className={`font-body-bold text-body-sm ${
           selected ? "text-background-primary" : "text-text-secondary"
         }`}
       >

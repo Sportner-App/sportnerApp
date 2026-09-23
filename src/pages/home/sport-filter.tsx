@@ -1,8 +1,9 @@
-import { Pressable, ScrollView, Text } from "react-native";
+import { Pressable, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { themeColors } from "@/constants/theme";
 import type { SportCategory } from "@/types/sports";
+import { AppText as Text } from "@/components/app-text";
 
 type CategoryFilterProps = {
   categories: SportCategory[];
@@ -65,7 +66,7 @@ function CategoryChip({
     >
       <Text
         numberOfLines={1}
-        className="font-body text-sm font-semibold"
+        className="font-body text-body-sm font-semibold"
         style={{
           color: isActive
             ? themeColors.text.onPrimary

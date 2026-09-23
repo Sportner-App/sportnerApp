@@ -1,10 +1,26 @@
 {
   "header": "YENİ ETKİNLİK",
   "steps": {
-    "1": { "title": "Etkinliğini oluştur", "subtitle": "Sporunu seç ve etkinliğini anlat." },
-    "2": { "title": "Planını yap", "subtitle": "Nerede, ne zaman ve ne kadar süreceğini belirle." },
-    "3": { "title": "Takımını kur", "subtitle": "Kaç kişinin katılabileceğini belirle." },
-    "4": { "title": "Yanına kim geliyor?", "subtitle": "Misafir veya arkadaş ekleyebilirsin. Bu adımı atlayabilirsin." }
+    "1": {
+      "title": "Etkinliğini oluştur",
+      "subtitle": "Sporunu seç ve etkinliğini anlat."
+    },
+    "2": {
+      "title": "Konumu belirle",
+      "subtitle": "Etkinliğin yapılacağı yeri haritadan rahatça seç."
+    },
+    "3": {
+      "title": "Planını yap",
+      "subtitle": "Tarih, saat, süre ve tekrar ayarlarını belirle."
+    },
+    "4": {
+      "title": "Takımını kur",
+      "subtitle": "Kapasite ve katılım koşullarını belirle."
+    },
+    "5": {
+      "title": "Yanına kim geliyor?",
+      "subtitle": "Misafir veya arkadaş ekleyebilirsin. Bu adımı atlayabilirsin."
+    }
   },
   "submit": "Etkinliği Yayınla",
   "publishing": "Yayınlanıyor...",
@@ -15,7 +31,8 @@
     "details": "Detaylar",
     "plan": "Plan",
     "capacity": "Kapasite",
-    "roster": "Kadro"
+    "roster": "Kadro",
+    "location": "Konum"
   },
   "sport": {
     "label": "Spor",
@@ -141,5 +158,15 @@
     "waitingForPlayers": "Oyuncular seni bekliyor.",
     "invitesFailedDescription": "{{reason}} Davetleri etkinlik detayından tekrar gönderebilirsin.",
     "invitesGenericFailure": "Davetler gönderilemedi."
+  },
+  "participantGender": {
+    "label": "Kimler katılabilir?",
+    "placeholder": "Katılımcı seç",
+    "sheetTitle": "Katılımcı cinsiyeti",
+    "sheetSubtitle": "Bu etkinliğe kimlerin katılım isteği gönderebileceğini seç",
+    "everyone": "Herkes",
+    "womenOnly": "Sadece kadınlar",
+    "menOnly": "Sadece erkekler",
+    "hint": "Bu seçim katılım istekleri ve arkadaş davetleri için uygulanır."
   }
 }

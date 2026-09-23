@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -18,7 +18,10 @@ import { useTranslation } from "react-i18next";
 import { Avatar } from "@/components";
 import { readableOn, resolveEventBadgeThemes } from "@/constants/badge-colors";
 import { skillKeyFromCode, useSkillLevelLabels } from "@/constants/profile";
-import { FALLBACK_SPORT_IMAGE, resolveEventPhoto } from "@/constants/sport-images";
+import {
+  FALLBACK_SPORT_IMAGE,
+  resolveEventPhoto,
+} from "@/constants/sport-images";
 import {
   radius,
   shadows,
@@ -33,11 +36,13 @@ import {
   formatEventFee,
   formatEventTime,
   hasApprovedParticipation,
+  hasEventEnded,
   hasPendingParticipation,
   isEventToday,
   noLocationLabel,
   relativeEventBadge,
 } from "@/utils/events";
+import { AppText as Text } from "@/components/app-text";
 
 type EventCardProps = {
   event: EventSummary;
@@ -49,10 +54,7 @@ const PRESS_MS = 120;
 // Fotoğraf üzerindeki içerik her iki temada da koyu overlay üzerinde okunur.
 const MIST = "#06111a";
 
-export function EventCard({
-  event,
-  onPress,
-}: EventCardProps) {
+export function EventCard({ event, onPress }: EventCardProps) {
   const { t } = useTranslation("home");
   const SKILL_LEVEL_LABELS = useSkillLevelLabels();
   const [cardSize, setCardSize] = useState({ width: 0, height: 0 });
@@ -72,8 +74,13 @@ export function EventCard({
   const time = formatEventTime(event.eventDate);
   const duration =
     event.durationMinutes > 0 ? formatDurationLabel(event.durationMinutes) : "";
-  const badge = relativeEventBadge(event.eventDate);
-  const sportLabel = event.sportName.trim().toLocaleUpperCase(currentDateLocale());
+  const isEnded = hasEventEnded(event);
+  const badge = isEnded
+    ? t("eventCard.ended")
+    : relativeEventBadge(event.eventDate);
+  const sportLabel = event.sportName
+    .trim()
+    .toLocaleUpperCase(currentDateLocale());
   const title = event.title.trim() || t("eventCard.untitled");
   const place = event.location.trim();
   const showPlace = place.length > 0 && place !== noLocationLabel();
@@ -92,25 +99,29 @@ export function EventCard({
 
   // Kullanıcının bu etkinlikteki katılım durumu (katılımcı / onay bekliyor).
   const myStatus = event.myParticipationStatus;
-  const myStatusBadge = hasApprovedParticipation(myStatus)
-    ? {
-        label: t("eventCard.myStatus.approved"),
-        accessibilityLabel: t("eventCard.accessibility.myStatusApproved"),
-        background: themeColors.success,
-      }
-    : hasPendingParticipation(myStatus)
+  const myStatusBadge = isEnded
+    ? null
+    : hasApprovedParticipation(myStatus)
       ? {
-          label: t("eventCard.myStatus.pending"),
-          accessibilityLabel: t("eventCard.accessibility.myStatusPending"),
-          background: themeColors.warning,
+          label: t("eventCard.myStatus.approved"),
+          accessibilityLabel: t("eventCard.accessibility.myStatusApproved"),
+          background: themeColors.success,
         }
-      : null;
+      : hasPendingParticipation(myStatus)
+        ? {
+            label: t("eventCard.myStatus.pending"),
+            accessibilityLabel: t("eventCard.accessibility.myStatusPending"),
+            background: themeColors.warning,
+          }
+        : null;
 
-  const remainingLabel = unlimited
-    ? t("eventCard.unlimited")
-    : isFull
-      ? t("eventCard.full")
-      : t("eventCard.spotsLeft", { count: spotsLeft ?? 0 });
+  const remainingLabel = isEnded
+    ? t("eventCard.ended")
+    : unlimited
+      ? t("eventCard.unlimited")
+      : isFull
+        ? t("eventCard.full")
+        : t("eventCard.spotsLeft", { count: spotsLeft ?? 0 });
 
   const countLabel = unlimited ? `${occupied}` : `${occupied} / ${max}`;
 
@@ -135,7 +146,7 @@ export function EventCard({
     unlimited
       ? t("eventCard.accessibility.unlimitedCapacity")
       : t("eventCard.accessibility.capacity", { count: max }),
-    remainingLabel,
+    isEnded ? t("eventCard.accessibility.ended") : remainingLabel,
     myStatusBadge?.accessibilityLabel ?? null,
   ]
     .filter(Boolean)
@@ -182,16 +193,33 @@ export function EventCard({
               width={cardSize.width}
               height={cardSize.height}
             />
+            {isEnded ? (
+              <View
+                style={[
+                  StyleSheet.absoluteFill,
+                  { backgroundColor: "rgba(3, 10, 18, 0.38)" },
+                ]}
+              />
+            ) : null}
           </View>
 
           {badge ? (
             <View
-              className="absolute right-3.5 top-3.5 z-20 rounded-pill px-2.5 py-1"
-              style={{ backgroundColor: badgeThemes.date.background }}
+              className="absolute right-3.5 top-3.5 z-20 flex-row items-center gap-1.5 rounded-pill px-2.5 py-1"
+              style={{
+                backgroundColor: isEnded
+                  ? "#334155"
+                  : badgeThemes.date.background,
+              }}
             >
+              {isEnded ? (
+                <FontAwesome6 name="check" size={9} color="#f8fafc" />
+              ) : null}
               <Text
-                className="font-body-bold text-[10px] tracking-wide"
-                style={{ color: badgeThemes.date.foreground }}
+                className="font-body-bold text-overline tracking-wide"
+                style={{
+                  color: isEnded ? "#f8fafc" : badgeThemes.date.foreground,
+                }}
               >
                 {badge}
               </Text>
@@ -212,7 +240,7 @@ export function EventCard({
                   />
                   <Text
                     numberOfLines={1}
-                    className="ml-1.5 font-body-bold text-[10px] tracking-[1.2px]"
+                    className="ml-1.5 font-body-bold text-overline tracking-[1.2px]"
                     style={{ color: onAccent }}
                   >
                     {sportLabel}
@@ -226,7 +254,7 @@ export function EventCard({
                 >
                   <Text
                     numberOfLines={1}
-                    className="font-body-bold text-[10px] tracking-[0.4px]"
+                    className="font-body-bold text-overline tracking-[0.4px]"
                     style={{ color: badgeThemes.skill.foreground }}
                   >
                     {SKILL_LEVEL_LABELS[skillKeyFromCode(event.skillLevel)]}
@@ -239,7 +267,7 @@ export function EventCard({
               >
                 <Text
                   numberOfLines={1}
-                  className="font-body-bold text-[10px] tracking-[0.4px]"
+                  className="font-body-bold text-overline tracking-[0.4px]"
                   style={{ color: badgeThemes.fee.foreground }}
                 >
                   {formatEventFee(event.isPaid, event.feeAmount)}
@@ -251,7 +279,7 @@ export function EventCard({
               <View className="w-[62%] pr-2">
                 <Text
                   numberOfLines={2}
-                  className="font-display text-[20px] leading-6 text-white"
+                  className="font-display text-heading-sm leading-6 text-white"
                 >
                   {title}
                 </Text>
@@ -289,13 +317,15 @@ export function EventCard({
                       {fillRatio != null ? (
                         <View
                           className="h-[4px] flex-1 overflow-hidden rounded-full"
-                          style={{ backgroundColor: themeColors.border.default }}
+                          style={{
+                            backgroundColor: themeColors.border.default,
+                          }}
                         >
                           <View
                             className="h-full rounded-full"
                             style={{
                               width: `${fillRatio * 100}%`,
-                              backgroundColor: sportColor,
+                              backgroundColor: isEnded ? "#64748b" : sportColor,
                             }}
                           />
                         </View>
@@ -306,8 +336,10 @@ export function EventCard({
                           style={{ backgroundColor: myStatusBadge.background }}
                         >
                           <Text
-                            className="font-body-bold text-[9px] tracking-wide"
-                            style={{ color: readableOn(myStatusBadge.background) }}
+                            className="font-body-bold text-overline tracking-wide"
+                            style={{
+                              color: readableOn(myStatusBadge.background),
+                            }}
                           >
                             {myStatusBadge.label}
                           </Text>
@@ -317,13 +349,17 @@ export function EventCard({
                   ) : null}
                 </View>
                 <View className="items-end">
-                  <Text className="font-body-bold text-[18px] leading-6 text-white">
+                  <Text className="font-body-bold text-heading-sm leading-6 text-white">
                     {countLabel}
                   </Text>
                   <Text
                     className="mt-0.5 font-body text-caption"
                     style={{
-                      color: isFull ? themeColors.warning : "#cbd5e1",
+                      color: isEnded
+                        ? "#94a3b8"
+                        : isFull
+                          ? themeColors.warning
+                          : "#cbd5e1",
                     }}
                   >
                     {remainingLabel}
@@ -352,7 +388,7 @@ function MetaItem({
       <FontAwesome6 name={icon} size={12} color={accent ?? "#cbd5e1"} />
       <Text
         numberOfLines={1}
-        className="max-w-[200px] font-body-bold text-[13px] text-white"
+        className="max-w-[200px] font-body-bold text-label text-white"
       >
         {label}
       </Text>
@@ -555,7 +591,7 @@ function ParticipantProof({
             className="absolute inset-0 items-center justify-center"
             style={{ backgroundColor: "rgba(6, 17, 26, 0.62)" }}
           >
-            <Text className="font-body-bold text-[11px] text-white">
+            <Text className="font-body-bold text-overline text-white">
               +{extra}
             </Text>
           </View>

@@ -118,6 +118,10 @@ module.exports = {
           `${typography.bodyLarge.fontSize}px`,
           { lineHeight: `${typography.bodyLarge.lineHeight}px` },
         ],
+        body: [
+          `${typography.body.fontSize}px`,
+          { lineHeight: `${typography.body.lineHeight}px` },
+        ],
         "body-sm": [
           `${typography.bodySmall.fontSize}px`,
           { lineHeight: `${typography.bodySmall.lineHeight}px` },

@@ -6,7 +6,6 @@ import {
   Image,
   Pressable,
   ScrollView,
-  Text,
   TextInput,
   useWindowDimensions,
   View,
@@ -35,6 +34,7 @@ import {
 import type { ApiComment, ApiPost } from "@/types/social";
 import { POST_MEDIA_TYPE } from "@/types/social";
 import { resolveMediaUrl } from "@/utils/media-url";
+import { AppText as Text } from "@/components/app-text";
 
 export function PostDetailScreen() {
   const { id, focus } = useLocalSearchParams<{ id: string; focus?: string }>();
@@ -151,7 +151,7 @@ export function PostDetailScreen() {
             className="flex-row items-center gap-3 px-6"
           >
             <Avatar uri={post.profileImageUrl} name={author} size={40} />
-            <Text className="font-body text-sm font-semibold text-text-primary">
+            <Text className="font-body text-body-sm font-semibold text-text-primary">
               @{post.username || t("events:fallback.athleteHandle")}
             </Text>
           </Pressable>
@@ -195,7 +195,7 @@ export function PostDetailScreen() {
 
           <View className="gap-4 px-6">
             {post.content?.trim() ? (
-              <Text className="font-body text-base text-text-primary">
+              <Text className="font-body text-body text-text-primary">
                 {post.content}
               </Text>
             ) : null}
@@ -210,24 +210,24 @@ export function PostDetailScreen() {
                   size={16}
                   color={post.likedByMe ? "#ccff00" : "#94a3b8"}
                 />
-                <Text className="font-mono text-xs text-white">
+                <Text className="font-mono text-caption text-white">
                   {t("social:likesCount", { count: post.likeCount })}
                 </Text>
               </Pressable>
               <View className="flex-row items-center gap-2">
                 <FontAwesome6 name="comment" size={15} color="#94a3b8" />
-                <Text className="font-mono text-xs text-brand-neutral">
+                <Text className="font-mono text-caption text-brand-neutral">
                   {t("social:commentsCount", { count: post.commentCount })}
                 </Text>
               </View>
             </View>
 
             <View ref={registerSection("comments")} className="gap-4">
-              <Text className="font-display text-base text-text-primary">
+              <Text className="font-display text-body text-text-primary">
                 {t("social:comments.title")}
               </Text>
               {comments.length === 0 ? (
-                <Text className="font-body text-sm text-brand-neutral">
+                <Text className="font-body text-body-sm text-brand-neutral">
                   {t("social:comments.firstComment")}
                 </Text>
               ) : (
@@ -244,11 +244,11 @@ export function PostDetailScreen() {
 
             {replyingTo ? (
               <View className="flex-row items-center justify-between">
-                <Text className="flex-1 font-body text-xs text-brand-neutral">
+                <Text className="flex-1 font-body text-caption text-brand-neutral">
                   {t("social:comments.replyTo", { username: replyUsername })}
                 </Text>
                 <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>
-                  <Text className="font-body text-xs font-semibold text-brand-primary">
+                  <Text className="font-body text-caption font-semibold text-brand-primary">
                     {t("common:cancel")}
                   </Text>
                 </Pressable>
