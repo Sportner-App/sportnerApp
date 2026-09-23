@@ -1,5 +1,6 @@
 {
   "title": "SPORCULAR",
+  "back": "Geri dön",
   "loading": "Sporcular yükleniyor",
   "loadingMore": "Sporcular yükleniyor",
   "loadFailed": "Sporcular yüklenemedi.",
@@ -7,5 +8,13 @@
   "loadMoreRetry": "{{error}} Tekrar denemek için dokun.",
   "empty": "Şimdilik keşfedilecek yeni sporcu yok.",
   "heading": "Tüm sporcular",
-  "subtitle": "Topluluktaki aktif ve herkese açık profilleri keşfet."
+  "subtitle": "Topluluktaki aktif ve herkese açık profilleri keşfet.",
+  "searchPlaceholder": "Kullanıcı adı ara",
+  "searchAccessibility": "Kullanıcı adına göre sporcu ara",
+  "searchHint": "@ işaretiyle veya işaretsiz arayabilirsin.",
+  "clearSearch": "Aramayı temizle",
+  "searching": "Kullanıcılar aranıyor",
+  "searchEmpty": "“@{{query}}” kullanıcı adına uygun profil bulunamadı.",
+  "searchResults": "{{count}} kullanıcı bulundu",
+  "searchResultsSubtitle": "“@{{query}}” için sonuçlar"
 }

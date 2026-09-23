@@ -84,8 +84,10 @@
     "noResults": "No matching options."
   },
   "tabHeader": {
+    "search": "Search users",
     "conversations": "My Chats",
     "notifications": "Notifications",
+    "searchAuthRequired": "Sign in to search for users.",
     "conversationsAuthRequired": "Sign in to view your chats.",
     "notificationsAuthRequired": "Sign in to view your notifications."
   }

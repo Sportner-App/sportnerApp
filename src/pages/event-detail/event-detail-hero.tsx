@@ -35,6 +35,7 @@ type EventDetailHeroProps = {
   onBack: () => void;
   pendingCount?: number;
   onPendingPress?: () => void;
+  onEdit?: () => void;
 };
 
 const HERO_ASPECT = 1.65;
@@ -45,6 +46,7 @@ export function EventDetailHero({
   onBack,
   pendingCount = 0,
   onPendingPress,
+  onEdit,
 }: EventDetailHeroProps) {
   const { t } = useTranslation("eventDetail");
   const insets = useSafeAreaInsets();
@@ -104,6 +106,13 @@ export function EventDetailHero({
               onPress={onBack}
             />
             <View className="flex-row items-center gap-2">
+              {onEdit ? (
+                <GlassControl
+                  accessibilityLabel={t("organizerPanel.editAccessibility")}
+                  icon="pen"
+                  onPress={onEdit}
+                />
+              ) : null}
               {showPending ? (
                 <PendingRequestsHeaderAction
                   count={pendingCount}

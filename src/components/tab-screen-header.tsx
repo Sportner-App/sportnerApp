@@ -60,6 +60,14 @@ export function TabScreenHeader() {
       <BrandMark tone="light" />
       <View className="flex-row items-center gap-2">
         <HeaderAction
+          icon="magnifying-glass"
+          label={t("tabHeader.search")}
+          onPress={() =>
+            requireAuth(t("tabHeader.searchAuthRequired")) &&
+            router.push("/people")
+          }
+        />
+        <HeaderAction
           icon="comments"
           label={t("tabHeader.conversations")}
           tourTargetRef={registerTarget("conversations")}
@@ -90,7 +98,7 @@ function HeaderAction({
   onPress,
   tourTargetRef,
 }: {
-  icon: "comments" | "bell";
+  icon: "magnifying-glass" | "comments" | "bell";
   label: string;
   showIndicator?: boolean;
   onPress: () => void;

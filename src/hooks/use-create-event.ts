@@ -103,7 +103,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
   const [friends, setFriends] = useState<ApiFriend[]>([]);
   const [isFriendsLoading, setIsFriendsLoading] = useState(true);
   const [guests, setGuests] = useState<
-    { localId: string; firstName: string; lastName: string }[]
+    { localId: string; firstName: string; lastName: string; email: string }[]
   >([]);
   const [selectedFriendIds, setSelectedFriendIds] = useState<string[]>([]);
 
@@ -269,7 +269,9 @@ export function useCreateEvent(initialOrganizationId?: string) {
 
   const areGuestsValid = guests.every(
     (guest) =>
-      guest.firstName.trim().length > 0 && guest.lastName.trim().length > 0,
+      guest.firstName.trim().length > 0 &&
+      guest.lastName.trim().length > 0 &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guest.email.trim()),
   );
   const canSubmit =
     isStep1Valid &&
@@ -304,19 +306,20 @@ export function useCreateEvent(initialOrganizationId?: string) {
         localId: `${Date.now()}-${current.length}`,
         firstName: "",
         lastName: "",
+        email: "",
       },
     ]);
   };
 
   const updateGuest = (
     localId: string,
-    key: "firstName" | "lastName",
+    key: "firstName" | "lastName" | "email",
     value: string,
   ) => {
     setGuests((current) =>
       current.map((guest) =>
         guest.localId === localId
-          ? { ...guest, [key]: value.slice(0, 50) }
+          ? { ...guest, [key]: value.slice(0, key === "email" ? 320 : 50) }
           : guest,
       ),
     );
@@ -465,6 +468,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
             guests: guests.map((guest) => ({
               firstName: guest.firstName.trim(),
               lastName: guest.lastName.trim(),
+              email: guest.email.trim().toLowerCase(),
             })),
             friendUserIds: selectedFriendIds,
           }),

@@ -106,6 +106,11 @@ export function EventDetailScreen() {
             onPendingPress={
               showPendingEntry ? handleOpenPendingRequests : undefined
             }
+            onEdit={
+              detail.canManage
+                ? () => router.push(`/events/${detail.event?.id}/edit`)
+                : undefined
+            }
           />
         )
       }

@@ -1,54 +1,91 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  TextInput,
+  View,
+} from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
+  AppText as Text,
   Avatar,
   brandRefreshControl,
   Button,
   LinearRefreshBar,
-  ScreenHeader,
   SportLoader,
 } from "@/components";
 import { themeColors } from "@/constants/theme";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { discoverUsers } from "@/services/users-service";
 import type { DiscoverUser } from "@/types/users";
-import { AppText as Text } from "@/components/app-text";
 
 const PAGE_SIZE = 20;
+const SEARCH_DEBOUNCE_MS = 350;
+
+function normalizeSearch(value: string) {
+  return value.trim().replace(/^@+/, "").toLowerCase();
+}
 
 export function PeopleScreen() {
   const { t } = useTranslation(["people", "common", "events"]);
   const router = useRouter();
   const [people, setPeople] = useState<DiscoverUser[]>([]);
+  const [query, setQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasNext, setHasNext] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const requestIdRef = useRef(0);
+  const normalizedQuery = normalizeSearch(query);
+  const isSearchPending = normalizedQuery !== debouncedSearch;
+
+  useEffect(() => {
+    const timeout = setTimeout(
+      () => setDebouncedSearch(normalizedQuery),
+      normalizedQuery ? SEARCH_DEBOUNCE_MS : 0,
+    );
+
+    return () => clearTimeout(timeout);
+  }, [normalizedQuery]);
 
   const load = useCallback(
     async (refresh = false) => {
+      const requestId = ++requestIdRef.current;
       refresh ? setIsRefreshing(true) : setIsLoading(true);
+
       try {
         setError(null);
-        const result = await discoverUsers({ page: 1, pageSize: PAGE_SIZE });
+        const result = await discoverUsers({
+          page: 1,
+          pageSize: PAGE_SIZE,
+          search: debouncedSearch || undefined,
+        });
+        if (requestId !== requestIdRef.current) return;
+
         setPeople(result.items);
+        setTotalCount(result.totalCount);
         setPage(result.page);
         setHasNext(result.hasNext);
       } catch (reason) {
+        if (requestId !== requestIdRef.current) return;
         setError(getApiErrorMessage(reason, t("people:loadFailed")));
       } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
+        if (requestId === requestIdRef.current) {
+          setIsLoading(false);
+          setIsRefreshing(false);
+        }
       }
     },
-    [t],
+    [debouncedSearch, t],
   );
 
   const loadMore = useCallback(async () => {
@@ -60,6 +97,7 @@ export function PeopleScreen() {
       const result = await discoverUsers({
         page: page + 1,
         pageSize: PAGE_SIZE,
+        search: debouncedSearch || undefined,
       });
       setPeople((current) => {
         const knownIds = new Set(current.map((person) => person.userId));
@@ -68,6 +106,7 @@ export function PeopleScreen() {
           ...result.items.filter((person) => !knownIds.has(person.userId)),
         ];
       });
+      setTotalCount(result.totalCount);
       setPage(result.page);
       setHasNext(result.hasNext);
     } catch (reason) {
@@ -75,26 +114,49 @@ export function PeopleScreen() {
     } finally {
       setIsLoadingMore(false);
     }
-  }, [hasNext, isLoading, isLoadingMore, isRefreshing, page, t]);
+  }, [
+    debouncedSearch,
+    hasNext,
+    isLoading,
+    isLoadingMore,
+    isRefreshing,
+    page,
+    t,
+  ]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
+  const initialLoading = isLoading && people.length === 0;
+  const isSearching = debouncedSearch.length > 0;
+
   return (
     <AppScreen
       tone="light"
-      header={<ScreenHeader title={t("people:title")} showBack tone="light" />}
+      header={
+        <PeopleSearchHeader
+          value={query}
+          isLoading={
+            isSearchPending || (isLoading && normalizedQuery.length > 0)
+          }
+          onChangeText={setQuery}
+          onClear={() => setQuery("")}
+        />
+      }
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
       scroll={false}
-      contentClassName="pt-3"
+      contentClassName="pt-1"
     >
-      {isLoading ? (
+      {initialLoading ? (
         <View className="items-center py-16">
-          <SportLoader size={148} label={t("people:loading")} />
+          <SportLoader
+            size={148}
+            label={isSearching ? t("people:searching") : t("people:loading")}
+          />
         </View>
       ) : error && people.length === 0 ? (
-        <View className="items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
+        <View className="mx-5 items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
           <Text className="text-center font-body text-body-sm text-text-secondary">
             {error}
           </Text>
@@ -106,15 +168,25 @@ export function PeopleScreen() {
           />
         </View>
       ) : people.length === 0 ? (
-        <View className="items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
+        <View className="mx-5 items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
           <FontAwesome6
-            name="user-group"
+            name={isSearching ? "user-slash" : "user-group"}
             size={22}
             color={themeColors.text.tertiary}
           />
           <Text className="text-center font-body text-body-sm text-text-secondary">
-            {t("people:empty")}
+            {isSearching
+              ? t("people:searchEmpty", { query: debouncedSearch })
+              : t("people:empty")}
           </Text>
+          {isSearching ? (
+            <Button
+              label={t("people:clearSearch")}
+              variant="outline"
+              size="sm"
+              onPress={() => setQuery("")}
+            />
+          ) : null}
         </View>
       ) : (
         <FlatList
@@ -122,6 +194,8 @@ export function PeopleScreen() {
           keyExtractor={(person) => person.userId}
           contentContainerClassName="px-5 pb-8"
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
           refreshControl={brandRefreshControl({
             refreshing: isRefreshing,
             onRefresh: () => void load(true),
@@ -129,10 +203,16 @@ export function PeopleScreen() {
           ListHeaderComponent={
             <View className="mb-4">
               <Text className="font-display text-heading-md text-text-primary">
-                {t("people:heading")}
+                {isSearching
+                  ? t("people:searchResults", { count: totalCount })
+                  : t("people:heading")}
               </Text>
               <Text className="mt-0.5 font-body text-caption text-text-secondary">
-                {t("people:subtitle")}
+                {isSearching
+                  ? t("people:searchResultsSubtitle", {
+                      query: debouncedSearch,
+                    })
+                  : t("people:subtitle")}
               </Text>
             </View>
           }
@@ -169,6 +249,75 @@ export function PeopleScreen() {
   );
 }
 
+function PeopleSearchHeader({
+  value,
+  isLoading,
+  onChangeText,
+  onClear,
+}: {
+  value: string;
+  isLoading: boolean;
+  onChangeText: (value: string) => void;
+  onClear: () => void;
+}) {
+  const router = useRouter();
+  const { t } = useTranslation("people");
+
+  return (
+    <View className="flex-row items-center gap-3 border-b border-border-default px-5 pb-3 pt-2">
+      <Pressable
+        onPress={() => router.back()}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel={t("back")}
+        className="h-11 w-9 items-start justify-center active:opacity-65"
+      >
+        <FontAwesome6
+          name="arrow-left"
+          size={17}
+          color={themeColors.text.primary}
+        />
+      </Pressable>
+
+      <View className="h-11 flex-1 flex-row items-center gap-3 rounded-2xl bg-surface-secondary px-4">
+        <FontAwesome6
+          name="magnifying-glass"
+          size={14}
+          color={themeColors.text.secondary}
+        />
+        <TextInput
+          autoFocus
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={t("searchPlaceholder")}
+          placeholderTextColor={themeColors.text.tertiary}
+          autoCapitalize="none"
+          autoCorrect={false}
+          returnKeyType="search"
+          className="flex-1 font-body text-body text-text-primary"
+          accessibilityLabel={t("searchAccessibility")}
+        />
+        {isLoading ? (
+          <ActivityIndicator size="small" color={themeColors.brand.primary} />
+        ) : value.length > 0 ? (
+          <Pressable
+            onPress={onClear}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel={t("clearSearch")}
+          >
+            <FontAwesome6
+              name="circle-xmark"
+              size={16}
+              color={themeColors.text.tertiary}
+            />
+          </Pressable>
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
 function PersonCard({
   person,
   onPress,
@@ -195,6 +344,12 @@ function PersonCard({
           className="font-body-bold text-body-sm text-text-primary"
         >
           @{person.username || t("fallback.athleteHandle")}
+        </Text>
+        <Text
+          numberOfLines={1}
+          className="mt-0.5 font-body text-caption text-text-secondary"
+        >
+          {person.name}
         </Text>
       </View>
       <View className="max-w-[92px] flex-row items-center gap-1">

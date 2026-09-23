@@ -315,6 +315,27 @@ export async function updateEventDetails(
   );
 }
 
+export async function updateEvent(
+  eventId: string,
+  payload: {
+    title: string;
+    description: string | null;
+    eventDate: string;
+    durationMinutes: number;
+    latitude: number;
+    longitude: number;
+    address: string;
+    maxParticipants: number | null;
+    isPaid: boolean;
+    feeAmount: number | null;
+  },
+) {
+  return eventAction(
+    () => apiClient.put(`/api/events/${eventId}/edit`, payload),
+    i18n.t("events:service.updateDetailsFailed"),
+  );
+}
+
 export async function updateEventSchedule(
   eventId: string,
   payload: { eventDate: string; durationMinutes: number },

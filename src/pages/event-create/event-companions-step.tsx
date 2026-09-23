@@ -7,7 +7,12 @@ import { themeColors } from "@/constants/theme";
 import type { ApiFriend } from "@/types/social";
 import { AppText as Text } from "@/components/app-text";
 
-type GuestDraft = { localId: string; firstName: string; lastName: string };
+type GuestDraft = {
+  localId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+};
 
 type Props = {
   maxParticipants: number;
@@ -19,7 +24,7 @@ type Props = {
   onAddGuest: () => void;
   onUpdateGuest: (
     localId: string,
-    key: "firstName" | "lastName",
+    key: "firstName" | "lastName" | "email",
     value: string,
   ) => void;
   onRemoveGuest: (localId: string) => void;
@@ -129,7 +134,19 @@ export function EventCompanionsStep({
                 }
               />
             </View>
-            {!guest.firstName.trim() || !guest.lastName.trim() ? (
+            <GuestInput
+              placeholder={t("companions.guestEmail")}
+              value={guest.email}
+              hasError={!isValidEmail(guest.email)}
+              keyboardType="email-address"
+              maxLength={320}
+              onChangeText={(value) =>
+                onUpdateGuest(guest.localId, "email", value)
+              }
+            />
+            {!guest.firstName.trim() ||
+            !guest.lastName.trim() ||
+            !isValidEmail(guest.email) ? (
               <Text className="font-body text-overline text-destructive">
                 {t("companions.guestRequiredError")}
               </Text>
@@ -219,17 +236,24 @@ function GuestInput({
   value,
   onChangeText,
   hasError,
+  keyboardType,
+  maxLength = 50,
 }: {
   placeholder: string;
   value: string;
   onChangeText: (value: string) => void;
   hasError?: boolean;
+  keyboardType?: "default" | "email-address";
+  maxLength?: number;
 }) {
   return (
     <TextInput
       value={value}
       onChangeText={onChangeText}
-      maxLength={50}
+      maxLength={maxLength}
+      keyboardType={keyboardType}
+      autoCapitalize={keyboardType === "email-address" ? "none" : "words"}
+      autoCorrect={keyboardType !== "email-address"}
       placeholder={placeholder}
       placeholderTextColor={themeColors.text.tertiary}
       className={`min-h-[46px] flex-1 rounded-xl border bg-surface-secondary px-3 font-body text-body-sm text-text-primary ${
@@ -237,4 +261,10 @@ function GuestInput({
       }`}
     />
   );
+}
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function isValidEmail(value: string) {
+  return EMAIL_PATTERN.test(value.trim());
 }

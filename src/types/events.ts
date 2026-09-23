@@ -190,6 +190,7 @@ export type EventParticipant = {
 export type EventGuestAssignment = {
   firstName: string;
   lastName: string;
+  email: string;
 };
 
 export type EventParticipantAssignment = {

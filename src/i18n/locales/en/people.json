@@ -1,5 +1,6 @@
 {
   "title": "ATHLETES",
+  "back": "Go back",
   "loading": "Loading athletes",
   "loadingMore": "Loading athletes",
   "loadFailed": "Could not load athletes.",
@@ -7,5 +8,13 @@
   "loadMoreRetry": "{{error}} Tap to try again.",
   "empty": "No new athletes to discover right now.",
   "heading": "All athletes",
-  "subtitle": "Discover active, public profiles in the community."
+  "subtitle": "Discover active, public profiles in the community.",
+  "searchPlaceholder": "Search by username",
+  "searchAccessibility": "Search athletes by username",
+  "searchHint": "You can search with or without the @ sign.",
+  "clearSearch": "Clear search",
+  "searching": "Searching users",
+  "searchEmpty": "No profile matches the username “@{{query}}”.",
+  "searchResults": "{{count}} users found",
+  "searchResultsSubtitle": "Results for “@{{query}}”"
 }

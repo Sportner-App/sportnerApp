@@ -84,8 +84,10 @@
     "noResults": "Sonuca uygun seçenek yok."
   },
   "tabHeader": {
+    "search": "Kullanıcı ara",
     "conversations": "Sohbetlerim",
     "notifications": "Bildirimler",
+    "searchAuthRequired": "Kullanıcı aramak için giriş yapmalısın.",
     "conversationsAuthRequired": "Sohbetlerini görmek için giriş yapmalısın.",
     "notificationsAuthRequired": "Bildirimlerini görmek için giriş yapmalısın."
   }

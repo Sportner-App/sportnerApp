@@ -18,7 +18,7 @@ import { AppText as Text } from "@/components/app-text";
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const containerVariants: Record<ButtonVariant, string> = {
-  primary: "bg-brand-primary",
+  primary: "bg-brand-primary/90",
   secondary: "border border-border-strong bg-surface-secondary",
   outline: "border border-brand-primary/60 bg-brand-primary/[0.04]",
   ghost: "bg-transparent",
@@ -129,18 +129,18 @@ export function Button({
         hasGlow &&
           (glow === "subtle"
             ? {
-                shadowColor: "#ccff00",
-                shadowOpacity: 0.18,
-                shadowRadius: 8,
-                shadowOffset: { width: 0, height: 3 },
-                elevation: 3,
+                shadowColor: themeColors.brand.primary,
+                shadowOpacity: 0.1,
+                shadowRadius: 6,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
               }
             : {
-                shadowColor: "#ccff00",
-                shadowOpacity: 0.4,
-                shadowRadius: 18,
-                shadowOffset: { width: 0, height: 6 },
-                elevation: 8,
+                shadowColor: themeColors.brand.primary,
+                shadowOpacity: 0.2,
+                shadowRadius: 10,
+                shadowOffset: { width: 0, height: 4 },
+                elevation: 4,
               }),
       ]}
       className={`flex-row items-center justify-center gap-2.5 rounded-2xl ${

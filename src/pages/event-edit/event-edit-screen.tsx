@@ -15,13 +15,7 @@ import { useToast } from "@/contexts";
 import { useEventDetail } from "@/hooks/use-event-detail";
 import { LocationPicker } from "@/pages/event-create/location-picker";
 import { SubmitBar } from "@/pages/event-create/submit-bar";
-import {
-  updateEventCapacity,
-  updateEventDetails,
-  updateEventFee,
-  updateEventLocation,
-  updateEventSchedule,
-} from "@/services/events-service";
+import { updateEvent } from "@/services/events-service";
 import { noDescriptionLabel, parseFeeAmount } from "@/utils/events";
 import { AppText as Text } from "@/components/app-text";
 
@@ -84,33 +78,24 @@ export function EventEditScreen() {
 
     setIsSaving(true);
     try {
-      const results = await Promise.all([
-        updateEventDetails(event.id, {
-          title: title.trim(),
-          description: description.trim() || null,
-        }),
-        updateEventSchedule(event.id, {
-          eventDate: eventDate.toISOString(),
-          durationMinutes,
-        }),
-        updateEventLocation(event.id, {
-          latitude,
-          longitude,
-          address: addressText.trim(),
-        }),
-        updateEventCapacity(event.id, Number(maxPlayers) || null),
-        updateEventFee(event.id, {
-          isPaid,
-          feeAmount: isPaid ? parseFeeAmount(feeAmountText) : null,
-        }),
-      ]);
+      const result = await updateEvent(event.id, {
+        title: title.trim(),
+        description: description.trim() || null,
+        eventDate: eventDate.toISOString(),
+        durationMinutes,
+        latitude,
+        longitude,
+        address: addressText.trim(),
+        maxParticipants: Number(maxPlayers) || null,
+        isPaid,
+        feeAmount: isPaid ? parseFeeAmount(feeAmountText) : null,
+      });
 
-      const failed = results.find((item) => item.error);
-      if (failed?.error) {
+      if (result.error) {
         showToast({
           type: "error",
           title: t("edit.saveFailedTitle"),
-          description: failed.error.message,
+          description: result.error.message,
         });
         return;
       }

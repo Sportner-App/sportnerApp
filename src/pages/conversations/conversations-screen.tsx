@@ -50,7 +50,12 @@ export function ConversationsScreen() {
           listMyConversations({ type: CONVERSATION_TYPE.direct }),
         ]);
         setEventItems(events.items);
-        setFriendItems(friends.items);
+        // Backend de boş birebir sohbetleri filtreliyor. Bu savunmacı filtre,
+        // eski API sürümüyle çalışan istemcilerde de mesaj atılmadan açılıp
+        // kapatılan sohbetlerin listede görünmesini engeller.
+        setFriendItems(
+          friends.items.filter((item) => item.lastMessageAt != null),
+        );
       } catch (loadError) {
         setError(getApiErrorMessage(loadError, t("messaging:loadFailed")));
       } finally {

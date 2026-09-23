@@ -1,6 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as Haptics from "expo-haptics";
-import * as Linking from "expo-linking";
 import * as Sharing from "expo-sharing";
 import { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, Share, View } from "react-native";
@@ -12,6 +11,7 @@ import { BottomSheet } from "@/components";
 import { sportAccentToken, themeColors } from "@/constants/theme";
 import { useToast } from "@/contexts";
 import type { EventDetail } from "@/types/events";
+import { eventShareUrl } from "@/utils/event-links";
 import { currentDateLocale } from "@/utils/events";
 import { AppText as Text } from "@/components/app-text";
 
@@ -36,9 +36,7 @@ export function EventShareSheet({
   const [target, setTarget] = useState<ShareTarget | null>(null);
   const [busy, setBusy] = useState<ShareTemplate | "link" | null>(null);
   const { showToast } = useToast();
-  const eventUrl = Linking.createURL(`/events/${event.id}`, {
-    scheme: "sportner",
-  });
+  const eventUrl = eventShareUrl(event.id);
 
   useEffect(() => {
     if (!visible) {
