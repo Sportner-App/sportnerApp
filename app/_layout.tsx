@@ -1,5 +1,9 @@
 import { colors } from "@/constants/colors";
 import { FEATURE_FLAGS } from "@/constants/feature-flags";
+import {
+  edgeBackStackOptions,
+  fullScreenBackStackOptions,
+} from "@/constants/navigation";
 import { AnimatedSplashScreen } from "@/components/animated-splash-screen";
 import { AppProviders } from "@/contexts";
 import { LanguagePreferenceProvider } from "@/contexts/language-preference-provider";
@@ -109,14 +113,14 @@ function ThemedRootLayoutNav() {
               },
             }}
           >
-            <Stack screenOptions={{ headerShown: false }}>
+            <Stack screenOptions={fullScreenBackStackOptions}>
               <Stack.Screen name="index" />
               <Stack.Screen name="(first-launch)" />
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="(auth)" />
               <Stack.Screen name="(verify-email)" />
               <Stack.Screen name="(onboarding)" />
-              <Stack.Screen name="events" />
+              <Stack.Screen name="events" options={edgeBackStackOptions} />
               <Stack.Screen name="users/[id]" />
               <Stack.Screen name="notifications" />
               <Stack.Screen name="profile" />

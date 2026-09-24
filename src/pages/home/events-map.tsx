@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ImageBackground, Pressable, View } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import MapView, {
@@ -36,6 +36,8 @@ import { AppText as Text } from "@/components/app-text";
 type EventsMapProps = {
   events: EventSummary[];
   onOpenEvent: (eventId: string) => void;
+  /** Seçiliyse kamera yalnızca filtrelenen şehirdeki etkinliklere odaklanır. */
+  focusedCity?: string | null;
   /** Kullanıcının mevcut konumu; ayrı bir marker olarak gösterilir. */
   userLocation?: UserCoordinates | null;
   locationStatus?: UserLocationStatus;
@@ -85,6 +87,7 @@ function regionForPoints(
 export function EventsMap({
   events,
   onOpenEvent,
+  focusedCity = null,
   userLocation = null,
   locationStatus = "idle",
   onRequestLocation,
@@ -92,6 +95,7 @@ export function EventsMap({
   const { t } = useTranslation("home");
   const { t: tLocation } = useTranslation("location");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isMapReady, setIsMapReady] = useState(false);
   const useGoogleMaps = isGooglePlacesEnabled();
   const mapRef = useRef<MapView>(null);
 
@@ -104,17 +108,43 @@ export function EventsMap({
     [events],
   );
 
-  // İlk kadraj kullanıcıyı da kapsasın: "ben neredeyim, etkinlikler nerede"
-  // sorusunun cevabı tek bakışta görünsün. MapView `initialRegion`'ı yalnızca
-  // ilk render'da okur; sonraki değişimler haritayı kullanıcının altından
-  // kaydırmaz, yeniden ortalamak için sağ alttaki düğme var.
-  const initialRegion = useMemo(
-    () => regionForPoints(userLocation ? [...located, userLocation] : located),
-    [located, userLocation],
-  );
+  // Filtresiz keşifte uzak etkinlikler kamerayı ülke ölçeğine açmasın: konum
+  // varsa ilk bakış kullanıcının yakın çevresine odaklanır. Şehir seçildiğinde
+  // kamera o şehirde dönen etkinlikleri kapsar. Konum yoksa etkinliklerden
+  // hesaplanan bölge güvenli fallback olarak kullanılır.
+  const initialRegion = useMemo(() => {
+    if (focusedCity) {
+      return regionForPoints(located);
+    }
+
+    if (userLocation) {
+      return {
+        ...userLocation,
+        latitudeDelta: 0.08,
+        longitudeDelta: 0.08,
+      };
+    }
+
+    return regionForPoints(located);
+  }, [focusedCity, located, userLocation]);
 
   const selectedEvent =
     located.find((event) => event.id === selectedId) ?? null;
+
+  useEffect(() => {
+    if (!isMapReady || focusedCity || !userLocation) {
+      return;
+    }
+
+    mapRef.current?.animateToRegion(
+      {
+        ...userLocation,
+        latitudeDelta: 0.08,
+        longitudeDelta: 0.08,
+      },
+      350,
+    );
+  }, [focusedCity, isMapReady, userLocation]);
 
   const centerOnUser = () => {
     if (!userLocation) {
@@ -153,6 +183,7 @@ export function EventsMap({
         showsCompass={false}
         showsPointsOfInterest={false}
         toolbarEnabled={false}
+        onMapReady={() => setIsMapReady(true)}
         onPress={() => setSelectedId(null)}
       >
         {userLocation ? (
@@ -316,6 +347,9 @@ function EventMapPreviewCard({
   const sportLabel = event.sportName
     .trim()
     .toLocaleUpperCase(currentDateLocale());
+  const accent = sportAccentToken(event.sport);
+  const sportColor = accent?.accent ?? themeColors.text.secondary;
+  const onAccent = accent?.onAccent ?? themeColors.text.inverse;
 
   return (
     <Animated.View
@@ -341,8 +375,14 @@ function EventMapPreviewCard({
 
           <View className="flex-1 justify-between p-3.5">
             {sportLabel ? (
-              <View className="flex-row items-center self-start rounded-pill bg-white/90 px-2 py-1">
-                <Text className="font-body text-overline font-bold tracking-[1.2px] text-text-secondary">
+              <View
+                className="flex-row items-center self-start rounded-pill px-2 py-1"
+                style={{ backgroundColor: sportColor }}
+              >
+                <Text
+                  className="font-body text-overline font-bold tracking-[1.2px]"
+                  style={{ color: onAccent }}
+                >
                   {sportLabel}
                 </Text>
               </View>

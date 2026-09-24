@@ -202,6 +202,8 @@ export type AppScreenProps = PropsWithChildren<{
   scroll?: boolean;
   /** Varsayılan olarak açıktır; odaktaki metin alanını klavyenin üstünde tutar. */
   keyboardAvoiding?: boolean;
+  /** false ise footer klavyeden kaçar ancak scroll alanı input odağını takip etmez. */
+  keyboardAwareScroll?: boolean;
   /** Klavye açıkken sabit footer için ek dikey düzeltme (örn. global toolbar). */
   keyboardVerticalOffset?: number;
   refreshControl?: ReactElement<RefreshControlProps>;

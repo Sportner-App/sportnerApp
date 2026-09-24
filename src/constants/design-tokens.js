@@ -79,6 +79,24 @@ const colors = {
   destructive: palette.destructive,
 };
 
+function relativeLuminance(hexColor) {
+  const hex = hexColor.replace("#", "");
+  const channels = [0, 2, 4].map((offset) => {
+    const value = parseInt(hex.slice(offset, offset + 2), 16) / 255;
+    return value <= 0.04045
+      ? value / 12.92
+      : Math.pow((value + 0.055) / 1.055, 2.4);
+  });
+
+  return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+}
+
+function contrastRatio(first, second) {
+  const lighter = Math.max(relativeLuminance(first), relativeLuminance(second));
+  const darker = Math.min(relativeLuminance(first), relativeLuminance(second));
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
 /**
  * Aksan renginden koyu zemin tonu ve okunabilir metin rengi türetir; böylece
  * her spor için üç değeri elle yazmak gerekmez.
@@ -89,18 +107,28 @@ function sportAccent(accent) {
   const g = parseInt(hex.slice(2, 4), 16);
   const b = parseInt(hex.slice(4, 6), 16);
 
+  const darkText = "#06111a";
+  const lightText = "#ffffff";
+  const maximumContrastText = "#000000";
+
   // Kart zeminine (#06111a) doğru karıştırılmış koyu ton.
   const mix = (channel, canvas) =>
     Math.round(channel * 0.18 + canvas * 0.82)
       .toString(16)
       .padStart(2, "0");
 
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  const preferredText =
+    contrastRatio(accent, darkText) >= contrastRatio(accent, lightText)
+      ? darkText
+      : lightText;
 
   return {
     accent,
     soft: `#${mix(r, 6)}${mix(g, 17)}${mix(b, 26)}`,
-    onAccent: luminance > 0.6 ? "#06111a" : "#ffffff",
+    onAccent:
+      contrastRatio(accent, preferredText) >= 4.5
+        ? preferredText
+        : maximumContrastText,
   };
 }
 
@@ -114,7 +142,7 @@ const sports = {
   basketball: {
     accent: "#ff6b1a",
     soft: "#3a2016",
-    onAccent: "#ffffff",
+    onAccent: "#06111a",
   },
   football: {
     // Açık sarı-yeşil zemin: beyaz yazı okunmuyordu, koyu metin kullanılıyor.
@@ -125,7 +153,7 @@ const sports = {
   volleyball: {
     accent: "#9a72ff",
     soft: "#2c2148",
-    onAccent: "#ffffff",
+    onAccent: "#06111a",
   },
   handball: sportAccent("#14b8a6"),
   beachVolleyball: sportAccent("#fbbf24"),
@@ -161,7 +189,7 @@ const sports = {
   running: {
     accent: "#42a5ff",
     soft: "#142d45",
-    onAccent: "#ffffff",
+    onAccent: "#06111a",
   },
   cycling: sportAccent("#22c55e"),
   hiking: sportAccent("#84cc16"),

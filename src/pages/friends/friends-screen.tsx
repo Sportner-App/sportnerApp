@@ -114,7 +114,11 @@ export function FriendsScreen() {
       <SegmentedTabs
         options={[
           { key: "friends", label: t("tabs.friends") },
-          { key: "requests", label: t("tabs.requests") },
+          {
+            key: "requests",
+            label: t("tabs.requests"),
+            badge: requests.length > 0 ? requests.length : undefined,
+          },
           { key: "suggestions", label: t("tabs.suggestions") },
         ]}
         value={tab}

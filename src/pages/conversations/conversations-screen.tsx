@@ -127,6 +127,14 @@ export function ConversationsScreen() {
 
   const items = tab === "events" ? eventItems : friendItems;
   const copy = TAB_COPY[tab];
+  const friendUnreadCount = useMemo(
+    () => friendItems.reduce((total, item) => total + item.unreadCount, 0),
+    [friendItems],
+  );
+  const eventUnreadCount = useMemo(
+    () => eventItems.reduce((total, item) => total + item.unreadCount, 0),
+    [eventItems],
+  );
 
   return (
     <AppScreen
@@ -171,8 +179,16 @@ export function ConversationsScreen() {
 
       <SegmentedTabs
         options={[
-          { key: "friends", label: t("messaging:tabs.friends") },
-          { key: "events", label: t("messaging:tabs.events") },
+          {
+            key: "friends",
+            label: t("messaging:tabs.friends"),
+            badge: friendUnreadCount > 0 ? friendUnreadCount : undefined,
+          },
+          {
+            key: "events",
+            label: t("messaging:tabs.events"),
+            badge: eventUnreadCount > 0 ? eventUnreadCount : undefined,
+          },
         ]}
         value={tab}
         onChange={setTab}

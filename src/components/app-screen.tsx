@@ -24,6 +24,7 @@ export function AppScreen({
   withTabBar = false,
   scroll = true,
   keyboardAvoiding = true,
+  keyboardAwareScroll = true,
   keyboardVerticalOffset = 0,
   refreshControl,
   contentClassName,
@@ -52,14 +53,15 @@ export function AppScreen({
         }
       }
     : undefined;
-  const ScrollContainer = keyboardAvoiding
+  const useKeyboardAwareScroll = keyboardAvoiding && keyboardAwareScroll;
+  const ScrollContainer = useKeyboardAwareScroll
     ? KeyboardAwareScrollView
     : ScrollView;
 
   const body = scroll ? (
     <ScrollContainer
       ref={scrollRef}
-      {...(keyboardAvoiding ? { bottomOffset: 64 } : {})}
+      {...(useKeyboardAwareScroll ? { bottomOffset: 64 } : {})}
       style={bodyStyle}
       onContentSizeChange={onContentSizeChange}
       contentContainerClassName={contentClassName}

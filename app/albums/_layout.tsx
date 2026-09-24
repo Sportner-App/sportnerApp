@@ -1,4 +1,5 @@
 import { FEATURE_FLAGS } from "@/constants/feature-flags";
+import { fullScreenBackStackOptions } from "@/constants/navigation";
 import { Redirect, Stack } from "expo-router";
 
 export default function AlbumsLayout() {
@@ -6,5 +7,5 @@ export default function AlbumsLayout() {
     return <Redirect href="/(tabs)/profile" />;
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return <Stack screenOptions={fullScreenBackStackOptions} />;
 }

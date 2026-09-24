@@ -206,6 +206,7 @@ export function HomeScreen() {
               <EventsMap
                 events={events}
                 onOpenEvent={(eventId) => router.push(`/events/${eventId}`)}
+                focusedCity={filters.city}
                 userLocation={userLocation}
                 locationStatus={locationStatus}
                 onRequestLocation={() => void requestLocation()}
@@ -220,33 +221,7 @@ export function HomeScreen() {
             >
               <TabScreenHeader />
 
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t("sort.accessibility")}
-                onPress={toggleSort}
-                className="mt-1 flex-row items-center gap-2 rounded-xl bg-surface-secondary px-3 py-2.5 active:opacity-70"
-              >
-                <FontAwesome6
-                  name={filters.sortBy === "time" ? "clock" : "location-dot"}
-                  size={13}
-                  color={themeColors.brand.primary}
-                />
-                <Text
-                  numberOfLines={1}
-                  className="flex-1 font-body-bold text-body-sm text-text-primary"
-                >
-                  {filters.sortBy === "time"
-                    ? t("sort.timeLabel")
-                    : t("sort.locationLabel")}
-                </Text>
-                <FontAwesome6
-                  name="arrows-up-down"
-                  size={9}
-                  color={themeColors.text.tertiary}
-                />
-              </Pressable>
-
-              <View className="mt-3 flex-row items-center justify-between gap-sm border-t border-border-default pt-3">
+              <View className="mt-2 flex-row items-center justify-between gap-sm border-t border-border-default pt-3">
                 {viewModeToggle}
                 {filterButtons}
               </View>
