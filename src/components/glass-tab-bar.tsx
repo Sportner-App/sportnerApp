@@ -23,6 +23,20 @@ import { Avatar } from "./avatar";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
+type HomeListViewListener = () => void;
+const homeListViewListeners = new Set<HomeListViewListener>();
+
+export function subscribeToHomeListView(listener: HomeListViewListener) {
+  homeListViewListeners.add(listener);
+  return () => {
+    homeListViewListeners.delete(listener);
+  };
+}
+
+function requestHomeListView() {
+  homeListViewListeners.forEach((listener) => listener());
+}
+
 function TabButton({
   label,
   icon,
@@ -264,6 +278,10 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
                     )
                   )
                     return;
+
+                  if (item.key === "index") {
+                    requestHomeListView();
+                  }
 
                   const route = state.routes[routeIndex];
                   if (!route) {

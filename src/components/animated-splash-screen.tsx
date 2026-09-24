@@ -6,9 +6,10 @@ import { useTranslation } from "react-i18next";
 import Animated, {
   Easing,
   FadeIn,
-  FadeInDown,
   FadeInUp,
+  ReduceMotion,
   runOnJS,
+  type SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
@@ -27,13 +28,76 @@ type AnimatedSplashScreenProps = {
 };
 
 const SPORT_CHIPS: { icon: IconName; label: string; angle: number }[] = [
-  { icon: "futbol", label: "Futbol", angle: -58 },
-  { icon: "person-running", label: "Koşu", angle: 12 },
-  { icon: "table-tennis-paddle-ball", label: "Tenis", angle: 148 },
+  { icon: "futbol", label: "Futbol", angle: -90 },
+  { icon: "person-running", label: "Koşu", angle: 30 },
+  { icon: "table-tennis-paddle-ball", label: "Tenis", angle: 150 },
 ];
 
+const CHIP_START_RADIUS = 360;
+const CHIP_END_RADIUS = 104;
+const CHIP_ENTRY_DELAY = 100;
+const CHIP_STAGGER_MS = 140;
+const CHIP_ENTRY_MS = 780;
 const HOLD_MS = 1650;
-const EXIT_MS = 460;
+const EXIT_MS = 350;
+
+function SplashSportChip({
+  chip,
+  index,
+  orbit,
+}: {
+  chip: (typeof SPORT_CHIPS)[number];
+  index: number;
+  orbit: SharedValue<number>;
+}) {
+  const progress = useSharedValue(0);
+  const radians = (chip.angle * Math.PI) / 180;
+
+  useEffect(() => {
+    progress.value = withDelay(
+      CHIP_ENTRY_DELAY + index * CHIP_STAGGER_MS,
+      withTiming(1, {
+        duration: CHIP_ENTRY_MS,
+        easing: Easing.bezier(0.23, 1, 0.32, 1),
+        reduceMotion: ReduceMotion.System,
+      }),
+    );
+  }, [index, progress]);
+
+  const anchorStyle = useAnimatedStyle(() => {
+    const radius =
+      CHIP_START_RADIUS +
+      (CHIP_END_RADIUS - CHIP_START_RADIUS) * progress.value;
+
+    return {
+      opacity: 0.18 + progress.value * 0.82,
+      transform: [
+        { translateX: Math.cos(radians) * radius },
+        { translateY: Math.sin(radians) * radius },
+        { scale: 0.9 + progress.value * 0.1 },
+      ],
+    };
+  });
+
+  const counterOrbitStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${-orbit.value}deg` }],
+  }));
+
+  return (
+    <Animated.View style={[styles.chipAnchor, anchorStyle]}>
+      <Animated.View style={counterOrbitStyle}>
+        <View style={styles.chip}>
+          <FontAwesome6
+            name={chip.icon}
+            size={11}
+            color={themeColors.brand.primary}
+          />
+          <Text style={styles.chipLabel}>{chip.label}</Text>
+        </View>
+      </Animated.View>
+    </Animated.View>
+  );
+}
 
 export function AnimatedSplashScreen({ onFinish }: AnimatedSplashScreenProps) {
   const { t } = useTranslation("components");
@@ -110,10 +174,6 @@ export function AnimatedSplashScreen({ onFinish }: AnimatedSplashScreenProps) {
     transform: [{ rotate: `${orbit.value}deg` }],
   }));
 
-  const counterOrbitStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${-orbit.value}deg` }],
-  }));
-
   return (
     <Animated.View
       style={[styles.root, screenStyle]}
@@ -169,34 +229,13 @@ export function AnimatedSplashScreen({ onFinish }: AnimatedSplashScreenProps) {
 
         <Animated.View style={[styles.orbitLayer, orbitStyle]}>
           {SPORT_CHIPS.map((chip, index) => {
-            const radians = (chip.angle * Math.PI) / 180;
-            const radius = 118;
-
             return (
-              <Animated.View
+              <SplashSportChip
                 key={chip.label}
-                entering={FadeInDown.duration(420).delay(180 + index * 70)}
-                style={[
-                  styles.chipAnchor,
-                  {
-                    transform: [
-                      { translateX: Math.cos(radians) * radius },
-                      { translateY: Math.sin(radians) * radius },
-                    ],
-                  },
-                ]}
-              >
-                <Animated.View style={counterOrbitStyle}>
-                  <View style={styles.chip}>
-                    <FontAwesome6
-                      name={chip.icon}
-                      size={11}
-                      color={themeColors.brand.primary}
-                    />
-                    <Text style={styles.chipLabel}>{chip.label}</Text>
-                  </View>
-                </Animated.View>
-              </Animated.View>
+                chip={chip}
+                index={index}
+                orbit={orbit}
+              />
             );
           })}
         </Animated.View>
@@ -281,8 +320,10 @@ const styles = StyleSheet.create({
   logoLetter: {
     fontFamily: "Anybody_700Bold",
     fontSize: 54,
+    lineHeight: 64,
+    includeFontPadding: false,
+    textAlign: "center",
     color: themeColors.brand.primary,
-    marginTop: -2,
   },
   orbitLayer: {
     ...StyleSheet.absoluteFillObject,

@@ -171,6 +171,10 @@ export type BrandMarkProps = {
   className?: string;
   /** `light` = cream canvas (Home). Default stays dark for auth / first-launch. */
   tone?: UiTone;
+  iconSize?: number;
+  textSize?: number;
+  letterSpacing?: number;
+  gap?: number;
 };
 
 // ScreenHeader
@@ -198,6 +202,8 @@ export type AppScreenProps = PropsWithChildren<{
   scroll?: boolean;
   /** Varsayılan olarak açıktır; odaktaki metin alanını klavyenin üstünde tutar. */
   keyboardAvoiding?: boolean;
+  /** Klavye açıkken sabit footer için ek dikey düzeltme (örn. global toolbar). */
+  keyboardVerticalOffset?: number;
   refreshControl?: ReactElement<RefreshControlProps>;
   contentClassName?: string;
   contentContainerStyle?: StyleProp<ViewStyle>;

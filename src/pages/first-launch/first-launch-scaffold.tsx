@@ -1,12 +1,14 @@
 import { useIsFocused } from "@react-navigation/native";
-import type { ReactNode } from "react";
-import type { ImageSourcePropType } from "react-native";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   ImageBackground,
   Platform,
+  useWindowDimensions,
   Pressable,
   StyleSheet,
   View,
+  type ImageSourcePropType,
+  type LayoutChangeEvent,
 } from "react-native";
 import Animated, {
   FadeInDown,
@@ -16,7 +18,6 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect } from "react";
 
 import { BrandMark, Button } from "@/components";
 import { DARK_THEME_COLORS } from "@/constants/theme-palettes";
@@ -68,6 +69,9 @@ export function FirstLaunchScaffold({
   embedded = false,
 }: FirstLaunchScaffoldProps) {
   const insets = useSafeAreaInsets();
+  const { height: windowHeight } = useWindowDimensions();
+  const compact = windowHeight < 860;
+  const veryCompact = windowHeight < 720;
   const isFocused = useIsFocused();
   const translateX = useSharedValue(embedded ? 0 : 22);
   const reduceEnter = embedded && Platform.OS === "android";
@@ -105,8 +109,8 @@ export function FirstLaunchScaffold({
       <View
         className="flex-1 px-6"
         style={{
-          paddingTop: insets.top + 16,
-          paddingBottom: insets.bottom + 18,
+          paddingTop: insets.top + (compact ? 8 : 16),
+          paddingBottom: insets.bottom + (compact ? 8 : 18),
         }}
       >
         <BrandMark />
@@ -114,26 +118,29 @@ export function FirstLaunchScaffold({
         {progressStep ? (
           <Animated.View
             entering={reduceEnter ? undefined : FadeInDown.duration(380)}
-            className="mt-10"
+            style={{ marginTop: compact ? 12 : 24 }}
           >
-            <Text className="font-mono text-heading-lg text-text-primary">
+            <Text
+              className={`font-mono text-text-primary ${
+                compact ? "text-heading-md" : "text-heading-lg"
+              }`}
+            >
               0{progressStep}
             </Text>
-            <View className="mt-2 h-0.5 w-7 bg-brand-primary" />
+            <View
+              className="h-0.5 bg-brand-primary"
+              style={{ marginTop: compact ? 4 : 8, width: compact ? 22 : 28 }}
+            />
           </Animated.View>
         ) : null}
 
         {visual ? (
-          <View
-            pointerEvents="none"
-            className="absolute left-6 right-6"
-            style={{ top: progressStep ? insets.top + 108 : insets.top + 88 }}
-          >
+          <FittedVisual compact={compact} veryCompact={veryCompact}>
             {visual}
-          </View>
-        ) : null}
-
-        <View className="flex-1" />
+          </FittedVisual>
+        ) : (
+          <View className="flex-1" />
+        )}
 
         <Animated.View
           entering={
@@ -144,7 +151,13 @@ export function FirstLaunchScaffold({
             {title.split("\n").map((line, index) => (
               <Text
                 key={`${line}-${index}`}
-                className={`font-display text-display leading-[42px] ${
+                className={`font-display ${
+                  veryCompact
+                    ? "text-heading-lg leading-[30px]"
+                    : compact
+                      ? "text-display leading-[38px]"
+                      : "text-display leading-[42px]"
+                } ${
                   index === accentLine
                     ? "text-brand-primary"
                     : "text-text-primary"
@@ -154,14 +167,22 @@ export function FirstLaunchScaffold({
               </Text>
             ))}
           </View>
-          <Text className="mt-4 max-w-[310px] font-body text-body leading-6 text-white/70">
+          <Text
+            className={`max-w-[330px] font-body text-white/70 ${
+              veryCompact
+                ? "mt-2 text-body-sm leading-5"
+                : compact
+                  ? "mt-3 text-body-sm leading-5"
+                  : "mt-4 text-body leading-6"
+            }`}
+          >
             {subtitle}
           </Text>
         </Animated.View>
 
-        <View className="mt-7">
+        <View style={{ marginTop: veryCompact ? 10 : compact ? 14 : 28 }}>
           {progressStep ? (
-            <View className="mb-5">
+            <View style={{ marginBottom: compact ? 10 : 20 }}>
               <OnboardingProgress step={progressStep} />
             </View>
           ) : null}
@@ -196,6 +217,52 @@ export function FirstLaunchScaffold({
         </View>
       </View>
     </Animated.View>
+  );
+}
+
+function FittedVisual({
+  children,
+  compact,
+  veryCompact,
+}: {
+  children: ReactNode;
+  compact: boolean;
+  veryCompact: boolean;
+}) {
+  const [availableHeight, setAvailableHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const measured = availableHeight > 0 && contentHeight > 0;
+  const scale = measured ? Math.min(1, availableHeight / contentHeight) : 1;
+  const top = measured ? (availableHeight - contentHeight) / 2 : 0;
+
+  return (
+    <View
+      pointerEvents="none"
+      className="min-h-0 flex-1 overflow-hidden"
+      style={{
+        marginTop: veryCompact ? 4 : compact ? 6 : 10,
+        marginBottom: veryCompact ? 4 : compact ? 8 : 12,
+      }}
+      onLayout={(event: LayoutChangeEvent) => {
+        setAvailableHeight(event.nativeEvent.layout.height);
+      }}
+    >
+      <View
+        onLayout={(event: LayoutChangeEvent) => {
+          setContentHeight(event.nativeEvent.layout.height);
+        }}
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top,
+          opacity: measured ? 1 : 0,
+          transform: [{ scale }],
+        }}
+      >
+        {children}
+      </View>
+    </View>
   );
 }
 

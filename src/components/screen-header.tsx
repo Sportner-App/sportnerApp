@@ -60,12 +60,20 @@ export function ScreenHeader({
 
   return (
     <View className={`px-6 pb-3 ${brand ? "pt-4" : "pt-3"}`}>
-      <View className="flex-row items-center justify-between">
-        {leftSlot}
+      <View
+        className={
+          brand
+            ? "flex-row items-center justify-between"
+            : "flex-row items-center"
+        }
+      >
+        <View className="flex-shrink-0">{leftSlot}</View>
 
         {!brand && title ? (
           <Text
-            className={`font-mono text-caption tracking-[4px] ${
+            numberOfLines={2}
+            ellipsizeMode="tail"
+            className={`min-w-0 flex-1 px-3 text-center font-mono text-caption leading-4 tracking-[4px] ${
               isLight ? "text-text-secondary" : "text-brand-neutral"
             }`}
           >
@@ -73,7 +81,7 @@ export function ScreenHeader({
           </Text>
         ) : null}
 
-        {right ?? <HeaderSpacer />}
+        <View className="flex-shrink-0">{right ?? <HeaderSpacer />}</View>
       </View>
     </View>
   );

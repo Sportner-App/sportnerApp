@@ -40,24 +40,26 @@ export function MessageRow({
     : message.content || (message.mediaUrl ? t("messaging:message.media") : "");
 
   const avatar = showSender ? (
-    <Avatar
-      name={senderName}
-      uri={message.senderProfileImageUrl}
-      size={36}
-      borderWidth={0}
-      onPress={
-        mine || !onOpenSender
-          ? undefined
-          : () => onOpenSender(message.senderUserId)
-      }
-    />
+    <View className="mt-5">
+      <Avatar
+        name={senderName}
+        uri={message.senderProfileImageUrl}
+        size={36}
+        borderWidth={0}
+        onPress={
+          mine || !onOpenSender
+            ? undefined
+            : () => onOpenSender(message.senderUserId)
+        }
+      />
+    </View>
   ) : (
     <View className="w-9" />
   );
 
   return (
     <View
-      className={`max-w-[90%] flex-row items-end gap-2 ${
+      className={`max-w-[90%] flex-row items-start gap-2 ${
         mine ? "self-end" : "self-start"
       }`}
     >

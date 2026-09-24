@@ -8,7 +8,6 @@ import {
 import {
   KeyboardAvoidingView,
   KeyboardAwareScrollView,
-  KeyboardStickyView,
 } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
@@ -25,6 +24,7 @@ export function AppScreen({
   withTabBar = false,
   scroll = true,
   keyboardAvoiding = true,
+  keyboardVerticalOffset = 0,
   refreshControl,
   contentClassName,
   contentContainerStyle,
@@ -112,13 +112,10 @@ export function AppScreen({
         <KeyboardAvoidingView
           className="flex-1"
           behavior={Platform.OS === "ios" ? "padding" : undefined}
+          keyboardVerticalOffset={keyboardVerticalOffset}
         >
           <View className="flex-1">{mainContent}</View>
-          {footer ? (
-            <KeyboardStickyView offset={{ opened: -44 }}>
-              {footer}
-            </KeyboardStickyView>
-          ) : null}
+          {footer}
         </KeyboardAvoidingView>
       ) : (
         <>

@@ -25,6 +25,8 @@ import { useSportCatalog } from "@/hooks/use-sport-catalog";
 import { useUserLocation } from "@/hooks/use-user-location";
 import { ORGANIZATION_STATUS } from "@/types/organizations";
 
+import { subscribeToHomeListView } from "@/components/glass-tab-bar";
+
 import { EventCard } from "./event-card";
 import { EventFilterSheet } from "./event-filter-sheet";
 import { EventsMap } from "./events-map";
@@ -46,6 +48,8 @@ export function HomeScreen() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const { requireAuth } = useRequireAuth();
+
+  useEffect(() => subscribeToHomeListView(() => setViewMode("list")), []);
   const { isAuthenticated } = useAuth();
   const { items: myOrganizations, isLoading: isOrganizationsLoading } =
     useMyOrganizations(isAuthenticated);

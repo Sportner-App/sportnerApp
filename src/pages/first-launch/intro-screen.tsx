@@ -2,14 +2,7 @@ import { useRouter } from "expo-router";
 import type { ComponentRef } from "react";
 import { useRef, useState } from "react";
 import { Platform, View, useWindowDimensions } from "react-native";
-import Animated, {
-  Extrapolation,
-  interpolate,
-  type SharedValue,
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  useSharedValue,
-} from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 
 import { useFirstLaunchCopy } from "@/constants/first-launch";
 import { useFirstLaunch } from "@/contexts/first-launch-context";
@@ -30,15 +23,8 @@ export function IntroScreen({ step }: { step: IntroStep }) {
   const { width: windowWidth } = useWindowDimensions();
   const width = IS_IOS ? windowWidth : Math.round(windowWidth);
   const scrollRef = useRef<ComponentRef<typeof Animated.ScrollView>>(null);
-  const scrollX = useSharedValue((step - 1) * width);
   const { markOnboardingSeen } = useFirstLaunch();
   const [isFinishing, setIsFinishing] = useState(false);
-
-  const onScroll = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      scrollX.value = event.contentOffset.x;
-    },
-  });
 
   const onPrimary = async () => {
     if (isFinishing) {
@@ -62,8 +48,6 @@ export function IntroScreen({ step }: { step: IntroStep }) {
       disableIntervalMomentum
       showsHorizontalScrollIndicator={false}
       contentOffset={{ x: (step - 1) * width, y: 0 }}
-      scrollEventThrottle={16}
-      onScroll={onScroll}
       directionalLockEnabled
       className="flex-1 bg-background-primary"
       {...(IS_IOS
@@ -86,7 +70,6 @@ export function IntroScreen({ step }: { step: IntroStep }) {
             key={currentStep}
             step={currentStep}
             width={width}
-            scrollX={scrollX}
             isFinishing={isFinishing}
             onNext={() => {
               scrollRef.current?.scrollTo({
@@ -105,7 +88,6 @@ export function IntroScreen({ step }: { step: IntroStep }) {
 type IntroSlideProps = {
   step: IntroStep;
   width: number;
-  scrollX: SharedValue<number>;
   isFinishing: boolean;
   onNext: () => void;
   onFinish: () => void;
@@ -114,7 +96,6 @@ type IntroSlideProps = {
 function IntroSlide({
   step,
   width,
-  scrollX,
   isFinishing,
   onNext,
   onFinish,
@@ -123,7 +104,6 @@ function IntroSlide({
   const copy = FIRST_LAUNCH_COPY[`intro${step}`];
   const skipLabel = FIRST_LAUNCH_COPY.skip;
   const isLastStep = step === 4;
-  const pageOffset = (step - 1) * width;
   const visual =
     step === 1 ? (
       <IntroEventsVisual />
@@ -135,32 +115,6 @@ function IntroSlide({
       <IntroCommunityVisual />
     );
 
-  const transitionStyle = useAnimatedStyle(() => {
-    const distance = scrollX.value - pageOffset;
-    const scale = interpolate(
-      distance,
-      [-width, 0, width],
-      [IS_IOS ? 0.88 : 0.94, 1, IS_IOS ? 0.88 : 0.94],
-      Extrapolation.CLAMP,
-    );
-
-    if (IS_IOS) {
-      return {
-        opacity: interpolate(
-          distance,
-          [-width, 0, width],
-          [0, 1, 0],
-          Extrapolation.CLAMP,
-        ),
-        transform: [{ translateX: distance }, { scale }],
-      };
-    }
-
-    return {
-      transform: [{ scale }],
-    };
-  });
-
   return (
     <View
       collapsable={false}
@@ -170,10 +124,7 @@ function IntroSlide({
         overflow: IS_IOS ? "visible" : "hidden",
       }}
     >
-      <Animated.View
-        renderToHardwareTextureAndroid
-        style={[{ flex: 1 }, transitionStyle]}
-      >
+      <View style={{ flex: 1 }}>
         <FirstLaunchScaffold
           title={copy.title}
           subtitle={copy.subtitle}
@@ -188,7 +139,7 @@ function IntroSlide({
           primaryHaptic={isLastStep ? "success" : "light"}
           embedded
         />
-      </Animated.View>
+      </View>
     </View>
   );
 }

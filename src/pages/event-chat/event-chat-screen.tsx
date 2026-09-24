@@ -343,6 +343,7 @@ export function EventChatScreen({
   return (
     <AppScreen
       keyboardAvoiding
+      keyboardVerticalOffset={54}
       scrollRef={scrollRef}
       onContentSizeChange={handleContentSizeChange}
       header={
