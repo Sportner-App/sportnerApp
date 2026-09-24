@@ -63,5 +63,16 @@
     "retryA11y": "Mesajı yeniden gönder",
     "failed": "Gönderilemedi · Tekrar dene",
     "sending": "Gönderiliyor…"
+  },
+  "delete": {
+    "action": "Sil",
+    "a11y": "{{title}} sohbetini sil",
+    "title": "Sohbet silinsin mi?",
+    "description": "Sohbet ve geçmişi yalnızca senden silinir. Yeni bir mesaj gelirse sohbet tekrar görünür.",
+    "cancel": "Vazgeç",
+    "confirm": "Sohbeti sil",
+    "deleting": "Siliniyor",
+    "success": "Sohbet silindi",
+    "failed": "Sohbet silinemedi"
   }
 }

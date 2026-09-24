@@ -1,14 +1,17 @@
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, TextInput, View } from "react-native";
+import { Alert, Pressable, ScrollView, TextInput, View } from "react-native";
 
 import { AppScreen, ScreenHeader } from "@/components";
+import { themeColors } from "@/constants/theme";
 import { useSession, useToast } from "@/contexts";
 import { getCurrentLocale } from "@/i18n";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { connectEventChat } from "@/lib/signalr";
 import {
+  deleteConversation,
   getConversation,
   getEventConversation,
   listMessages,
@@ -65,6 +68,7 @@ export function EventChatScreen({
   );
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   /** Taslağın senkron aynası: aynı karedeki ikinci dokunuş boş görsün. */
   const draftRef = useRef("");
@@ -304,6 +308,36 @@ export function EventChatScreen({
     didInitialScrollRef.current = true;
   };
 
+  const confirmDelete = () => {
+    if (!conversationId || isDeleting) {
+      return;
+    }
+
+    Alert.alert(t("delete.title"), t("delete.description"), [
+      { text: t("delete.cancel"), style: "cancel" },
+      {
+        text: t("delete.confirm"),
+        style: "destructive",
+        onPress: () => {
+          setIsDeleting(true);
+          void deleteConversation(conversationId)
+            .then(() => {
+              showToast({ type: "success", title: t("delete.success") });
+              router.back();
+            })
+            .catch((deleteError) => {
+              setIsDeleting(false);
+              showToast({
+                type: "error",
+                title: t("delete.failed"),
+                description: getApiErrorMessage(deleteError),
+              });
+            });
+        },
+      },
+    ]);
+  };
+
   const canSend = draft.trim().length > 0;
 
   return (
@@ -311,7 +345,29 @@ export function EventChatScreen({
       keyboardAvoiding
       scrollRef={scrollRef}
       onContentSizeChange={handleContentSizeChange}
-      header={<ScreenHeader title={headerTitle} showBack />}
+      header={
+        <ScreenHeader
+          title={headerTitle}
+          showBack
+          right={
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t("delete.a11y", { title: headerTitle })}
+              accessibilityState={{ disabled: !conversationId || isDeleting }}
+              disabled={!conversationId || isDeleting}
+              hitSlop={8}
+              onPress={confirmDelete}
+              className="h-10 w-10 items-center justify-center rounded-full border border-destructive/25 bg-destructive/10 active:opacity-70"
+            >
+              <FontAwesome6
+                name="trash-can"
+                size={14}
+                color={themeColors.destructive}
+              />
+            </Pressable>
+          }
+        />
+      }
       contentClassName="gap-3 px-6 pt-2"
       footer={
         isClosed ? (

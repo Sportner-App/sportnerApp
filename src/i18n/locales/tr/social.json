@@ -10,7 +10,11 @@
     "now": "şimdi",
     "minutes": "{{count}} dk",
     "hours": "{{count}} sa",
-    "days": "{{count}} gün"
+    "days": "{{count}} gün",
+    "daysShort": "{{count}} g",
+    "weeks": "{{count}} hf",
+    "months": "{{count}} ay",
+    "years": "{{count}} yıl"
   },
   "comments": {
     "title": "Yorumlar",

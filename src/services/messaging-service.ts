@@ -91,3 +91,7 @@ export async function markConversationRead(
     messageId,
   });
 }
+
+export async function deleteConversation(conversationId: string) {
+  await apiClient.delete(`/api/conversations/${conversationId}`);
+}

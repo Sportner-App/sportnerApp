@@ -61,6 +61,7 @@ export type SegmentedTabsProps<T extends string> = {
   onChange: (key: T) => void;
   disabled?: boolean;
   indicatorMotion?: "spring" | "timing";
+  badgePlacement?: "inline" | "top";
 };
 
 // BottomSheet

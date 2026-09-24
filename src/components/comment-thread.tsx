@@ -6,6 +6,7 @@ import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { listReplies } from "@/services/social-service";
 import type { ApiComment } from "@/types/social";
+import { formatCompactRelativeTime } from "@/utils/relative-time";
 
 import { Avatar } from "./avatar";
 import { AppText as Text } from "@/components/app-text";
@@ -193,22 +194,29 @@ function CommentRow({
         />
       </Pressable>
       <View className="min-w-0 flex-1">
-        <Text className={`font-body text-label leading-[18px] ${bodyColor}`}>
+        <View className="flex-row items-start gap-2">
           <Text
-            className={`font-body-bold ${nameColor}`}
-            onPress={
-              onAuthorPress ? () => onAuthorPress(comment.userId) : undefined
-            }
+            className={`min-w-0 flex-1 font-body text-label leading-[18px] ${bodyColor}`}
           >
-            {username}{" "}
-          </Text>
-          {mention ? (
-            <Text className="font-body-bold text-brand-primary">
-              @{mention}{" "}
+            <Text
+              className={`font-body-bold ${nameColor}`}
+              onPress={
+                onAuthorPress ? () => onAuthorPress(comment.userId) : undefined
+              }
+            >
+              {username}{" "}
             </Text>
-          ) : null}
-          {comment.content}
-        </Text>
+            {mention ? (
+              <Text className="font-body-bold text-brand-primary">
+                @{mention}{" "}
+              </Text>
+            ) : null}
+            {comment.content}
+          </Text>
+          <Text className={`shrink-0 font-mono text-overline ${actionColor}`}>
+            {formatCompactRelativeTime(comment.createdAt)}
+          </Text>
+        </View>
         <Pressable
           hitSlop={10}
           onPress={() => onReply(comment)}

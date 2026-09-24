@@ -19,6 +19,7 @@ export function SegmentedTabs<T extends string>({
   onChange,
   disabled = false,
   indicatorMotion = "spring",
+  badgePlacement = "inline",
 }: SegmentedTabsProps<T>) {
   const [trackWidth, setTrackWidth] = useState(0);
   const segmentWidth =
@@ -68,51 +69,73 @@ export function SegmentedTabs<T extends string>({
               ? option.label
               : `${option.label}, ${option.badge}`
           }
-          className="min-h-[44px] min-w-0 flex-1 items-center justify-center px-1"
+          className={`min-w-0 flex-1 items-center justify-center px-0.5 ${
+            badgePlacement === "top" ? "min-h-[54px]" : "min-h-[44px]"
+          }`}
           onPress={() => onChange(option.key)}
         >
-          <Text
-            numberOfLines={1}
-            className={`max-w-full text-center font-body font-semibold ${
-              options.length >= 4
-                ? "text-overline"
-                : options.length >= 3
-                  ? "text-overline"
-                  : "text-body-sm"
-            } ${
-              option.key === value
-                ? "text-brand-secondary"
-                : "text-brand-neutral"
+          <View
+            className={`max-w-full items-center justify-center ${
+              badgePlacement === "top" ? "flex-col gap-0.5" : "flex-row gap-1"
             }`}
           >
-            {option.label}
-          </Text>
-          {option.badge != null ? (
-            <View
-              className={`absolute right-1 top-1 h-4 min-w-4 items-center justify-center rounded-full px-1 ${
+            {badgePlacement === "top" && option.badge != null ? (
+              <CountBadge option={option} selected={option.key === value} />
+            ) : null}
+            <Text
+              numberOfLines={1}
+              className={`min-w-0 shrink text-center font-body font-semibold ${
+                options.length >= 3 ? "text-overline" : "text-body-sm"
+              } ${
                 option.key === value
-                  ? "bg-brand-secondary/15"
-                  : option.badge > 0
-                    ? "bg-brand-primary/15"
-                    : "bg-surface-secondary"
+                  ? "text-brand-secondary"
+                  : "text-brand-neutral"
               }`}
             >
-              <Text
-                style={{ fontVariant: ["tabular-nums"] }}
-                className={`font-mono text-overline leading-[10px] ${
-                  option.key === value
-                    ? "text-brand-secondary"
-                    : option.badge > 0
-                      ? "text-brand-primary"
-                      : "text-text-tertiary"
-                }`}
-              >
-                {option.badge}
-              </Text>
-            </View>
-          ) : null}
+              {option.label}
+            </Text>
+            {badgePlacement === "inline" && option.badge != null ? (
+              <CountBadge option={option} selected={option.key === value} />
+            ) : null}
+          </View>
         </Pressable>
       ))}
+    </View>
+  );
+}
+
+function CountBadge({
+  option,
+  selected,
+}: {
+  option: { badge?: number };
+  selected: boolean;
+}) {
+  if (option.badge == null) return null;
+
+  return (
+    <View
+      className={`h-4 min-w-4 shrink-0 items-center justify-center rounded-full px-1 ${
+        selected
+          ? "bg-brand-secondary/15"
+          : option.badge > 0
+            ? "bg-brand-primary/15"
+            : "bg-surface-secondary"
+      }`}
+    >
+      <Text
+        numberOfLines={1}
+        style={{ fontVariant: ["tabular-nums"] }}
+        className={`font-mono text-overline leading-[14px] ${
+          selected
+            ? "text-brand-secondary"
+            : option.badge > 0
+              ? "text-brand-primary"
+              : "text-text-tertiary"
+        }`}
+      >
+        {option.badge > 99 ? "99+" : option.badge}
+      </Text>
     </View>
   );
 }

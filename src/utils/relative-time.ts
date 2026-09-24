@@ -24,3 +24,43 @@ export function formatRelativeTime(iso: string): string {
 
   return new Date(iso).toLocaleDateString(getCurrentLocale());
 }
+
+/** Instagram benzeri, tam tarihe dönmeden her zaman kısa kalan zaman etiketi. */
+export function formatCompactRelativeTime(iso: string): string {
+  const timestamp = new Date(iso).getTime();
+  if (!Number.isFinite(timestamp)) {
+    return "";
+  }
+
+  const minutes = Math.max(Math.floor((Date.now() - timestamp) / 60_000), 0);
+  if (minutes < 1) {
+    return i18n.t("social:relativeTime.now");
+  }
+  if (minutes < 60) {
+    return i18n.t("social:relativeTime.minutes", { count: minutes });
+  }
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    return i18n.t("social:relativeTime.hours", { count: hours });
+  }
+
+  const days = Math.floor(hours / 24);
+  if (days < 7) {
+    return i18n.t("social:relativeTime.daysShort", { count: days });
+  }
+
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) {
+    return i18n.t("social:relativeTime.weeks", { count: weeks });
+  }
+
+  const months = Math.floor(days / 30);
+  if (months < 12) {
+    return i18n.t("social:relativeTime.months", { count: months });
+  }
+
+  return i18n.t("social:relativeTime.years", {
+    count: Math.floor(days / 365),
+  });
+}

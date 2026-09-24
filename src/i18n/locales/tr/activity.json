@@ -5,10 +5,10 @@
   "loadingMore": "Etkinlikler yükleniyor",
   "eventCount": "{{count}} etkinlik",
   "tabs": {
-    "upcoming": "Devam eden",
+    "upcoming": "Aktif",
     "pending": "Bekleyen",
     "past": "Geçmiş",
-    "organized": "Düzenlediklerim"
+    "organized": "Yönettiğim"
   },
   "empty": {
     "upcoming": {

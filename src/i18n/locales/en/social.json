@@ -10,7 +10,11 @@
     "now": "now",
     "minutes": "{{count}} min",
     "hours": "{{count}} h",
-    "days": "{{count}} days"
+    "days": "{{count}} days",
+    "daysShort": "{{count}} d",
+    "weeks": "{{count}} w",
+    "months": "{{count}} mo",
+    "years": "{{count}} y"
   },
   "comments": {
     "title": "Comments",

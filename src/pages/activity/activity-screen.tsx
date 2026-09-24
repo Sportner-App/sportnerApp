@@ -44,7 +44,12 @@ export function ActivityScreen() {
         </Text>
       </View>
 
-      <SegmentedTabs options={copy.tabs} value={tab} onChange={setTab} />
+      <SegmentedTabs
+        options={copy.tabs}
+        value={tab}
+        badgePlacement="top"
+        onChange={setTab}
+      />
 
       {isLoading ? (
         <View className="items-center py-16">

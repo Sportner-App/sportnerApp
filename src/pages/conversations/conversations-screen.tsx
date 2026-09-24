@@ -1,8 +1,14 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, View } from "react-native";
+import { Alert, Pressable, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
 
 import {
   AppScreen,
@@ -14,9 +20,13 @@ import {
   SportLoader,
 } from "@/components";
 import { useConversationsTabCopy } from "@/constants/messaging";
+import { useToast } from "@/contexts";
 import { themeColors } from "@/constants/theme";
 import { getApiErrorMessage } from "@/lib/api/errors";
-import { listMyConversations } from "@/services/messaging-service";
+import {
+  deleteConversation,
+  listMyConversations,
+} from "@/services/messaging-service";
 import {
   CONVERSATION_TYPE,
   type ApiConversationListItem,
@@ -32,6 +42,7 @@ export function ConversationsScreen() {
   const router = useRouter();
   const { t } = useTranslation(["messaging", "common"]);
   const TAB_COPY = useConversationsTabCopy();
+  const { showToast } = useToast();
   const [tab, setTab] = useState<InboxTab>("friends");
   const [eventItems, setEventItems] = useState<ApiConversationListItem[]>([]);
   const [friendItems, setFriendItems] = useState<ApiConversationListItem[]>([]);
@@ -39,6 +50,7 @@ export function ConversationsScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [composeOpen, setComposeOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const load = useCallback(
     async (refresh = false) => {
@@ -70,6 +82,47 @@ export function ConversationsScreen() {
     useCallback(() => {
       void load();
     }, [load]),
+  );
+
+  const confirmDelete = useCallback(
+    (item: ApiConversationListItem) => {
+      Alert.alert(
+        t("messaging:delete.title"),
+        t("messaging:delete.description"),
+        [
+          { text: t("messaging:delete.cancel"), style: "cancel" },
+          {
+            text: t("messaging:delete.confirm"),
+            style: "destructive",
+            onPress: () => {
+              setDeletingId(item.id);
+              void deleteConversation(item.id)
+                .then(() => {
+                  setEventItems((current) =>
+                    current.filter((candidate) => candidate.id !== item.id),
+                  );
+                  setFriendItems((current) =>
+                    current.filter((candidate) => candidate.id !== item.id),
+                  );
+                  showToast({
+                    type: "success",
+                    title: t("messaging:delete.success"),
+                  });
+                })
+                .catch((deleteError) => {
+                  showToast({
+                    type: "error",
+                    title: t("messaging:delete.failed"),
+                    description: getApiErrorMessage(deleteError),
+                  });
+                })
+                .finally(() => setDeletingId(null));
+            },
+          },
+        ],
+      );
+    },
+    [showToast, t],
   );
 
   const items = tab === "events" ? eventItems : friendItems;
@@ -180,6 +233,8 @@ export function ConversationsScreen() {
             key={item.id}
             item={item}
             onPress={() => router.push(`/conversations/${item.id}`)}
+            onDelete={() => confirmDelete(item)}
+            deleting={deletingId === item.id}
           />
         ))
       )}
@@ -192,15 +247,23 @@ export function ConversationsScreen() {
   );
 }
 
+const DELETE_ACTION_WIDTH = 88;
+
 function ConversationRow({
   item,
   onPress,
+  onDelete,
+  deleting,
 }: {
   item: ApiConversationListItem;
   onPress: () => void;
+  onDelete: () => void;
+  deleting: boolean;
 }) {
   const { t } = useTranslation("messaging");
   const isEvent = item.type === CONVERSATION_TYPE.event;
+  const translateX = useSharedValue(0);
+  const dragStartX = useSharedValue(0);
   const title = isEvent
     ? item.title || t("messaging:row.eventFallback")
     : item.peerFirstName ||
@@ -208,75 +271,130 @@ function ConversationRow({
       item.title ||
       t("messaging:row.chatFallback");
 
+  const panGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .activeOffsetX([-10, 10])
+        .failOffsetY([-10, 10])
+        .onStart(() => {
+          dragStartX.value = translateX.value;
+        })
+        .onUpdate((event) => {
+          translateX.value = Math.max(
+            -DELETE_ACTION_WIDTH,
+            Math.min(0, dragStartX.value + event.translationX),
+          );
+        })
+        .onEnd((event) => {
+          const shouldOpen =
+            translateX.value < -DELETE_ACTION_WIDTH / 2 ||
+            event.velocityX < -500;
+          translateX.value = withSpring(shouldOpen ? -DELETE_ACTION_WIDTH : 0, {
+            dampingRatio: 0.82,
+            duration: 260,
+          });
+        }),
+    [dragStartX, translateX],
+  );
+
+  const rowStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
+
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={t("messaging:row.openA11y", { title })}
-      onPress={onPress}
-      className="flex-row items-center gap-3 rounded-[24px] border border-border-default bg-surface-primary px-4 py-4 active:opacity-75"
-    >
-      {isEvent ? (
-        <View className="h-12 w-12 items-center justify-center rounded-full border border-brand-primary/30 bg-brand-primary/10">
-          <FontAwesome6
-            name="calendar-days"
-            size={18}
-            color={themeColors.brand.primary}
-          />
-        </View>
-      ) : (
-        <Avatar
-          uri={item.peerProfileImageUrl}
-          name={title}
-          size={48}
-          previewable={false}
-        />
-      )}
-
-      <View className="min-w-0 flex-1 gap-1">
-        <View className="flex-row items-center gap-2">
-          <Text
-            numberOfLines={1}
-            className="min-w-0 flex-1 font-body-bold text-body text-text-primary"
-          >
-            {title}
+    <View className="relative overflow-hidden rounded-[24px]">
+      <View className="absolute inset-y-0 right-0 w-[88px] items-center justify-center bg-destructive">
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t("messaging:delete.a11y", { title })}
+          accessibilityState={{ disabled: deleting }}
+          disabled={deleting}
+          onPress={onDelete}
+          className="h-full w-full items-center justify-center gap-1 active:opacity-70"
+        >
+          <FontAwesome6 name="trash-can" size={18} color="#ffffff" />
+          <Text className="font-body-bold text-overline text-white">
+            {deleting
+              ? t("messaging:delete.deleting")
+              : t("messaging:delete.action")}
           </Text>
-          {isEvent && item.isClosed ? (
-            <View className="rounded-full bg-white/10 px-2 py-0.5">
-              <Text className="font-mono text-overline uppercase tracking-wide text-text-tertiary">
-                {t("messaging:row.closed")}
-              </Text>
-            </View>
-          ) : null}
-          {item.lastMessageAt ? (
-            <Text className="font-mono text-overline text-text-tertiary">
-              {formatConversationTime(item.lastMessageAt)}
-            </Text>
-          ) : null}
-        </View>
-        <View className="flex-row items-center gap-2">
-          <Text
-            numberOfLines={1}
-            className={`min-w-0 flex-1 font-body text-label ${
-              item.unreadCount > 0 ? "text-text-primary" : "text-text-tertiary"
-            }`}
-          >
-            {item.lastMessagePreview || t("messaging:row.noMessages")}
-          </Text>
-          {item.unreadCount > 0 ? (
-            <View className="min-w-5 items-center justify-center rounded-full bg-brand-primary px-1.5 py-0.5">
-              <Text className="font-mono text-overline text-text-on-primary">
-                {item.unreadCount > 99 ? "99+" : item.unreadCount}
-              </Text>
-            </View>
-          ) : null}
-        </View>
+        </Pressable>
       </View>
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={rowStyle}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t("messaging:row.openA11y", { title })}
+            onPress={onPress}
+            className="flex-row items-center gap-3 rounded-[24px] border border-border-default bg-surface-primary px-4 py-4 active:opacity-75"
+          >
+            {isEvent ? (
+              <View className="h-12 w-12 items-center justify-center rounded-full border border-brand-primary/30 bg-brand-primary/10">
+                <FontAwesome6
+                  name="calendar-days"
+                  size={18}
+                  color={themeColors.brand.primary}
+                />
+              </View>
+            ) : (
+              <Avatar
+                uri={item.peerProfileImageUrl}
+                name={title}
+                size={48}
+                previewable={false}
+              />
+            )}
 
-      <FontAwesome6
-        name="chevron-right"
-        size={11}
-        color={themeColors.text.tertiary}
-      />
-    </Pressable>
+            <View className="min-w-0 flex-1 gap-1">
+              <View className="flex-row items-center gap-2">
+                <Text
+                  numberOfLines={1}
+                  className="min-w-0 flex-1 font-body-bold text-body text-text-primary"
+                >
+                  {title}
+                </Text>
+                {isEvent && item.isClosed ? (
+                  <View className="rounded-full bg-white/10 px-2 py-0.5">
+                    <Text className="font-mono text-overline uppercase tracking-wide text-text-tertiary">
+                      {t("messaging:row.closed")}
+                    </Text>
+                  </View>
+                ) : null}
+                {item.lastMessageAt ? (
+                  <Text className="font-mono text-overline text-text-tertiary">
+                    {formatConversationTime(item.lastMessageAt)}
+                  </Text>
+                ) : null}
+              </View>
+              <View className="flex-row items-center gap-2">
+                <Text
+                  numberOfLines={1}
+                  className={`min-w-0 flex-1 font-body text-label ${
+                    item.unreadCount > 0
+                      ? "text-text-primary"
+                      : "text-text-tertiary"
+                  }`}
+                >
+                  {item.lastMessagePreview || t("messaging:row.noMessages")}
+                </Text>
+                {item.unreadCount > 0 ? (
+                  <View className="min-w-5 items-center justify-center rounded-full bg-brand-primary px-1.5 py-0.5">
+                    <Text className="font-mono text-overline text-text-on-primary">
+                      {item.unreadCount > 99 ? "99+" : item.unreadCount}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+            </View>
+
+            <FontAwesome6
+              name="chevron-right"
+              size={11}
+              color={themeColors.text.tertiary}
+            />
+          </Pressable>
+        </Animated.View>
+      </GestureDetector>
+    </View>
   );
 }

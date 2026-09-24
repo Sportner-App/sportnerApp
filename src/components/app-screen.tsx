@@ -6,6 +6,7 @@ import {
   type NativeSyntheticEvent,
 } from "react-native";
 import {
+  KeyboardAvoidingView,
   KeyboardAwareScrollView,
   KeyboardStickyView,
 } from "react-native-keyboard-controller";
@@ -16,11 +17,6 @@ import { TAB_BAR_CLEARANCE } from "@/constants/tabs";
 import { themeColors } from "@/constants/theme";
 import type { AppScreenProps } from "@/types/components";
 
-/**
- * Uygulama ekranları için ortak kabuk:
- * safe-area top, sabit header, opsiyonel refresh bar / footer,
- * tab bar clearance ve scroll.
- */
 export function AppScreen({
   children,
   header,
@@ -28,8 +24,6 @@ export function AppScreen({
   footer,
   withTabBar = false,
   scroll = true,
-  // Mesaj ekranındaki davranışı bütün ekranlara taşır: odaklanan alan
-  // klavyenin altında kalmaz; ekranın geri kalanı kaydırılarak klavye kapanır.
   keyboardAvoiding = true,
   refreshControl,
   contentClassName,
@@ -65,6 +59,7 @@ export function AppScreen({
   const body = scroll ? (
     <ScrollContainer
       ref={scrollRef}
+      {...(keyboardAvoiding ? { bottomOffset: 64 } : {})}
       style={bodyStyle}
       onContentSizeChange={onContentSizeChange}
       contentContainerClassName={contentClassName}
@@ -114,10 +109,17 @@ export function AppScreen({
       style={{ paddingTop: edgeToEdgeTop ? 0 : insets.top }}
     >
       {keyboardAvoiding ? (
-        <>
+        <KeyboardAvoidingView
+          className="flex-1"
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
           <View className="flex-1">{mainContent}</View>
-          {footer ? <KeyboardStickyView>{footer}</KeyboardStickyView> : null}
-        </>
+          {footer ? (
+            <KeyboardStickyView offset={{ opened: -44 }}>
+              {footer}
+            </KeyboardStickyView>
+          ) : null}
+        </KeyboardAvoidingView>
       ) : (
         <>
           {mainContent}

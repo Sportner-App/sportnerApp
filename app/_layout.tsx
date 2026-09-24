@@ -16,8 +16,13 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { KeyboardProvider } from "react-native-keyboard-controller";
+import {
+  KeyboardProvider,
+  KeyboardToolbar,
+  type KeyboardToolbarProps,
+} from "react-native-keyboard-controller";
 import "react-native-reanimated";
 import "../global.css";
 import { configureForegroundNotifications } from "@/services/push-notifications-service";
@@ -81,6 +86,7 @@ function RootLayoutNav() {
 }
 
 function ThemedRootLayoutNav() {
+  const { t } = useTranslation("common");
   const { resolvedScheme: colorScheme } = useThemePreference();
   const appColors = colors[colorScheme];
   const navigationTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
@@ -124,9 +130,28 @@ function ThemedRootLayoutNav() {
               <Stack.Screen name="report" />
               <Stack.Screen name="help" />
             </Stack>
+            <KeyboardToolbar
+              doneText={t("close")}
+              theme={keyboardToolbarTheme}
+            />
           </ThemeProvider>
         </AppProviders>
       </KeyboardProvider>
     </GestureHandlerRootView>
   );
 }
+
+const keyboardToolbarTheme: KeyboardToolbarProps["theme"] = {
+  light: {
+    primary: "#18222b",
+    disabled: "#94a0aa",
+    background: "#f4f6f2",
+    ripple: "#c8d0c8",
+  },
+  dark: {
+    primary: "#ccff00",
+    disabled: "#667581",
+    background: "#10212f",
+    ripple: "#43515b",
+  },
+};

@@ -63,5 +63,16 @@
     "retryA11y": "Resend message",
     "failed": "Failed to send · Try again",
     "sending": "Sending…"
+  },
+  "delete": {
+    "action": "Delete",
+    "a11y": "Delete {{title}} chat",
+    "title": "Delete chat?",
+    "description": "The chat and its history will be removed only for you. It will appear again if a new message arrives.",
+    "cancel": "Cancel",
+    "confirm": "Delete chat",
+    "deleting": "Deleting",
+    "success": "Chat deleted",
+    "failed": "Could not delete chat"
   }
 }

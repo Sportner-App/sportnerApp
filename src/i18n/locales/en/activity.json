@@ -5,10 +5,10 @@
   "loadingMore": "Loading events",
   "eventCount": "{{count}} events",
   "tabs": {
-    "upcoming": "Ongoing",
+    "upcoming": "Active",
     "pending": "Pending",
     "past": "Past",
-    "organized": "Organized"
+    "organized": "Managed"
   },
   "empty": {
     "upcoming": {
