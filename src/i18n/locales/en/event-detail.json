@@ -181,7 +181,7 @@
     "chatDone": "View chat",
     "chatGo": "Go to Chat",
     "eventEnded": "Event ended",
-    "joined": "✓ You're in",
+    "joined": "You're in",
     "invitedBy": "{{name}} invited you",
     "accept": "Accept",
     "decline": "Decline",

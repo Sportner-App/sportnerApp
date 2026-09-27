@@ -24,15 +24,25 @@ import { AppText as Text } from "@/components/app-text";
 type EventPrimaryInfoProps = {
   event: EventDetail;
   isOrganizer?: boolean;
+  /** Blok doğrudan etkinlik fotoğrafının üzerinde duruyor: metne gölge, ayırıcılara
+   * saydam beyaz tonlar verip kontrastı fotoğraftan bağımsız hale getiriyoruz. */
+  onMedia?: boolean;
   onOpenParticipants?: () => void;
   onOpenReviews?: () => void;
 };
 
 const VISIBLE_AVATARS = 3;
 
+const MEDIA_TEXT_SHADOW = {
+  textShadowColor: "rgba(2, 8, 13, 0.6)",
+  textShadowOffset: { width: 0, height: 1 },
+  textShadowRadius: 8,
+} as const;
+
 export function EventPrimaryInfo({
   event,
   isOrganizer,
+  onMedia = false,
   onOpenParticipants,
   onOpenReviews,
 }: EventPrimaryInfoProps) {
@@ -54,20 +64,31 @@ export function EventPrimaryInfo({
     >
       <Text
         numberOfLines={3}
-        style={[typeStyles.headingLarge, { color: themeColors.text.primary }]}
+        style={[
+          typeStyles.headingLarge,
+          { color: themeColors.text.primary },
+          onMedia ? MEDIA_TEXT_SHADOW : null,
+        ]}
       >
         {title}
       </Text>
 
       <View className="flex-row flex-wrap items-center gap-x-2 gap-y-1">
-        {showPlace ? <MetaPiece icon="location-dot" label={place} /> : null}
-        {showPlace && time ? <MetaDot /> : null}
-        {time ? <MetaPiece icon="clock" label={time} /> : null}
-        {(showPlace || time) && duration ? <MetaDot /> : null}
-        {duration ? <MetaPiece icon="clock" label={duration} /> : null}
-        {showPlace || time || duration ? <MetaDot /> : null}
+        {showPlace ? (
+          <MetaPiece icon="location-dot" label={place} onMedia={onMedia} />
+        ) : null}
+        {showPlace && time ? <MetaDot onMedia={onMedia} /> : null}
+        {time ? (
+          <MetaPiece icon="clock" label={time} onMedia={onMedia} />
+        ) : null}
+        {(showPlace || time) && duration ? <MetaDot onMedia={onMedia} /> : null}
+        {duration ? (
+          <MetaPiece icon="clock" label={duration} onMedia={onMedia} />
+        ) : null}
+        {showPlace || time || duration ? <MetaDot onMedia={onMedia} /> : null}
         <MetaPiece
           icon="id-card"
+          onMedia={onMedia}
           label={t("primaryInfo.ageRange", {
             min: event.minParticipantAge,
             max: event.maxParticipantAge,
@@ -75,9 +96,10 @@ export function EventPrimaryInfo({
         />
         {event.participantGender != null ? (
           <>
-            <MetaDot />
+            <MetaDot onMedia={onMedia} />
             <MetaPiece
               icon="venus-mars"
+              onMedia={onMedia}
               label={t(
                 event.participantGender === 1
                   ? "primaryInfo.womenOnly"
@@ -88,16 +110,18 @@ export function EventPrimaryInfo({
         ) : null}
         {event.skillLevel != null ? (
           <>
-            <MetaDot />
+            <MetaDot onMedia={onMedia} />
             <MetaPiece
               icon="medal"
+              onMedia={onMedia}
               label={SKILL_LEVEL_LABELS[skillKeyFromCode(event.skillLevel)]}
             />
           </>
         ) : null}
-        <MetaDot />
+        <MetaDot onMedia={onMedia} />
         <MetaPiece
           icon="coins"
+          onMedia={onMedia}
           label={formatEventFee(event.isPaid, event.feeAmount)}
         />
       </View>
@@ -114,7 +138,11 @@ export function EventPrimaryInfo({
       {event.isPaid ? (
         <Text
           className="font-body text-caption leading-5"
-          style={{ color: themeColors.text.tertiary }}
+          style={{
+            color: onMedia
+              ? themeColors.text.secondary
+              : themeColors.text.tertiary,
+          }}
         >
           {t("primaryInfo.paymentDisclaimer")}
         </Text>
@@ -123,6 +151,7 @@ export function EventPrimaryInfo({
       <EventCapacitySummary
         event={event}
         isOrganizer={isOrganizer}
+        onMedia={onMedia}
         onOpenParticipants={onOpenParticipants}
         onOpenReviews={onOpenReviews}
       />
@@ -130,19 +159,29 @@ export function EventPrimaryInfo({
   );
 }
 
-function MetaDot() {
+function MetaDot({ onMedia = false }: { onMedia?: boolean }) {
   return (
     <Text
       className="font-body text-caption"
-      style={{ color: themeColors.text.tertiary }}
+      style={{
+        color: onMedia ? themeColors.text.secondary : themeColors.text.tertiary,
+      }}
     >
       ·
     </Text>
   );
 }
 
-function MetaPiece({ icon, label }: { icon: IconName; label: string }) {
-  const muted = themeColors.text.secondary;
+function MetaPiece({
+  icon,
+  label,
+  onMedia = false,
+}: {
+  icon: IconName;
+  label: string;
+  onMedia?: boolean;
+}) {
+  const muted = onMedia ? themeColors.text.primary : themeColors.text.secondary;
 
   return (
     <View className="flex-row items-center gap-1.5">
@@ -150,7 +189,7 @@ function MetaPiece({ icon, label }: { icon: IconName; label: string }) {
       <Text
         numberOfLines={1}
         className="max-w-[220px] font-body text-label"
-        style={{ color: muted }}
+        style={[{ color: muted }, onMedia ? MEDIA_TEXT_SHADOW : null]}
       >
         {label}
       </Text>
@@ -161,6 +200,7 @@ function MetaPiece({ icon, label }: { icon: IconName; label: string }) {
 export function EventCapacitySummary({
   event,
   isOrganizer,
+  onMedia = false,
   onOpenParticipants,
   onOpenReviews,
 }: EventPrimaryInfoProps) {
@@ -183,6 +223,13 @@ export function EventCapacitySummary({
   const accent = sportAccentToken(event.sport);
   const sportSoft = accent?.soft ?? themeColors.surface.secondary;
   const sportColor = accent?.accent ?? themeColors.text.secondary;
+  // Fotoğraf üzerinde koyu lacivert halka/şerit kaybolur; saydam beyaza çeviriyoruz.
+  const ringColor = onMedia
+    ? "rgba(255, 255, 255, 0.4)"
+    : themeColors.surface.primary;
+  const trackColor = onMedia
+    ? "rgba(255, 255, 255, 0.22)"
+    : themeColors.border.default;
 
   const remainingLabel = unlimited
     ? t("primaryInfo.unlimited")
@@ -214,6 +261,7 @@ export function EventCapacitySummary({
                   index={index}
                   soft={sportSoft}
                   accent={sportColor}
+                  ring={ringColor}
                 />
               ))}
               {extra > 0 ? (
@@ -222,7 +270,7 @@ export function EventCapacitySummary({
                   style={{
                     marginLeft: -10,
                     backgroundColor: themeColors.surface.secondary,
-                    borderColor: themeColors.surface.primary,
+                    borderColor: ringColor,
                     zIndex: 0,
                   }}
                 >
@@ -247,7 +295,10 @@ export function EventCapacitySummary({
 
         <View className="items-end">
           <View className="flex-row items-center gap-2">
-            <Text className="font-body-bold text-heading-sm leading-6 text-text-primary">
+            <Text
+              className="font-body-bold text-heading-sm leading-6 text-text-primary"
+              style={onMedia ? MEDIA_TEXT_SHADOW : undefined}
+            >
               {countLabel}
             </Text>
             {onOpenParticipants ? (
@@ -260,9 +311,16 @@ export function EventCapacitySummary({
           </View>
           <Text
             className="mt-0.5 font-body text-caption"
-            style={{
-              color: isFull ? themeColors.warning : themeColors.text.secondary,
-            }}
+            style={[
+              {
+                color: isFull
+                  ? themeColors.warning
+                  : onMedia
+                    ? themeColors.text.primary
+                    : themeColors.text.secondary,
+              },
+              onMedia ? MEDIA_TEXT_SHADOW : null,
+            ]}
           >
             {remainingLabel}
           </Text>
@@ -272,7 +330,7 @@ export function EventCapacitySummary({
       {fillRatio != null ? (
         <View
           className="h-[4px] overflow-hidden rounded-full"
-          style={{ backgroundColor: themeColors.border.default }}
+          style={{ backgroundColor: trackColor }}
         >
           <View
             className="h-full rounded-full"
@@ -312,7 +370,10 @@ export function EventCapacitySummary({
         <Pressable onPress={onOpenReviews} className="self-start py-1">
           <Text
             className="font-body text-caption"
-            style={{ color: themeColors.text.secondary }}
+            style={[
+              { color: themeColors.text.secondary },
+              onMedia ? MEDIA_TEXT_SHADOW : null,
+            ]}
           >
             {t("primaryInfo.reviews")}
           </Text>
@@ -327,11 +388,13 @@ function CapacityAvatar({
   index,
   soft,
   accent,
+  ring,
 }: {
   person: EventParticipant;
   index: number;
   soft: string;
   accent: string;
+  ring: string;
 }) {
   const face = (
     <Avatar
@@ -348,7 +411,7 @@ function CapacityAvatar({
   const shellStyle = {
     marginLeft: index === 0 ? 0 : -10,
     backgroundColor: soft,
-    borderColor: themeColors.surface.primary,
+    borderColor: ring,
     zIndex: VISIBLE_AVATARS - index,
   };
 

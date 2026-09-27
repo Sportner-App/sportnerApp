@@ -61,7 +61,7 @@ export function EventParticipantsTab({
         </Pressable>
       ) : null}
 
-      <View className="overflow-hidden rounded-3xl border border-border-default bg-background-secondary">
+      <View className="overflow-hidden rounded-3xl border border-white/10 bg-background-secondary/55">
         <View className="flex-row items-center justify-between border-b border-border-default px-4 py-3.5">
           <Text className="font-body-bold text-body text-text-primary">
             {t("participantTab.heading")}

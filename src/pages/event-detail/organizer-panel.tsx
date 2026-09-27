@@ -80,7 +80,7 @@ export function OrganizerPanel({
               lightImpact();
               onEdit();
             }}
-            className="min-h-[48px] flex-row items-center justify-center gap-2 rounded-large border border-border-strong bg-surface-primary px-4 active:bg-surface-secondary"
+            className="min-h-[48px] flex-row items-center justify-center gap-2 rounded-large border border-white/15 bg-surface-primary/60 px-4 active:bg-surface-secondary"
           >
             <FontAwesome6
               name="pen"

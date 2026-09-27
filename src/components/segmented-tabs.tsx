@@ -20,6 +20,7 @@ export function SegmentedTabs<T extends string>({
   disabled = false,
   indicatorMotion = "spring",
   badgePlacement = "inline",
+  translucent = false,
 }: SegmentedTabsProps<T>) {
   const [trackWidth, setTrackWidth] = useState(0);
   const segmentWidth =
@@ -46,9 +47,11 @@ export function SegmentedTabs<T extends string>({
 
   return (
     <View
-      className={`relative flex-row rounded-2xl border border-border-default bg-background-secondary p-1 ${
-        disabled ? "opacity-50" : ""
-      }`}
+      className={`relative flex-row rounded-2xl border p-1 ${
+        translucent
+          ? "border-white/10 bg-background-secondary/55"
+          : "border-border-default bg-background-secondary"
+      } ${disabled ? "opacity-50" : ""}`}
       onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
     >
       {segmentWidth > 0 && (

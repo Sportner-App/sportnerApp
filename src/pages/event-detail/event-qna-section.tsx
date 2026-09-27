@@ -204,7 +204,7 @@ export function EventQnASection({
       ) : null}
 
       {canReply && replyingTo ? (
-        <View className="gap-2 rounded-2xl border border-border-default bg-background-secondary px-3 py-3">
+        <View className="gap-2 rounded-2xl border border-white/10 bg-background-secondary/55 px-3 py-3">
           <View className="flex-row items-center justify-between">
             <Text className="flex-1 font-body text-caption text-text-secondary">
               {t("qna.replyingTo", {

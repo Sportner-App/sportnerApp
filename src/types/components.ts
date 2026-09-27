@@ -62,6 +62,8 @@ export type SegmentedTabsProps<T extends string> = {
   disabled?: boolean;
   indicatorMotion?: "spring" | "timing";
   badgePlacement?: "inline" | "top";
+  /** Medya zeminli ekranlarda arkadaki görselin sızması için yarı saydam şerit. */
+  translucent?: boolean;
 };
 
 // BottomSheet
@@ -194,6 +196,9 @@ export type ScreenHeaderProps = {
 // AppScreen
 export type AppScreenProps = PropsWithChildren<{
   header?: ReactNode;
+  /** Header/body/footer'ın tamamının arkasına serilen tam ekran zemin (ör. etkinlik
+   * fotoğrafı). `edgeToEdgeTop` ile birlikte kullanılır; scroll ile kaymaz. */
+  background?: ReactNode;
   belowHeader?: ReactNode;
   footer?: ReactNode;
   /** Floating tab bar için alt boşluk */

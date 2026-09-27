@@ -114,7 +114,7 @@ export function PendingRequestsBanner({
         pressScale.value = withTiming(1, { duration: 95 });
       }}
       style={pressStyle}
-      className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-3"
+      className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-surface-primary/60 px-4 py-3"
     >
       <View className="h-8 w-8 items-center justify-center rounded-full bg-brand-primary/15">
         <FontAwesome6 name="user-group" size={12} color="#ccff00" />

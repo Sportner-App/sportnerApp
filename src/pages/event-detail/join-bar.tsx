@@ -1,11 +1,12 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, View } from "react-native";
+import { useKeyboardState } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components";
-import { shadows, themeColors } from "@/constants/theme";
+import { shadows, spacing, themeColors } from "@/constants/theme";
 import type { ButtonVariant } from "@/types/components";
 import type { EventDetail } from "@/types/events";
 import {
@@ -97,7 +98,8 @@ function resolveBar({
 
   if (hasApprovedParticipation(event.myParticipationStatus)) {
     return {
-      statusTitle: ended ? t("join.eventEnded") : t("join.joined"),
+      // "Katılıyorsun" artık ekranın sağ üstündeki rozette; bar'da tekrarlamıyoruz.
+      statusTitle: ended ? t("join.eventEnded") : undefined,
       actionLabel: ended ? t("join.chatDone") : t("join.chatGo"),
       action: canChat ? onChat : undefined,
       variant: ended ? "secondary" : "primary",
@@ -175,6 +177,7 @@ export function JoinBar({
 }: JoinBarProps) {
   const { t } = useTranslation("eventDetail");
   const insets = useSafeAreaInsets();
+  const isKeyboardVisible = useKeyboardState((state) => state.isVisible);
   const bar = resolveBar({
     t,
     event,
@@ -195,7 +198,17 @@ export function JoinBar({
   return (
     <View
       className="gap-3 border-t border-border-default bg-surface-primary px-5 pt-3"
-      style={[shadows.md, { paddingBottom: insets.bottom + 10 }]}
+      style={[
+        shadows.md,
+        {
+          // Klavye açıkken bar zaten klavyenin üstüne yapışıyor, alt inset'i de
+          // eklemek onu şişiriyordu. Kapalıyken de tam inset fazla geliyor:
+          // home indicator çubuğu ~13pt, üstünde kalacak kadarını bırakıyoruz.
+          paddingBottom: isKeyboardVisible
+            ? spacing.md
+            : Math.max(insets.bottom - 10, spacing.md),
+        },
+      ]}
     >
       {bar.statusTitle && hasTwoActions ? (
         <Text className="font-body-bold text-body-sm text-text-primary">

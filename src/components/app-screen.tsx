@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   Platform,
   ScrollView,
+  StyleSheet,
   View,
   type LayoutChangeEvent,
   type NativeScrollEvent,
@@ -26,6 +27,7 @@ const KEYBOARD_TOOLBAR_OFFSET = Platform.OS === "ios" ? 53 : 42;
 export function AppScreen({
   children,
   header,
+  background,
   belowHeader,
   footer,
   withTabBar = false,
@@ -155,6 +157,19 @@ export function AppScreen({
       className="flex-1 bg-background-primary"
       style={{ paddingTop: edgeToEdgeTop ? 0 : insets.top }}
     >
+      {background ? (
+        // Absolute konum padding box'a göre çözülür; üst inset'i geri alıp zemini
+        // gerçekten ekranın tepesinden başlatıyoruz.
+        <View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            edgeToEdgeTop ? null : { top: -insets.top },
+          ]}
+        >
+          {background}
+        </View>
+      ) : null}
       {!keyboardAvoiding ? (
         <>
           {mainContent}
@@ -165,9 +180,7 @@ export function AppScreen({
         <>
           <View className="flex-1">{mainContent}</View>
           {footer ? (
-            <KeyboardStickyView
-              offset={{ opened: -KEYBOARD_TOOLBAR_OFFSET }}
-            >
+            <KeyboardStickyView offset={{ opened: -KEYBOARD_TOOLBAR_OFFSET }}>
               <View onLayout={handleFooterLayout}>{footer}</View>
             </KeyboardStickyView>
           ) : null}
