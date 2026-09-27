@@ -36,10 +36,16 @@ async function fetchFriendIds(): Promise<Set<string>> {
   return ids;
 }
 
+export type DiscoverScope = "all" | "friends";
+
 export function useDiscover() {
   const [posts, setPosts] = useState<ApiPost[]>([]);
   const [people, setPeople] = useState<ExplorePerson[]>([]);
   const [friendIds, setFriendIds] = useState<Set<string>>(new Set());
+  const [scope, setScope] = useState<DiscoverScope>("all");
+  // Kapsam değişiminde eski kapsamla tazeleme yapılmasın diye ref'te tutuyoruz.
+  const scopeRef = useRef<DiscoverScope>("all");
+  scopeRef.current = scope;
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +61,7 @@ export function useDiscover() {
       setError(null);
       const [postResult, peopleResult, friendResult] =
         await Promise.allSettled([
-          explorePosts(36),
+          explorePosts(36, scopeRef.current === "friends"),
           explorePeople({ limit: 12 }),
           fetchFriendIds(),
         ]);
@@ -79,6 +85,18 @@ export function useDiscover() {
       }
     }
   }, []);
+
+  const changeScope = useCallback(
+    (next: DiscoverScope) => {
+      if (next === scopeRef.current) {
+        return;
+      }
+      scopeRef.current = next;
+      setScope(next);
+      void load("initial");
+    },
+    [load],
+  );
 
   const hasLoadedRef = useRef(false);
 
@@ -153,6 +171,8 @@ export function useDiscover() {
     posts,
     people,
     friendIds,
+    scope,
+    setScope: changeScope,
     isLoading,
     isRefreshing,
     error,

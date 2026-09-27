@@ -10,12 +10,8 @@
     "createA11y": "Gönderi paylaş"
   },
   "people": {
-    "title": "Yeni sporcular keşfet",
+    "title": "Yeni sporcular",
     "seeAll": "Tümünü gör"
-  },
-  "section": {
-    "title": "Anı yakala",
-    "subtitle": "Topluluktan son paylaşımlar"
   },
   "empty": {
     "message": "Henüz paylaşım yok. İlk fotoğrafı sen ekle.",
@@ -25,6 +21,11 @@
     "createPost": "Gönderi paylaşmak için giriş yapmalısın.",
     "like": "Gönderileri beğenmek için giriş yapmalısın.",
     "comment": "Yorum yapmak için giriş yapmalısın.",
-    "reply": "Yanıt vermek için giriş yapmalısın."
+    "reply": "Yanıt vermek için giriş yapmalısın.",
+    "friendsFilter": "Arkadaşlarının gönderilerini görmek için giriş yapmalısın."
+  },
+  "filter": {
+    "all": "Tüm gönderiler",
+    "friends": "Arkadaşlarım"
   }
 }

@@ -10,12 +10,8 @@
     "createA11y": "Share post"
   },
   "people": {
-    "title": "Discover new athletes",
+    "title": "New athletes",
     "seeAll": "See all"
-  },
-  "section": {
-    "title": "Capture the moment",
-    "subtitle": "Latest from the community"
   },
   "empty": {
     "message": "No shares yet. Be the first to add a photo.",
@@ -25,6 +21,11 @@
     "createPost": "You need to sign in to share a post.",
     "like": "You need to sign in to like posts.",
     "comment": "You need to sign in to comment.",
-    "reply": "You need to sign in to reply."
+    "reply": "You need to sign in to reply.",
+    "friendsFilter": "You need to sign in to see your friends' posts."
+  },
+  "filter": {
+    "all": "All posts",
+    "friends": "My friends"
   }
 }

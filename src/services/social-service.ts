@@ -166,9 +166,9 @@ export async function getExploreFeed(before?: string) {
   };
 }
 
-export async function explorePosts(limit = 36) {
+export async function explorePosts(limit = 36, friendsOnly = false) {
   const response = await apiClient.get<ApiPost[]>("/api/explore/posts", {
-    params: { limit },
+    params: { limit, friendsOnly: friendsOnly || undefined },
   });
   return (response.data ?? []).map(normalizePost);
 }

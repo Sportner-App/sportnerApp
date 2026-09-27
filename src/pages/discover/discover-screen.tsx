@@ -22,6 +22,8 @@ export function DiscoverScreen() {
     posts,
     people,
     friendIds,
+    scope,
+    setScope,
     isLoading,
     isRefreshing,
     error,
@@ -45,45 +47,76 @@ export function DiscoverScreen() {
           router.push("/posts/create"),
       }}
     >
-      {people.length > 0 ? (
-        // Kompakt kişi şeridi: başlık satırı yok, avatarlar yatay kayar.
-        <View className="gap-2">
-          <View className="flex-row items-center justify-between px-5">
-            <Text className="font-body-bold text-caption text-text-secondary">
-              {t("discover:people.title")}
-            </Text>
-            <Pressable hitSlop={8} onPress={() => router.push("/people")}>
-              <Text className="font-body-bold text-overline text-brand-primary">
-                {t("discover:people.seeAll")}
+      <View className="flex-row gap-2 px-5">
+        {(["all", "friends"] as const).map((option) => {
+          const active = scope === option;
+          return (
+            <Pressable
+              key={option}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: active }}
+              onPress={() => {
+                if (
+                  option === "friends" &&
+                  !requireAuth(t("discover:auth.friendsFilter"))
+                ) {
+                  return;
+                }
+                setScope(option);
+              }}
+              className={`rounded-full border px-3.5 py-1.5 active:opacity-75 ${
+                active
+                  ? "border-brand-primary bg-brand-primary"
+                  : "border-border-default bg-surface-primary"
+              }`}
+            >
+              <Text
+                className={`font-body-bold text-caption ${
+                  active ? "text-background-primary" : "text-text-secondary"
+                }`}
+              >
+                {t(`discover:filter.${option}`)}
               </Text>
             </Pressable>
-          </View>
+          );
+        })}
+      </View>
+
+      {people.length > 0 ? (
+        // Tek satır: etiket, avatarlar ve "tümünü gör" yan yana; kullanıcı adları
+        // kaldırıldı — dar alanda "@test…" diye kırpılıp okunmaz hale geliyordu.
+        <View className="flex-row items-center gap-3 px-5">
+          <Text className="font-body-bold text-overline text-text-tertiary">
+            {t("discover:people.title")}
+          </Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 20, gap: 14 }}
+            contentContainerStyle={{ gap: 8 }}
+            className="flex-1"
           >
             {people.map((person) => (
               <Pressable
                 key={person.userId}
+                accessibilityRole="button"
+                accessibilityLabel={`@${person.username ?? ""}`}
                 onPress={() => router.push(`/users/${person.userId}`)}
-                className="w-14 items-center active:opacity-75"
+                className="active:opacity-75"
               >
                 <Avatar
                   uri={person.avatarUrl}
                   name={person.name}
-                  size={44}
-                  borderWidth={2}
+                  size={34}
+                  borderWidth={1.5}
                 />
-                <Text
-                  numberOfLines={1}
-                  className="mt-1 w-full text-center font-body text-overline text-text-secondary"
-                >
-                  @{person.username || t("events:fallback.athleteHandle")}
-                </Text>
               </Pressable>
             ))}
           </ScrollView>
+          <Pressable hitSlop={8} onPress={() => router.push("/people")}>
+            <Text className="font-body-bold text-overline text-brand-primary">
+              {t("discover:people.seeAll")}
+            </Text>
+          </Pressable>
         </View>
       ) : null}
 

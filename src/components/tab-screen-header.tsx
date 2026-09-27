@@ -40,9 +40,10 @@ export type TabHeaderAction = {
 export function TabScreenHeader({ action }: { action?: TabHeaderAction }) {
   const { t } = useTranslation("components");
   const { width } = useWindowDimensions();
-  const actionSize = responsiveSize(width, 40, 44);
-  const actionIconSize = responsiveSize(width, 16, 18);
-  const actionGap = responsiveSize(width, 6, 8);
+  // 4 ikon sığsın diye küçültüldü; 390pt ekranda markaya ~26pt pay kalıyor.
+  const actionSize = responsiveSize(width, 36, 40);
+  const actionIconSize = responsiveSize(width, 15, 16);
+  const actionGap = responsiveSize(width, 5, 6);
   const indicatorSize = responsiveSize(width, 8, 10);
   const brandIconSize = responsiveSize(width, 34, 40);
   const brandTextSize = responsiveSize(width, 16, 18);
@@ -111,21 +112,21 @@ export function TabScreenHeader({ action }: { action?: TabHeaderAction }) {
             iconSize={actionIconSize}
             indicatorSize={indicatorSize}
             label={action.label}
+            tint={themeColors.brand.primary}
             onPress={action.onPress}
           />
-        ) : (
-          <HeaderAction
-            icon="magnifying-glass"
-            size={actionSize}
-            iconSize={actionIconSize}
-            indicatorSize={indicatorSize}
-            label={t("tabHeader.search")}
-            onPress={() =>
-              requireAuth(t("tabHeader.searchAuthRequired")) &&
-              router.push("/people")
-            }
-          />
-        )}
+        ) : null}
+        <HeaderAction
+          icon="magnifying-glass"
+          size={actionSize}
+          iconSize={actionIconSize}
+          indicatorSize={indicatorSize}
+          label={t("tabHeader.search")}
+          onPress={() =>
+            requireAuth(t("tabHeader.searchAuthRequired")) &&
+            router.push("/people")
+          }
+        />
         <HeaderAction
           icon="comments"
           size={actionSize}
@@ -165,6 +166,7 @@ function HeaderAction({
   size,
   iconSize,
   indicatorSize,
+  tint,
 }: {
   icon: "magnifying-glass" | "comments" | "bell" | "plus";
   label: string;
@@ -174,6 +176,8 @@ function HeaderAction({
   size: number;
   iconSize: number;
   indicatorSize: number;
+  /** Birincil aksiyonu marka rengiyle öne çıkarmak için. */
+  tint?: string;
 }) {
   return (
     <View ref={tourTargetRef} collapsable={false}>
@@ -188,7 +192,7 @@ function HeaderAction({
         <FontAwesome6
           name={icon}
           size={iconSize}
-          color={themeColors.text.primary}
+          color={tint ?? themeColors.text.primary}
         />
         {showIndicator ? (
           <View
