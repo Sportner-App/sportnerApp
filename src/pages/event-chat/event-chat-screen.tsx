@@ -3,6 +3,12 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Pressable, ScrollView, TextInput, View } from "react-native";
+import { useKeyboardHandler } from "react-native-keyboard-controller";
+import {
+  scrollTo,
+  useAnimatedRef,
+  useSharedValue,
+} from "react-native-reanimated";
 
 import { AppScreen, ScreenHeader } from "@/components";
 import { themeColors } from "@/constants/theme";
@@ -50,6 +56,9 @@ function settlePending(
   });
 }
 
+/** scrollTo hedefi içerik sonuna kırpılır; "en dibe in" demenin ucuz yolu. */
+const BOTTOM_SCROLL_TARGET = 1_000_000;
+
 type EventChatScreenProps = {
   conversationId?: string;
 };
@@ -72,7 +81,9 @@ export function EventChatScreen({
 
   /** Taslağın senkron aynası: aynı karedeki ikinci dokunuş boş görsün. */
   const draftRef = useRef("");
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useAnimatedRef<ScrollView>();
+  /** Yalnızca klavye açılırken dibe sabitle; kapanışta konumu koru. */
+  const isKeyboardOpening = useSharedValue(false);
   /** Bir sonraki içerik ölçümünde en alta in (ilk yükleme + kendi mesajım). */
   const stickToBottomRef = useRef(true);
   const didInitialScrollRef = useRef(false);
@@ -80,6 +91,32 @@ export function EventChatScreen({
   const userIdRef = useRef<string | undefined>(user?.id);
 
   userIdRef.current = user?.id;
+
+  // Klavye açılınca içerik boyutu değişmez, yalnızca görünür alan kısalır, bu
+  // yüzden onContentSizeChange tetiklenmez. Klavyenin her animasyon karesinde
+  // UI thread'inde dibe kaydırıyoruz: hedef içerik sonuna kırpıldığı için liste
+  // alan küçüldükçe dipte kalır ve hareket klavyeyle birebir senkron olur.
+  useKeyboardHandler(
+    {
+      onStart: (event) => {
+        "worklet";
+        isKeyboardOpening.value = event.height > 0;
+      },
+      onMove: () => {
+        "worklet";
+        if (isKeyboardOpening.value) {
+          scrollTo(scrollRef, 0, BOTTOM_SCROLL_TARGET, false);
+        }
+      },
+      onEnd: () => {
+        "worklet";
+        if (isKeyboardOpening.value) {
+          scrollTo(scrollRef, 0, BOTTOM_SCROLL_TARGET, false);
+        }
+      },
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!id && !directConversationId) {

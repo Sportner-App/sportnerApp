@@ -1,13 +1,16 @@
+import { useState } from "react";
 import {
   Platform,
   ScrollView,
   View,
+  type LayoutChangeEvent,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from "react-native";
 import {
   KeyboardAvoidingView,
   KeyboardAwareScrollView,
+  KeyboardStickyView,
 } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
@@ -15,6 +18,9 @@ import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 import { TAB_BAR_CLEARANCE } from "@/constants/tabs";
 import { themeColors } from "@/constants/theme";
 import type { AppScreenProps } from "@/types/components";
+
+/** app/_layout'taki KeyboardToolbar klavyenin üstünde bu kadar yer kaplar. */
+const KEYBOARD_TOOLBAR_OFFSET = Platform.OS === "ios" ? 53 : 42;
 
 export function AppScreen({
   children,
@@ -40,6 +46,12 @@ export function AppScreen({
 }: AppScreenProps) {
   const insets = useSafeAreaInsets();
   const bottomPad = withTabBar ? TAB_BAR_CLEARANCE + 16 : 32;
+  const [footerHeight, setFooterHeight] = useState(0);
+
+  const handleFooterLayout = (event: LayoutChangeEvent) => {
+    const next = Math.round(event.nativeEvent.layout.height);
+    setFooterHeight((current) => (current === next ? current : next));
+  };
 
   const handleScroll = onEndReached
     ? (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -61,7 +73,9 @@ export function AppScreen({
   const body = scroll ? (
     <ScrollContainer
       ref={scrollRef}
-      {...(useKeyboardAwareScroll ? { bottomOffset: 64 } : {})}
+      {...(useKeyboardAwareScroll
+        ? { bottomOffset: footerHeight + KEYBOARD_TOOLBAR_OFFSET + 12 }
+        : {})}
       style={bodyStyle}
       onContentSizeChange={onContentSizeChange}
       contentContainerClassName={contentClassName}
@@ -110,7 +124,24 @@ export function AppScreen({
       className="flex-1 bg-background-primary"
       style={{ paddingTop: edgeToEdgeTop ? 0 : insets.top }}
     >
-      {keyboardAvoiding ? (
+      {!keyboardAvoiding ? (
+        <>
+          {mainContent}
+          {footer}
+        </>
+      ) : useKeyboardAwareScroll ? (
+        // KeyboardAwareScrollView klavyeyi kendi telafi ediyor; ayrıca KeyboardAvoidingView ile sarmak telafiyi ikiye katlar.
+        <>
+          <View className="flex-1">{mainContent}</View>
+          {footer ? (
+            <KeyboardStickyView
+              offset={{ opened: -KEYBOARD_TOOLBAR_OFFSET }}
+            >
+              <View onLayout={handleFooterLayout}>{footer}</View>
+            </KeyboardStickyView>
+          ) : null}
+        </>
+      ) : (
         <KeyboardAvoidingView
           className="flex-1"
           behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -119,11 +150,6 @@ export function AppScreen({
           <View className="flex-1">{mainContent}</View>
           {footer}
         </KeyboardAvoidingView>
-      ) : (
-        <>
-          {mainContent}
-          {footer}
-        </>
       )}
     </View>
   );
