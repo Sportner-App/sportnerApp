@@ -6,11 +6,14 @@ import {
   Image,
   Pressable,
   ScrollView,
+  StyleSheet,
   TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
 import { ScrollView as GestureScrollView } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
 import {
   AppScreen,
@@ -36,9 +39,33 @@ import { POST_MEDIA_TYPE } from "@/types/social";
 import { resolveMediaUrl } from "@/utils/media-url";
 import { AppText as Text } from "@/components/app-text";
 
+const HEADER_ROW_HEIGHT = 64;
+
+/** Fotoğrafın üzerindeki başlık/geri butonunu okunur tutan üst karartma. */
+function HeaderScrim({ height }: { height: number }) {
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <Svg width="100%" height={height}>
+        <Defs>
+          <LinearGradient id="post-detail-scrim" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#000000" stopOpacity="0.55" />
+            <Stop offset="1" stopColor="#000000" stopOpacity="0" />
+          </LinearGradient>
+        </Defs>
+        <Rect
+          width="100%"
+          height={height}
+          fill="url(#post-detail-scrim)"
+        />
+      </Svg>
+    </View>
+  );
+}
+
 export function PostDetailScreen() {
   const { id, focus } = useLocalSearchParams<{ id: string; focus?: string }>();
   const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { showToast } = useToast();
   const { t } = useTranslation(["feed", "social", "events", "common"]);
@@ -137,25 +164,31 @@ export function PostDetailScreen() {
     <AppScreen
       scrollRef={scrollRef}
       keyboardAvoiding
-      header={<ScreenHeader title={t("feed:detail.header")} showBack />}
-      contentClassName="gap-4 pt-2"
+      edgeToEdgeTop
+      headerOverlay
+      header={
+        <View>
+          <HeaderScrim height={insets.top + HEADER_ROW_HEIGHT} />
+          <View style={{ paddingTop: insets.top }}>
+            {/* Görsel üzerinde başlık, gönderinin kendi içeriğiyle çakışıyor. */}
+            <ScreenHeader
+              title={images.length > 0 ? undefined : t("feed:detail.header")}
+              showBack
+            />
+          </View>
+        </View>
+      }
+      contentClassName="gap-4"
     >
       {isLoading || !post ? (
-        <View className="items-center px-6 py-16">
+        <View
+          className="items-center px-6 py-16"
+          style={{ paddingTop: insets.top + HEADER_ROW_HEIGHT }}
+        >
           <SportLoader size={120} label={t("common:loading")} />
         </View>
       ) : (
         <>
-          <Pressable
-            onPress={() => router.push(`/users/${post.userId}`)}
-            className="flex-row items-center gap-3 px-6"
-          >
-            <Avatar uri={post.profileImageUrl} name={author} size={40} />
-            <Text className="font-body text-body-sm font-semibold text-text-primary">
-              @{post.username || t("events:fallback.athleteHandle")}
-            </Text>
-          </Pressable>
-
           {images.length > 0 ? (
             <>
               <GestureScrollView
@@ -191,7 +224,20 @@ export function PostDetailScreen() {
                 </View>
               ) : null}
             </>
-          ) : null}
+          ) : (
+            // Görsel yoksa arkada karartılacak bir şey de yok; header'a yer aç.
+            <View style={{ height: insets.top + HEADER_ROW_HEIGHT }} />
+          )}
+
+          <Pressable
+            onPress={() => router.push(`/users/${post.userId}`)}
+            className="flex-row items-center gap-3 px-6"
+          >
+            <Avatar uri={post.profileImageUrl} name={author} size={40} />
+            <Text className="font-body text-body-sm font-semibold text-text-primary">
+              @{post.username || t("events:fallback.athleteHandle")}
+            </Text>
+          </Pressable>
 
           <View className="gap-4 px-6">
             {post.content?.trim() ? (

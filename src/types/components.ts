@@ -214,6 +214,9 @@ export type AppScreenProps = PropsWithChildren<{
   bodyStyle?: StyleProp<ViewStyle>;
   /** Hero/media ekranlarında içeriği status bar arkasına uzatır. */
   edgeToEdgeTop?: boolean;
+  /** Header'ı akışta satır kaplamak yerine içeriğin üzerine bindirir; `edgeToEdgeTop`
+   * ile birlikte medyanın ekranın en üstüne kadar uzanmasını sağlar. */
+  headerOverlay?: boolean;
   /** Light ekran için opsiyonel premium zeytin gradient zemini. */
   backdrop?: "default" | "olive";
   /** `light` uses background.primary. Default stays legacy navy. */

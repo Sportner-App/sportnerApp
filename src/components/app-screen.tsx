@@ -37,6 +37,7 @@ export function AppScreen({
   contentContainerStyle,
   bodyStyle,
   edgeToEdgeTop = false,
+  headerOverlay = false,
   backdrop = "default",
   tone = "dark",
   onEndReached,
@@ -111,7 +112,16 @@ export function AppScreen({
     </View>
   );
 
-  const mainContent = (
+  // Overlay modunda header satır kaplamaz; body önce çizilir ki header üstte kalsın.
+  const mainContent = headerOverlay ? (
+    <>
+      {body}
+      <View pointerEvents="box-none" className="absolute inset-x-0 top-0">
+        {header}
+        {belowHeader}
+      </View>
+    </>
+  ) : (
     <>
       {header}
       {belowHeader}
