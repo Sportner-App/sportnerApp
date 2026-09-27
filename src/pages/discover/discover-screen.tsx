@@ -1,7 +1,10 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
+// Dikey scroller gesture-handler tabanlı; yatay şerit de aynı yerden gelmeli,
+// yoksa kaydırma jesti arbitrasyonda kayboluyor.
+import { ScrollView } from "react-native-gesture-handler";
 
 import { Avatar, Button, SportLoader, TabPage } from "@/components";
 import { themeColors } from "@/constants/theme";
@@ -18,6 +21,7 @@ export function DiscoverScreen() {
   const {
     posts,
     people,
+    friendIds,
     isLoading,
     isRefreshing,
     error,
@@ -28,80 +32,67 @@ export function DiscoverScreen() {
   } = useDiscover();
 
   return (
-    <TabPage keyboardAvoiding refreshing={isRefreshing} onRefresh={refresh}>
-      <DiscoverHero
-        postCount={posts.length}
-        onCreate={() =>
+    <TabPage
+      edgeToEdge
+      keyboardAvoiding
+      refreshing={isRefreshing}
+      onRefresh={refresh}
+      headerAction={{
+        icon: "plus",
+        label: t("discover:hero.createA11y"),
+        onPress: () =>
           requireAuth(t("discover:auth.createPost")) &&
-          router.push("/posts/create")
-        }
-      />
-
+          router.push("/posts/create"),
+      }}
+    >
       {people.length > 0 ? (
-        <View>
-          <View className="mb-4 flex-row items-center justify-between">
-            <Text className="font-body-bold text-body-sm text-text-primary">
+        // Kompakt kişi şeridi: başlık satırı yok, avatarlar yatay kayar.
+        <View className="gap-2">
+          <View className="flex-row items-center justify-between px-5">
+            <Text className="font-body-bold text-caption text-text-secondary">
               {t("discover:people.title")}
             </Text>
-            <Pressable
-              hitSlop={8}
-              onPress={() => router.push("/people")}
-              className="flex-row items-center gap-1.5 rounded-full border border-border-default bg-surface-primary px-3 py-1.5 active:opacity-75"
-            >
+            <Pressable hitSlop={8} onPress={() => router.push("/people")}>
               <Text className="font-body-bold text-overline text-brand-primary">
                 {t("discover:people.seeAll")}
               </Text>
-              <FontAwesome6
-                name="chevron-right"
-                size={9}
-                color={themeColors.brand.primary}
-              />
             </Pressable>
           </View>
-          <View className="flex-row">
-            {people.slice(0, 4).map((person) => {
-              return (
-                <Pressable
-                  key={person.userId}
-                  onPress={() => router.push(`/users/${person.userId}`)}
-                  className="flex-1 items-center px-1 active:opacity-75"
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 20, gap: 14 }}
+          >
+            {people.map((person) => (
+              <Pressable
+                key={person.userId}
+                onPress={() => router.push(`/users/${person.userId}`)}
+                className="w-14 items-center active:opacity-75"
+              >
+                <Avatar
+                  uri={person.avatarUrl}
+                  name={person.name}
+                  size={44}
+                  borderWidth={2}
+                />
+                <Text
+                  numberOfLines={1}
+                  className="mt-1 w-full text-center font-body text-overline text-text-secondary"
                 >
-                  <Avatar
-                    uri={person.avatarUrl}
-                    name={person.name}
-                    size={58}
-                    borderWidth={2}
-                  />
-                  <Text
-                    numberOfLines={1}
-                    className="mt-1.5 w-full text-center font-body text-overline text-text-secondary"
-                  >
-                    @{person.username || t("events:fallback.athleteHandle")}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
-      ) : null}
-
-      {!isLoading && !error && posts.length > 0 ? (
-        <View>
-          <Text className="font-display text-heading-md text-text-primary">
-            {t("discover:section.title")}
-          </Text>
-          <Text className="mt-1 font-body text-caption text-text-secondary">
-            {t("discover:section.subtitle")}
-          </Text>
+                  @{person.username || t("events:fallback.athleteHandle")}
+                </Text>
+              </Pressable>
+            ))}
+          </ScrollView>
         </View>
       ) : null}
 
       {isLoading ? (
-        <View className="items-center py-16">
+        <View className="items-center px-5 py-16">
           <SportLoader size={148} label={t("discover:loading")} />
         </View>
       ) : error ? (
-        <View className="items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
+        <View className="mx-5 items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
           <Text className="text-center font-body text-body-sm text-text-secondary">
             {error}
           </Text>
@@ -113,7 +104,7 @@ export function DiscoverScreen() {
           />
         </View>
       ) : posts.length === 0 ? (
-        <View className="items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
+        <View className="mx-5 items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
           <FontAwesome6
             name="images"
             size={22}
@@ -151,65 +142,10 @@ export function DiscoverScreen() {
               return addReply(post, parent.id, content);
             }}
             onAuthorPress={() => router.push(`/users/${post.userId}`)}
+            isFriend={friendIds.has(post.userId)}
           />
         ))
       )}
     </TabPage>
-  );
-}
-
-function DiscoverHero({
-  postCount,
-  onCreate,
-}: {
-  postCount: number;
-  onCreate: () => void;
-}) {
-  const { t } = useTranslation("discover");
-
-  return (
-    <View className="overflow-hidden rounded-[24px] border border-border-default bg-surface-primary p-4">
-      <View className="absolute -right-9 -top-10 h-28 w-28 rounded-full border-[18px] border-brand-primary/10" />
-      <View className="flex-row items-center gap-4">
-        <View className="flex-1">
-          <View className="flex-row items-center gap-2">
-            <View className="h-2 w-2 rounded-full bg-brand-primary" />
-            <Text className="font-mono-bold text-overline tracking-[1.8px] text-brand-primary">
-              {t("hero.eyebrow")}
-            </Text>
-            <Text className="font-mono text-overline text-text-tertiary">
-              {t("hero.postCount", { count: postCount })}
-            </Text>
-          </View>
-          <Text className="mt-2 font-display text-heading-md leading-7 text-text-primary">
-            <Trans
-              ns="discover"
-              i18nKey="hero.title"
-              components={{
-                highlight: <Text className="text-brand-primary" />,
-              }}
-            />
-          </Text>
-          <Text className="mt-1.5 font-body text-caption text-text-secondary">
-            {t("hero.subtitle")}
-          </Text>
-        </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t("hero.createA11y")}
-          onPress={onCreate}
-          className="min-h-14 min-w-[116px] flex-row items-center justify-center gap-2 rounded-2xl bg-brand-primary px-3 active:opacity-85"
-        >
-          <FontAwesome6
-            name="camera"
-            size={17}
-            color={themeColors.background.primary}
-          />
-          <Text className="font-body-bold text-overline text-background-primary">
-            {t("hero.createLabel")}
-          </Text>
-        </Pressable>
-      </View>
-    </View>
   );
 }

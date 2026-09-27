@@ -30,7 +30,14 @@ function responsiveSize(width: number, min: number, max: number): number {
   return min + (max - min) * progress;
 }
 
-export function TabScreenHeader() {
+/** Sekmeye özel birincil aksiyon; verilirse arama ikonunun yerini alır. */
+export type TabHeaderAction = {
+  icon: "plus";
+  label: string;
+  onPress: () => void;
+};
+
+export function TabScreenHeader({ action }: { action?: TabHeaderAction }) {
   const { t } = useTranslation("components");
   const { width } = useWindowDimensions();
   const actionSize = responsiveSize(width, 40, 44);
@@ -97,17 +104,28 @@ export function TabScreenHeader() {
         className="flex-row flex-shrink-0 items-center"
         style={{ gap: actionGap }}
       >
-        <HeaderAction
-          icon="magnifying-glass"
-          size={actionSize}
-          iconSize={actionIconSize}
-          indicatorSize={indicatorSize}
-          label={t("tabHeader.search")}
-          onPress={() =>
-            requireAuth(t("tabHeader.searchAuthRequired")) &&
-            router.push("/people")
-          }
-        />
+        {action ? (
+          <HeaderAction
+            icon={action.icon}
+            size={actionSize}
+            iconSize={actionIconSize}
+            indicatorSize={indicatorSize}
+            label={action.label}
+            onPress={action.onPress}
+          />
+        ) : (
+          <HeaderAction
+            icon="magnifying-glass"
+            size={actionSize}
+            iconSize={actionIconSize}
+            indicatorSize={indicatorSize}
+            label={t("tabHeader.search")}
+            onPress={() =>
+              requireAuth(t("tabHeader.searchAuthRequired")) &&
+              router.push("/people")
+            }
+          />
+        )}
         <HeaderAction
           icon="comments"
           size={actionSize}
@@ -148,7 +166,7 @@ function HeaderAction({
   iconSize,
   indicatorSize,
 }: {
-  icon: "magnifying-glass" | "comments" | "bell";
+  icon: "magnifying-glass" | "comments" | "bell" | "plus";
   label: string;
   showIndicator?: boolean;
   onPress: () => void;

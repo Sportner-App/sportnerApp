@@ -19,6 +19,7 @@ import { useAppTour, useSession } from "@/contexts";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 import { getMyProfile } from "@/services/profile-service";
 import type { UserProfile } from "@/types/profile";
+import { tabBarShrink } from "@/utils/tab-bar-scroll";
 import { Avatar } from "./avatar";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -198,11 +199,21 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
   const avatarUrl = profile?.avatarUrl ?? user?.avatarUrl;
   const avatarName = profile?.fullName ?? user?.fullName ?? user?.username;
 
+  // Scroll sırasında küçül, durunca eski boyuta dön. Ölçeği alt kenara
+  // sabitliyoruz ki bar aşağıda kalsın, ortadan büzülmesin.
+  const shrinkStyle = useAnimatedStyle(() => ({
+    opacity: 1 - tabBarShrink.value * 0.2,
+    transform: [
+      { scale: 1 - tabBarShrink.value * 0.14 },
+      { translateY: tabBarShrink.value * 8 },
+    ],
+  }));
+
   return (
-    <View
+    <Animated.View
       pointerEvents="box-none"
       className="absolute bottom-0 left-0 right-0 px-7"
-      style={{ paddingBottom: Math.max(insets.bottom, 9) }}
+      style={[{ paddingBottom: Math.max(insets.bottom, 9) }, shrinkStyle]}
     >
       <View
         className="h-16 rounded-[30px] border border-white/30"
@@ -303,6 +314,6 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
           })}
         </View>
       </View>
-    </View>
+    </Animated.View>
   );
 }

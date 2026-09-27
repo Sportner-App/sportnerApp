@@ -9,14 +9,37 @@ import {
   createReply,
   explorePosts,
   likePost,
+  listFriends,
   unlikePost,
 } from "@/services/social-service";
 import type { ApiComment, ApiPost } from "@/types/social";
 import type { ExplorePerson } from "@/types/events";
 
+/**
+ * Gönderi yükü arkadaşlık durumu taşımıyor; kart başına istek atmamak için
+ * arkadaş id'lerini bir kez toplayıp kartlarda küme üzerinden bakıyoruz.
+ */
+const FRIEND_PAGE_SIZE = 100;
+const FRIEND_MAX_PAGES = 5;
+
+async function fetchFriendIds(): Promise<Set<string>> {
+  const ids = new Set<string>();
+
+  for (let page = 1; page <= FRIEND_MAX_PAGES; page += 1) {
+    const result = await listFriends(page, FRIEND_PAGE_SIZE);
+    result.items.forEach((friend) => ids.add(friend.userId));
+    if (!result.hasNext) {
+      break;
+    }
+  }
+
+  return ids;
+}
+
 export function useDiscover() {
   const [posts, setPosts] = useState<ApiPost[]>([]);
   const [people, setPeople] = useState<ExplorePerson[]>([]);
+  const [friendIds, setFriendIds] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,15 +53,21 @@ export function useDiscover() {
 
     try {
       setError(null);
-      const [postResult, peopleResult] = await Promise.allSettled([
-        explorePosts(36),
-        explorePeople({ limit: 12 }),
-      ]);
+      const [postResult, peopleResult, friendResult] =
+        await Promise.allSettled([
+          explorePosts(36),
+          explorePeople({ limit: 12 }),
+          fetchFriendIds(),
+        ]);
 
       if (postResult.status === "rejected") throw postResult.reason;
       setPosts(postResult.value);
       if (peopleResult.status === "fulfilled") {
         setPeople(peopleResult.value);
+      }
+      // Giriş yapılmamışsa istek 401 döner; kartlar arkadaş ekleme göstermez.
+      if (friendResult.status === "fulfilled") {
+        setFriendIds(friendResult.value);
       }
     } catch (err) {
       setError(getApiErrorMessage(err, i18n.t("discover:loadFailed")));
@@ -123,6 +152,7 @@ export function useDiscover() {
   return {
     posts,
     people,
+    friendIds,
     isLoading,
     isRefreshing,
     error,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Platform,
   ScrollView,
@@ -18,6 +18,7 @@ import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 import { TAB_BAR_CLEARANCE } from "@/constants/tabs";
 import { themeColors } from "@/constants/theme";
 import type { AppScreenProps } from "@/types/components";
+import { restoreTabBar, shrinkTabBar } from "@/utils/tab-bar-scroll";
 
 /** app/_layout'taki KeyboardToolbar klavyenin üstünde bu kadar yer kaplar. */
 const KEYBOARD_TOOLBAR_OFFSET = Platform.OS === "ios" ? 53 : 42;
@@ -53,6 +54,25 @@ export function AppScreen({
     const next = Math.round(event.nativeEvent.layout.height);
     setFooterHeight((current) => (current === next ? current : next));
   };
+
+  // Scroll sırasında tab bar'ı küçült; yalnızca bar'ın görünür olduğu ekranlarda.
+  const tabBarScrollProps = withTabBar
+    ? {
+        onScrollBeginDrag: shrinkTabBar,
+        onMomentumScrollBegin: shrinkTabBar,
+        // Parmak kalkınca momentum gelebilir; kısa gecikme onu beklemek için.
+        onScrollEndDrag: () => restoreTabBar(150),
+        onMomentumScrollEnd: () => restoreTabBar(),
+      }
+    : null;
+
+  useEffect(() => {
+    if (!withTabBar) {
+      return;
+    }
+    // Scroll ederken ekrandan çıkılırsa bar küçük kalmasın.
+    return () => restoreTabBar();
+  }, [withTabBar]);
 
   const handleScroll = onEndReached
     ? (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -96,6 +116,7 @@ export function AppScreen({
       refreshControl={refreshControl}
       onScroll={handleScroll}
       scrollEventThrottle={handleScroll ? 100 : undefined}
+      {...tabBarScrollProps}
     >
       {children}
     </ScrollContainer>

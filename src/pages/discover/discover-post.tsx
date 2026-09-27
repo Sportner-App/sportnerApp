@@ -12,10 +12,10 @@ import {
 import { ScrollView as GestureScrollView } from "react-native-gesture-handler";
 
 import { Avatar, CommentThread } from "@/components";
-import { useToast } from "@/contexts";
+import { useSession, useToast } from "@/contexts";
 import { themeColors } from "@/constants/theme";
-import { getApiErrorMessage } from "@/lib/api/errors";
-import { listComments } from "@/services/social-service";
+import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
+import { listComments, sendFriendRequest } from "@/services/social-service";
 import type { ApiComment, ApiPost } from "@/types/social";
 import { POST_MEDIA_TYPE } from "@/types/social";
 import { lightImpact } from "@/utils/haptics";
@@ -29,6 +29,7 @@ type DiscoverPostProps = {
   onComment: (content: string) => Promise<ApiComment>;
   onReply: (parent: ApiComment, content: string) => Promise<ApiComment>;
   onAuthorPress: () => void;
+  isFriend: boolean;
 };
 
 export function DiscoverPost({
@@ -37,9 +38,11 @@ export function DiscoverPost({
   onComment,
   onReply,
   onAuthorPress,
+  isFriend,
 }: DiscoverPostProps) {
   const { width } = useWindowDimensions();
-  const cardWidth = width - 64;
+  /** Tam bleed akış: medya ekran genişliğini kullanır. */
+  const mediaWidth = width;
   const router = useRouter();
   const { showToast } = useToast();
   const { t } = useTranslation(["social", "events", "common"]);
@@ -54,6 +57,36 @@ export function DiscoverPost({
   const [isCommenting, setIsCommenting] = useState(false);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [heartBurst, setHeartBurst] = useState(false);
+  const [friendRequestSent, setFriendRequestSent] = useState(false);
+  const [isAddingFriend, setIsAddingFriend] = useState(false);
+  const { user } = useSession();
+  const isOwnPost = user?.id === post.userId;
+  const canAddFriend = Boolean(user) && !isOwnPost && !isFriend;
+
+  const addFriend = async () => {
+    if (isAddingFriend) {
+      return;
+    }
+
+    setIsAddingFriend(true);
+    try {
+      await sendFriendRequest(post.userId);
+      setFriendRequestSent(true);
+    } catch (error) {
+      // Zaten istek varsa sunucu 409 döner; kullanıcı için sonuç yine "gönderildi".
+      if (isApiError(error) && error.status === 409) {
+        setFriendRequestSent(true);
+        return;
+      }
+      showToast({
+        type: "error",
+        title: t("social:friend.requestFailed"),
+        description: getApiErrorMessage(error),
+      });
+    } finally {
+      setIsAddingFriend(false);
+    }
+  };
 
   const author =
     post.firstName || post.username || t("events:fallback.athlete");
@@ -180,25 +213,46 @@ export function DiscoverPost({
   };
 
   return (
-    <View className="rounded-[28px] border border-border-default bg-surface-primary p-3">
-      <Pressable
-        onPress={onAuthorPress}
-        className="mb-3 flex-row items-center gap-3 px-1"
-      >
-        <Avatar uri={post.profileImageUrl} name={author} size={40} />
-        <View className="flex-1">
-          <Text className="font-body-bold text-body-sm text-text-primary">
-            @{athleteHandle}
-          </Text>
-          <Text className="mt-0.5 font-mono text-overline text-text-tertiary">
-            @{athleteHandle} · {formatRelativeTime(post.createdAt)}
-          </Text>
-        </View>
-      </Pressable>
+    <View>
+      <View className="mb-2.5 flex-row items-center gap-3 px-4">
+        <Pressable
+          onPress={onAuthorPress}
+          className="flex-1 flex-row items-center gap-3 active:opacity-75"
+        >
+          <Avatar uri={post.profileImageUrl} name={author} size={38} />
+          <View className="flex-1">
+            <Text className="font-body-bold text-body-sm text-text-primary">
+              @{athleteHandle}
+            </Text>
+            <Text className="mt-0.5 font-mono text-overline text-text-tertiary">
+              {formatRelativeTime(post.createdAt)}
+            </Text>
+          </View>
+        </Pressable>
+
+        {canAddFriend ? (
+          <Pressable
+            hitSlop={8}
+            disabled={friendRequestSent || isAddingFriend}
+            onPress={() => void addFriend()}
+            className="active:opacity-70"
+          >
+            <Text
+              className={`font-body-bold text-caption ${
+                friendRequestSent ? "text-text-tertiary" : "text-brand-primary"
+              }`}
+            >
+              {friendRequestSent
+                ? t("social:friend.requestSent")
+                : t("social:friend.add")}
+            </Text>
+          </Pressable>
+        ) : null}
+      </View>
 
       <Pressable
         onPress={handleMediaPress}
-        className="overflow-hidden rounded-[22px] bg-background-secondary"
+        className="bg-background-secondary"
       >
         {images.length > 0 ? (
           <GestureScrollView
@@ -207,7 +261,7 @@ export function DiscoverPost({
             showsHorizontalScrollIndicator={false}
             onMomentumScrollEnd={(event) => {
               setPage(
-                Math.round(event.nativeEvent.contentOffset.x / cardWidth),
+                Math.round(event.nativeEvent.contentOffset.x / mediaWidth),
               );
             }}
           >
@@ -215,14 +269,14 @@ export function DiscoverPost({
               <Image
                 key={item.id}
                 source={{ uri: resolveMediaUrl(item.storagePath) }}
-                style={{ width: cardWidth, height: cardWidth * 1.03 }}
+                style={{ width: mediaWidth, height: mediaWidth * 1.03 }}
               />
             ))}
           </GestureScrollView>
         ) : (
           <View
             className="justify-center bg-background-secondary px-6"
-            style={{ width: cardWidth, height: cardWidth * 0.9 }}
+            style={{ width: mediaWidth, height: mediaWidth * 0.9 }}
           >
             {videos.length > 0 ? (
               <View className="items-center gap-3">
@@ -269,7 +323,7 @@ export function DiscoverPost({
         </View>
       ) : null}
 
-      <View className="gap-3 px-1 pt-3">
+      <View className="gap-3 px-4 pt-3">
         <View className="flex-row items-center gap-2">
           <Pressable
             hitSlop={8}
@@ -311,7 +365,7 @@ export function DiscoverPost({
 
         {caption && images.length > 0 ? (
           <Text className="font-body text-body-sm leading-5 text-text-primary">
-            <Text className="font-semibold">{author} </Text>
+            <Text className="font-semibold">{athleteHandle} </Text>
             {caption}
           </Text>
         ) : null}

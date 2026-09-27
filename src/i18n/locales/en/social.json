@@ -37,5 +37,10 @@
     "actionFailed": "Action failed",
     "permissionRequired": "Permission required"
   },
-  "report": "Report"
+  "report": "Report",
+  "friend": {
+    "add": "Add friend",
+    "requestSent": "Request sent",
+    "requestFailed": "Could not send request"
+  }
 }
