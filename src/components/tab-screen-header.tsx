@@ -1,13 +1,13 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Pressable,
   View,
   useWindowDimensions,
   type View as ViewType,
 } from "react-native";
-import { useTranslation } from "react-i18next";
 
 import { themeColors } from "@/constants/theme";
 import { useAppTour } from "@/contexts";

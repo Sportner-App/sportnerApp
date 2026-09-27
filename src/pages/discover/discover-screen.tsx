@@ -11,8 +11,8 @@ import { themeColors } from "@/constants/theme";
 import { useDiscover } from "@/hooks/use-discover";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 
-import { DiscoverPost } from "./discover-post";
 import { AppText as Text } from "@/components/app-text";
+import { DiscoverPost } from "./discover-post";
 
 export function DiscoverScreen() {
   const router = useRouter();
@@ -47,7 +47,8 @@ export function DiscoverScreen() {
           router.push("/posts/create"),
       }}
     >
-      <View className="flex-row gap-2 px-5">
+      {/* Minimal filtre: kenarlık/dolgu yok, yalnızca aktif olan öne çıkıyor. */}
+      <View className="flex-row gap-5 px-5">
         {(["all", "friends"] as const).map((option) => {
           const active = scope === option;
           return (
@@ -55,6 +56,7 @@ export function DiscoverScreen() {
               key={option}
               accessibilityRole="radio"
               accessibilityState={{ selected: active }}
+              hitSlop={8}
               onPress={() => {
                 if (
                   option === "friends" &&
@@ -64,36 +66,42 @@ export function DiscoverScreen() {
                 }
                 setScope(option);
               }}
-              className={`rounded-full border px-3.5 py-1.5 active:opacity-75 ${
-                active
-                  ? "border-brand-primary bg-brand-primary"
-                  : "border-border-default bg-surface-primary"
-              }`}
+              className="active:opacity-70"
             >
               <Text
-                className={`font-body-bold text-caption ${
-                  active ? "text-background-primary" : "text-text-secondary"
+                className={`font-body-bold text-body-sm ${
+                  active ? "text-text-primary" : "text-text-tertiary"
                 }`}
               >
                 {t(`discover:filter.${option}`)}
               </Text>
+              <View
+                className={`mt-1.5 h-0.5 rounded-full ${
+                  active ? "bg-brand-primary" : "bg-transparent"
+                }`}
+              />
             </Pressable>
           );
         })}
       </View>
 
       {people.length > 0 ? (
-        // Tek satır: etiket, avatarlar ve "tümünü gör" yan yana; kullanıcı adları
-        // kaldırıldı — dar alanda "@test…" diye kırpılıp okunmaz hale geliyordu.
-        <View className="flex-row items-center gap-3 px-5">
-          <Text className="font-body-bold text-overline text-text-tertiary">
-            {t("discover:people.title")}
-          </Text>
+        <View className="gap-2.5 border-t border-b border-border-default py-1.5">
+          <View className="flex-row items-center justify-between px-5">
+            <Text className="font-body-bold text-overline text-text-tertiary">
+              {t("discover:people.title")}
+            </Text>
+            <Pressable hitSlop={8} onPress={() => router.push("/people")}>
+              <Text className="font-body-bold text-overline text-brand-primary">
+                {t("discover:people.seeAll")}
+              </Text>
+            </Pressable>
+          </View>
+          {/* Kullanıcı adları yok: dar alanda "@test…" diye kırpılıyordu. */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 8 }}
-            className="flex-1"
+            contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}
           >
             {people.map((person) => (
               <Pressable
@@ -106,17 +114,14 @@ export function DiscoverScreen() {
                 <Avatar
                   uri={person.avatarUrl}
                   name={person.name}
-                  size={34}
+                  size={42}
                   borderWidth={1.5}
                 />
               </Pressable>
             ))}
           </ScrollView>
-          <Pressable hitSlop={8} onPress={() => router.push("/people")}>
-            <Text className="font-body-bold text-overline text-brand-primary">
-              {t("discover:people.seeAll")}
-            </Text>
-          </Pressable>
+
+          {/* <View className="mt-1 h-px bg-border-default " /> */}
         </View>
       ) : null}
 
