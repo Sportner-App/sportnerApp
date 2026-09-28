@@ -1,10 +1,5 @@
 {
   "resolveFailed": "Konum detayı alınamadı.",
-  "googleSearchFailed": "Google konum araması başarısız.",
-  "detailsFailed": "Konum detayı alınamadı.",
-  "reverseFailed": "Adres çözümlenemedi.",
-  "nominatimSearchFailed": "Konum araması başarısız.",
-  "selectedLocation": "Seçilen konum",
   "locationLabel": "Konum",
   "mapUnavailable": "Harita şu anda kullanılamıyor.",
   "mapUnavailableHint": "Konumu yukarıdaki arama alanından seçebilirsin."

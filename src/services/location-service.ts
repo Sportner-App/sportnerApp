@@ -1,68 +1,83 @@
 import i18n from "@/i18n";
 import {
-  getGooglePlaceDetails,
-  hasGoogleMapsKey,
-  reverseWithGoogle,
-  searchWithGoogle,
-} from "@/services/location/google";
-import {
-  reverseWithNominatim,
-  searchWithNominatim,
-} from "@/services/location/nominatim";
+  getPlaceDetails,
+  reverseGeocode as reverseGeocodeRequest,
+  searchPlaces,
+} from "@/services/location/places-api";
 import type { LocationSuggestion, SelectedLocation } from "@/types/location";
 
 /**
- * Adres arama (autocomplete)
- * Key varsa Google Places, yoksa Nominatim.
+ * Sağlayıcı seçimi (Google Places / Nominatim) artık sunucuda; burada yalnızca
+ * oturum kimliği yönetiliyor. Anahtar uygulamaya hiç girmiyor.
  */
+
+const MIN_QUERY_LENGTH = 2;
+
+/**
+ * Google, bir adres seçimi boyunca atılan autocomplete isteklerini ve onu
+ * kapatan details çağrısını aynı sessionToken ile gönderirsek tek oturum
+ * olarak faturalandırıyor — her tuş vuruşunu ayrı ödemek yerine.
+ * Bu yüzden token seçim tamamlanana kadar korunur, sonra yenilenir.
+ */
+let sessionToken = createSessionToken();
+
+function createSessionToken() {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function endSession() {
+  sessionToken = createSessionToken();
+}
+
+/** Adres arama (autocomplete). */
 export async function searchLocations(
   query: string,
 ): Promise<LocationSuggestion[]> {
   const trimmed = query.trim();
 
-  if (trimmed.length < 2) {
+  if (trimmed.length < MIN_QUERY_LENGTH) {
     return [];
   }
 
-  return hasGoogleMapsKey()
-    ? searchWithGoogle(trimmed)
-    : searchWithNominatim(trimmed);
+  return searchPlaces(trimmed, sessionToken);
 }
 
 /**
- * Öneri seçildiğinde lat/lng + adres döner.
- * Google'da place details; Nominatim'de zaten dolu alanlar kullanılır.
+ * Öneri seçildiğinde lat/lng + adres döner ve arama oturumunu kapatır.
+ * Sağlayıcı koordinatı zaten verdiyse (Nominatim böyle) ikinci istek atılmaz.
  */
 export async function resolveLocationSuggestion(
   suggestion: LocationSuggestion,
 ): Promise<SelectedLocation> {
-  if (
-    suggestion.latitude != null &&
-    suggestion.longitude != null &&
-    suggestion.addressText
-  ) {
-    return {
-      addressText: suggestion.addressText,
-      latitude: suggestion.latitude,
-      longitude: suggestion.longitude,
-    };
-  }
+  try {
+    if (
+      suggestion.latitude != null &&
+      suggestion.longitude != null &&
+      suggestion.addressText
+    ) {
+      return {
+        addressText: suggestion.addressText,
+        latitude: suggestion.latitude,
+        longitude: suggestion.longitude,
+      };
+    }
 
-  if (hasGoogleMapsKey() && suggestion.placeId) {
-    return getGooglePlaceDetails(suggestion.placeId);
-  }
+    if (!suggestion.placeId) {
+      throw new Error(i18n.t("location:resolveFailed"));
+    }
 
-  throw new Error(i18n.t("location:resolveFailed"));
+    return await getPlaceDetails(suggestion.placeId, sessionToken);
+  } finally {
+    // Seçim bitti: başarılı da olsa hatalı da olsa sonraki arama yeni bir
+    // oturum sayılmalı, yoksa Google eski token'ı geçersiz sayar.
+    endSession();
+  }
 }
 
-/**
- * Haritada seçilen noktayı adrese çevirir
- */
+/** Haritada seçilen noktayı adrese çevirir. */
 export async function reverseGeocode(
   latitude: number,
   longitude: number,
 ): Promise<SelectedLocation> {
-  return hasGoogleMapsKey()
-    ? reverseWithGoogle(latitude, longitude)
-    : reverseWithNominatim(latitude, longitude);
+  return reverseGeocodeRequest(latitude, longitude);
 }

@@ -1,10 +1,5 @@
 {
   "resolveFailed": "Could not load location details.",
-  "googleSearchFailed": "Google location search failed.",
-  "detailsFailed": "Could not load location details.",
-  "reverseFailed": "Could not resolve the address.",
-  "nominatimSearchFailed": "Location search failed.",
-  "selectedLocation": "Selected location",
   "locationLabel": "Location",
   "mapUnavailable": "The map is currently unavailable.",
   "mapUnavailableHint": "You can pick the location from the search field above."

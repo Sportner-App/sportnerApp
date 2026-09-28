@@ -1,9 +1,8 @@
 const appJson = require("./app.json");
 const withAndroidPackageQueries = require("./plugins/withAndroidPackageQueries");
 
-// EXPO_PUBLIC_GOOGLE_MAPS_API_KEY hâlâ kullanılıyor ama artık yalnızca Places
-// / Geocoding HTTP çağrıları için (services/location/google.ts). Harita
-// render'ı Mapbox'a geçtiği için native Google Maps yapılandırması kaldırıldı.
+// Harita render'ı Mapbox'ta, adres arama ise sunucudaki /api/locations
+// uçlarından geçiyor — uygulamanın artık hiç Google Maps anahtarı yok.
 const googleIosClientId =
   process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID?.trim() ||
   "1000243667995-c4edjccfgef9npv2jdfjruugvfqapoi8.apps.googleusercontent.com";

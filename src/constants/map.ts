@@ -3,7 +3,7 @@ import { DEFAULT_EVENT_LOCATION } from "@/constants/events";
 /** Studio'da üretilen Sportner koyu teması (tools/mapbox-restyle.js çıktısı). */
 export const MAPBOX_STYLE_URL =
   process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL?.trim() ||
-  "mapbox://styles/yagizerdenler/cmujuszpg002701s93nptbifd";
+  "mapbox://styles/yagizerdenler/cmukqizlx000601s5bonw7aio";
 
 /**
  * Mapbox koordinatları [longitude, latitude] sırasında — react-native-maps'in

@@ -30,7 +30,7 @@
 
 - `EXPO_PUBLIC_AUTH_BYPASS=true` — login zorunlu değil; form submit doğrudan
   tab’lara geçer. Backend bağlanınca `false` yap.
-- `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY` — doluysa Google Places; boşsa Nominatim.
+- Adres arama `/api/locations/*` üzerinden sunucudan geçer; sağlayıcı anahtarı API tarafındadır.
 
 Gerektiğinde web projesindeki gibi `store/`, `locales/`, `layouts/` klasörleri
 aynı mantıkla eklenebilir.
