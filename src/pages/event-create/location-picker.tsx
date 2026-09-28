@@ -1,23 +1,25 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useRef } from "react";
-import { ActivityIndicator, Pressable, TextInput, View } from "react-native";
-import MapView, {
-  Marker,
-  PROVIDER_GOOGLE,
-  type MapPressEvent,
-  type Region,
-} from "react-native-maps";
+import Mapbox from "@rnmapbox/maps";
+import { useEffect, useRef } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  TextInput,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import Animated, { FadeIn, FadeInDown, FadeOut } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
 import { MapPin, MapUnavailable } from "@/components";
-import { DARK_MAP_STYLE, MAP_INITIAL_REGION } from "@/constants/map";
+import {
+  MAP_INITIAL_CAMERA,
+  MAPBOX_STYLE_URL,
+  toMapboxCoord,
+} from "@/constants/map";
 import { themeColors } from "@/constants/theme";
 import { useLocationSearch } from "@/hooks/use-location-search";
-import {
-  isGooglePlacesEnabled,
-  isNativeMapAvailable,
-} from "@/services/location-service";
+import { hasMapboxToken, zoomForLongitudeSpan } from "@/services/mapbox";
 import type { LocationSuggestion, SelectedLocation } from "@/types/location";
 import { AppText as Text } from "@/components/app-text";
 
@@ -40,7 +42,8 @@ export function LocationPicker({
 }: LocationPickerProps) {
   const { t } = useTranslation("eventCreate");
   const { t: tLocation } = useTranslation("location");
-  const mapRef = useRef<MapView>(null);
+  const cameraRef = useRef<Mapbox.Camera>(null);
+  const { width: screenWidth } = useWindowDimensions();
   const {
     query,
     setQuery,
@@ -52,20 +55,52 @@ export function LocationPicker({
     clearSuggestions,
   } = useLocationSearch(addressText);
 
-  const useGoogleMaps = isGooglePlacesEnabled();
-  const mapAvailable = isNativeMapAvailable();
+  const mapAvailable = hasMapboxToken();
   const hasSelection = latitude != null && longitude != null;
 
-  const animateTo = (lat: number, lng: number) => {
-    const region: Region = {
-      latitude: lat,
-      longitude: lng,
-      latitudeDelta: 0.02,
-      longitudeDelta: 0.02,
-    };
+  // Eski MapView'ın latitudeDelta 0.02'si; yakınlık birebir korunsun diye
+  // sabit yazmak yerine ekran genişliğinden türetiliyor.
+  const selectionZoom = zoomForLongitudeSpan(0.02, screenWidth);
 
-    mapRef.current?.animateToRegion(region, 380);
+  const animateTo = (lat: number, lng: number) => {
+    cameraRef.current?.setCamera({
+      centerCoordinate: [lng, lat],
+      zoomLevel: selectionZoom,
+      animationDuration: 380,
+    });
   };
+
+  /**
+   * Düzenlemede harita seçili konumda açılsın. defaultSettings yalnızca mount
+   * anında okunduğu için koordinat sonradan gelirse (etkinlik verisi async)
+   * aşağıdaki effect devreye giriyor.
+   */
+  const initialCamera = hasSelection
+    ? {
+        centerCoordinate: toMapboxCoord({
+          latitude: latitude!,
+          longitude: longitude!,
+        }),
+        zoomLevel: selectionZoom,
+      }
+    : {
+        centerCoordinate: [...MAP_INITIAL_CAMERA.centerCoordinate],
+        zoomLevel: MAP_INITIAL_CAMERA.zoomLevel,
+      };
+
+  const didFocusSelection = useRef(false);
+
+  useEffect(() => {
+    if (didFocusSelection.current || !hasSelection) {
+      return;
+    }
+
+    didFocusSelection.current = true;
+    animateTo(latitude!, longitude!);
+    // animateTo kasıtlı olarak bağımlılıkta değil: her render'da yeniden
+    // oluşuyor ve effect'i gereksiz tetiklerdi.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasSelection, latitude, longitude]);
 
   const handleSuggestionPress = async (suggestion: LocationSuggestion) => {
     const resolved = await resolveSuggestion(suggestion);
@@ -78,8 +113,13 @@ export function LocationPicker({
     animateTo(resolved.latitude, resolved.longitude);
   };
 
-  const handleMapPress = async (event: MapPressEvent) => {
-    const { latitude: lat, longitude: lng } = event.nativeEvent.coordinate;
+  /** Mapbox tıklamayı GeoJSON feature olarak veriyor: [longitude, latitude]. */
+  const handleMapPress = async (feature: GeoJSON.Feature) => {
+    if (feature.geometry?.type !== "Point") {
+      return;
+    }
+
+    const [lng, lat] = feature.geometry.coordinates;
     animateTo(lat, lng);
 
     const resolved = await resolvePoint(lat, lng);
@@ -193,33 +233,33 @@ export function LocationPicker({
           className={`relative ${expanded ? "h-[420px]" : compact ? "h-40" : "h-56"}`}
         >
           {mapAvailable ? (
-            <MapView
-              ref={mapRef}
+            <Mapbox.MapView
               style={{ flex: 1 }}
-              provider={useGoogleMaps ? PROVIDER_GOOGLE : undefined}
-              initialRegion={MAP_INITIAL_REGION}
-              customMapStyle={useGoogleMaps ? DARK_MAP_STYLE : undefined}
-              userInterfaceStyle="dark"
-              onPress={handleMapPress}
-              showsUserLocation={false}
-              showsCompass={false}
-              showsPointsOfInterest={false}
-              toolbarEnabled={false}
+              styleURL={MAPBOX_STYLE_URL}
+              scaleBarEnabled={false}
+              compassEnabled={false}
               rotateEnabled={false}
               pitchEnabled={false}
+              logoPosition={{ bottom: 56, left: 8 }}
+              attributionPosition={{ bottom: 56, left: 92 }}
+              onPress={handleMapPress}
             >
+              <Mapbox.Camera ref={cameraRef} defaultSettings={initialCamera} />
+
               {hasSelection && (
-                <Marker
-                  coordinate={{
+                <Mapbox.MarkerView
+                  id="selected-location"
+                  coordinate={toMapboxCoord({
                     latitude: latitude!,
                     longitude: longitude!,
-                  }}
+                  })}
                   anchor={{ x: 0.5, y: 1 }}
+                  allowOverlap
                 >
                   <MapPin />
-                </Marker>
+                </Mapbox.MarkerView>
               )}
-            </MapView>
+            </Mapbox.MapView>
           ) : (
             <MapUnavailable message={tLocation("mapUnavailable")} />
           )}

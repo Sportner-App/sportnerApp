@@ -1,76 +1,26 @@
 import { DEFAULT_EVENT_LOCATION } from "@/constants/events";
 
-type MapStyleElement = {
-  elementType?: string;
-  featureType?: string;
-  stylers: Array<Record<string, string | number | undefined>>;
-};
+/** Studio'da üretilen Sportner koyu teması (tools/mapbox-restyle.js çıktısı). */
+export const MAPBOX_STYLE_URL =
+  process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL?.trim() ||
+  "mapbox://styles/yagizerdenler/cmujuszpg002701s93nptbifd";
 
-export const MAP_INITIAL_REGION = {
-  latitude: DEFAULT_EVENT_LOCATION.latitude,
-  longitude: DEFAULT_EVENT_LOCATION.longitude,
-  latitudeDelta: 0.04,
-  longitudeDelta: 0.04,
+/**
+ * Mapbox koordinatları [longitude, latitude] sırasında — react-native-maps'in
+ * tersi. Dönüşümü tek yerde tutuyoruz ki ekranlarda sıra hatası olmasın.
+ */
+export function toMapboxCoord(point: {
+  latitude: number;
+  longitude: number;
+}): [number, number] {
+  return [point.longitude, point.latitude];
+}
+
+/**
+ * Varsayılan şehir görünümü. 0.04° boylam açıklığı ~390pt genişlikte
+ * 360 * 390 / (512 * 2^z) = 0.04 → z ≈ 12.7 veriyor.
+ */
+export const MAP_INITIAL_CAMERA = {
+  centerCoordinate: toMapboxCoord(DEFAULT_EVENT_LOCATION),
+  zoomLevel: 12.7,
 } as const;
-
-/** Google Maps (Android) için markaya yakın koyu stil */
-export const DARK_MAP_STYLE: MapStyleElement[] = [
-  { elementType: "geometry", stylers: [{ color: "#06111a" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#94a3b8" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#06111a" }] },
-  {
-    featureType: "administrative",
-    elementType: "geometry",
-    stylers: [{ color: "#1e293b" }],
-  },
-  {
-    featureType: "poi",
-    elementType: "geometry",
-    stylers: [{ color: "#152238" }],
-  },
-  {
-    featureType: "poi",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#64748b" }],
-  },
-  {
-    featureType: "poi.park",
-    elementType: "geometry",
-    stylers: [{ color: "#132033" }],
-  },
-  {
-    featureType: "road",
-    elementType: "geometry",
-    stylers: [{ color: "#1e2d46" }],
-  },
-  {
-    featureType: "road",
-    elementType: "geometry.stroke",
-    stylers: [{ color: "#06111a" }],
-  },
-  {
-    featureType: "road",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#94a3b8" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry",
-    stylers: [{ color: "#243552" }],
-  },
-  {
-    featureType: "transit",
-    elementType: "geometry",
-    stylers: [{ color: "#152238" }],
-  },
-  {
-    featureType: "water",
-    elementType: "geometry",
-    stylers: [{ color: "#0b1220" }],
-  },
-  {
-    featureType: "water",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#475569" }],
-  },
-];

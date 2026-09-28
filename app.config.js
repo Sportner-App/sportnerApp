@@ -1,8 +1,9 @@
 const appJson = require("./app.json");
 const withAndroidPackageQueries = require("./plugins/withAndroidPackageQueries");
 
-const googleMapsApiKey =
-  process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY?.trim() || "";
+// EXPO_PUBLIC_GOOGLE_MAPS_API_KEY hâlâ kullanılıyor ama artık yalnızca Places
+// / Geocoding HTTP çağrıları için (services/location/google.ts). Harita
+// render'ı Mapbox'a geçtiği için native Google Maps yapılandırması kaldırıldı.
 const googleIosClientId =
   process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID?.trim() ||
   "1000243667995-c4edjccfgef9npv2jdfjruugvfqapoi8.apps.googleusercontent.com";
@@ -18,23 +19,9 @@ module.exports = {
       usesAppleSignIn: true,
       bundleIdentifier:
         appJson.expo?.ios?.bundleIdentifier || "com.yagizerdenler.sportner",
-      config: {
-        ...(appJson.expo?.ios?.config || {}),
-        ...(googleMapsApiKey ? { googleMapsApiKey } : {}),
-      },
     },
     android: {
       ...appJson.expo?.android,
-      config: {
-        ...(appJson.expo?.android?.config || {}),
-        ...(googleMapsApiKey
-          ? {
-              googleMaps: {
-                apiKey: googleMapsApiKey,
-              },
-            }
-          : {}),
-      },
     },
     plugins: [
       ...(appJson.expo?.plugins || []),
@@ -48,6 +35,9 @@ module.exports = {
       // organization-invite.ts). iOS'ta bunun karşılığı zaten
       // app.json > ios.infoPlist.LSApplicationQueriesSchemes.
       [withAndroidPackageQueries, ["com.whatsapp"]],
+      // Harita render'ı Mapbox'ta; adres arama Google Places'te kalıyor.
+      // Secret download token artık gerekmiyor, public pk.* token yeterli.
+      ["@rnmapbox/maps", { RNMapboxMapsUseV11: true }],
     ],
     extra: {
       ...appJson.expo?.extra,

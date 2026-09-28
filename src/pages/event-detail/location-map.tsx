@@ -1,7 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
-import { Pressable, View } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { Image, Pressable, View, type LayoutChangeEvent } from "react-native";
 import Animated, {
   FadeInDown,
   useAnimatedStyle,
@@ -10,13 +9,14 @@ import Animated, {
 } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
-import { DirectionsSheet, MapPin, MapUnavailable } from "@/components";
-import { DARK_MAP_STYLE } from "@/constants/map";
-import { themeColors, typeStyles } from "@/constants/theme";
 import {
-  isGooglePlacesEnabled,
-  isNativeMapAvailable,
-} from "@/services/location-service";
+  DirectionsSheet,
+  MapAttribution,
+  MapPin,
+  MapUnavailable,
+} from "@/components";
+import { themeColors, typeStyles } from "@/constants/theme";
+import { staticMapUrl, zoomForLongitudeSpan } from "@/services/mapbox";
 import type { EventDetail } from "@/types/events";
 import type { DirectionsTarget } from "@/utils/open-directions";
 import { lightImpact } from "@/utils/haptics";
@@ -24,6 +24,9 @@ import { noLocationLabel } from "@/utils/events";
 import { AppText as Text } from "@/components/app-text";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+/** Önceki MapView'ın latitudeDelta'sı; aynı yakınlığı koruyoruz. */
+const MAP_SPAN_DEGREES = 0.018;
 
 type LocationMapProps = {
   event: EventDetail;
@@ -48,8 +51,31 @@ function locationPresentation(address: string) {
 export function LocationMap({ event }: LocationMapProps) {
   const { t } = useTranslation("eventDetail");
   const { t: tLocation } = useTranslation("location");
-  const useGoogleMaps = isGooglePlacesEnabled();
   const [sheetVisible, setSheetVisible] = useState(false);
+  // Statik görselin ölçüsü kabın gerçek genişliğinden türetiliyor; ekran
+  // genişliği eksi padding'i tahmin etmeye çalışmıyoruz.
+  const [size, setSize] = useState<{ width: number; height: number } | null>(
+    null,
+  );
+
+  const handleMapLayout = (layoutEvent: LayoutChangeEvent) => {
+    const { width, height } = layoutEvent.nativeEvent.layout;
+
+    if (width > 0 && height > 0 && width !== size?.width) {
+      setSize({ width, height });
+    }
+  };
+
+  const mapImageUrl = size
+    ? staticMapUrl({
+        latitude: event.latitude,
+        longitude: event.longitude,
+        width: size.width,
+        height: size.height,
+        zoom: zoomForLongitudeSpan(MAP_SPAN_DEGREES, size.width),
+      })
+    : null;
+
   const { title: primaryLocation, detail: secondaryAddress } =
     locationPresentation(event.address);
 
@@ -114,43 +140,34 @@ export function LocationMap({ event }: LocationMapProps) {
             backgroundColor: themeColors.surface.primary,
           }}
         >
-          <View className="relative h-52">
-            {isNativeMapAvailable() ? (
-              <MapView
-                style={{ flex: 1 }}
-                provider={useGoogleMaps ? PROVIDER_GOOGLE : undefined}
-                customMapStyle={useGoogleMaps ? DARK_MAP_STYLE : undefined}
-                userInterfaceStyle="dark"
-                initialRegion={{
-                  latitude: event.latitude,
-                  longitude: event.longitude,
-                  latitudeDelta: 0.018,
-                  longitudeDelta: 0.018,
-                }}
-                scrollEnabled={false}
-                zoomEnabled={false}
-                rotateEnabled={false}
-                pitchEnabled={false}
-                toolbarEnabled={false}
-                showsCompass={false}
-                showsPointsOfInterest={false}
-                pointerEvents="none"
-              >
-                <Marker
-                  coordinate={{
-                    latitude: event.latitude,
-                    longitude: event.longitude,
-                  }}
-                  anchor={{ x: 0.5, y: 1 }}
+          <View className="relative h-52" onLayout={handleMapLayout}>
+            {mapImageUrl ? (
+              <>
+                <Image
+                  source={{ uri: mapImageUrl }}
+                  style={{ flex: 1 }}
+                  resizeMode="cover"
+                  accessibilityIgnoresInvertColors
+                />
+                {/* Görsel etkinlik koordinatında ortalı: kap yüksekliğin üst
+                    yarısını kaplayıp pin'i dibe hizalayınca pin'in ucu tam
+                    merkeze, yani koordinatın üstüne oturuyor. */}
+                <View
+                  pointerEvents="none"
+                  className="absolute inset-x-0 top-0 items-center justify-end"
+                  style={{ bottom: "50%" }}
                 >
                   <MapPin />
-                </Marker>
-              </MapView>
+                </View>
+              </>
             ) : (
               <MapUnavailable message={tLocation("mapUnavailable")} />
             )}
 
             <Pressable onPress={openSheet} className="absolute inset-0" />
+
+            {/* Tam kaplayan Pressable'dan sonra: atıf dokunulabilir kalmalı. */}
+            {mapImageUrl ? <MapAttribution /> : null}
           </View>
 
           <View

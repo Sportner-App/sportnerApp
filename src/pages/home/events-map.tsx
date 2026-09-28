@@ -1,15 +1,26 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ImageBackground, Pressable, View } from "react-native";
+import Mapbox from "@rnmapbox/maps";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+} from "react";
+import {
+  ImageBackground,
+  Pressable,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
-import MapView, {
-  Marker,
-  PROVIDER_GOOGLE,
-  type Region,
-} from "react-native-maps";
 import { useTranslation } from "react-i18next";
 
-import { DARK_MAP_STYLE, MAP_INITIAL_REGION } from "@/constants/map";
+import {
+  MAP_INITIAL_CAMERA,
+  MAPBOX_STYLE_URL,
+  toMapboxCoord,
+} from "@/constants/map";
 import {
   FALLBACK_SPORT_IMAGE,
   resolveEventPhoto,
@@ -19,10 +30,7 @@ import type {
   UserCoordinates,
   UserLocationStatus,
 } from "@/hooks/use-user-location";
-import {
-  isGooglePlacesEnabled,
-  isNativeMapAvailable,
-} from "@/services/location-service";
+import { hasMapboxToken, zoomForLongitudeSpan } from "@/services/mapbox";
 import { MapUnavailable } from "@/components";
 import type { IconName } from "@/types/components";
 import type { EventSummary } from "@/types/events";
@@ -45,22 +53,27 @@ type EventsMapProps = {
   onRequestLocation?: () => void;
 };
 
-function regionForPoints(
-  points: { latitude: number; longitude: number }[],
-): Region {
-  if (points.length === 0) {
-    return MAP_INITIAL_REGION;
-  }
+type Coordinate = { latitude: number; longitude: number };
 
-  if (points.length === 1) {
-    return {
-      latitude: points[0].latitude,
-      longitude: points[0].longitude,
-      latitudeDelta: 0.05,
-      longitudeDelta: 0.05,
-    };
-  }
+/** rnmapbox OnPressEvent'i paket kokunden export etmiyor; tipten turetiyoruz. */
+type ShapePressEvent = Parameters<
+  NonNullable<ComponentProps<typeof Mapbox.ShapeSource>["onPress"]>
+>[0];
 
+/**
+ * Kamerayı etkinliklerin üstüne oturtan sınırlar. Eski region hesabındaki
+ * `delta * 1.6` payı yerine Mapbox'ın kendi padding'ini kullanıyoruz: üstteki
+ * filtre şeridi ve alttaki önizleme kartı gerçek piksel değerleriyle hesaba
+ * katıldığı için pinler artık arayüzün altında kalmıyor.
+ */
+const BOUNDS_PADDING = {
+  paddingTop: 96,
+  paddingBottom: 160,
+  paddingLeft: 48,
+  paddingRight: 48,
+};
+
+function boundsForPoints(points: Coordinate[]) {
   let minLat = points[0].latitude;
   let maxLat = points[0].latitude;
   let minLng = points[0].longitude;
@@ -73,15 +86,42 @@ function regionForPoints(
     maxLng = Math.max(maxLng, point.longitude);
   }
 
-  const latSpan = Math.max(maxLat - minLat, 0.01);
-  const lngSpan = Math.max(maxLng - minLng, 0.01);
-
   return {
-    latitude: (minLat + maxLat) / 2,
-    longitude: (minLng + maxLng) / 2,
-    latitudeDelta: latSpan * 1.6,
-    longitudeDelta: lngSpan * 1.6,
+    ne: [maxLng, maxLat] as [number, number],
+    sw: [minLng, minLat] as [number, number],
+    ...BOUNDS_PADDING,
   };
+}
+
+/**
+ * Cluster ayarları. clusterMaxZoomLevel'ın üstünde pinler tek tek görünür;
+ * mahalle ölçeğinde (z14) artık gruplamanın anlamı kalmıyor.
+ */
+const CLUSTER_RADIUS = 60;
+const CLUSTER_MAX_ZOOM = 14;
+
+/** Bir etkinliğin hangi pin görselini kullanacağı. İkon + aksan rengi çifti. */
+function pinKeyFor(icon: string, accent: string) {
+  return `pin|${icon}|${accent}`;
+}
+
+/** Tek nokta / boş liste sınır hesabına uygun değil; merkez + zoom'a düşer. */
+function cameraForPoints(points: Coordinate[], singleZoom: number) {
+  if (points.length === 0) {
+    return {
+      centerCoordinate: [...MAP_INITIAL_CAMERA.centerCoordinate],
+      zoomLevel: MAP_INITIAL_CAMERA.zoomLevel,
+    };
+  }
+
+  if (points.length === 1) {
+    return {
+      centerCoordinate: toMapboxCoord(points[0]),
+      zoomLevel: singleZoom,
+    };
+  }
+
+  return { bounds: boundsForPoints(points) };
 }
 
 export function EventsMap({
@@ -96,8 +136,15 @@ export function EventsMap({
   const { t: tLocation } = useTranslation("location");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isMapReady, setIsMapReady] = useState(false);
-  const useGoogleMaps = isGooglePlacesEnabled();
-  const mapRef = useRef<MapView>(null);
+  const cameraRef = useRef<Mapbox.Camera>(null);
+  const shapeRef = useRef<Mapbox.ShapeSource>(null);
+  const { width: screenWidth } = useWindowDimensions();
+
+  // Eski MapView delta'larının zoom karşılıkları; yakınlık birebir korunsun
+  // diye ekran genişliğinden türetiliyor.
+  const zoomNearby = zoomForLongitudeSpan(0.08, screenWidth);
+  const zoomRecenter = zoomForLongitudeSpan(0.03, screenWidth);
+  const zoomSingle = zoomForLongitudeSpan(0.05, screenWidth);
 
   const located = useMemo(
     () =>
@@ -112,39 +159,148 @@ export function EventsMap({
   // varsa ilk bakış kullanıcının yakın çevresine odaklanır. Şehir seçildiğinde
   // kamera o şehirde dönen etkinlikleri kapsar. Konum yoksa etkinliklerden
   // hesaplanan bölge güvenli fallback olarak kullanılır.
-  const initialRegion = useMemo(() => {
+  const initialCamera = useMemo(() => {
     if (focusedCity) {
-      return regionForPoints(located);
+      return cameraForPoints(located, zoomSingle);
     }
 
     if (userLocation) {
       return {
-        ...userLocation,
-        latitudeDelta: 0.08,
-        longitudeDelta: 0.08,
+        centerCoordinate: toMapboxCoord(userLocation),
+        zoomLevel: zoomNearby,
       };
     }
 
-    return regionForPoints(located);
-  }, [focusedCity, located, userLocation]);
+    return cameraForPoints(located, zoomSingle);
+  }, [focusedCity, located, userLocation, zoomNearby, zoomSingle]);
 
   const selectedEvent =
     located.find((event) => event.id === selectedId) ?? null;
+
+  /**
+   * Pinler artık RN view değil, harita sembolü — yüzlerce etkinlikte kaydırma
+   * takılmasın diye. Her (ikon, renk) çifti bir kez görsele çevrilip atlasa
+   * yükleniyor; EventMapPin olduğu gibi kullanıldığı için tasarım değişmiyor.
+   * Yalnızca ekranda gerçekten bulunan sporlar kaydediliyor.
+   */
+  const pinImages = useMemo(() => {
+    const seen = new Map<string, { icon: IconName; accent: string }>();
+
+    for (const event of located) {
+      const accent =
+        sportAccentToken(event.sport)?.accent ?? themeColors.brand.primary;
+      const key = pinKeyFor(event.sportIcon, accent);
+
+      if (!seen.has(key)) {
+        seen.set(key, { icon: event.sportIcon, accent });
+      }
+    }
+
+    return [...seen.entries()];
+  }, [located]);
+
+  const eventShape = useMemo<GeoJSON.FeatureCollection<GeoJSON.Point>>(
+    () => ({
+      type: "FeatureCollection",
+      features: located.map((event) => {
+        const accent =
+          sportAccentToken(event.sport)?.accent ?? themeColors.brand.primary;
+
+        return {
+          type: "Feature" as const,
+          geometry: {
+            type: "Point" as const,
+            coordinates: toMapboxCoord(event),
+          },
+          // Cluster'lama feature.id'yi koruma garantisi vermiyor; id'yi
+          // properties içinde taşıyoruz.
+          properties: { id: event.id, pinKey: pinKeyFor(event.sportIcon, accent) },
+        };
+      }),
+    }),
+    [located],
+  );
+
+  /**
+   * ShapeSource dokunması haritanın kendi onPress'ini de tetikleyebiliyor;
+   * o da seçimi hemen temizlerdi. Sembol dokunuşundan hemen sonraki harita
+   * dokunuşunu yok sayıyoruz.
+   */
+  const shapePressedAt = useRef(0);
+
+  const handleShapePress = async (pressEvent: ShapePressEvent) => {
+    shapePressedAt.current = Date.now();
+    const feature = pressEvent.features[0];
+
+    if (!feature) {
+      return;
+    }
+
+    // Cluster'a dokunulduysa seçim yapmak yerine içini açacak kadar yakınlaş.
+    if (feature.properties?.point_count) {
+      const zoom = await shapeRef.current?.getClusterExpansionZoom(feature);
+
+      if (zoom != null && feature.geometry.type === "Point") {
+        cameraRef.current?.setCamera({
+          centerCoordinate: feature.geometry.coordinates as [number, number],
+          zoomLevel: zoom,
+          animationDuration: 350,
+        });
+      }
+
+      return;
+    }
+
+    const id = feature.properties?.id;
+
+    if (typeof id === "string") {
+      setSelectedId(id);
+    }
+  };
 
   useEffect(() => {
     if (!isMapReady || focusedCity || !userLocation) {
       return;
     }
 
-    mapRef.current?.animateToRegion(
-      {
-        ...userLocation,
-        latitudeDelta: 0.08,
-        longitudeDelta: 0.08,
-      },
-      350,
-    );
-  }, [focusedCity, isMapReady, userLocation]);
+    cameraRef.current?.setCamera({
+      centerCoordinate: toMapboxCoord(userLocation),
+      zoomLevel: zoomNearby,
+      animationDuration: 350,
+    });
+  }, [focusedCity, isMapReady, userLocation, zoomNearby]);
+
+  /**
+   * Şehir filtresi seçilince kamera o şehrin etkinliklerini kapsasın.
+   * Eskiden kamera yalnızca mount anında kuruluyordu, yani şehir değiştirmek
+   * görünümü hiç oynatmıyordu — kullanıcı elle kaydırmak zorundaydı.
+   *
+   * Şehir başına bir kez çalışır: etkinlikler her yenilendiğinde tetiklenirse
+   * kullanıcı haritayı kaydırırken kamera geri zıplardı. Liste henüz boşsa
+   * beklenir, çünkü şehir seçimiyle birlikte etkinlikler yeniden çekiliyor.
+   */
+  const fittedCityRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!isMapReady) {
+      return;
+    }
+
+    if (!focusedCity) {
+      fittedCityRef.current = null;
+      return;
+    }
+
+    if (fittedCityRef.current === focusedCity || located.length === 0) {
+      return;
+    }
+
+    fittedCityRef.current = focusedCity;
+    cameraRef.current?.setCamera({
+      ...cameraForPoints(located, zoomSingle),
+      animationDuration: 350,
+    });
+  }, [focusedCity, isMapReady, located, zoomSingle]);
 
   const centerOnUser = () => {
     if (!userLocation) {
@@ -152,17 +308,14 @@ export function EventsMap({
       return;
     }
 
-    mapRef.current?.animateToRegion(
-      {
-        ...userLocation,
-        latitudeDelta: 0.03,
-        longitudeDelta: 0.03,
-      },
-      350,
-    );
+    cameraRef.current?.setCamera({
+      centerCoordinate: toMapboxCoord(userLocation),
+      zoomLevel: zoomRecenter,
+      animationDuration: 350,
+    });
   };
 
-  if (!isNativeMapAvailable()) {
+  if (!hasMapboxToken()) {
     return (
       <View className="flex-1 overflow-hidden rounded-xlarge border border-border-default">
         <MapUnavailable message={tLocation("mapUnavailable")} />
@@ -172,56 +325,128 @@ export function EventsMap({
 
   return (
     <View className="flex-1 overflow-hidden rounded-xlarge border border-border-default">
-      <MapView
-        ref={mapRef}
+      <Mapbox.MapView
         style={{ flex: 1 }}
-        provider={useGoogleMaps ? PROVIDER_GOOGLE : undefined}
-        initialRegion={initialRegion}
-        customMapStyle={useGoogleMaps ? DARK_MAP_STYLE : undefined}
-        userInterfaceStyle="dark"
-        showsUserLocation={false}
-        showsCompass={false}
-        showsPointsOfInterest={false}
-        toolbarEnabled={false}
-        onMapReady={() => setIsMapReady(true)}
-        onPress={() => setSelectedId(null)}
+        styleURL={MAPBOX_STYLE_URL}
+        scaleBarEnabled={false}
+        compassEnabled={false}
+        // Mapbox kullanım şartları etkileşimli haritada wordmark ve atıf
+        // gösterilmesini zorunlu tutuyor; alttaki önizleme kartının altında
+        // kalmasın diye sola yaslandı.
+        logoPosition={{ bottom: 8, left: 8 }}
+        attributionPosition={{ bottom: 8, left: 92 }}
+        onDidFinishLoadingMap={() => setIsMapReady(true)}
+        onPress={() => {
+          if (Date.now() - shapePressedAt.current < 300) {
+            return;
+          }
+
+          setSelectedId(null);
+        }}
       >
-        {userLocation ? (
-          <Marker
-            coordinate={userLocation}
-            anchor={{ x: 0.5, y: 0.5 }}
-            zIndex={1}
-            title={t("map.currentLocationTitle")}
-            tracksViewChanges={false}
+        <Mapbox.Camera ref={cameraRef} defaultSettings={initialCamera} />
+
+        <Mapbox.Images>
+          {pinImages.map(([key, { icon, accent }]) => (
+            <Mapbox.Image key={key} name={key}>
+              {/* collapsable={false} şart: EventMapPin'in kök View'ı yalnızca
+                  hizalama taşıdığı için RN onu eleyip iki alt view'ı doğrudan
+                  RNMBXImage'a veriyor ("expected a single subview"), pin
+                  görseli de bozuk üretiliyor. */}
+              <View collapsable={false}>
+                <EventMapPin icon={icon} accent={accent} active={false} />
+              </View>
+            </Mapbox.Image>
+          ))}
+        </Mapbox.Images>
+
+        <Mapbox.ShapeSource
+          id="events"
+          ref={shapeRef}
+          shape={eventShape}
+          cluster
+          clusterRadius={CLUSTER_RADIUS}
+          clusterMaxZoomLevel={CLUSTER_MAX_ZOOM}
+          onPress={handleShapePress}
+        >
+          <Mapbox.CircleLayer
+            id="event-cluster-bubble"
+            filter={["has", "point_count"]}
+            style={{
+              // Pin'lerle aynı dil: koyu zemin + marka konturu.
+              circleColor: themeColors.background.primary,
+              circleOpacity: 0.95,
+              circleStrokeWidth: 2,
+              circleStrokeColor: themeColors.brand.primary,
+              circleRadius: ["step", ["get", "point_count"], 16, 10, 20, 50, 26],
+            }}
+          />
+
+          <Mapbox.SymbolLayer
+            id="event-cluster-count"
+            filter={["has", "point_count"]}
+            style={{
+              textField: ["get", "point_count_abbreviated"],
+              textFont: ["DIN Pro Bold", "Arial Unicode MS Bold"],
+              textSize: 13,
+              textColor: themeColors.brand.primary,
+              textAllowOverlap: true,
+              textIgnorePlacement: true,
+            }}
+          />
+
+          <Mapbox.SymbolLayer
+            id="event-pin"
+            // Seçili pin ayrı bir MarkerView olarak üstte çiziliyor; burada
+            // iki kez görünmesin diye dışarıda bırakılıyor.
+            filter={[
+              "all",
+              ["!", ["has", "point_count"]],
+              ["!=", ["get", "id"], selectedId ?? ""],
+            ]}
+            style={{
+              iconImage: ["get", "pinKey"],
+              iconAnchor: "bottom",
+              iconAllowOverlap: true,
+              iconIgnorePlacement: true,
+            }}
+          />
+        </Mapbox.ShapeSource>
+
+        {selectedEvent ? (
+          <Mapbox.MarkerView
+            id="selected-event"
+            coordinate={toMapboxCoord(selectedEvent)}
+            anchor={{ x: 0.5, y: 1 }}
+            allowOverlap
           >
-            <CurrentLocationPin />
-          </Marker>
+            <EventMapPin
+              icon={selectedEvent.sportIcon}
+              accent={
+                sportAccentToken(selectedEvent.sport)?.accent ??
+                themeColors.brand.primary
+              }
+              active
+            />
+          </Mapbox.MarkerView>
         ) : null}
 
-        {located.map((event) => {
-          const accent = sportAccentToken(event.sport);
-          return (
-            <Marker
-              key={event.id}
-              coordinate={{
-                latitude: event.latitude,
-                longitude: event.longitude,
-              }}
-              anchor={{ x: 0.5, y: 1 }}
-              onPress={(pressEvent) => {
-                pressEvent.stopPropagation();
-                setSelectedId(event.id);
-              }}
-            >
-              <EventMapPin
-                icon={event.sportIcon}
-                accent={accent?.accent ?? themeColors.brand.primary}
-                active={event.id === selectedId}
-              />
-            </Marker>
-          );
-        })}
-      </MapView>
+        {/* Etkinliklerden SONRA: MarkerView'da zIndex yok, üstte kalması için
+            en son render edilmesi gerekiyor. Eskiden Marker zIndex={1} ile
+            aynı sonucu veriyordu. */}
+        {userLocation ? (
+          <Mapbox.MarkerView
+            id="user-location"
+            coordinate={toMapboxCoord(userLocation)}
+            anchor={{ x: 0.5, y: 0.5 }}
+            allowOverlap
+          >
+            <View accessibilityLabel={t("map.currentLocationTitle")}>
+              <CurrentLocationPin />
+            </View>
+          </Mapbox.MarkerView>
+        ) : null}
+      </Mapbox.MapView>
 
       {located.length === 0 ? (
         // Tam ekran örtü yerine üstte şerit: kullanıcının kendi konum

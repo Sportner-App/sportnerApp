@@ -13,6 +13,7 @@ export { DirectionsSheet } from "./directions-sheet";
 export { GlassTabBar } from "./glass-tab-bar";
 export { Input } from "./input";
 export { LinearRefreshBar } from "./linear-refresh-bar";
+export { MapAttribution } from "./map-attribution";
 export { MapPin } from "./map-pin";
 export { MapUnavailable } from "./map-unavailable";
 export { MediaSourceSheet } from "./media-source-sheet";

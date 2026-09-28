@@ -30,6 +30,7 @@ import {
 import "react-native-reanimated";
 import "../global.css";
 import { configureForegroundNotifications } from "@/services/push-notifications-service";
+import { configureMapbox } from "@/services/mapbox";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -40,6 +41,7 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 configureForegroundNotifications();
+configureMapbox();
 
 export default function RootLayout() {
   const [splashDone, setSplashDone] = useState(false);
