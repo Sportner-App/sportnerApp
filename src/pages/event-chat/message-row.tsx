@@ -39,8 +39,10 @@ export function MessageRow({
     ? t("messaging:message.deleted")
     : message.content || (message.mediaUrl ? t("messaging:message.media") : "");
 
+  // shrink-0: satır max-w'ye dayandığında daralması gereken metin sütunu,
+  // avatar değil. Aksi halde avatar ezilir ya da dışarı taşar.
   const avatar = showSender ? (
-    <View className="mt-5">
+    <View className="mt-5 shrink-0">
       <Avatar
         name={senderName}
         uri={message.senderProfileImageUrl}
@@ -54,7 +56,7 @@ export function MessageRow({
       />
     </View>
   ) : (
-    <View className="w-9" />
+    <View className="w-9 shrink-0" />
   );
 
   return (
@@ -64,7 +66,10 @@ export function MessageRow({
       }`}
     >
       {mine ? null : avatar}
-      <View className={mine ? "items-end" : "items-start"}>
+      {/* React Native'de flexShrink varsayılanı 0 — bu sütun daralmayınca
+          kendi içerik genişliğini alıyor, satır max-w'yi aşıyor ve avatar
+          ekranın sağ kenarından taşıp yarısı kesiliyordu. */}
+      <View className={`min-w-0 shrink ${mine ? "items-end" : "items-start"}`}>
         {showSender ? (
           <Text className="mb-1 font-body text-caption font-semibold text-brand-primary">
             {name}
