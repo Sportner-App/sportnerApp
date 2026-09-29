@@ -12,7 +12,7 @@
       "appleTeamId": "MN3MXLT7QL",
       "supportsTablet": true,
       "bundleIdentifier": "com.yagizerdenler.sportner",
-      "buildNumber": "39",
+      "buildNumber": "40",
       "infoPlist": {
         "CFBundleDisplayName": "Sportner",
         "ITSAppUsesNonExemptEncryption": false,
@@ -51,13 +51,16 @@
         "expo-image-picker",
         {
           "photosPermission": "Profil fotoğrafı ve gönderi eklemek için galeri erişimi gerekir.",
-          "cameraPermission": "Yeni fotoğraf çekmek için kamera erişimi gerekir."
+          "cameraPermission": "Yeni fotoğraf çekmek için kamera erişimi gerekir.",
+          "microphonePermission": false
         }
       ],
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Etkinlikleri sana en yakından uzağa sıralamak ve haritada konumunu göstermek için kullanılır."
+          "locationWhenInUsePermission": "Etkinlikleri sana en yakından uzağa sıralamak ve haritada konumunu göstermek için kullanılır.",
+          "locationAlwaysAndWhenInUsePermission": false,
+          "locationAlwaysPermission": false
         }
       ],
       "expo-localization",

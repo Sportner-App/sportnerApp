@@ -279,13 +279,15 @@ export function AuthScreen() {
             {!form.isLogin ? (
               <View className="mt-5">
                 <Pressable
-                  accessibilityRole="button"
+                  accessibilityRole="checkbox"
                   accessibilityState={{
                     checked: form.hasAcceptedLegalTerms,
                   }}
                   accessibilityLabel={t("consent.accessibilityLabel")}
                   className="flex-row items-start gap-3"
-                  onPress={() => setIsLegalConsentModalVisible(true)}
+                  onPress={() =>
+                    form.setHasAcceptedLegalTerms(!form.hasAcceptedLegalTerms)
+                  }
                 >
                   <View
                     className={
@@ -300,13 +302,22 @@ export function AuthScreen() {
                       </Text>
                     ) : null}
                   </View>
+                  {/* Belge adları metni açar; satırın geri kalanı kutuyu işaretler. */}
                   <Text className="flex-1 font-body text-caption leading-5 text-brand-neutral">
                     {t("consent.prefix")}{" "}
-                    <Text className="font-body font-semibold text-text-primary">
+                    <Text
+                      accessibilityRole="link"
+                      className="font-body font-semibold text-brand-primary underline"
+                      onPress={() => setIsLegalConsentModalVisible(true)}
+                    >
                       {t("consent.kvkk")}
                     </Text>{" "}
                     {t("consent.and")}{" "}
-                    <Text className="font-body font-semibold text-text-primary">
+                    <Text
+                      accessibilityRole="link"
+                      className="font-body font-semibold text-brand-primary underline"
+                      onPress={() => setIsLegalConsentModalVisible(true)}
+                    >
                       {t("consent.privacy")}
                     </Text>{" "}
                     {t("consent.suffix")}
