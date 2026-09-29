@@ -3,12 +3,39 @@ const withAndroidPackageQueries = require("./plugins/withAndroidPackageQueries")
 
 // Harita render'ı Mapbox'ta, adres arama ise sunucudaki /api/locations
 // uçlarından geçiyor — uygulamanın artık hiç Google Maps anahtarı yok.
-const googleIosClientId =
-  process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID?.trim() ||
-  "1000243667995-c4edjccfgef9npv2jdfjruugvfqapoi8.apps.googleusercontent.com";
-const googleIosUrlScheme =
-  process.env.GOOGLE_IOS_URL_SCHEME?.trim() ||
-  "com.googleusercontent.apps.1000243667995-c4edjccfgef9npv2jdfjruugvfqapoi8";
+
+/**
+ * Config değerleri koda gömülmüyor: eksik bir değişkenle build almaktansa
+ * hata verip build'i durduruyoruz. Yerelde .env, EAS'te proje ortam
+ * değişkenleri doldurur.
+ *
+ * Hata yalnızca gerçek build sırasında (EAS_BUILD) fırlatılır. `eas env:set`,
+ * `eas build:list` gibi komutlar da bu dosyayı eval ettiği için, her bağlamda
+ * throw etmek değişkeni eklemeyi imkânsız hale getiriyordu.
+ */
+const isEasBuild = process.env.EAS_BUILD === "true";
+
+function requiredEnv(name) {
+  const value = process.env[name]?.trim();
+
+  if (!value) {
+    const message =
+      `${name} tanımlı değil. Yerelde .env dosyasına, EAS build'lerinde ` +
+      `proje ortam değişkenlerine ekleyin.`;
+
+    if (isEasBuild) {
+      throw new Error(message);
+    }
+
+    console.warn(`[app.config] ${message}`);
+  }
+
+  return value;
+}
+
+const googleIosClientId = requiredEnv("EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID");
+const googleWebClientId = requiredEnv("EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID");
+const googleIosUrlScheme = requiredEnv("GOOGLE_IOS_URL_SCHEME");
 
 module.exports = {
   expo: {
@@ -25,10 +52,17 @@ module.exports = {
     plugins: [
       ...(appJson.expo?.plugins || []),
       "expo-apple-authentication",
-      [
-        "@react-native-google-signin/google-signin",
-        { iosUrlScheme: googleIosUrlScheme },
-      ],
+      // Plugin iosUrlScheme boş gelince config eval'i tamamen kırıyor; bu da
+      // `eas env:set` gibi komutları bloklar. Değişken yoksa plugin'i hiç
+      // eklemiyoruz — gerçek build'de requiredEnv zaten hata veriyor.
+      ...(googleIosUrlScheme
+        ? [
+            [
+              "@react-native-google-signin/google-signin",
+              { iosUrlScheme: googleIosUrlScheme },
+            ],
+          ]
+        : []),
       // Android 11+ paket görünürlüğü: WhatsApp'ın yüklü olup olmadığını
       // Linking.canOpenURL ile doğru tespit edebilmek için (bkz.
       // organization-invite.ts). iOS'ta bunun karşılığı zaten
@@ -42,9 +76,7 @@ module.exports = {
       ...appJson.expo?.extra,
       auth: {
         googleIosClientId,
-        googleWebClientId:
-          process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID?.trim() ||
-          "1000243667995-onii96ut9bacgu5ltcnnfcoegtemotlu.apps.googleusercontent.com",
+        googleWebClientId,
       },
     },
   },

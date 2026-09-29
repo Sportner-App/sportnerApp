@@ -7,12 +7,11 @@ import { AppScreen, Button, ScreenHeader, SportLoader } from "@/components";
 import { useToast } from "@/contexts";
 import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
 import { getApiErrorMessage } from "@/lib/api/errors";
+import { API_URL } from "@/constants/env";
 import { addAlbumMedia, getAlbum } from "@/services/albums-service";
 import type { ApiAlbumDetail } from "@/types/social";
 import { mediaDeniedMessage, pickSingleImage } from "@/utils/media-picker";
 import { AppText as Text } from "@/components/app-text";
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:5139";
 
 export function AlbumDetailScreen() {
   const { t } = useTranslation("albums");
@@ -100,7 +99,7 @@ export function AlbumDetailScreen() {
                 source={{
                   uri: item.storagePath.startsWith("http")
                     ? item.storagePath
-                    : `${API_BASE_URL}/${item.storagePath}`,
+                    : `${API_URL}/${item.storagePath}`,
                 }}
                 className="h-28 w-28 rounded-2xl"
               />

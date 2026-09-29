@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:5139";
+import { API_URL } from "@/constants/env";
 
 export function resolveMediaUrl(path: string | null | undefined) {
   const trimmed = path?.trim();
@@ -12,5 +12,5 @@ export function resolveMediaUrl(path: string | null | undefined) {
     return trimmed;
   }
 
-  return `${API_BASE_URL.replace(/\/$/, "")}/${trimmed.replace(/^\//, "")}`;
+  return `${API_URL.replace(/\/$/, "")}/${trimmed.replace(/^\//, "")}`;
 }

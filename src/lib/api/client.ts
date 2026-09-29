@@ -10,9 +10,9 @@ import type {
   StoredAuthSession,
 } from "@/types/api";
 
-import { normalizeApiError } from "./errors";
+import { API_URL } from "@/constants/env";
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:5139";
+import { normalizeApiError } from "./errors";
 
 const TOKEN_STORAGE_KEY = "api_token";
 const REFRESH_TOKEN_STORAGE_KEY = "api_refresh_token";
@@ -58,7 +58,7 @@ class APIClient {
 
   constructor() {
     this.instance = axios.create({
-      baseURL: API_BASE_URL,
+      baseURL: API_URL,
       timeout: 30000,
       headers: {
         "Content-Type": "application/json",

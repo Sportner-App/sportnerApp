@@ -28,8 +28,8 @@
 
 ### Env bayrakları
 
-- `EXPO_PUBLIC_AUTH_BYPASS=true` — login zorunlu değil; form submit doğrudan
-  tab’lara geçer. Backend bağlanınca `false` yap.
+- Tüm değişkenler `src/constants/env.ts` üzerinden okunur; kodda varsayılan
+  değer tutulmaz, eksik değişken açık hata verir. Liste için `.env.example`.
 - Adres arama `/api/locations/*` üzerinden sunucudan geçer; sağlayıcı anahtarı API tarafındadır.
 
 Gerektiğinde web projesindeki gibi `store/`, `locales/`, `layouts/` klasörleri

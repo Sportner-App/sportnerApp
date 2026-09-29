@@ -1,5 +1,6 @@
 import Mapbox from "@rnmapbox/maps";
 
+import { MAPBOX_TOKEN } from "@/constants/env";
 import { MAPBOX_STYLE_URL } from "@/constants/map";
 
 /**
@@ -7,7 +8,7 @@ import { MAPBOX_STYLE_URL } from "@/constants/map";
  * arama hâlâ Google Places üzerinden gidiyor (bkz. location-service.ts).
  */
 function getAccessToken() {
-  return process.env.EXPO_PUBLIC_MAPBOX_TOKEN?.trim() ?? "";
+  return MAPBOX_TOKEN;
 }
 
 export function hasMapboxToken() {

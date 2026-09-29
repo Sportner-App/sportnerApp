@@ -1,9 +1,10 @@
 import { DEFAULT_EVENT_LOCATION } from "@/constants/events";
 
-/** Studio'da üretilen Sportner koyu teması (tools/mapbox-restyle.js çıktısı). */
-export const MAPBOX_STYLE_URL =
-  process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL?.trim() ||
-  "mapbox://styles/yagizerdenler/cmukqizlx000601s5bonw7aio";
+/**
+ * Studio'da üretilen Sportner koyu teması (tools/mapbox-restyle.js çıktısı).
+ * Değer EXPO_PUBLIC_MAPBOX_STYLE_URL ile verilir; bkz. constants/env.ts.
+ */
+export { MAPBOX_STYLE_URL } from "@/constants/env";
 
 /**
  * Mapbox koordinatları [longitude, latitude] sırasında — react-native-maps'in

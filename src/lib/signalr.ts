@@ -4,9 +4,8 @@ import {
   LogLevel,
 } from "@microsoft/signalr";
 
+import { API_URL } from "@/constants/env";
 import { apiClient } from "@/lib/api/client";
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:5139";
 
 export async function connectEventChat(
   conversationId: string,
@@ -18,7 +17,7 @@ export async function connectEventChat(
   }
 
   const connection = new HubConnectionBuilder()
-    .withUrl(`${API_BASE_URL}/hubs/event-chat`, {
+    .withUrl(`${API_URL}/hubs/event-chat`, {
       accessTokenFactory: () => token,
     })
     .withAutomaticReconnect()
