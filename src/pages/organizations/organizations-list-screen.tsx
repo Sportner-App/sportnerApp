@@ -86,7 +86,7 @@ export function OrganizationsListScreen() {
             onPress={() => router.push(`/organizations/${item.id}`)}
             className="rounded-3xl border border-border-default bg-surface-primary p-4"
           >
-            <Text className="font-body text-body font-semibold text-text-primary">
+            <Text className="font-body-bold text-body text-text-primary">
               {item.name}
             </Text>
             <Text className="mt-1 font-body text-caption text-text-tertiary">

@@ -42,8 +42,8 @@ const containerSizes: Record<ButtonSize, string> = {
 };
 
 const labelSizes: Record<ButtonSize, string> = {
-  sm: "font-body text-body-sm font-semibold",
-  md: "font-body text-body font-semibold",
+  sm: "font-body-bold text-body-sm",
+  md: "font-body-bold text-body",
   lg: "font-display text-body tracking-wide",
 };
 

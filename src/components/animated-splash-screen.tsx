@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     backgroundColor: `${themeColors.brand.primary}18`,
   },
   logoLetter: {
-    fontFamily: "Anybody_700Bold",
+    fontFamily: fonts.display,
     fontSize: 54,
     lineHeight: 64,
     includeFontPadding: false,
@@ -420,7 +420,7 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
   },
   chipLabel: {
-    fontFamily: "HankenGrotesk_500Medium",
+    fontFamily: fonts.body,
     fontSize: 12,
     color: themeColors.text.primary,
   },
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   tagline: {
-    fontFamily: "Anybody_600SemiBold",
+    fontFamily: fonts.displaySemiBold,
     fontSize: 22,
     color: themeColors.text.primary,
     letterSpacing: 0.2,

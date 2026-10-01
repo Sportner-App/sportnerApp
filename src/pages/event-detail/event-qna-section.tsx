@@ -355,7 +355,7 @@ function QnARow({
             onPress={() => onReply(item)}
             className="self-start py-0.5"
           >
-            <Text className="font-body text-caption font-semibold text-text-secondary">
+            <Text className="font-body-bold text-caption text-text-secondary">
               {t("qna.reply")}
             </Text>
           </Pressable>

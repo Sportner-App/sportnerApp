@@ -176,7 +176,7 @@ export function EventReviewsScreen() {
                   <FontAwesome6 name="people-group" size={15} color="#cbd5e1" />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-body text-body-sm font-semibold text-text-primary">
+                  <Text className="font-body-bold text-body-sm text-text-primary">
                     {t("eventReviews:choose.teammatesTitle", {
                       count: teammates.length,
                     })}
@@ -244,7 +244,7 @@ function OrganizerCard({
         <Text className="font-body-bold text-overline text-brand-primary">
           {t("eventReviews:choose.organizerEyebrow")}
         </Text>
-        <Text className="font-body text-body font-semibold text-text-primary">
+        <Text className="font-body-bold text-body text-text-primary">
           @{peer.username || t("events:fallback.athleteHandle")}
         </Text>
         <Text className="font-body text-caption text-text-tertiary">
@@ -311,7 +311,7 @@ function RatingForm({
   return (
     <View className="gap-4 rounded-3xl border border-border-default bg-surface-primary p-5">
       <Pressable onPress={onBack} className="self-start py-1 active:opacity-70">
-        <Text className="font-body text-body-sm font-semibold text-brand-primary">
+        <Text className="font-body-bold text-body-sm text-brand-primary">
           {t("eventReviews:form.back")}
         </Text>
       </Pressable>
@@ -409,7 +409,7 @@ function ReviewList({ reviews }: { reviews: ApiReview[] }) {
                 size={36}
                 borderWidth={0}
               />
-              <Text className="flex-1 font-body text-body-sm font-semibold text-text-primary">
+              <Text className="flex-1 font-body-bold text-body-sm text-text-primary">
                 @{review.reviewerUsername || t("events:fallback.athleteHandle")}{" "}
                 → @
                 {review.reviewedUsername || t("events:fallback.athleteHandle")}

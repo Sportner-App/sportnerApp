@@ -48,7 +48,7 @@ export function DirectionsSheet({
               <FontAwesome6 name={option.icon} size={16} color="#ccff00" />
             </View>
             <View className="flex-1">
-              <Text className="font-body text-body-sm font-semibold text-text-primary">
+              <Text className="font-body-bold text-body-sm text-text-primary">
                 {option.label}
               </Text>
               <Text className="mt-0.5 font-body text-caption text-text-tertiary">

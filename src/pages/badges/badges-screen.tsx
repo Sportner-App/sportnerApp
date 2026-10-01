@@ -109,7 +109,7 @@ export function BadgesScreen() {
 function Card({ title, body }: { title: string; body: string }) {
   return (
     <View className="rounded-2xl border border-border-default bg-surface-primary p-4">
-      <Text className="font-body text-body-sm font-semibold text-text-primary">
+      <Text className="font-body-bold text-body-sm text-text-primary">
         {title}
       </Text>
       <Text className="mt-1 font-body text-caption text-text-tertiary">

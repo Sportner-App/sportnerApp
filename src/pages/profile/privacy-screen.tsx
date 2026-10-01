@@ -158,7 +158,7 @@ export function PrivacyScreen() {
 
           {profile.email ? (
             <View className="gap-2">
-              <Text className="font-body text-caption font-semibold uppercase tracking-wide text-text-tertiary">
+              <Text className="font-body-bold text-caption uppercase tracking-wide text-text-tertiary">
                 {t("profile:privacy.emailVerification.sectionTitle")}
               </Text>
               <Pressable
@@ -180,7 +180,7 @@ export function PrivacyScreen() {
                   />
                 </View>
                 <View className="min-w-0 flex-1">
-                  <Text className="font-body text-body font-semibold text-text-primary">
+                  <Text className="font-body-bold text-body text-text-primary">
                     {profile.isEmailVerified
                       ? t("profile:privacy.emailVerification.verifiedTitle")
                       : t("profile:privacy.emailVerification.unverifiedTitle")}
@@ -200,7 +200,7 @@ export function PrivacyScreen() {
                   </Text>
                 </View>
                 {!profile.isEmailVerified ? (
-                  <Text className="font-body text-caption font-semibold text-brand-primary">
+                  <Text className="font-body-bold text-caption text-brand-primary">
                     {t("profile:privacy.emailVerification.verifyButton")}
                   </Text>
                 ) : null}
@@ -216,7 +216,7 @@ export function PrivacyScreen() {
               <FontAwesome6 name="ban" size={12} color="#ccff00" />
             </View>
             <View className="min-w-0 flex-1">
-              <Text className="font-body text-body font-semibold text-text-primary">
+              <Text className="font-body-bold text-body text-text-primary">
                 {t("profile:privacy.blockedTitle")}
               </Text>
               <Text className="mt-0.5 font-body text-caption text-text-tertiary">
@@ -227,7 +227,7 @@ export function PrivacyScreen() {
           </Pressable>
 
           <View className="mt-4 gap-2">
-            <Text className="font-body text-caption font-semibold uppercase tracking-wide text-destructive">
+            <Text className="font-body-bold text-caption uppercase tracking-wide text-destructive">
               {t("profile:privacy.deleteAccount.sectionTitle")}
             </Text>
             <Pressable
@@ -238,7 +238,7 @@ export function PrivacyScreen() {
                 <FontAwesome6 name="trash" size={12} color="#ef4444" />
               </View>
               <View className="min-w-0 flex-1">
-                <Text className="font-body text-body font-semibold text-destructive">
+                <Text className="font-body-bold text-body text-destructive">
                   {t("profile:privacy.deleteAccount.title")}
                 </Text>
                 <Text className="mt-0.5 font-body text-caption text-text-tertiary">
@@ -332,7 +332,7 @@ export function PrivacyScreen() {
                 disabled={isResending || cooldown > 0}
                 className="items-center py-2"
               >
-                <Text className="font-body text-caption font-semibold text-brand-primary">
+                <Text className="font-body-bold text-caption text-brand-primary">
                   {cooldown > 0
                     ? t("profile:privacy.emailVerification.resendCooldown", {
                         seconds: cooldown,

@@ -67,7 +67,7 @@ function SportTile({
       </View>
       <Text
         numberOfLines={2}
-        className="min-h-[32px] text-center font-body text-caption font-semibold leading-4 text-text-primary"
+        className="min-h-[32px] text-center font-body-bold text-caption leading-4 text-text-primary"
       >
         {sport.name}
       </Text>
@@ -182,7 +182,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
                 }`}
               >
                 <Text
-                  className={`font-body text-caption font-semibold ${
+                  className={`font-body-bold text-caption ${
                     active ? "text-brand-primary" : "text-text-tertiary"
                   }`}
                 >
@@ -337,7 +337,7 @@ function SelectedSportChip({
         size={12}
         color="#ccff00"
       />
-      <Text className="font-body text-caption font-semibold text-text-primary">
+      <Text className="font-body-bold text-caption text-text-primary">
         {draft.sportName}
       </Text>
       <View className="rounded-full bg-white/10 px-1.5 py-0.5">
@@ -405,7 +405,7 @@ function SportConfigSheet({
                     }`}
                   >
                     <Text
-                      className={`font-body text-caption font-semibold ${
+                      className={`font-body-bold text-caption ${
                         active ? "text-background-primary" : "text-text-primary"
                       }`}
                     >
@@ -431,7 +431,7 @@ function SportConfigSheet({
               color={isPrimary ? "#ccff00" : "#64748b"}
             />
             <View className="flex-1">
-              <Text className="font-body text-body-sm font-semibold text-text-primary">
+              <Text className="font-body-bold text-body-sm text-text-primary">
                 {configCopy.primaryTitle}
               </Text>
               <Text className="mt-0.5 font-body text-caption text-text-tertiary">

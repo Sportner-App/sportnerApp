@@ -41,7 +41,7 @@ export function ProfileAboutSection({
               className="min-h-[44px] flex-1 flex-row items-center justify-center gap-2 rounded-2xl border border-border-default bg-surface-primary px-3 active:opacity-65"
             >
               <FontAwesome6 name={item.icon} size={12} color="#ccff00" />
-              <Text className="font-body text-caption font-semibold text-text-primary">
+              <Text className="font-body-bold text-caption text-text-primary">
                 {item.label}
               </Text>
             </Pressable>

@@ -265,7 +265,7 @@ export function OrganizationDetailScreen() {
 
           {organization.myStatus === ORGANIZATION_STATUS.pending ? (
             <View className="rounded-3xl border border-amber-300/30 bg-amber-400/10 p-4">
-              <Text className="font-body text-body-sm font-semibold text-amber-200">
+              <Text className="font-body-bold text-body-sm text-amber-200">
                 {t("organizations:detail.pendingTitle")}
               </Text>
               <Text className="mt-1 font-body text-body-sm text-text-secondary">
@@ -354,7 +354,7 @@ export function OrganizationDetailScreen() {
                     }
                     hitSlop={8}
                   >
-                    <Text className="font-body text-overline font-semibold text-brand-primary">
+                    <Text className="font-body-bold text-overline text-brand-primary">
                       {t("organizations:detail.createEvent")}
                     </Text>
                   </Pressable>
@@ -412,7 +412,7 @@ export function OrganizationDetailScreen() {
                       })
                     }
                   >
-                    <Text className="font-body text-overline font-semibold text-brand-primary">
+                    <Text className="font-body-bold text-overline text-brand-primary">
                       {t("organizations:detail.seeAll")}
                     </Text>
                   </Pressable>
@@ -447,7 +447,7 @@ export function OrganizationDetailScreen() {
                   }
                   className="items-center rounded-2xl border border-border-default bg-surface-primary py-3 active:bg-surface-secondary"
                 >
-                  <Text className="font-body text-body-sm font-semibold text-brand-primary">
+                  <Text className="font-body-bold text-body-sm text-brand-primary">
                     {t("organizations:detail.moreMembers", {
                       count: members.length - memberPreview.length,
                     })}

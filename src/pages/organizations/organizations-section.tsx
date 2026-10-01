@@ -34,7 +34,7 @@ export function OrganizationsSection({
         </Text>
         {onPressList ? (
           <Pressable onPress={onPressList} hitSlop={8}>
-            <Text className="font-body text-overline font-semibold text-brand-primary">
+            <Text className="font-body-bold text-overline text-brand-primary">
               {items.length === 0
                 ? t("profile:organizations.add")
                 : t("common:all")}
@@ -66,7 +66,7 @@ export function OrganizationsSection({
               }`}
             >
               <FontAwesome6 name="users" size={11} color="#ccff00" />
-              <Text className="font-body text-caption font-semibold text-text-primary">
+              <Text className="font-body-bold text-caption text-text-primary">
                 {item.name}
               </Text>
               {item.status === ORGANIZATION_STATUS.pending ? (

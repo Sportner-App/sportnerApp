@@ -149,7 +149,7 @@ export function PendingAttendancePrompt({ children }: PropsWithChildren) {
                 disabled={isSubmitting}
                 className="items-center py-2"
               >
-                <Text className="font-body text-body-sm font-semibold text-brand-primary">
+                <Text className="font-body-bold text-body-sm text-brand-primary">
                   {t("pendingAttendance.someoneAbsent")}
                 </Text>
               </Pressable>

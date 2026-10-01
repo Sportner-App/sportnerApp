@@ -110,7 +110,7 @@ export function IntroEventsVisual() {
             <Text className="font-display text-heading-lg leading-[34px] text-brand-primary">
               20:30
             </Text>
-            <Text className="mt-2 font-body text-heading-sm font-semibold text-white">
+            <Text className="mt-2 font-body-bold text-heading-sm text-white">
               {t("visuals.events.venueTurf")}
             </Text>
             <Text className="mt-1 font-body text-body-sm text-text-tertiary">

@@ -71,7 +71,7 @@ export function MessageRow({
           ekranın sağ kenarından taşıp yarısı kesiliyordu. */}
       <View className={`min-w-0 shrink ${mine ? "items-end" : "items-start"}`}>
         {showSender ? (
-          <Text className="mb-1 font-body text-caption font-semibold text-brand-primary">
+          <Text className="mb-1 font-body-bold text-caption text-brand-primary">
             {name}
           </Text>
         ) : null}

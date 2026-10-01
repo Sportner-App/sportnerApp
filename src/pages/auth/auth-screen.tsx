@@ -300,7 +300,7 @@ export function AuthScreen() {
                   hitSlop={8}
                   className="items-end"
                 >
-                  <Text className="font-body text-caption font-semibold text-brand-primary">
+                  <Text className="font-body-bold text-caption text-brand-primary">
                     {t("forgotPassword.link")}
                   </Text>
                 </Pressable>
@@ -328,7 +328,7 @@ export function AuthScreen() {
                     }
                   >
                     {form.hasAcceptedLegalTerms ? (
-                      <Text className="font-body text-caption font-bold text-white">
+                      <Text className="font-body-bold text-caption text-white">
                         ✓
                       </Text>
                     ) : null}
@@ -338,7 +338,7 @@ export function AuthScreen() {
                     {t("consent.prefix")}{" "}
                     <Text
                       accessibilityRole="link"
-                      className="font-body font-semibold text-brand-primary underline"
+                      className="font-body-bold text-brand-primary underline"
                       onPress={() => setIsLegalConsentModalVisible(true)}
                     >
                       {t("consent.kvkk")}
@@ -346,7 +346,7 @@ export function AuthScreen() {
                     {t("consent.and")}{" "}
                     <Text
                       accessibilityRole="link"
-                      className="font-body font-semibold text-brand-primary underline"
+                      className="font-body-bold text-brand-primary underline"
                       onPress={() => setIsLegalConsentModalVisible(true)}
                     >
                       {t("consent.privacy")}

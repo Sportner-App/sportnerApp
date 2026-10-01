@@ -87,7 +87,7 @@ export function SegmentedTabs<T extends string>({
             ) : null}
             <Text
               numberOfLines={1}
-              className={`min-w-0 shrink text-center font-body font-semibold ${
+              className={`min-w-0 shrink text-center font-body-bold ${
                 options.length >= 3 ? "text-overline" : "text-body-sm"
               } ${
                 option.key === value

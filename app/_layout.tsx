@@ -48,10 +48,10 @@ configureMapbox();
 export default function RootLayout() {
   const [splashDone, setSplashDone] = useState(false);
   const [loaded, error] = useFonts({
-    Anybody_600SemiBold: require("@expo-google-fonts/anybody/600SemiBold/Anybody_600SemiBold.ttf"),
-    Anybody_700Bold: require("@expo-google-fonts/anybody/700Bold/Anybody_700Bold.ttf"),
-    HankenGrotesk_500Medium: require("@expo-google-fonts/hanken-grotesk/500Medium/HankenGrotesk_500Medium.ttf"),
-    HankenGrotesk_700Bold: require("@expo-google-fonts/hanken-grotesk/700Bold/HankenGrotesk_700Bold.ttf"),
+    ArchivoExpanded_700Bold: require("../assets/fonts/archivo/ArchivoExpanded-Bold.ttf"),
+    ArchivoExpanded_800ExtraBold: require("../assets/fonts/archivo/ArchivoExpanded-ExtraBold.ttf"),
+    Archivo_500Medium: require("@expo-google-fonts/archivo/500Medium/Archivo_500Medium.ttf"),
+    Archivo_700Bold: require("@expo-google-fonts/archivo/700Bold/Archivo_700Bold.ttf"),
   });
 
   const handleSplashFinish = useCallback(() => {

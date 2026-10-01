@@ -75,7 +75,7 @@ export function AlbumsScreen() {
               onPress={() => router.push(`/albums/${album.id}`)}
               className="rounded-2xl border border-border-default bg-surface-primary p-4"
             >
-              <Text className="font-body text-body-sm font-semibold text-text-primary">
+              <Text className="font-body-bold text-body-sm text-text-primary">
                 {album.title}
               </Text>
               <Text className="font-body text-caption text-text-tertiary">

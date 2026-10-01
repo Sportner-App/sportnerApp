@@ -160,7 +160,7 @@ export function VerifyEmailScreen() {
               disabled={isResending || cooldown > 0}
               className="mt-4 items-center py-2"
             >
-              <Text className="font-body text-caption font-semibold text-brand-primary">
+              <Text className="font-body-bold text-caption text-brand-primary">
                 {cooldown > 0
                   ? t("verifyEmail.resendCooldown", { seconds: cooldown })
                   : t("verifyEmail.resend")}

@@ -64,7 +64,7 @@ export function MenuSection({
                     />
                   </View>
                   <Text
-                    className={`flex-1 font-body text-body-sm font-semibold ${
+                    className={`flex-1 font-body-bold text-body-sm ${
                       item.danger ? "text-destructive" : "text-text-primary"
                     }`}
                   >

@@ -605,7 +605,7 @@ function EventMapPreviewCard({
                 style={{ backgroundColor: sportColor }}
               >
                 <Text
-                  className="font-body text-overline font-bold tracking-[1.2px]"
+                  className="font-body-bold text-overline tracking-[1.2px]"
                   style={{ color: onAccent }}
                 >
                   {sportLabel}

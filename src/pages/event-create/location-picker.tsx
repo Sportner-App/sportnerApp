@@ -215,7 +215,7 @@ export function LocationPicker({
                   </View>
                   <View className="flex-1">
                     <Text
-                      className="font-body text-body-sm font-semibold text-text-primary"
+                      className="font-body-bold text-body-sm text-text-primary"
                       numberOfLines={1}
                     >
                       {item.title}

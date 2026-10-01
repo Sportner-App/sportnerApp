@@ -237,7 +237,7 @@ function GroupChip({
       }`}
     >
       <Text
-        className={`font-body text-caption font-semibold ${
+        className={`font-body-bold text-caption ${
           isActive ? "text-brand-primary" : "text-text-secondary"
         }`}
       >
@@ -280,7 +280,7 @@ function ListRow<T extends string>({
 
       <View className="flex-1">
         <Text
-          className={`font-body text-body-sm font-semibold ${
+          className={`font-body-bold text-body-sm ${
             isActive ? "text-brand-primary" : "text-text-primary"
           }`}
         >

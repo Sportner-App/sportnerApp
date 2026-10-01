@@ -181,7 +181,7 @@ export function AddSportScreen() {
                         color="#ccff00"
                       />
                     </View>
-                    <Text className="font-body text-caption font-semibold text-text-primary">
+                    <Text className="font-body-bold text-caption text-text-primary">
                       {sport.name}
                     </Text>
                   </Pressable>
@@ -208,7 +208,7 @@ export function AddSportScreen() {
                   size={12}
                   color="#ccff00"
                 />
-                <Text className="font-body text-body-sm font-semibold text-text-primary">
+                <Text className="font-body-bold text-body-sm text-text-primary">
                   {t("addSport.levelForSport", {
                     name: activeSelection.sport.name,
                   })}
@@ -235,7 +235,7 @@ export function AddSportScreen() {
                     }`}
                   >
                     <Text
-                      className={`font-body text-caption font-semibold ${
+                      className={`font-body-bold text-caption ${
                         activeSelection.level === option.level
                           ? "text-background-primary"
                           : "text-text-primary"
@@ -311,7 +311,7 @@ export function AddSportScreen() {
                       color={active ? "#06111a" : "#ccff00"}
                     />
                   </View>
-                  <Text className="text-center font-body text-body-sm font-semibold text-text-primary">
+                  <Text className="text-center font-body-bold text-body-sm text-text-primary">
                     {sport.name}
                   </Text>
                   {active ? (

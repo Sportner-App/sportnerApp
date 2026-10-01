@@ -194,38 +194,43 @@ const sports = {
   archery: sportAccent("#ca8a04"),
 };
 
+/**
+ * Tek aile: Archivo. Başlıklar geniş (wdth 125) kesimden — `assets/fonts/archivo`
+ * içindeki dosyalar resmi variable fonttan üretilmiş sabit kesimlerdir, çünkü
+ * iOS'ta RN variable font eksenlerini desteklemiyor. Gövde normal genişlik.
+ */
 const fonts = {
-  display: "Anybody_700Bold",
-  displaySemiBold: "Anybody_600SemiBold",
-  body: "HankenGrotesk_500Medium",
-  bodyBold: "HankenGrotesk_700Bold",
+  display: "ArchivoExpanded_800ExtraBold",
+  displaySemiBold: "ArchivoExpanded_700Bold",
+  body: "Archivo_500Medium",
+  bodyBold: "Archivo_700Bold",
 };
 
 /** Semantic type styles — existing font families, new hierarchy. */
 const typography = {
   display: {
     fontFamily: fonts.display,
-    fontSize: 36,
-    lineHeight: 40,
-    letterSpacing: -0.7,
+    fontSize: 32,
+    lineHeight: 38,
+    letterSpacing: -0.4,
   },
   headingLarge: {
     fontFamily: fonts.display,
-    fontSize: 26,
-    lineHeight: 32,
-    letterSpacing: -0.4,
+    fontSize: 24,
+    lineHeight: 30,
+    letterSpacing: -0.2,
   },
   headingMedium: {
     fontFamily: fonts.display,
-    fontSize: 22,
-    lineHeight: 28,
-    letterSpacing: -0.3,
+    fontSize: 20,
+    lineHeight: 26,
+    letterSpacing: -0.1,
   },
   headingSmall: {
     fontFamily: fonts.display,
-    fontSize: 18,
-    lineHeight: 24,
-    letterSpacing: -0.2,
+    fontSize: 17,
+    lineHeight: 22,
+    letterSpacing: 0,
   },
   bodyLarge: {
     fontFamily: fonts.body,

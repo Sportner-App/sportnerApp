@@ -120,7 +120,7 @@ export function CommentThread({
                   }`}
                 />
                 <Text
-                  className={`font-body text-overline font-semibold ${
+                  className={`font-body-bold text-overline ${
                     variant === "detail"
                       ? "text-white/50"
                       : "text-text-secondary"
@@ -223,7 +223,7 @@ function CommentRow({
           className="mt-0.5 self-start py-0.5"
         >
           <Text
-            className={`font-body text-overline font-semibold ${actionColor}`}
+            className={`font-body-bold text-overline ${actionColor}`}
           >
             {t("components:commentThread.reply")}
           </Text>

@@ -94,7 +94,7 @@ function MemberActionChip({
       ) : (
         <FontAwesome6 name={icon} size={10} color={iconColor} />
       )}
-      <Text className={`font-body text-overline font-semibold ${labelClass}`}>
+      <Text className={`font-body-bold text-overline ${labelClass}`}>
         {label}
       </Text>
     </Pressable>

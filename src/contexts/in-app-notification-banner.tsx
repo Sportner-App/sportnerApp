@@ -260,7 +260,7 @@ export function InAppNotificationBanner() {
               {!!banner.title && (
                 <Text
                   numberOfLines={1}
-                  className="font-body text-body-sm font-semibold text-white"
+                  className="font-body-bold text-body-sm text-white"
                 >
                   {banner.title}
                 </Text>

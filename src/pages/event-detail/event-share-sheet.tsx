@@ -420,7 +420,7 @@ function EventShareArtwork({
           <Text
             style={{
               color: isMinimal ? "#f4f6f2" : isEnergy ? accent : "#06111a",
-              fontFamily: "HankenGrotesk_700Bold",
+              fontFamily: fonts.bodyBold,
               fontSize: 11,
               letterSpacing: 1.2,
             }}
@@ -435,7 +435,7 @@ function EventShareArtwork({
           numberOfLines={3}
           style={{
             color: foregroundColor,
-            fontFamily: "Anybody_700Bold",
+            fontFamily: fonts.display,
             fontSize: isEnergy ? 50 : 44,
             lineHeight: isEnergy ? 52 : 47,
             letterSpacing: -1.2,
@@ -486,7 +486,7 @@ function EventShareArtwork({
           <Text
             style={{
               color: detailAccent,
-              fontFamily: "HankenGrotesk_700Bold",
+              fontFamily: fonts.bodyBold,
               fontSize: 18,
             }}
           >
@@ -495,7 +495,7 @@ function EventShareArtwork({
           <Text
             style={{
               color: mutedColor,
-              fontFamily: "HankenGrotesk_500Medium",
+              fontFamily: fonts.body,
               fontSize: 11,
             }}
           >
@@ -546,7 +546,7 @@ function ArtworkInfo({
         style={{
           flex: 1,
           color: textColor,
-          fontFamily: "HankenGrotesk_700Bold",
+          fontFamily: fonts.bodyBold,
           fontSize: 14,
         }}
       >

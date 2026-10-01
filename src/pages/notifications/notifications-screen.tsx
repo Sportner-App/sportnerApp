@@ -148,7 +148,7 @@ export function NotificationsScreen() {
                   : "border-brand-primary/30 bg-brand-primary/10"
               }`}
             >
-              <Text className="font-body text-body-sm font-semibold text-text-primary">
+              <Text className="font-body-bold text-body-sm text-text-primary">
                 {copy.title}
               </Text>
               {copy.body && copy.body !== copy.title ? (

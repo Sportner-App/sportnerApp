@@ -66,7 +66,7 @@ function CategoryChip({
     >
       <Text
         numberOfLines={1}
-        className="font-body text-body-sm font-semibold"
+        className="font-body-bold text-body-sm"
         style={{
           color: isActive
             ? themeColors.text.onPrimary

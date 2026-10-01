@@ -26,7 +26,7 @@ export function HelpScreen() {
           key={item.q}
           className="rounded-3xl border border-border-default bg-surface-primary p-4"
         >
-          <Text className="font-body text-body-sm font-semibold text-text-primary">
+          <Text className="font-body-bold text-body-sm text-text-primary">
             {item.q}
           </Text>
           <Text className="mt-2 font-body text-body-sm text-text-tertiary">
@@ -36,7 +36,7 @@ export function HelpScreen() {
       ))}
 
       <View className="gap-3 rounded-3xl border border-white/10 bg-surface-primary/90 p-4">
-        <Text className="font-body text-body-sm font-semibold text-white">
+        <Text className="font-body-bold text-body-sm text-white">
           {t("feedback.title")}
         </Text>
         <Text className="font-body text-body-sm text-text-tertiary">

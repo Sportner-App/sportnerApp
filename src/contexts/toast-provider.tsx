@@ -190,7 +190,7 @@ export function ToastProvider({ children }: PropsWithChildren) {
                 </View>
 
                 <View className="flex-1">
-                  <Text className="font-body text-body-sm font-semibold text-white">
+                  <Text className="font-body-bold text-body-sm text-white">
                     {toast.title}
                   </Text>
 

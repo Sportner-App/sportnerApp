@@ -199,7 +199,7 @@ function RequestRow({
           borderWidth={0}
         />
         <View className="flex-1">
-          <Text className="font-body text-body-sm font-semibold text-text-primary">
+          <Text className="font-body-bold text-body-sm text-text-primary">
             @{person.username || t("events:fallback.athleteHandle")}
           </Text>
         </View>
@@ -255,7 +255,7 @@ function EmptyState() {
 
   return (
     <Animated.View style={style} className="items-center gap-2 px-4 py-10">
-      <Text className="text-center font-body text-body-sm font-semibold text-text-primary">
+      <Text className="text-center font-body-bold text-body-sm text-text-primary">
         {t("pendingSheet.emptyTitle")}
       </Text>
       <Text className="text-center font-body text-caption text-text-secondary">

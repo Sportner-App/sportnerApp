@@ -189,7 +189,7 @@ export function LocationMap({ event }: LocationMapProps) {
             </View>
             <View className="flex-1">
               <Text
-                className="font-body text-body-sm font-semibold"
+                className="font-body-bold text-body-sm"
                 style={{ color: themeColors.text.primary }}
                 numberOfLines={1}
               >

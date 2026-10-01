@@ -365,7 +365,7 @@ export function DiscoverPost({
 
         {caption && images.length > 0 ? (
           <Text className="font-body text-body-sm leading-5 text-text-primary">
-            <Text className="font-semibold">{athleteHandle} </Text>
+            <Text className="font-body-bold">{athleteHandle} </Text>
             {caption}
           </Text>
         ) : null}
@@ -409,7 +409,7 @@ export function DiscoverPost({
               {t("social:comments.replyTo", { username: replyUsername })}
             </Text>
             <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>
-              <Text className="font-body text-caption font-semibold text-brand-primary">
+              <Text className="font-body-bold text-caption text-brand-primary">
                 {t("common:cancel")}
               </Text>
             </Pressable>
@@ -437,7 +437,7 @@ export function DiscoverPost({
             onPress={() => void submitComment()}
           >
             <Text
-              className={`font-body text-body-sm font-semibold ${
+              className={`font-body-bold text-body-sm ${
                 draft.trim() ? "text-brand-primary" : "text-text-tertiary"
               }`}
             >

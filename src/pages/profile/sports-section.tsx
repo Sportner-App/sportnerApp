@@ -48,7 +48,7 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
             accessibilityLabel={t("sports.editAccessibility")}
             className="min-h-[36px] flex-row items-center gap-1.5 rounded-full px-2 active:opacity-65"
           >
-            <Text className="font-body text-caption font-semibold text-brand-primary">
+            <Text className="font-body-bold text-caption text-brand-primary">
               {t("sports.edit")}
             </Text>
           </Pressable>
@@ -92,7 +92,7 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
                     size={11}
                     color="#ccff00"
                   />
-                  <Text className="font-body text-caption font-semibold text-text-primary">
+                  <Text className="font-body-bold text-caption text-text-primary">
                     {sport.sportName}
                   </Text>
                 </Pressable>

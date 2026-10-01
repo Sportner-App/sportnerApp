@@ -447,7 +447,7 @@ export function EventChatScreen({
                 canSend ? "bg-brand-primary" : "bg-brand-primary/35"
               }`}
             >
-              <Text className="font-body font-semibold text-background-primary">
+              <Text className="font-body-bold text-background-primary">
                 {t("chat.send")}
               </Text>
             </Pressable>

@@ -71,7 +71,7 @@ export function SportsEditScreen() {
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-body text-body-sm font-semibold text-text-primary">
+                  <Text className="font-body-bold text-body-sm text-text-primary">
                     {sport.sportName}
                   </Text>
                   <Text className="font-body text-caption text-text-tertiary">

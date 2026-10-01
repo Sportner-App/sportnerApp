@@ -234,7 +234,7 @@ export function PostDetailScreen() {
             className="flex-row items-center gap-3 px-6"
           >
             <Avatar uri={post.profileImageUrl} name={author} size={40} />
-            <Text className="font-body text-body-sm font-semibold text-text-primary">
+            <Text className="font-body-bold text-body-sm text-text-primary">
               @{post.username || t("events:fallback.athleteHandle")}
             </Text>
           </Pressable>
@@ -294,7 +294,7 @@ export function PostDetailScreen() {
                   {t("social:comments.replyTo", { username: replyUsername })}
                 </Text>
                 <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>
-                  <Text className="font-body text-caption font-semibold text-brand-primary">
+                  <Text className="font-body-bold text-caption text-brand-primary">
                     {t("common:cancel")}
                   </Text>
                 </Pressable>

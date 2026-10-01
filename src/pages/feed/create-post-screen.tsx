@@ -136,7 +136,7 @@ export function CreatePostScreen() {
                 <ActivityIndicator size="small" color="#ccff00" />
               ) : (
                 <Text
-                  className={`font-body text-body-sm font-semibold ${
+                  className={`font-body-bold text-body-sm ${
                     canShare ? "text-brand-primary" : "text-text-tertiary"
                   }`}
                 >
@@ -177,7 +177,7 @@ export function CreatePostScreen() {
           </ScrollView>
           {photos.length > 1 ? (
             <View className="absolute right-3 top-3 rounded-pill bg-background-primary/70 px-2.5 py-1">
-              <Text className="font-body text-overline font-semibold text-white">
+              <Text className="font-body-bold text-overline text-white">
                 {activeIndex + 1}/{photos.length}
               </Text>
             </View>
@@ -198,7 +198,7 @@ export function CreatePostScreen() {
           <View className="h-14 w-14 items-center justify-center rounded-full bg-brand-primary/15">
             <FontAwesome6 name="camera" size={20} color="#ccff00" />
           </View>
-          <Text className="text-center font-body text-body-sm font-semibold text-text-primary">
+          <Text className="text-center font-body-bold text-body-sm text-text-primary">
             {t("feed:create.addPhoto")}
           </Text>
           <Text className="text-center font-body text-caption text-text-tertiary">

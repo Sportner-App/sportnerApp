@@ -44,7 +44,7 @@ export function MediaSourceSheet({
               />
             </View>
             <View className="flex-1">
-              <Text className="font-body text-body-sm font-semibold text-text-primary">
+              <Text className="font-body-bold text-body-sm text-text-primary">
                 {option.label}
               </Text>
               <Text className="mt-0.5 font-body text-caption text-text-secondary">
