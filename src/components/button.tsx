@@ -153,7 +153,12 @@ export function Button({
         <>
           <ActivityIndicator color={contentColors[variant]} />
           {loadingLabel ? (
-            <Text className={`${labelSizes[size]} ${labelVariants[variant]}`}>
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+              className={`shrink ${labelSizes[size]} ${labelVariants[variant]}`}
+            >
               {loadingLabel}
             </Text>
           ) : null}
@@ -167,7 +172,13 @@ export function Button({
               color={disabledIconColor}
             />
           )}
-          <Text className={`${labelSizes[size]} ${disabledLabelClass}`}>
+          {/* Dar butonlarda (ör. SubmitBar ikili düzeni) etiket iki satıra düşmesin. */}
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.8}
+            className={`shrink ${labelSizes[size]} ${disabledLabelClass}`}
+          >
             {label}
           </Text>
         </>

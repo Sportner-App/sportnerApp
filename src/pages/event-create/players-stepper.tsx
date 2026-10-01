@@ -109,9 +109,7 @@ export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
               value={value}
               onChangeText={typeCount}
               onBlur={finishEditing}
-              onSubmitEditing={finishEditing}
               keyboardType="number-pad"
-              returnKeyType="done"
               maxLength={4}
               selectTextOnFocus
               textAlign="center"

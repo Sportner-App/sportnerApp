@@ -3,6 +3,7 @@ const {
   sports,
   fonts,
   typography,
+  textClassTokens,
   spacing,
   radius,
   shadows,
@@ -78,63 +79,19 @@ module.exports = {
         body: [fonts.body],
         "body-bold": [fonts.bodyBold],
       },
-      fontSize: {
-        display: [
-          `${typography.display.fontSize}px`,
-          {
-            lineHeight: `${typography.display.lineHeight}px`,
-            letterSpacing: `${typography.display.letterSpacing}px`,
-          },
-        ],
-        "heading-lg": [
-          `${typography.headingLarge.fontSize}px`,
-          {
-            lineHeight: `${typography.headingLarge.lineHeight}px`,
-            letterSpacing: `${typography.headingLarge.letterSpacing}px`,
-          },
-        ],
-        "heading-md": [
-          `${typography.headingMedium.fontSize}px`,
-          {
-            lineHeight: `${typography.headingMedium.lineHeight}px`,
-            letterSpacing: `${typography.headingMedium.letterSpacing}px`,
-          },
-        ],
-        "heading-sm": [
-          `${typography.headingSmall.fontSize}px`,
-          {
-            lineHeight: `${typography.headingSmall.lineHeight}px`,
-            letterSpacing: `${typography.headingSmall.letterSpacing}px`,
-          },
-        ],
-        "body-lg": [
-          `${typography.bodyLarge.fontSize}px`,
-          { lineHeight: `${typography.bodyLarge.lineHeight}px` },
-        ],
-        body: [
-          `${typography.body.fontSize}px`,
-          { lineHeight: `${typography.body.lineHeight}px` },
-        ],
-        "body-sm": [
-          `${typography.bodySmall.fontSize}px`,
-          { lineHeight: `${typography.bodySmall.lineHeight}px` },
-        ],
-        label: [
-          `${typography.label.fontSize}px`,
-          { lineHeight: `${typography.label.lineHeight}px` },
-        ],
-        caption: [
-          `${typography.caption.fontSize}px`,
-          { lineHeight: `${typography.caption.lineHeight}px` },
-        ],
-        overline: [
-          `${typography.overline.fontSize}px`,
-          {
-            lineHeight: `${typography.overline.lineHeight}px`,
-            letterSpacing: `${typography.overline.letterSpacing}px`,
-          },
-        ],
-      },
+      // Boyutlar ekran genişliğine göre ölçeklenir; bkz. `fluidType` (design-tokens.js).
+      fontSize: Object.fromEntries(
+        Object.entries(textClassTokens).map(([name, key]) => [
+          name,
+          [
+            `var(--text-${name})`,
+            {
+              lineHeight: `var(--leading-${name})`,
+              letterSpacing: `${typography[key].letterSpacing}px`,
+            },
+          ],
+        ]),
+      ),
       spacing: {
         xs: `${spacing.xs}px`,
         sm: `${spacing.sm}px`,

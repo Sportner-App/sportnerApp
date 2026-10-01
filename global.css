@@ -21,4 +21,26 @@
   --color-text-inverse: 244 246 242;
   --color-border-default: 32 52 67;
   --color-border-strong: 52 80 100;
+
+  /* 390pt genişlik varsayılanı; çalışma anında ekran genişliğine göre yeniden yazılır. */
+  --text-display: 32px;
+  --leading-display: 38px;
+  --text-heading-lg: 24px;
+  --leading-heading-lg: 30px;
+  --text-heading-md: 20px;
+  --leading-heading-md: 26px;
+  --text-heading-sm: 17px;
+  --leading-heading-sm: 22px;
+  --text-body-lg: 17px;
+  --leading-body-lg: 26px;
+  --text-body: 15px;
+  --leading-body: 22px;
+  --text-body-sm: 14px;
+  --leading-body-sm: 20px;
+  --text-label: 13px;
+  --leading-label: 16px;
+  --text-caption: 12px;
+  --leading-caption: 16px;
+  --text-overline: 12px;
+  --leading-overline: 16px;
 }

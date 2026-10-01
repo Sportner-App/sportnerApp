@@ -107,6 +107,10 @@ export type DesignTokens = {
     destructive: string;
   };
   sports: Record<SportAccentName, SportAccentToken>;
+  fluidType: { baseWidth: number; minScale: number; maxScale: number };
+  textClassTokens: Record<string, keyof DesignTokens["typography"]>;
+  typeScaleForWidth: (width: number) => number;
+  textSizeVariables: (width: number) => Record<string, number>;
   fonts: {
     display: string;
     displaySemiBold: string;

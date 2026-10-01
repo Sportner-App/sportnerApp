@@ -270,6 +270,63 @@ const typography = {
   },
 };
 
+/**
+ * Akışkan tipografi. `typography` boyutları 390pt genişlik için yazıldı;
+ * ekran genişliğine göre bu aralıkta orantılı ölçeklenir. Tailwind `text-*`
+ * sınıfları sabit px değil `var(--text-*)` okur, değerleri
+ * `ThemePreferenceProvider` çalışma anında `textSizeVariables()` ile yazar.
+ */
+const fluidType = {
+  baseWidth: 390,
+  minScale: 0.9,
+  maxScale: 1.12,
+};
+
+/** Tailwind sınıf adı → `typography` anahtarı. */
+const textClassTokens = {
+  display: "display",
+  "heading-lg": "headingLarge",
+  "heading-md": "headingMedium",
+  "heading-sm": "headingSmall",
+  "body-lg": "bodyLarge",
+  body: "body",
+  "body-sm": "bodySmall",
+  label: "label",
+  caption: "caption",
+  overline: "overline",
+};
+
+function typeScaleForWidth(width) {
+  if (!width || width <= 0) {
+    return 1;
+  }
+
+  return Math.min(
+    fluidType.maxScale,
+    Math.max(fluidType.minScale, width / fluidType.baseWidth),
+  );
+}
+
+/** Yarım piksele yuvarlar; metin taban çizgisi bulanıklaşmasın. */
+function roundHalf(value) {
+  return Math.round(value * 2) / 2;
+}
+
+/** Verilen ekran genişliği için `--text-*` / `--leading-*` değişkenleri. */
+function textSizeVariables(width) {
+  const scale = typeScaleForWidth(width);
+  const variables = {};
+
+  for (const [name, key] of Object.entries(textClassTokens)) {
+    variables[`--text-${name}`] = roundHalf(typography[key].fontSize * scale);
+    variables[`--leading-${name}`] = roundHalf(
+      typography[key].lineHeight * scale,
+    );
+  }
+
+  return variables;
+}
+
 const spacing = {
   xs: 4,
   sm: 8,
@@ -332,6 +389,10 @@ const designTokens = {
   sports,
   fonts,
   typography,
+  fluidType,
+  textClassTokens,
+  typeScaleForWidth,
+  textSizeVariables,
   spacing,
   radius,
   shadows,

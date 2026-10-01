@@ -8,8 +8,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import { View } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 
+import tokens from "@/constants/design-tokens";
 import { themeColors } from "@/constants/theme";
 import {
   DARK_THEME_COLORS,
@@ -30,8 +31,13 @@ function hexRgb(hex: string) {
   return `${parseInt(value.slice(0, 2), 16)} ${parseInt(value.slice(2, 4), 16)} ${parseInt(value.slice(4, 6), 16)}`;
 }
 
-export function createThemeVariables(colors: ThemeColors) {
+/**
+ * Tema CSS değişkenleri. `width` verilirse ekran genişliğine göre ölçeklenen
+ * `--text-*` / `--leading-*` font boyutları da eklenir.
+ */
+export function createThemeVariables(colors: ThemeColors, width?: number) {
   return vars({
+    ...(width ? tokens.textSizeVariables(width) : {}),
     "--color-brand-primary": hexRgb(colors.brand.primary),
     "--color-action-primary": hexRgb(colors.action.primary),
     "--color-action-on-primary": hexRgb(colors.action.onPrimary),
@@ -49,6 +55,7 @@ export function createThemeVariables(colors: ThemeColors) {
 }
 
 export function ThemePreferenceProvider({ children }: PropsWithChildren) {
+  const { width } = useWindowDimensions();
   const [preference, setPreferenceState] = useState<ThemePreference>("dark");
   const resolvedScheme = preference;
   const colors =
@@ -83,7 +90,10 @@ export function ThemePreferenceProvider({ children }: PropsWithChildren) {
     void AsyncStorage.setItem(STORAGE_KEY, value);
   };
 
-  const cssVariables = createThemeVariables(colors);
+  const cssVariables = useMemo(
+    () => createThemeVariables(colors, width),
+    [colors, width],
+  );
 
   const value = useMemo(
     () => ({ preference, resolvedScheme, setPreference }),
