@@ -1,7 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Keyboard,
   Platform,
   Pressable,
   ScrollView,
@@ -62,46 +61,23 @@ export function SelectSheet<T extends string>({
   const resolvedSearchPlaceholder =
     searchPlaceholder ?? t("components:select.searchPlaceholder");
   const resolvedAllGroupLabel = allGroupLabel ?? t("common:all");
-  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const { width: windowWidth } = useWindowDimensions();
   const [query, setQuery] = useState("");
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
-  const [keyboardInset, setKeyboardInset] = useState(0);
 
   useEffect(() => {
-    if (!visible) {
-      setQuery("");
-      setActiveGroup(null);
-      setKeyboardInset(0);
+    if (visible) {
       return;
     }
 
-    const showEvent =
-      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-    const hideEvent =
-      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
-
-    const showSub = Keyboard.addListener(showEvent, (event) => {
-      setKeyboardInset(event.endCoordinates.height);
-    });
-    const hideSub = Keyboard.addListener(hideEvent, () => {
-      setKeyboardInset(0);
-    });
-
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
+    setQuery("");
+    setActiveGroup(null);
   }, [visible]);
 
-  const listMaxHeight = useMemo(() => {
-    const base = variant === "grid" ? 420 : 320;
-    if (!searchable || keyboardInset <= 0) {
-      return base;
-    }
-
-    const reserved = keyboardInset + 220;
-    return Math.max(140, Math.min(base, windowHeight - reserved));
-  }, [keyboardInset, searchable, variant, windowHeight]);
+  // Klavye telafisi BottomSheet'te: sheet kendi yuksekligini klavyeye gore
+  // kisitliyor ve icerik flexShrink ile uyum sagliyor. Burada da ayrica
+  // kisitlamak listeyi iki kez kuculturdu.
+  const listMaxHeight = variant === "grid" ? 420 : 320;
 
   const filtered = useMemo(
     () => filterOptions(options, query, activeGroup),

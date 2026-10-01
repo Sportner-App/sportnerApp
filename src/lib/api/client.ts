@@ -13,6 +13,11 @@ import type {
 import { API_URL } from "@/constants/env";
 
 import { normalizeApiError } from "./errors";
+import {
+  deleteSecureItem,
+  getSecureItem,
+  setSecureItem,
+} from "./secure-storage";
 
 const TOKEN_STORAGE_KEY = "api_token";
 const REFRESH_TOKEN_STORAGE_KEY = "api_refresh_token";
@@ -79,7 +84,7 @@ class APIClient {
       );
 
       try {
-        const token = await AsyncStorage.getItem(TOKEN_STORAGE_KEY);
+        const token = await getSecureItem(TOKEN_STORAGE_KEY);
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -203,11 +208,8 @@ class APIClient {
 
   async setSession(session: StoredAuthSession) {
     try {
-      await AsyncStorage.setItem(TOKEN_STORAGE_KEY, session.accessToken);
-      await AsyncStorage.setItem(
-        REFRESH_TOKEN_STORAGE_KEY,
-        session.refreshToken,
-      );
+      await setSecureItem(TOKEN_STORAGE_KEY, session.accessToken);
+      await setSecureItem(REFRESH_TOKEN_STORAGE_KEY, session.refreshToken);
 
       if (session.user) {
         await AsyncStorage.setItem(
@@ -226,10 +228,10 @@ class APIClient {
   async setToken(token: string | null | undefined) {
     try {
       if (!token) {
-        await AsyncStorage.removeItem(TOKEN_STORAGE_KEY);
+        await deleteSecureItem(TOKEN_STORAGE_KEY);
         return;
       }
-      await AsyncStorage.setItem(TOKEN_STORAGE_KEY, token);
+      await setSecureItem(TOKEN_STORAGE_KEY, token);
     } catch (error) {
       console.error("Token kaydedilemedi:", error);
       throw error;
@@ -241,10 +243,10 @@ class APIClient {
   async setRefreshToken(token: string | null | undefined) {
     try {
       if (!token) {
-        await AsyncStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
+        await deleteSecureItem(REFRESH_TOKEN_STORAGE_KEY);
         return;
       }
-      await AsyncStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, token);
+      await setSecureItem(REFRESH_TOKEN_STORAGE_KEY, token);
     } catch (error) {
       console.error("Refresh token kaydedilemedi:", error);
       throw error;
@@ -253,11 +255,9 @@ class APIClient {
 
   async clearToken() {
     try {
-      await AsyncStorage.multiRemove([
-        TOKEN_STORAGE_KEY,
-        REFRESH_TOKEN_STORAGE_KEY,
-        USER_STORAGE_KEY,
-      ]);
+      await deleteSecureItem(TOKEN_STORAGE_KEY);
+      await deleteSecureItem(REFRESH_TOKEN_STORAGE_KEY);
+      await AsyncStorage.removeItem(USER_STORAGE_KEY);
     } catch (error) {
       console.error("Token silinirken hata:", error);
     } finally {
@@ -292,7 +292,7 @@ class APIClient {
 
   async getToken() {
     try {
-      return await AsyncStorage.getItem(TOKEN_STORAGE_KEY);
+      return await getSecureItem(TOKEN_STORAGE_KEY);
     } catch (error) {
       console.error("Token okunamadi:", error);
       return null;
@@ -301,7 +301,7 @@ class APIClient {
 
   async getRefreshToken() {
     try {
-      return await AsyncStorage.getItem(REFRESH_TOKEN_STORAGE_KEY);
+      return await getSecureItem(REFRESH_TOKEN_STORAGE_KEY);
     } catch (error) {
       console.error("Refresh token okunamadi:", error);
       return null;

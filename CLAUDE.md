@@ -47,3 +47,19 @@ Bu yüzden plugin `app.config.js`'te koşullu ekleniyor.
 Değişken eklerken üç yeri birden güncelle: `.env` (yerel), `.env.example`
 (dokümantasyon) ve EAS proje ortam değişkenleri (`eas env:create`). EAS'te
 eksik olan bir zorunlu değişken build'i durdurur.
+
+## Oturum anahtarlarının saklanması
+
+Access ve refresh token `src/lib/api/secure-storage.ts` üzerinden cihazın
+güvenli deposunda tutulur (iOS Keychain / Android Keystore). AsyncStorage'a
+yazılmaz — orada düz metin duruyorlardı.
+
+Güvenli depoda değer bulunamazsa `getSecureItem` eski AsyncStorage kalıntısını
+siler (geri yüklemez): kullanıcı yeniden giriş yapar, düz metin token cihazda
+kalmaz. Kalıcı bir temizlik, ileride kaldırılması gerekmiyor.
+
+Kullanıcı profili (`api_user`) AsyncStorage'da kalır: hassas değil ve
+SecureStore'un 2 KB değer sınırını aşabilir.
+
+`expo-secure-store` native bir modül — `ios/Podfile.lock` güncellenmesi için
+`npx pod-install` (EAS build bunu kendisi yapar).

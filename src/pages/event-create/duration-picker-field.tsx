@@ -1,6 +1,14 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as Haptics from "expo-haptics";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -21,6 +29,20 @@ const WHEEL_HEIGHT = ITEM_HEIGHT * VISIBLE_ITEMS;
 const WHEEL_PADDING = ITEM_HEIGHT * Math.floor(VISIBLE_ITEMS / 2);
 const HOURS = Array.from({ length: 13 }, (_, index) => index);
 const MINUTES = Array.from({ length: 60 }, (_, index) => index);
+
+/**
+ * Carki dongusel gostermek icin liste bu kadar kez tekrarlaniyor; kullanici
+ * her zaman ortadaki blokta tutuluyor. Uca varildiginda ayni degerin ortadaki
+ * kopyasina animasyonsuz atlaniyor, boylece 59'dan 0'a (veya 0'dan 59'a)
+ * gecis kesintisiz oluyor ve kullanici listenin bir ucundan digerine
+ * kaydirmak zorunda kalmiyor.
+ */
+const LOOP_REPEATS = 3;
+const LOOP_MIDDLE_BLOCK = 1;
+
+type WheelHandle = {
+  scrollToValue: (value: number, animated?: boolean) => void;
+};
 
 type DurationPickerFieldProps = {
   value: number;
@@ -85,8 +107,8 @@ function DurationPickerSheet({
   onChange: (minutes: number) => void;
 }) {
   const { t } = useTranslation("eventCreate");
-  const hourRef = useRef<ScrollView>(null);
-  const minuteRef = useRef<ScrollView>(null);
+  const hourRef = useRef<WheelHandle>(null);
+  const minuteRef = useRef<WheelHandle>(null);
   const initialHour = Math.min(Math.floor(value / 60), HOURS.length - 1);
   const initialMinute = Math.min(value % 60, MINUTES.length - 1);
   const [hour, setHour] = useState(initialHour);
@@ -101,14 +123,8 @@ function DurationPickerSheet({
     setMinute(nextMinute);
 
     const timer = setTimeout(() => {
-      hourRef.current?.scrollTo({
-        y: nextHour * ITEM_HEIGHT,
-        animated: false,
-      });
-      minuteRef.current?.scrollTo({
-        y: nextMinute * ITEM_HEIGHT,
-        animated: false,
-      });
+      hourRef.current?.scrollToValue(nextHour);
+      minuteRef.current?.scrollToValue(nextMinute);
     }, 80);
 
     return () => clearTimeout(timer);
@@ -193,7 +209,7 @@ function DurationPickerSheet({
 }
 
 const Wheel = forwardRef<
-  ScrollView,
+  WheelHandle,
   {
     values: number[];
     selected: number;
@@ -214,25 +230,59 @@ const Wheel = forwardRef<
   },
   ref,
 ) {
+  const scrollRef = useRef<ScrollView>(null);
+
+  const items = useMemo(
+    () => Array.from({ length: LOOP_REPEATS }, () => values).flat(),
+    [values],
+  );
+
+  /** Bir degerin ortadaki bloktaki kaydirma konumu. */
+  const offsetFor = useCallback(
+    (index: number) =>
+      (LOOP_MIDDLE_BLOCK * values.length + index) * ITEM_HEIGHT,
+    [values.length],
+  );
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      scrollToValue: (value: number, animated = false) => {
+        const index = values.indexOf(value);
+        if (index < 0) return;
+        scrollRef.current?.scrollTo({ y: offsetFor(index), animated });
+      },
+    }),
+    [offsetFor, values],
+  );
+
   const settle = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const index = Math.max(
+    const position = Math.max(
       0,
       Math.min(
         Math.round(event.nativeEvent.contentOffset.y / ITEM_HEIGHT),
-        values.length - 1,
+        items.length - 1,
       ),
     );
+    const index = ((position % values.length) + values.length) % values.length;
     const next = values[index];
+
     if (next !== selected) {
       onSelect(next);
       void Haptics.selectionAsync();
+    }
+
+    // Orta blogun disina cikildiysa ayni degerin ortadaki kopyasina don.
+    // Animasyonsuz oldugu icin kullanici atlamayi fark etmiyor.
+    if (position < values.length || position >= values.length * 2) {
+      scrollRef.current?.scrollTo({ y: offsetFor(index), animated: false });
     }
   };
 
   return (
     <View className="flex-1">
       <ScrollView
-        ref={ref}
+        ref={scrollRef}
         style={{ height: WHEEL_HEIGHT }}
         contentContainerStyle={{ paddingVertical: WHEEL_PADDING }}
         showsVerticalScrollIndicator={false}
@@ -247,11 +297,11 @@ const Wheel = forwardRef<
           }
         }}
       >
-        {values.map((item) => {
+        {items.map((item, position) => {
           const active = item === selected;
           return (
             <View
-              key={item}
+              key={`${item}-${position}`}
               style={{ height: ITEM_HEIGHT }}
               className="flex-row items-center justify-center gap-2"
             >

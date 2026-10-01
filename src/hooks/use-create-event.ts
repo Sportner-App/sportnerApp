@@ -201,6 +201,20 @@ export function useCreateEvent(initialOrganizationId?: string) {
     }));
   };
 
+  /**
+   * Konum secimini tamamen kaldirir. Arama kutusundaki "x" yalnizca metni
+   * siliyordu; koordinatlar durdugu icin haritadaki isaretci ekranda kaliyor
+   * ve kullanici yanlis sectigi konumu kaldiramiyordu.
+   */
+  const clearLocation = () => {
+    setValues((prev) => ({
+      ...prev,
+      addressText: "",
+      latitude: null,
+      longitude: null,
+    }));
+  };
+
   const maxPlayersNumber = Number(values.maxPlayers);
   const minParticipantAgeNumber = Number(values.minParticipantAge);
   const maxParticipantAgeNumber = Number(values.maxParticipantAge);
@@ -490,6 +504,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
     values,
     update,
     setLocation,
+    clearLocation,
     organizationId,
     setOrganizationId,
     wantsOrganizationEvent,

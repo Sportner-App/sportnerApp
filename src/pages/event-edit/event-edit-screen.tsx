@@ -8,11 +8,11 @@ import {
   DateField,
   Input,
   ScreenHeader,
-  SelectField,
 } from "@/components";
-import { CREATE_EVENT_LIMITS, useDurationOptions } from "@/constants/events";
+import { CREATE_EVENT_LIMITS } from "@/constants/events";
 import { useToast } from "@/contexts";
 import { useEventDetail } from "@/hooks/use-event-detail";
+import { DurationPickerField } from "@/pages/event-create/duration-picker-field";
 import { LocationPicker } from "@/pages/event-create/location-picker";
 import { SubmitBar } from "@/pages/event-create/submit-bar";
 import { updateEvent } from "@/services/events-service";
@@ -25,7 +25,6 @@ export function EventEditScreen() {
   const { t } = useTranslation("eventDetail");
   const { showToast } = useToast();
   const { event, isLoading } = useEventDetail(id);
-  const DURATION_OPTIONS = useDurationOptions();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -154,19 +153,10 @@ export function EventEditScreen() {
         value={eventDate}
         onChange={setEventDate}
       />
-      <SelectField
-        label={t("edit.durationLabel")}
-        value={String(durationMinutes)}
-        onChange={(key) => {
-          const option = DURATION_OPTIONS.find((item) => item.key === key);
-          if (option) {
-            setDurationMinutes(option.minutes);
-          }
-        }}
-        options={DURATION_OPTIONS.map((option) => ({
-          key: option.key,
-          label: option.label,
-        }))}
+      <DurationPickerField
+        value={durationMinutes}
+        onChange={setDurationMinutes}
+        disabled={isSaving}
       />
       <Input
         label={t("edit.playerCountLabel")}
@@ -238,6 +228,11 @@ export function EventEditScreen() {
           setAddressText(location.addressText);
           setLatitude(location.latitude);
           setLongitude(location.longitude);
+        }}
+        onClear={() => {
+          setAddressText("");
+          setLatitude(null);
+          setLongitude(null);
         }}
       />
     </AppScreen>

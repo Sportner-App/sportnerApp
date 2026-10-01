@@ -1,5 +1,4 @@
 import { colors } from "@/constants/colors";
-import { FEATURE_FLAGS } from "@/constants/feature-flags";
 import {
   edgeBackStackOptions,
   fullScreenBackStackOptions,
@@ -132,7 +131,7 @@ function ThemedRootLayoutNav() {
               <Stack.Screen name="feed" />
               <Stack.Screen name="posts" />
               <Stack.Screen name="badges" />
-              {FEATURE_FLAGS.albums ? <Stack.Screen name="albums" /> : null}
+              <Stack.Screen name="albums" />
               <Stack.Screen name="report" />
               <Stack.Screen name="help" />
             </Stack>

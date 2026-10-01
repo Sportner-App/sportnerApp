@@ -28,6 +28,7 @@ type LocationPickerProps = {
   latitude: number | null;
   longitude: number | null;
   onSelect: (location: SelectedLocation) => void;
+  onClear: () => void;
   compact?: boolean;
   expanded?: boolean;
 };
@@ -37,6 +38,7 @@ export function LocationPicker({
   latitude,
   longitude,
   onSelect,
+  onClear,
   compact = false,
   expanded = false,
 }: LocationPickerProps) {
@@ -174,6 +176,9 @@ export function LocationPicker({
                 onPress={() => {
                   setQuery("");
                   clearSuggestions();
+                  // Secimi de kaldir: aksi halde metin silinse bile
+                  // koordinatlar kaliyor ve harita isaretcisi ekranda duruyor.
+                  onClear();
                 }}
               >
                 <FontAwesome6

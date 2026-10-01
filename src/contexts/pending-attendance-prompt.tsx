@@ -10,7 +10,12 @@ import {
 import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { AppText as Text, Avatar, BottomSheet, Button } from "@/components";
+// Barrel yerine dogrudan dosyalar: "@/components" uzerinden gecmek
+// contexts -> components -> contexts require cycle'ina yol aciyordu.
+import { AppText as Text } from "@/components/app-text";
+import { Avatar } from "@/components/avatar";
+import { BottomSheet } from "@/components/bottom-sheet";
+import { Button } from "@/components/button";
 import { themeColors } from "@/constants/theme";
 import {
   confirmAllAttendance,

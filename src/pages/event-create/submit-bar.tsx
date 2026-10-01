@@ -1,8 +1,14 @@
 import { View } from "react-native";
+import Animated, {
+  FadeInDown,
+  FadeOutDown,
+  useReducedMotion,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components";
 import { shadows } from "@/constants/theme";
+import { useKeyboardHeight } from "@/hooks/use-keyboard-height";
 
 type SubmitBarProps = {
   disabled: boolean;
@@ -30,6 +36,24 @@ export function SubmitBar({
   loadingLabel,
 }: SubmitBarProps) {
   const insets = useSafeAreaInsets();
+  const keyboardHeight = useKeyboardHeight();
+  const reducedMotion = useReducedMotion();
+  const isKeyboardOpen = keyboardHeight > 0;
+
+  const bottomPadding = insets.bottom + 10;
+
+  /**
+   * Klavye açıkken gizleniyor.
+   *
+   * Bir metin alanı odaktayken bu çubuk klavyenin hemen üstüne yapışıyor ve
+   * parlak birincil buton dikkati topluyordu: kullanıcı başlığı yazar yazmaz
+   * "Devam Et"e basıp açıklama gibi opsiyonel alanları doldurmadan
+   * ilerliyordu. Alanlar arası geçişi klavye araç çubuğundaki oklar zaten
+   * sağlıyor; "Kapat"a basıldığında çubuk geri geliyor.
+   */
+  if (isKeyboardOpen) {
+    return null;
+  }
 
   const primary = (
     <Button
@@ -46,9 +70,11 @@ export function SubmitBar({
   );
 
   return (
-    <View
+    <Animated.View
+      entering={reducedMotion ? undefined : FadeInDown.duration(180)}
+      exiting={reducedMotion ? undefined : FadeOutDown.duration(120)}
       className="border-t border-border-default bg-background-primary/95 px-5 pt-3"
-      style={[shadows.lg, { paddingBottom: insets.bottom + 10 }]}
+      style={[shadows.lg, { paddingBottom: bottomPadding }]}
     >
       {onBack ? (
         <View className="flex-row gap-3">
@@ -69,6 +95,6 @@ export function SubmitBar({
       ) : (
         primary
       )}
-    </View>
+    </Animated.View>
   );
 }

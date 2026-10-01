@@ -22,6 +22,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
 
+import { useKeyboardHeight } from "@/hooks/use-keyboard-height";
 import type { BottomSheetProps } from "@/types/components";
 import { Button } from "./button";
 import { AppText as Text } from "@/components/app-text";
@@ -52,7 +53,15 @@ export function BottomSheet({
   const slideDistance = useSharedValue(windowHeight);
   const dragY = useSharedValue(0);
   const dragStartY = useSharedValue(0);
-  const maxSheetHeight = Math.max(windowHeight - insets.top - TOP_GUTTER, 0);
+  const keyboardHeight = useKeyboardHeight();
+
+  // KeyboardAvoidingView sheet'i klavye kadar yukarı itiyor ama yükseklik
+  // sınırını değiştirmiyordu: tam ekran yüksekliğindeki bir sheet itilince
+  // üstten taşıp başlık ve arama alanı status bar'ın altında kalıyordu.
+  const maxSheetHeight = Math.max(
+    windowHeight - insets.top - TOP_GUTTER - keyboardHeight,
+    0,
+  );
   const reduceMotion = reducedMotion
     ? ReduceMotion.Always
     : ReduceMotion.System;
@@ -199,7 +208,17 @@ export function BottomSheet({
           style={[sheetStyle, { maxHeight: maxSheetHeight }]}
           className="overflow-hidden rounded-t-[32px] border border-border-default bg-background-primary px-5 pt-3"
         >
-          <View style={{ flexShrink: 1, paddingBottom: insets.bottom + 16 }}>
+          {/*
+            Klavye acikken alt guvenli alan payi eklenmiyor: o bosluk home
+            indicator icin ve klavye zaten orayi kapatiyor. Eklenince Vazgec
+            butonunun altinda klavyeye kadar uzanan bir bosluk kaliyordu.
+          */}
+          <View
+            style={{
+              flexShrink: 1,
+              paddingBottom: (keyboardHeight > 0 ? 0 : insets.bottom) + 16,
+            }}
+          >
             <GestureDetector gesture={panGesture}>
               <View className="mb-4 items-center pb-1">
                 <View className="mb-4 h-1 w-10 rounded-full bg-brand-primary" />

@@ -16,7 +16,9 @@
       "infoPlist": {
         "CFBundleDisplayName": "Sportner",
         "ITSAppUsesNonExemptEncryption": false,
-        "LSApplicationQueriesSchemes": ["whatsapp"],
+        "LSApplicationQueriesSchemes": [
+          "whatsapp"
+        ],
         "NSCameraUsageDescription": "Yeni fotoğraf çekmek için kamera erişimi gerekir.",
         "NSPhotoLibraryUsageDescription": "Profil fotoğrafı ve gönderi eklemek için galeri erişimi gerekir."
       }
@@ -40,6 +42,7 @@
     "plugins": [
       "expo-router",
       "expo-video",
+      "expo-secure-store",
       [
         "expo-notifications",
         {

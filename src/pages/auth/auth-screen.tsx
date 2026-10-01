@@ -2,7 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import * as AppleAuthentication from "expo-apple-authentication";
 import * as Haptics from "expo-haptics";
 import { useTranslation } from "react-i18next";
-import { Platform, Pressable, View } from "react-native";
+import {
+  InteractionManager,
+  Platform,
+  Pressable,
+  View,
+} from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import Animated, {
   Keyframe,
@@ -92,6 +97,11 @@ export function AuthScreen() {
   const [isAppleAvailable, setIsAppleAvailable] = useState(false);
   const [isLegalConsentModalVisible, setIsLegalConsentModalVisible] =
     useState(false);
+  // Modal, hangi sosyal girişin onay beklediğini bilmeli: onaydan sonra
+  // kullanıcıyı butona ikinci kez bastırmak yerine akışı biz sürdürüyoruz.
+  const [pendingSocialProvider, setPendingSocialProvider] = useState<
+    "google" | "apple" | null
+  >(null);
   const [isForgotPasswordVisible, setIsForgotPasswordVisible] = useState(false);
 
   useEffect(() => {
@@ -119,10 +129,31 @@ export function AuthScreen() {
       <SocialRegistrationOverlay social={social} />
       <LegalConsentModal
         visible={isLegalConsentModalVisible}
-        onClose={() => setIsLegalConsentModalVisible(false)}
+        onClose={() => {
+          setPendingSocialProvider(null);
+          setIsLegalConsentModalVisible(false);
+        }}
         onAccept={() => {
           form.setHasAcceptedLegalTerms(true);
           setIsLegalConsentModalVisible(false);
+
+          const provider = pendingSocialProvider;
+          setPendingSocialProvider(null);
+
+          if (!provider) {
+            return;
+          }
+
+          // Apple/Google kendi sistem sayfasını açıyor; modalın kapanma
+          // animasyonu bitmeden çağırırsak iOS ikinci sunumu yok sayıyor.
+          InteractionManager.runAfterInteractions(() => {
+            if (provider === "google") {
+              void social.signInWithGoogle();
+              return;
+            }
+
+            void social.signInWithApple();
+          });
         }}
       />
       <ForgotPasswordSheet
@@ -368,7 +399,10 @@ export function AuthScreen() {
               onPress={
                 form.isLogin || form.hasAcceptedLegalTerms
                   ? social.signInWithGoogle
-                  : () => setIsLegalConsentModalVisible(true)
+                  : () => {
+                      setPendingSocialProvider("google");
+                      setIsLegalConsentModalVisible(true);
+                    }
               }
             />
             {isAppleAvailable ? (
@@ -380,7 +414,10 @@ export function AuthScreen() {
                 onPress={
                   form.isLogin || form.hasAcceptedLegalTerms
                     ? social.signInWithApple
-                    : () => setIsLegalConsentModalVisible(true)
+                    : () => {
+                        setPendingSocialProvider("apple");
+                        setIsLegalConsentModalVisible(true);
+                      }
                 }
               />
             ) : null}

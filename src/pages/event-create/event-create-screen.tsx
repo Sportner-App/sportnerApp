@@ -114,6 +114,7 @@ export function EventCreateScreen() {
     values,
     update,
     setLocation,
+    clearLocation,
     organizationId,
     setOrganizationId,
     wantsOrganizationEvent,
@@ -359,6 +360,7 @@ export function EventCreateScreen() {
               latitude={values.latitude}
               longitude={values.longitude}
               onSelect={setLocation}
+              onClear={clearLocation}
             />
           </View>
         ) : null}
