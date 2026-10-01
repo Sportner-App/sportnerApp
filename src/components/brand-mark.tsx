@@ -1,7 +1,7 @@
 import { Image, View } from "react-native";
 
-import type { BrandMarkProps } from "@/types/components";
 import { AppText as Text } from "@/components/app-text";
+import type { BrandMarkProps } from "@/types/components";
 
 const LOGO_MARK = require("../../assets/images/icon-removebg.png");
 

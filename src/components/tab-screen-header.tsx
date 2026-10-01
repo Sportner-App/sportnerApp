@@ -46,7 +46,7 @@ export function TabScreenHeader({ action }: { action?: TabHeaderAction }) {
   const actionGap = responsiveSize(width, 5, 6);
   const indicatorSize = responsiveSize(width, 8, 10);
   const brandIconSize = responsiveSize(width, 34, 40);
-  const brandTextSize = responsiveSize(width, 16, 18);
+  const brandTextSize = responsiveSize(width, 14, 16);
   const brandLetterSpacing = responsiveSize(width, 5, 7);
   const brandGap = responsiveSize(width, 6, 8);
   const router = useRouter();
