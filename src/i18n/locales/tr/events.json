@@ -1,8 +1,8 @@
 {
   "badge": {
-    "today": "BUGÜN",
-    "tomorrow": "YARIN",
-    "inDays": "{{count}} GÜN SONRA"
+    "today": "Bugün",
+    "tomorrow": "Yarın",
+    "inDays": "{{count}} gün sonra"
   },
   "dateLabel": {
     "today": "Bugün",

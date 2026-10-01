@@ -31,7 +31,7 @@ export function StatsSection({ statistics }: StatsSectionProps) {
           <Text className="font-body-bold text-heading-sm text-text-primary">
             {statistics[item.field]}
           </Text>
-          <Text className="mt-1 font-body text-overline uppercase tracking-wide text-text-tertiary">
+          <Text className="mt-1 font-body text-overline text-text-tertiary">
             {item.label}
           </Text>
         </View>

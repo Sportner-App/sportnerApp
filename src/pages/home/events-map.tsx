@@ -31,14 +31,10 @@ import type {
   UserLocationStatus,
 } from "@/hooks/use-user-location";
 import { hasMapboxToken, zoomForLongitudeSpan } from "@/services/mapbox";
-import { MapUnavailable } from "@/components";
+import { Chip, MapUnavailable } from "@/components";
 import type { IconName } from "@/types/components";
 import type { EventSummary } from "@/types/events";
-import {
-  currentDateLocale,
-  formatEventTime,
-  relativeEventBadge,
-} from "@/utils/events";
+import { formatEventTime, relativeEventBadge } from "@/utils/events";
 import { AppText as Text } from "@/components/app-text";
 
 type EventsMapProps = {
@@ -569,12 +565,7 @@ function EventMapPreviewCard({
   const time = formatEventTime(event.eventDate);
   const whenLabel = [badge, time].filter(Boolean).join(" · ");
   const place = event.location.trim();
-  const sportLabel = event.sportName
-    .trim()
-    .toLocaleUpperCase(currentDateLocale());
-  const accent = sportAccentToken(event.sport);
-  const sportColor = accent?.accent ?? themeColors.text.secondary;
-  const onAccent = accent?.onAccent ?? themeColors.text.inverse;
+  const sportLabel = event.sportName.trim();
 
   return (
     <Animated.View
@@ -600,17 +591,12 @@ function EventMapPreviewCard({
 
           <View className="flex-1 justify-between p-3.5">
             {sportLabel ? (
-              <View
-                className="flex-row items-center self-start rounded-pill px-2 py-1"
-                style={{ backgroundColor: sportColor }}
-              >
-                <Text
-                  className="font-body-bold text-overline tracking-[1.2px]"
-                  style={{ color: onAccent }}
-                >
-                  {sportLabel}
-                </Text>
-              </View>
+              <Chip
+                variant="sport"
+                sport={event.sport}
+                icon={event.sportIcon}
+                label={sportLabel}
+              />
             ) : (
               <View />
             )}

@@ -112,7 +112,7 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
 
           <View className="flex-row overflow-hidden rounded-[22px] border border-border-default bg-surface-primary">
             <View className="flex-1 items-center px-3 py-4">
-              <Text className="font-body text-overline uppercase tracking-[1.2px] text-text-tertiary">
+              <Text className="font-body text-overline text-text-tertiary">
                 {t("sports.primaryLevel")}
               </Text>
               <Text className="mt-2 font-display text-heading-sm text-brand-primary">
@@ -128,7 +128,7 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
             </View>
             <View className="my-3 w-px bg-border-default" />
             <View className="flex-1 items-center px-3 py-4">
-              <Text className="font-body text-overline uppercase tracking-[1.2px] text-text-tertiary">
+              <Text className="font-body text-overline text-text-tertiary">
                 {t("sports.playerRating")}
               </Text>
               <View className="mt-2 flex-row items-center gap-1.5">

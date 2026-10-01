@@ -1,8 +1,8 @@
 {
   "badge": {
-    "today": "TODAY",
-    "tomorrow": "TOMORROW",
-    "inDays": "IN {{count}} DAYS"
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "inDays": "In {{count}} days"
   },
   "dateLabel": {
     "today": "Today",

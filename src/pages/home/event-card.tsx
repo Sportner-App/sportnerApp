@@ -15,8 +15,7 @@ import Svg, {
 } from "react-native-svg";
 import { useTranslation } from "react-i18next";
 
-import { Avatar } from "@/components";
-import { readableOn, resolveEventBadgeThemes } from "@/constants/badge-colors";
+import { Avatar, Chip } from "@/components";
 import { skillKeyFromCode, useSkillLevelLabels } from "@/constants/profile";
 import {
   FALLBACK_SPORT_IMAGE,
@@ -38,7 +37,6 @@ import {
   hasApprovedParticipation,
   hasEventEnded,
   hasPendingParticipation,
-  isEventToday,
   noLocationLabel,
   relativeEventBadge,
 } from "@/utils/events";
@@ -78,9 +76,7 @@ export function EventCard({ event, onPress }: EventCardProps) {
   const badge = isEnded
     ? t("eventCard.ended")
     : relativeEventBadge(event.eventDate);
-  const sportLabel = event.sportName
-    .trim()
-    .toLocaleUpperCase(currentDateLocale());
+  const sportLabel = event.sportName.trim();
   const title = event.title.trim() || t("eventCard.untitled");
   const place = event.location.trim();
   const showPlace = place.length > 0 && place !== noLocationLabel();
@@ -88,14 +84,15 @@ export function EventCard({ event, onPress }: EventCardProps) {
   const accent = sportAccentToken(event.sport);
   const sportColor = accent?.accent ?? themeColors.text.secondary;
   const sportSoft = accent?.soft ?? themeColors.surface.secondary;
-  const onAccent = accent?.onAccent ?? themeColors.text.inverse;
-  // Rozet renkleri: her biri kendi ailesinden, spor aksanına ve birbirlerine
-  // çakışmayacak şekilde seçilir.
-  const badgeThemes = resolveEventBadgeThemes({
-    sportAccent: sportColor,
-    isPaid: event.isPaid,
-    urgency: isEventToday(event.eventDate) ? "today" : "upcoming",
-  });
+  // Seviye ve ücret rozet değil, meta satırında düz metin.
+  const detailLine = [
+    event.skillLevel != null
+      ? SKILL_LEVEL_LABELS[skillKeyFromCode(event.skillLevel)]
+      : null,
+    formatEventFee(event.isPaid, event.feeAmount),
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   // Kullanıcının bu etkinlikteki katılım durumu (katılımcı / onay bekliyor).
   const myStatus = event.myParticipationStatus;
@@ -105,13 +102,15 @@ export function EventCard({ event, onPress }: EventCardProps) {
       ? {
           label: t("eventCard.myStatus.approved"),
           accessibilityLabel: t("eventCard.accessibility.myStatusApproved"),
-          background: themeColors.success,
+          color: themeColors.success,
+          icon: "circle-check" as const,
         }
       : hasPendingParticipation(myStatus)
         ? {
             label: t("eventCard.myStatus.pending"),
             accessibilityLabel: t("eventCard.accessibility.myStatusPending"),
-            background: themeColors.warning,
+            color: themeColors.warning,
+            icon: "clock" as const,
           }
         : null;
 
@@ -204,76 +203,25 @@ export function EventCard({ event, onPress }: EventCardProps) {
           </View>
 
           {badge ? (
-            <View
-              className="absolute right-3.5 top-3.5 z-20 flex-row items-center gap-1.5 rounded-pill px-2.5 py-1"
-              style={{
-                backgroundColor: isEnded
-                  ? "#334155"
-                  : badgeThemes.date.background,
-              }}
-            >
-              {isEnded ? (
-                <FontAwesome6 name="check" size={9} color="#f8fafc" />
-              ) : null}
-              <Text
-                className="font-body-bold text-overline tracking-wide"
-                style={{
-                  color: isEnded ? "#f8fafc" : badgeThemes.date.foreground,
-                }}
-              >
-                {badge}
-              </Text>
-            </View>
+            <Chip
+              label={badge}
+              icon={isEnded ? "check" : undefined}
+              className="absolute right-3.5 top-3.5 z-20"
+            />
           ) : null}
 
           <View className="z-10 min-h-[210px] justify-between px-4 py-3.5">
-            <View className="flex-row flex-wrap items-center gap-1.5">
-              {sportLabel ? (
-                <View
-                  className="flex-row items-center self-start rounded-pill px-2.5 py-1"
-                  style={{ backgroundColor: sportColor }}
-                >
-                  <FontAwesome6
-                    name={event.sportIcon}
-                    size={9}
-                    color={onAccent}
-                  />
-                  <Text
-                    numberOfLines={1}
-                    className="ml-1.5 font-body-bold text-overline tracking-[1.2px]"
-                    style={{ color: onAccent }}
-                  >
-                    {sportLabel}
-                  </Text>
-                </View>
-              ) : null}
-              {event.skillLevel != null ? (
-                <View
-                  className="self-start rounded-pill px-2.5 py-1"
-                  style={{ backgroundColor: badgeThemes.skill.background }}
-                >
-                  <Text
-                    numberOfLines={1}
-                    className="font-body-bold text-overline tracking-[0.4px]"
-                    style={{ color: badgeThemes.skill.foreground }}
-                  >
-                    {SKILL_LEVEL_LABELS[skillKeyFromCode(event.skillLevel)]}
-                  </Text>
-                </View>
-              ) : null}
-              <View
-                className="self-start rounded-pill px-2.5 py-1"
-                style={{ backgroundColor: badgeThemes.fee.background }}
-              >
-                <Text
-                  numberOfLines={1}
-                  className="font-body-bold text-overline tracking-[0.4px]"
-                  style={{ color: badgeThemes.fee.foreground }}
-                >
-                  {formatEventFee(event.isPaid, event.feeAmount)}
-                </Text>
-              </View>
-            </View>
+            {sportLabel ? (
+              <Chip
+                variant="sport"
+                sport={event.sport}
+                icon={event.sportIcon}
+                label={sportLabel}
+                className="mb-3"
+              />
+            ) : (
+              <View />
+            )}
 
             <View>
               <View className="w-[62%] pr-2">
@@ -301,6 +249,14 @@ export function EventCard({ event, onPress }: EventCardProps) {
                     }
                     accent={sportColor}
                   />
+                  {detailLine ? (
+                    <Text
+                      numberOfLines={1}
+                      className="font-body text-label text-white/80"
+                    >
+                      {detailLine}
+                    </Text>
+                  ) : null}
                 </View>
               </View>
 
@@ -331,15 +287,15 @@ export function EventCard({ event, onPress }: EventCardProps) {
                         </View>
                       ) : null}
                       {myStatusBadge ? (
-                        <View
-                          className="rounded-pill px-2 py-0.5"
-                          style={{ backgroundColor: myStatusBadge.background }}
-                        >
+                        <View className="flex-row items-center gap-1">
+                          <FontAwesome6
+                            name={myStatusBadge.icon}
+                            size={11}
+                            color={myStatusBadge.color}
+                          />
                           <Text
-                            className="font-body-bold text-overline tracking-wide"
-                            style={{
-                              color: readableOn(myStatusBadge.background),
-                            }}
+                            className="font-body-bold text-caption"
+                            style={{ color: myStatusBadge.color }}
                           >
                             {myStatusBadge.label}
                           </Text>

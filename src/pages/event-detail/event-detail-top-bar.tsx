@@ -3,15 +3,11 @@ import { Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
-import { resolveEventBadgeThemes } from "@/constants/badge-colors";
-import { sportAccentToken, themeColors } from "@/constants/theme";
+import { Chip } from "@/components/chip";
+import { themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { EventDetail } from "@/types/events";
-import {
-  currentDateLocale,
-  isEventToday,
-  relativeEventBadge,
-} from "@/utils/events";
+import { relativeEventBadge } from "@/utils/events";
 
 import { PendingRequestsHeaderAction } from "./pending-requests-entry";
 import { AppText as Text } from "@/components/app-text";
@@ -79,18 +75,8 @@ export function EventDetailTopBar({
 
 /** Spor ve tarih etiketleri; eskiden hero'nun alt köşelerindeydi, artık başlığın üstünde. */
 export function EventDetailBadges({ event }: { event: EventDetail }) {
-  const accent = sportAccentToken(event.sport);
-  const sportColor = accent?.accent ?? themeColors.text.secondary;
-  const onAccent = accent?.onAccent ?? themeColors.text.inverse;
-  const sportLabel = event.sportName
-    .trim()
-    .toLocaleUpperCase(currentDateLocale());
+  const sportLabel = event.sportName.trim();
   const dateBadge = relativeEventBadge(event.eventDate);
-  const badgeThemes = resolveEventBadgeThemes({
-    sportAccent: sportColor,
-    isPaid: event.isPaid,
-    urgency: isEventToday(event.eventDate) ? "today" : "upcoming",
-  });
 
   if (!sportLabel && !dateBadge) {
     return null;
@@ -99,33 +85,15 @@ export function EventDetailBadges({ event }: { event: EventDetail }) {
   return (
     <View className="flex-row flex-wrap items-center gap-2">
       {sportLabel ? (
-        <View
-          className="max-w-[62%] flex-row items-center rounded-pill px-2.5 py-1"
-          style={{ backgroundColor: sportColor }}
-        >
-          <FontAwesome6 name={event.sportIcon} size={10} color={onAccent} />
-          <Text
-            numberOfLines={1}
-            className="ml-1.5 font-body-bold text-overline tracking-[1.2px]"
-            style={{ color: onAccent }}
-          >
-            {sportLabel}
-          </Text>
-        </View>
+        <Chip
+          variant="sport"
+          sport={event.sport}
+          icon={event.sportIcon}
+          label={sportLabel}
+          className="max-w-[62%]"
+        />
       ) : null}
-      {dateBadge ? (
-        <View
-          className="rounded-pill px-2.5 py-1"
-          style={{ backgroundColor: badgeThemes.date.background }}
-        >
-          <Text
-            className="font-body-bold text-overline tracking-wide"
-            style={{ color: badgeThemes.date.foreground }}
-          >
-            {dateBadge}
-          </Text>
-        </View>
-      ) : null}
+      {dateBadge ? <Chip label={dateBadge} /> : null}
     </View>
   );
 }
@@ -139,7 +107,7 @@ function JoinedBadge({ label }: { label: string }) {
       <FontAwesome6 name="check" size={10} color={themeColors.brand.primary} />
       <Text
         numberOfLines={1}
-        className="font-body-bold text-overline tracking-wide"
+        className="font-body-bold text-caption"
         style={{ color: themeColors.brand.primary }}
       >
         {label}

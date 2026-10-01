@@ -7,6 +7,7 @@ export { CommentThread } from "./comment-thread";
 export { BottomSheet } from "./bottom-sheet";
 export { BrandMark } from "./brand-mark";
 export { Button } from "./button";
+export { Chip } from "./chip";
 export { DateField } from "./date-field";
 export { DatePickerSheet } from "./date-picker-sheet";
 export { DirectionsSheet } from "./directions-sheet";
