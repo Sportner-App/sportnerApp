@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect, useState } from "react";
-import { Pressable, TextInput, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, {
   interpolateColor,
   Keyframe,
@@ -13,6 +13,7 @@ import Animated, {
 import { themeColors } from "@/constants/theme";
 import type { InputProps } from "@/types/components";
 import { AppText as Text } from "@/components/app-text";
+import { AppTextInput } from "@/components/app-text-input";
 
 const ERROR_COLOR = themeColors.warning;
 const FOCUS_COLOR = themeColors.brand.primary;
@@ -84,7 +85,7 @@ export function Input({
       >
         {icon && <FontAwesome6 name={icon} size={16} color={iconColor} />}
 
-        <TextInput
+        <AppTextInput
           {...inputProps}
           editable={!disabled && inputProps.editable !== false}
           secureTextEntry={isPassword && isHidden}

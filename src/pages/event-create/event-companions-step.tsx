@@ -1,5 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, ScrollView, TextInput, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
 import { useTranslation } from "react-i18next";
 
 import { Avatar } from "@/components";
@@ -247,7 +248,7 @@ function GuestInput({
   maxLength?: number;
 }) {
   return (
-    <TextInput
+    <AppTextInput
       value={value}
       onChangeText={onChangeText}
       maxLength={maxLength}

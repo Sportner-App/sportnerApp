@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, TextInput, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useTranslation } from "react-i18next";
 
@@ -122,7 +123,7 @@ export function AddSportScreen() {
 
       <View className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4">
         <FontAwesome6 name="magnifying-glass" size={13} color="#6f7d86" />
-        <TextInput
+        <AppTextInput
           value={query}
           onChangeText={setQuery}
           placeholder={t("addSport.searchPlaceholder")}

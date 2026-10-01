@@ -2,7 +2,8 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, Pressable, ScrollView, TextInput, View } from "react-native";
+import { Platform, Pressable, ScrollView, View } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
 
 import { Avatar, BottomSheet, SportLoader } from "@/components";
 import { themeColors } from "@/constants/theme";
@@ -109,7 +110,7 @@ export function NewConversationSheet({
           size={14}
           color={themeColors.text.tertiary}
         />
-        <TextInput
+        <AppTextInput
           value={query}
           onChangeText={setQuery}
           placeholder={t("messaging:compose.searchPlaceholder")}

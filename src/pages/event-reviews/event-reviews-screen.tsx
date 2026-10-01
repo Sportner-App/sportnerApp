@@ -1,7 +1,8 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Pressable, TextInput, View } from "react-native";
+import { Pressable, View } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -363,7 +364,7 @@ function RatingForm({
       <Text className="text-center font-body text-caption text-text-tertiary">
         {ratingLabel}
       </Text>
-      <TextInput
+      <AppTextInput
         value={comment}
         onChangeText={onComment}
         multiline

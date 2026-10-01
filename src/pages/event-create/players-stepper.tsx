@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as Haptics from "expo-haptics";
-import { Pressable, TextInput, View } from "react-native";
+import { Pressable, View } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -104,7 +105,7 @@ export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
 
         <View className="items-center">
           <Animated.View style={countStyle}>
-            <TextInput
+            <AppTextInput
               accessibilityLabel={t("players.accessibilityLabel")}
               value={value}
               onChangeText={typeCount}

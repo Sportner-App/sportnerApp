@@ -4,10 +4,10 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
 
 import { BottomSheet } from "@/components/bottom-sheet";
 import { sportAccentToken, themeColors } from "@/constants/theme";
@@ -111,7 +111,7 @@ export function SelectSheet<T extends string>({
             size={14}
             color={themeColors.text.tertiary}
           />
-          <TextInput
+          <AppTextInput
             value={query}
             onChangeText={setQuery}
             placeholder={resolvedSearchPlaceholder}

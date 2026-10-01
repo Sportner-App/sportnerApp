@@ -2,7 +2,8 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Pressable, ScrollView, TextInput, View } from "react-native";
+import { Alert, Pressable, ScrollView, View } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
 import { useKeyboardHandler } from "react-native-keyboard-controller";
 import {
   scrollTo,
@@ -417,7 +418,7 @@ export function EventChatScreen({
           </View>
         ) : (
           <View className="flex-row items-center gap-2 border-t border-border-default px-6 py-3">
-            <TextInput
+            <AppTextInput
               value={draft}
               onChangeText={(value) => {
                 draftRef.current = value;

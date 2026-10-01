@@ -2,7 +2,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Pressable, TextInput, View } from "react-native";
+import { Pressable, View } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -225,7 +226,7 @@ export function OrganizationMembersScreen() {
           size={14}
           color={themeColors.text.tertiary}
         />
-        <TextInput
+        <AppTextInput
           value={query}
           onChangeText={setQuery}
           placeholder={t("members.searchPlaceholder")}

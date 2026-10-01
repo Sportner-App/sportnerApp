@@ -4,10 +4,10 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -131,7 +131,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
 
         <View className="mt-5 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-3">
           <FontAwesome6 name="magnifying-glass" size={14} color="#64748b" />
-          <TextInput
+          <AppTextInput
             value={form.query}
             onChangeText={form.setQuery}
             placeholder={copy.searchPlaceholder}

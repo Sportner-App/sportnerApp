@@ -4,10 +4,10 @@ import { useEffect, useRef } from "react";
 import {
   ActivityIndicator,
   Pressable,
-  TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
 import Animated, { FadeIn, FadeInDown, FadeOut } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
@@ -156,7 +156,7 @@ export function LocationPicker({
               size={14}
               color={themeColors.brand.primary}
             />
-            <TextInput
+            <AppTextInput
               value={query}
               onChangeText={setQuery}
               placeholder={t("location.searchPlaceholder")}

@@ -7,10 +7,10 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
 import { ScrollView as GestureScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
@@ -52,11 +52,7 @@ function HeaderScrim({ height }: { height: number }) {
             <Stop offset="1" stopColor="#000000" stopOpacity="0" />
           </LinearGradient>
         </Defs>
-        <Rect
-          width="100%"
-          height={height}
-          fill="url(#post-detail-scrim)"
-        />
+        <Rect width="100%" height={height} fill="url(#post-detail-scrim)" />
       </Svg>
     </View>
   );
@@ -301,7 +297,7 @@ export function PostDetailScreen() {
               </View>
             ) : null}
 
-            <TextInput
+            <AppTextInput
               value={draft}
               onChangeText={setDraft}
               placeholder={

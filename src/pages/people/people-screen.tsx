@@ -1,13 +1,8 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  TextInput,
-  View,
-} from "react-native";
+import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -285,7 +280,7 @@ function PeopleSearchHeader({
           size={14}
           color={themeColors.text.secondary}
         />
-        <TextInput
+        <AppTextInput
           autoFocus
           value={value}
           onChangeText={onChangeText}

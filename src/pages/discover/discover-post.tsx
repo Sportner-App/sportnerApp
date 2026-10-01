@@ -2,13 +2,8 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Image,
-  Pressable,
-  TextInput,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { Image, Pressable, useWindowDimensions, View } from "react-native";
+import { AppTextInput } from "@/components/app-text-input";
 import { ScrollView as GestureScrollView } from "react-native-gesture-handler";
 
 import { Avatar, CommentThread } from "@/components";
@@ -250,10 +245,7 @@ export function DiscoverPost({
         ) : null}
       </View>
 
-      <Pressable
-        onPress={handleMediaPress}
-        className="bg-background-secondary"
-      >
+      <Pressable onPress={handleMediaPress} className="bg-background-secondary">
         {images.length > 0 ? (
           <GestureScrollView
             horizontal
@@ -417,7 +409,7 @@ export function DiscoverPost({
         ) : null}
 
         <View className="flex-row items-center gap-2 rounded-full border border-border-default bg-background-secondary px-4">
-          <TextInput
+          <AppTextInput
             value={draft}
             onChangeText={setDraft}
             onFocus={() => setCommentsOpen(true)}
