@@ -150,11 +150,11 @@ export function AgeRangeSlider({
           </Text>
         </View>
         <View className="flex-row items-center rounded-full bg-brand-primary/10 px-3 py-1.5">
-          <Text className="min-w-6 text-center font-mono text-body-sm text-brand-primary">
+          <Text className="min-w-6 text-center font-body-bold text-body-sm text-brand-primary">
             {previewRange.min}
           </Text>
-          <Text className="font-mono text-body-sm text-brand-primary">–</Text>
-          <Text className="min-w-6 text-center font-mono text-body-sm text-brand-primary">
+          <Text className="font-body-bold text-body-sm text-brand-primary">–</Text>
+          <Text className="min-w-6 text-center font-body-bold text-body-sm text-brand-primary">
             {previewRange.max}
           </Text>
           <Text className="ml-1 font-body text-caption text-brand-primary">
@@ -198,13 +198,13 @@ export function AgeRangeSlider({
 
       <View className="mt-1 flex-row justify-between">
         <Text
-          className="font-mono text-overline"
+          className="font-body-bold text-overline"
           style={{ color: themeColors.text.tertiary }}
         >
           {MIN_AGE}
         </Text>
         <Text
-          className="font-mono text-overline"
+          className="font-body-bold text-overline"
           style={{ color: themeColors.text.tertiary }}
         >
           {MAX_AGE}

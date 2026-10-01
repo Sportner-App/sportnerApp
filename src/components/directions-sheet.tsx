@@ -51,7 +51,7 @@ export function DirectionsSheet({
               <Text className="font-body text-body-sm font-semibold text-text-primary">
                 {option.label}
               </Text>
-              <Text className="mt-0.5 font-body text-caption text-brand-neutral">
+              <Text className="mt-0.5 font-body text-caption text-text-tertiary">
                 {option.description}
               </Text>
             </View>

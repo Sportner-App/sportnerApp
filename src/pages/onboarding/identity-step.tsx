@@ -25,7 +25,7 @@ export function IdentityStep({ form }: IdentityStepProps) {
         <Text className="font-display text-display leading-[52px] text-text-primary">
           {t("identity.title")}
         </Text>
-        <Text className="mt-3 font-body text-body leading-6 text-brand-neutral">
+        <Text className="mt-3 font-body text-body leading-6 text-text-tertiary">
           {t("identity.subtitle")}
         </Text>
       </Animated.View>

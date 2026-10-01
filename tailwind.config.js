@@ -6,8 +6,6 @@ const {
   spacing,
   radius,
   shadows,
-  media,
-  palette,
 } = require("./src/constants/design-tokens");
 
 const themed = (name) => `rgb(var(--color-${name}) / <alpha-value>)`;
@@ -21,13 +19,10 @@ module.exports = {
       colors: {
         brand: {
           primary: themed("brand-primary"),
-          /** App canvas; retained alias for screens using brand-secondary. */
-          secondary: themed("background-primary"),
-          tertiary: palette.navyMuted,
-          neutral: themed("text-tertiary"),
-          surface: themed("surface-primary"),
-          raised: themed("surface-secondary"),
-          charcoal: colors.surface.dark,
+        },
+        action: {
+          primary: themed("action-primary"),
+          "on-primary": themed("action-on-primary"),
         },
         background: {
           primary: themed("background-primary"),
@@ -36,7 +31,6 @@ module.exports = {
         surface: {
           primary: themed("surface-primary"),
           secondary: themed("surface-secondary"),
-          dark: colors.surface.dark,
         },
         text: {
           primary: themed("text-primary"),
@@ -50,6 +44,7 @@ module.exports = {
         },
         overlay: {
           dark: colors.overlay.dark,
+          photo: colors.overlay.photo,
         },
         sport: {
           basketball: {
@@ -82,8 +77,6 @@ module.exports = {
         "display-semibold": [fonts.displaySemiBold],
         body: [fonts.body],
         "body-bold": [fonts.bodyBold],
-        mono: [fonts.mono],
-        "mono-bold": [fonts.monoBold],
       },
       fontSize: {
         display: [
@@ -157,14 +150,11 @@ module.exports = {
         large: `${radius.large}px`,
         xlarge: `${radius.xl}px`,
         pill: `${radius.pill}px`,
-        media: `${media.cardRadius}px`,
-        hero: `${media.heroRadius}px`,
       },
       boxShadow: {
         "elevation-sm": shadows.sm.css,
         "elevation-md": shadows.md.css,
         "elevation-lg": shadows.lg.css,
-        glow: shadows.glow.css,
       },
     },
   },

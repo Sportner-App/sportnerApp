@@ -28,7 +28,7 @@ export function StatsSection({ statistics }: StatsSectionProps) {
             index > 0 ? "border-l border-border-default" : ""
           }`}
         >
-          <Text className="font-mono-bold text-heading-sm text-text-primary">
+          <Text className="font-body-bold text-heading-sm text-text-primary">
             {statistics[item.field]}
           </Text>
           <Text className="mt-1 font-body text-overline uppercase tracking-wide text-text-tertiary">

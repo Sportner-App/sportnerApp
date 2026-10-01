@@ -299,7 +299,7 @@ export function PublicProfileScreen() {
           <SportLoader size={140} label={t("publicProfile.loading")} />
         </View>
       ) : !profile ? (
-        <Text className="text-center font-body text-body-sm text-brand-neutral">
+        <Text className="text-center font-body text-body-sm text-text-tertiary">
           {t("publicProfile.notFound")}
         </Text>
       ) : (

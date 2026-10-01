@@ -411,7 +411,7 @@ export function EventChatScreen({
       footer={
         isClosed ? (
           <View className="border-t border-border-default px-6 py-4">
-            <Text className="text-center font-body text-body-sm leading-5 text-brand-neutral">
+            <Text className="text-center font-body text-body-sm leading-5 text-text-tertiary">
               {t("chat.closedFooter")}
             </Text>
           </View>
@@ -447,7 +447,7 @@ export function EventChatScreen({
                 canSend ? "bg-brand-primary" : "bg-brand-primary/35"
               }`}
             >
-              <Text className="font-body font-semibold text-brand-secondary">
+              <Text className="font-body font-semibold text-background-primary">
                 {t("chat.send")}
               </Text>
             </Pressable>
@@ -456,7 +456,7 @@ export function EventChatScreen({
       }
     >
       {sorted.length === 0 ? (
-        <Text className="py-10 text-center font-body text-body-sm text-brand-neutral">
+        <Text className="py-10 text-center font-body text-body-sm text-text-tertiary">
           {isClosed ? t("chat.emptyClosed") : t("chat.emptyOpen")}
         </Text>
       ) : (

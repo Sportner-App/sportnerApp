@@ -20,7 +20,7 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
 
-import { palette, themeColors } from "@/constants/theme";
+import { fonts, palette, themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import { AppText as Text } from "@/components/app-text";
 
@@ -269,10 +269,10 @@ export function AnimatedSplashScreen({ onFinish }: AnimatedSplashScreenProps) {
             >
               <Stop offset="0" stopColor={palette.lime} stopOpacity="0.22" />
               <Stop offset="0.55" stopColor={palette.lime} stopOpacity="0.04" />
-              <Stop offset="1" stopColor={palette.navy} stopOpacity="0" />
+              <Stop offset="1" stopColor={palette.canvas} stopOpacity="0" />
             </RadialGradient>
           </Defs>
-          <Rect width="100%" height="100%" fill={palette.navy} />
+          <Rect width="100%" height="100%" fill={palette.canvas} />
           <Rect width="100%" height="100%" fill="url(#splash-glow)" />
         </Svg>
       </View>
@@ -323,7 +323,7 @@ export function AnimatedSplashScreen({ onFinish }: AnimatedSplashScreenProps) {
           style={styles.brandRow}
         >
           <View style={styles.brandDot} />
-          <Text style={styles.brandWord}>SPORTNER</Text>
+          <Text style={styles.brandWord}>Sportner</Text>
         </Animated.View>
       </View>
 
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.1)",
-    backgroundColor: `${palette.parchment}f2`,
+    backgroundColor: `${palette.surface}f2`,
     paddingHorizontal: 12,
     paddingVertical: 7,
   },
@@ -438,9 +438,9 @@ const styles = StyleSheet.create({
     backgroundColor: themeColors.brand.primary,
   },
   brandWord: {
-    fontFamily: "JetBrainsMono_500Medium",
-    fontSize: 16,
-    letterSpacing: 9,
+    fontFamily: fonts.display,
+    fontSize: 20,
+    letterSpacing: -0.2,
     color: "rgba(244,246,242,0.88)",
   },
   footer: {
@@ -462,10 +462,8 @@ const styles = StyleSheet.create({
     backgroundColor: themeColors.brand.primary,
   },
   footerHint: {
-    fontFamily: "JetBrainsMono_500Medium",
-    fontSize: 11,
-    letterSpacing: 4,
-    textTransform: "uppercase",
+    fontFamily: fonts.body,
+    fontSize: 13,
     color: themeColors.text.secondary,
   },
 });

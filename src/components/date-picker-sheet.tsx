@@ -324,9 +324,9 @@ function PickerWheel({
             >
               <Text
                 numberOfLines={1}
-                className={`font-mono text-heading-md ${
+                className={`font-body-bold text-heading-md ${
                   active
-                    ? "font-mono-bold text-brand-primary"
+                    ? "font-body-bold text-brand-primary"
                     : "text-text-tertiary"
                 }`}
               >

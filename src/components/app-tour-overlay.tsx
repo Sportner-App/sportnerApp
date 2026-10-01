@@ -108,7 +108,7 @@ export function AppTourOverlay() {
         )}
 
         <View
-          className="absolute left-5 right-5 rounded-[26px] border border-white/15 bg-brand-surface p-5"
+          className="absolute left-5 right-5 rounded-[26px] border border-white/15 bg-surface-primary p-5"
           style={
             cardBelow
               ? {
@@ -126,7 +126,7 @@ export function AppTourOverlay() {
           }
         >
           <View className="flex-row items-center justify-between">
-            <Text className="font-mono text-caption tracking-[2px] text-brand-primary">
+            <Text className="font-body-bold text-caption tracking-[2px] text-brand-primary">
               {copy.eyebrow}
             </Text>
             <Pressable
@@ -151,7 +151,7 @@ export function AppTourOverlay() {
             onPress={next}
             className="mt-5 flex-row items-center justify-center gap-2 rounded-full bg-brand-primary px-5 py-3.5 active:opacity-80"
           >
-            <Text className="font-body-bold text-body-sm text-brand-secondary">
+            <Text className="font-body-bold text-body-sm text-background-primary">
               {step === 2 ? t("appTour.finish") : t("appTour.continue")}
             </Text>
             <FontAwesome6

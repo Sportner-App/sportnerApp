@@ -224,7 +224,7 @@ export function DiscoverPost({
             <Text className="font-body-bold text-body-sm text-text-primary">
               @{athleteHandle}
             </Text>
-            <Text className="mt-0.5 font-mono text-overline text-text-tertiary">
+            <Text className="mt-0.5 font-body-bold text-overline text-text-tertiary">
               {formatRelativeTime(post.createdAt)}
             </Text>
           </View>
@@ -343,7 +343,7 @@ export function DiscoverPost({
                   : themeColors.text.primary
               }
             />
-            <Text className="font-mono text-caption text-text-primary">
+            <Text className="font-body-bold text-caption text-text-primary">
               {post.likeCount}
             </Text>
           </Pressable>
@@ -357,7 +357,7 @@ export function DiscoverPost({
               size={17}
               color={themeColors.text.primary}
             />
-            <Text className="font-mono text-caption text-text-primary">
+            <Text className="font-body-bold text-caption text-text-primary">
               {post.commentCount}
             </Text>
           </Pressable>

@@ -40,7 +40,7 @@ function Block({ block }: { block: LegalBlock }) {
       return (
         <RichText
           text={block.text}
-          className="mt-3 font-body text-body-sm leading-6 text-brand-neutral"
+          className="mt-3 font-body text-body-sm leading-6 text-text-tertiary"
         />
       );
 
@@ -61,7 +61,7 @@ function Block({ block }: { block: LegalBlock }) {
               </Text>
               <RichText
                 text={item}
-                className="flex-1 font-body text-body-sm leading-6 text-brand-neutral"
+                className="flex-1 font-body text-body-sm leading-6 text-text-tertiary"
               />
             </View>
           ))}
@@ -82,7 +82,7 @@ function Block({ block }: { block: LegalBlock }) {
               />
               <RichText
                 text={item.description}
-                className="mt-1 font-body text-body-sm leading-5 text-brand-neutral"
+                className="mt-1 font-body text-body-sm leading-5 text-text-tertiary"
               />
             </View>
           ))}
@@ -102,10 +102,10 @@ function Block({ block }: { block: LegalBlock }) {
               </Text>
               {row.slice(1).map((cell, cellIndex) => (
                 <View key={cellIndex} className="mt-1.5">
-                  <Text className="font-body text-caption uppercase tracking-wide text-brand-neutral/70">
+                  <Text className="font-body text-caption uppercase tracking-wide text-text-tertiary/70">
                     {block.columns[cellIndex + 1]}
                   </Text>
-                  <Text className="font-body text-body-sm leading-5 text-brand-neutral">
+                  <Text className="font-body text-body-sm leading-5 text-text-tertiary">
                     {cell}
                   </Text>
                 </View>
@@ -123,7 +123,7 @@ function Document({ document }: { document: LegalDocument }) {
       <Text className="font-display text-heading-lg leading-9 text-text-primary">
         {document.title}
       </Text>
-      <Text className="mt-1 font-body text-caption text-brand-neutral">
+      <Text className="mt-1 font-body text-caption text-text-tertiary">
         {document.updatedLabel}
       </Text>
 
@@ -161,7 +161,7 @@ export function LegalConsentModal({
             <Text className="font-display text-heading-sm text-text-primary">
               {t("legalDocument.title")}
             </Text>
-            <Text className="mt-1 font-body text-caption text-brand-neutral">
+            <Text className="mt-1 font-body text-caption text-text-tertiary">
               {t("legalDocument.subtitle")}
             </Text>
           </View>

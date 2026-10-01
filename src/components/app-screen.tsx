@@ -14,10 +14,8 @@ import {
   KeyboardStickyView,
 } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
 import { TAB_BAR_CLEARANCE } from "@/constants/tabs";
-import { themeColors } from "@/constants/theme";
 import type { AppScreenProps } from "@/types/components";
 import { restoreTabBar, shrinkTabBar } from "@/utils/tab-bar-scroll";
 
@@ -41,7 +39,6 @@ export function AppScreen({
   bodyStyle,
   edgeToEdgeTop = false,
   headerOverlay = false,
-  backdrop = "default",
   tone = "dark",
   onEndReached,
   onEndReachedThreshold = 240,
@@ -130,7 +127,6 @@ export function AppScreen({
         contentContainerStyle,
       ]}
     >
-      {tone === "light" && backdrop === "olive" ? <OliveBackdrop /> : null}
       {children}
     </View>
   );
@@ -195,26 +191,6 @@ export function AppScreen({
           {footer}
         </KeyboardAvoidingView>
       )}
-    </View>
-  );
-}
-
-function OliveBackdrop() {
-  return (
-    <View pointerEvents="none" className="absolute inset-0">
-      <Svg width="100%" height="100%">
-        <Defs>
-          <LinearGradient id="app-olive" x1="0" y1="0" x2="0.85" y2="1">
-            <Stop offset="0" stopColor={themeColors.background.oliveTop} />
-            <Stop
-              offset="0.56"
-              stopColor={themeColors.background.oliveMiddle}
-            />
-            <Stop offset="1" stopColor={themeColors.background.oliveBottom} />
-          </LinearGradient>
-        </Defs>
-        <Rect width="100%" height="100%" fill="url(#app-olive)" />
-      </Svg>
     </View>
   );
 }

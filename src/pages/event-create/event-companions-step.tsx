@@ -58,7 +58,7 @@ export function EventCompanionsStep({
               {t("companions.reservedBreakdown", { count: reserved })}
             </Text>
           </View>
-          <Text className="font-mono-bold text-heading-sm text-brand-primary">
+          <Text className="font-body-bold text-heading-sm text-brand-primary">
             {1 + reserved}/{maxParticipants}
           </Text>
         </View>

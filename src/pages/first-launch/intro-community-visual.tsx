@@ -14,7 +14,7 @@ export function IntroCommunityVisual() {
       <View className="absolute -left-8 top-6 h-40 w-40 rounded-full bg-brand-primary/8" />
       <Animated.View
         entering={heroFadeUp(220, 0, 8)}
-        className="overflow-hidden rounded-[28px] border border-white/10 bg-brand-surface/95"
+        className="overflow-hidden rounded-[28px] border border-white/10 bg-surface-primary/95"
       >
         <View className="flex-row items-center gap-3 p-4">
           <View className="h-11 w-11 items-center justify-center rounded-full border border-brand-primary/30 bg-brand-primary/10">
@@ -26,21 +26,21 @@ export function IntroCommunityVisual() {
             <Text className="font-body-bold text-body-sm text-white">
               Deniz Er
             </Text>
-            <Text className="font-body text-caption text-brand-neutral">
+            <Text className="font-body text-caption text-text-tertiary">
               Koşu · {t("events:duration.minutes", { count: 12 })}
             </Text>
           </View>
           <FontAwesome6 name="ellipsis" size={14} color="#6f7d86" />
         </View>
-        <View className="h-36 overflow-hidden bg-brand-raised">
+        <View className="h-36 overflow-hidden bg-surface-secondary">
           <Image
             source={require("../../../assets/images/first-launch/community-run-post-v2.png")}
             resizeMode="cover"
             className="h-full w-full"
           />
-          <View className="absolute inset-0 bg-brand-secondary/15" />
-          <View className="absolute bottom-3 right-3 rounded-full bg-brand-secondary/80 px-3 py-1.5">
-            <Text className="font-mono text-overline text-white">
+          <View className="absolute inset-0 bg-background-primary/15" />
+          <View className="absolute bottom-3 right-3 rounded-full bg-background-primary/80 px-3 py-1.5">
+            <Text className="font-body-bold text-overline text-white">
               5.2 KM · 28 DK
             </Text>
           </View>

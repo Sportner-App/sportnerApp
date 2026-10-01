@@ -121,7 +121,7 @@ export function FirstLaunchScaffold({
             style={{ marginTop: compact ? 12 : 24 }}
           >
             <Text
-              className={`font-mono text-text-primary ${
+              className={`font-body-bold text-text-primary ${
                 compact ? "text-heading-md" : "text-heading-lg"
               }`}
             >

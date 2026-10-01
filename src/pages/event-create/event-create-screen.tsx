@@ -461,7 +461,7 @@ export function EventCreateScreen() {
                             −
                           </Text>
                         </Pressable>
-                        <Text className="w-7 text-center font-mono text-body text-brand-primary">
+                        <Text className="w-7 text-center font-body-bold text-body text-brand-primary">
                           {values.recurrenceCount}
                         </Text>
                         <Pressable

@@ -137,7 +137,7 @@ export function CreatePostScreen() {
               ) : (
                 <Text
                   className={`font-body text-body-sm font-semibold ${
-                    canShare ? "text-brand-primary" : "text-brand-neutral"
+                    canShare ? "text-brand-primary" : "text-text-tertiary"
                   }`}
                 >
                   {t("feed:create.share")}
@@ -201,7 +201,7 @@ export function CreatePostScreen() {
           <Text className="text-center font-body text-body-sm font-semibold text-text-primary">
             {t("feed:create.addPhoto")}
           </Text>
-          <Text className="text-center font-body text-caption text-brand-neutral">
+          <Text className="text-center font-body text-caption text-text-tertiary">
             {t("feed:create.photoHint")}
           </Text>
         </Pressable>

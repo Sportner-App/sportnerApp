@@ -64,13 +64,13 @@ export function OnboardingScreen() {
 
               <View className="flex-1 flex-row items-center gap-2.5">
                 <View className="h-2.5 w-2.5 rounded-full bg-brand-primary" />
-                <Text className="font-mono text-caption tracking-[4px] text-brand-neutral">
+                <Text className="font-body-bold text-caption tracking-[4px] text-text-tertiary">
                   {ONBOARDING_COPY.eyebrow}
                 </Text>
               </View>
 
               <View className="rounded-full border border-brand-primary/25 bg-brand-primary/10 px-3 py-1.5">
-                <Text className="font-mono text-overline tracking-wide text-brand-primary">
+                <Text className="font-body-bold text-overline tracking-wide text-brand-primary">
                   {detailsCopy.stepLabel}
                 </Text>
               </View>
@@ -80,7 +80,7 @@ export function OnboardingScreen() {
               <Text className="font-display text-display leading-[52px] text-text-primary">
                 {detailsCopy.title}
               </Text>
-              <Text className="mt-3 font-body text-body leading-6 text-brand-neutral">
+              <Text className="mt-3 font-body text-body leading-6 text-text-tertiary">
                 {detailsCopy.subtitle}
               </Text>
             </Animated.View>

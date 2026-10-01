@@ -1,71 +1,53 @@
 const lime = "#ccff00";
 
+/**
+ * Ham renkler. Ekranlar bunları doğrudan değil, aşağıdaki semantik `colors`
+ * üzerinden kullanır; açık tema karşılıkları `theme-palettes.ts` içinde.
+ */
 const palette = {
   lime,
-
-  cream: "#06111a",
-  creamMuted: "#091722",
-  white: "#ffffff",
-  parchment: "#0d1b27",
-  mist: "#152635",
-  oliveDeep: "#06111a",
-  olive: "#0a1822",
-  oliveSoft: "#102431",
-  charcoal: "#1c1917",
-  charcoalRaised: "#2a2622",
+  canvas: "#06111a",
+  canvasRaised: "#091722",
+  surface: "#0d1b27",
+  surfaceRaised: "#152635",
   ink: "#f4f6f2",
   inkMuted: "#a8b2b8",
   inkSoft: "#6f7d86",
-  inkInverse: "#f4f6f2",
   line: "#203443",
   lineStrong: "#345064",
+  white: "#ffffff",
   overlay: "rgba(2, 8, 13, 0.58)",
-
+  /** Fotoğraf üstündeki metin için tek, düz karartma. */
+  photoScrim: "rgba(6, 17, 26, 0.72)",
   success: "#5eead4",
   warning: "#fda4af",
-
   destructive: "#ef4444",
-  navy: "#06111a",
-  navyMuted: "#1e293b",
-  navySurface: "#152238",
-  navyRaised: "#1e2d46",
-  navyHighlight: "#243652",
-  navyCanvas: "#111827",
-  navySearch: "#1c2c44",
-  slate50: "#f8fafc",
-  slate950: "#020617",
-  slate300: "#cbd5e1",
-  slate400: "#94a3b8",
-  slate500: "#64748b",
-  slateTab: "#aeb9cf",
-  metric: "#d8dcb8",
-  limeBorder: "rgba(204,255,0,0.18)",
-  limeBorderStrong: "rgba(204,255,0,0.42)",
 };
 
 const colors = {
   brand: {
     primary: palette.lime,
   },
+  /** Lime yalnızca ekrandaki tek birincil aksiyonda kullanılır. */
+  action: {
+    primary: palette.lime,
+    onPrimary: palette.canvas,
+  },
   background: {
-    primary: palette.cream,
-    secondary: palette.creamMuted,
-    oliveTop: palette.oliveDeep,
-    oliveMiddle: palette.olive,
-    oliveBottom: palette.oliveSoft,
+    primary: palette.canvas,
+    secondary: palette.canvasRaised,
   },
   surface: {
-    primary: palette.parchment,
-    secondary: palette.mist,
-    dark: palette.charcoal,
+    primary: palette.surface,
+    secondary: palette.surfaceRaised,
   },
   text: {
     primary: palette.ink,
     secondary: palette.inkMuted,
     tertiary: palette.inkSoft,
-    inverse: palette.inkInverse,
+    inverse: palette.ink,
     /** Text sitting on lime CTAs */
-    onPrimary: palette.cream,
+    onPrimary: palette.canvas,
   },
   border: {
     default: palette.line,
@@ -73,6 +55,7 @@ const colors = {
   },
   overlay: {
     dark: palette.overlay,
+    photo: palette.photoScrim,
   },
   success: palette.success,
   warning: palette.warning,
@@ -107,11 +90,11 @@ function sportAccent(accent) {
   const g = parseInt(hex.slice(2, 4), 16);
   const b = parseInt(hex.slice(4, 6), 16);
 
-  const darkText = "#06111a";
+  const darkText = palette.canvas;
   const lightText = "#ffffff";
   const maximumContrastText = "#000000";
 
-  // Kart zeminine (#06111a) doğru karıştırılmış koyu ton.
+  // Kart zeminine (palette.canvas) doğru karıştırılmış koyu ton.
   const mix = (channel, canvas) =>
     Math.round(channel * 0.18 + canvas * 0.82)
       .toString(16)
@@ -142,18 +125,18 @@ const sports = {
   basketball: {
     accent: "#ff6b1a",
     soft: "#3a2016",
-    onAccent: "#06111a",
+    onAccent: palette.canvas,
   },
   football: {
     // Açık sarı-yeşil zemin: beyaz yazı okunmuyordu, koyu metin kullanılıyor.
     accent: "#9ed900",
     soft: "#253414",
-    onAccent: "#06111a",
+    onAccent: palette.canvas,
   },
   volleyball: {
     accent: "#9a72ff",
     soft: "#2c2148",
-    onAccent: "#06111a",
+    onAccent: palette.canvas,
   },
   handball: sportAccent("#14b8a6"),
   beachVolleyball: sportAccent("#fbbf24"),
@@ -163,7 +146,7 @@ const sports = {
   tennis: {
     accent: "#d7ef32",
     soft: "#303817",
-    onAccent: "#06111a",
+    onAccent: palette.canvas,
   },
   tableTennis: sportAccent("#22d3ee"),
   badminton: sportAccent("#f472b6"),
@@ -189,7 +172,7 @@ const sports = {
   running: {
     accent: "#42a5ff",
     soft: "#142d45",
-    onAccent: "#06111a",
+    onAccent: palette.canvas,
   },
   cycling: sportAccent("#22c55e"),
   hiking: sportAccent("#84cc16"),
@@ -216,8 +199,6 @@ const fonts = {
   displaySemiBold: "Anybody_600SemiBold",
   body: "HankenGrotesk_500Medium",
   bodyBold: "HankenGrotesk_700Bold",
-  mono: "JetBrainsMono_500Medium",
-  monoBold: "JetBrainsMono_700Bold",
 };
 
 /** Semantic type styles — existing font families, new hierarchy. */
@@ -277,11 +258,10 @@ const typography = {
     letterSpacing: 0.1,
   },
   overline: {
-    fontFamily: fonts.mono,
-    fontSize: 11,
-    lineHeight: 14,
-    letterSpacing: 1.6,
-    textTransform: "uppercase",
+    fontFamily: fonts.bodyBold,
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0,
   },
 };
 
@@ -334,149 +314,11 @@ const shadows = {
     },
     css: "0 16px 42px rgba(0, 0, 0, 0.4)",
   },
-  glow: {
-    native: {
-      shadowColor: lime,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.22,
-      shadowRadius: 12,
-      elevation: 4,
-    },
-    css: "0 4px 14px rgba(204, 255, 0, 0.22)",
-  },
 };
 
 const media = {
-  cardRadius: radius.xl,
-  heroRadius: 32,
-  overlayOpacity: 0.45,
-  overlayColor: palette.overlay,
-};
-
-const components = {
-  button: {
-    primary: {
-      background: colors.brand.primary,
-      foreground: colors.text.onPrimary,
-      border: "transparent",
-    },
-    secondary: {
-      background: colors.surface.primary,
-      foreground: colors.text.primary,
-      border: colors.border.default,
-    },
-    ghost: {
-      background: "transparent",
-      foreground: colors.text.secondary,
-      border: "transparent",
-    },
-    destructive: {
-      background: colors.destructive,
-      foreground: palette.white,
-      border: "transparent",
-    },
-  },
-  card: {
-    default: {
-      background: colors.surface.primary,
-      border: colors.border.default,
-      radius: radius.large,
-    },
-    elevated: {
-      background: colors.surface.primary,
-      border: "transparent",
-      radius: radius.large,
-      shadow: "md",
-    },
-    dark: {
-      background: colors.surface.dark,
-      foreground: colors.text.inverse,
-      border: "transparent",
-      radius: radius.large,
-    },
-    media: {
-      background: colors.surface.dark,
-      radius: media.cardRadius,
-      overlayOpacity: media.overlayOpacity,
-    },
-  },
-  chip: {
-    default: {
-      background: colors.surface.secondary,
-      foreground: colors.text.secondary,
-      border: colors.border.default,
-      radius: radius.pill,
-    },
-    selected: {
-      background: colors.brand.primary,
-      foreground: colors.text.onPrimary,
-      border: colors.brand.primary,
-      radius: radius.pill,
-    },
-    sport: {
-      radius: radius.pill,
-    },
-  },
-  badge: {
-    sport: {
-      radius: radius.pill,
-    },
-    status: {
-      radius: radius.small,
-      success: colors.success,
-      warning: colors.warning,
-      destructive: colors.destructive,
-    },
-  },
-};
-
-/**
- * Exact shape of the current `colorPalette` export.
- * Do not rename keys — Input and other components depend on them.
- */
-const legacyPalette = {
-  primary: palette.lime,
-  secondary: palette.navy,
-  tertiary: palette.navyMuted,
-  neutral: palette.slate500,
-  white: palette.slate50,
-  black: palette.slate950,
-  success: palette.success,
-  warning: palette.warning,
-};
-
-/** Current light + dark schemes are identical navy UI (legacy). */
-const legacyScheme = {
-  text: legacyPalette.white,
-  textMuted: palette.slate300,
-  textSoft: palette.slate400,
-  background: legacyPalette.secondary,
-  backgroundCanvas: palette.navyCanvas,
-  surface: palette.navySurface,
-  surfaceRaised: palette.navyRaised,
-  surfaceMuted: legacyPalette.tertiary,
-  border: palette.limeBorder,
-  borderStrong: palette.limeBorderStrong,
-  tint: legacyPalette.primary,
-  tabIconDefault: palette.slateTab,
-  tabIconSelected: legacyPalette.primary,
-  cardAccent: legacyPalette.primary,
-  cardHighlight: palette.navyHighlight,
-  metric: palette.metric,
-  searchBackground: palette.navySearch,
-  destructive: legacyPalette.warning,
-};
-
-const legacy = {
-  palette: legacyPalette,
-  scheme: legacyScheme,
-  navy: palette.navy,
-  navyMuted: palette.navyMuted,
-  navySurface: palette.navySurface,
-  navyRaised: palette.navyRaised,
-  navyHighlight: palette.navyHighlight,
-  navyCanvas: palette.navyCanvas,
-  navySearch: palette.navySearch,
+  cardRadius: radius.large,
+  overlayColor: palette.photoScrim,
 };
 
 const designTokens = {
@@ -489,8 +331,6 @@ const designTokens = {
   radius,
   shadows,
   media,
-  components,
-  legacy,
 };
 
 module.exports = designTokens;

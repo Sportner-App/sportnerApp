@@ -248,7 +248,7 @@ export function OrganizationDetailScreen() {
           <SportLoader size={120} />
         </View>
       ) : !organization ? (
-        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-text-tertiary">
           {t("organizations:detail.notFound")}
         </Text>
       ) : (
@@ -286,7 +286,7 @@ export function OrganizationDetailScreen() {
                     >
                       <Text
                         selectable
-                        className="font-mono text-heading-md tracking-[0.2em] text-text-primary"
+                        className="font-body-bold text-heading-md tracking-[0.2em] text-text-primary"
                       >
                         {organization.inviteCode}
                       </Text>
@@ -588,7 +588,7 @@ function OrganizationStat({
 }) {
   return (
     <View className="flex-1">
-      <Text className="font-mono-bold text-heading-sm text-text-primary">
+      <Text className="font-body-bold text-heading-sm text-text-primary">
         {value}
       </Text>
       <View className="mt-0.5 flex-row items-center gap-1.5">

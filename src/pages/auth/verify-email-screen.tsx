@@ -126,7 +126,7 @@ export function VerifyEmailScreen() {
           <Text className="font-display text-display leading-[52px] text-text-primary">
             {t("verifyEmail.title")}
           </Text>
-          <Text className="mt-3 font-body text-body leading-6 text-brand-neutral">
+          <Text className="mt-3 font-body text-body leading-6 text-text-tertiary">
             {t("verifyEmail.subtitle", { email: userEmail })}
           </Text>
 
@@ -173,7 +173,7 @@ export function VerifyEmailScreen() {
             disabled={isChangingAccount}
             className="mt-8 items-center py-2"
           >
-            <Text className="font-body text-caption text-brand-neutral">
+            <Text className="font-body text-caption text-text-tertiary">
               {t("verifyEmail.changeAccount")}
             </Text>
           </Pressable>

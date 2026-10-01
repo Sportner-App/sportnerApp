@@ -27,7 +27,7 @@ const containerVariants: Record<ButtonVariant, string> = {
 };
 
 const labelVariants: Record<ButtonVariant, string> = {
-  primary: "text-brand-secondary",
+  primary: "text-background-primary",
   secondary: "text-text-primary",
   outline: "text-brand-primary",
   ghost: "text-text-secondary",
@@ -96,7 +96,7 @@ export function Button({
   const hasGlow = variant === "primary" && !isInactive;
   const pressDuration = pressScale === 0.98 ? 100 : 90;
   const disabledLabelClass = isDisabledPrimary
-    ? "text-brand-neutral"
+    ? "text-text-tertiary"
     : labelVariants[variant];
   const disabledIconColor = isDisabledPrimary
     ? themeColors.text.tertiary
@@ -145,7 +145,7 @@ export function Button({
       ]}
       className={`flex-row items-center justify-center gap-2.5 rounded-2xl ${
         isDisabledPrimary
-          ? "border border-white/10 bg-brand-raised"
+          ? "border border-white/10 bg-surface-secondary"
           : containerVariants[variant]
       } ${containerSizes[size]}`}
     >

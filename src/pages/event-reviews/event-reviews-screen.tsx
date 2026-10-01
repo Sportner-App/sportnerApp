@@ -159,7 +159,7 @@ export function EventReviewsScreen() {
             <Text className="font-display text-heading-sm text-text-primary">
               {t("eventReviews:choose.heading")}
             </Text>
-            <Text className="font-body text-body-sm leading-5 text-brand-neutral">
+            <Text className="font-body text-body-sm leading-5 text-text-tertiary">
               {t("eventReviews:choose.hint")}
             </Text>
           </View>
@@ -181,7 +181,7 @@ export function EventReviewsScreen() {
                       count: teammates.length,
                     })}
                   </Text>
-                  <Text className="font-body text-caption text-brand-neutral">
+                  <Text className="font-body text-caption text-text-tertiary">
                     {t("eventReviews:choose.teammatesHint")}
                   </Text>
                 </View>
@@ -210,7 +210,7 @@ export function EventReviewsScreen() {
           <Text className="font-display text-body text-text-primary">
             {t("eventReviews:emptyPeers.title")}
           </Text>
-          <Text className="font-body text-body-sm leading-5 text-brand-neutral">
+          <Text className="font-body text-body-sm leading-5 text-text-tertiary">
             {t("eventReviews:emptyPeers.description")}
           </Text>
         </View>
@@ -241,13 +241,13 @@ function OrganizerCard({
         borderWidth={0}
       />
       <View className="flex-1 gap-0.5">
-        <Text className="font-mono text-overline text-brand-primary">
+        <Text className="font-body-bold text-overline text-brand-primary">
           {t("eventReviews:choose.organizerEyebrow")}
         </Text>
         <Text className="font-body text-body font-semibold text-text-primary">
           @{peer.username || t("events:fallback.athleteHandle")}
         </Text>
-        <Text className="font-body text-caption text-brand-neutral">
+        <Text className="font-body text-caption text-text-tertiary">
           {t("eventReviews:choose.organizerHint")}
         </Text>
       </View>
@@ -323,7 +323,7 @@ function RatingForm({
           borderWidth={0}
         />
         <View className="flex-1">
-          <Text className="font-mono text-overline text-brand-primary">
+          <Text className="font-body-bold text-overline text-brand-primary">
             {t(`eventReviews:form.${context}Eyebrow`)}
           </Text>
           <Text className="font-display text-heading-sm text-text-primary">
@@ -331,7 +331,7 @@ function RatingForm({
           </Text>
         </View>
       </View>
-      <Text className="font-body text-body-sm leading-5 text-brand-neutral">
+      <Text className="font-body text-body-sm leading-5 text-text-tertiary">
         {t(`eventReviews:form.${context}Question`)}
       </Text>
       <View className="flex-row justify-between gap-2">
@@ -352,7 +352,7 @@ function RatingForm({
               className={`h-11 w-11 items-center justify-center rounded-full border ${active ? "border-brand-primary bg-brand-primary" : "border-border-default bg-white/5"}`}
             >
               <Text
-                className={`font-mono text-body-sm ${active ? "text-brand-secondary" : "text-text-primary"}`}
+                className={`font-body-bold text-body-sm ${active ? "text-background-primary" : "text-text-primary"}`}
               >
                 {value}
               </Text>
@@ -360,7 +360,7 @@ function RatingForm({
           );
         })}
       </View>
-      <Text className="text-center font-body text-caption text-brand-neutral">
+      <Text className="text-center font-body text-caption text-text-tertiary">
         {ratingLabel}
       </Text>
       <TextInput
@@ -393,7 +393,7 @@ function ReviewList({ reviews }: { reviews: ApiReview[] }) {
         {t("eventReviews:list.heading")}
       </Text>
       {reviews.length === 0 ? (
-        <Text className="font-body text-body-sm text-brand-neutral">
+        <Text className="font-body text-body-sm text-text-tertiary">
           {t("eventReviews:list.empty")}
         </Text>
       ) : (
@@ -414,12 +414,12 @@ function ReviewList({ reviews }: { reviews: ApiReview[] }) {
                 → @
                 {review.reviewedUsername || t("events:fallback.athleteHandle")}
               </Text>
-              <Text className="font-mono text-caption text-amber-300">
+              <Text className="font-body-bold text-caption text-amber-300">
                 {review.rating}/5
               </Text>
             </View>
             {review.comment ? (
-              <Text className="mt-2 font-body text-body-sm text-brand-neutral">
+              <Text className="mt-2 font-body text-body-sm text-text-tertiary">
                 {review.comment}
               </Text>
             ) : null}

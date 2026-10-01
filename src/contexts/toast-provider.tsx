@@ -144,7 +144,7 @@ export function ToastProvider({ children }: PropsWithChildren) {
                 elevation: 6,
               },
             ]}
-            className="mx-4 overflow-hidden rounded-2xl border bg-brand-surface"
+            className="mx-4 overflow-hidden rounded-2xl border bg-surface-primary"
           >
             <Pressable onPress={() => hide(toast.id)}>
               {/* Çizgisel doku */}
@@ -195,7 +195,7 @@ export function ToastProvider({ children }: PropsWithChildren) {
                   </Text>
 
                   {!!toast.description && (
-                    <Text className="mt-0.5 font-body text-caption text-brand-neutral">
+                    <Text className="mt-0.5 font-body text-caption text-text-tertiary">
                       {toast.description}
                     </Text>
                   )}

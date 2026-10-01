@@ -72,11 +72,11 @@ export function OrganizationsListScreen() {
           <SportLoader size={120} />
         </View>
       ) : error ? (
-        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-text-tertiary">
           {error}
         </Text>
       ) : items.length === 0 ? (
-        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-text-tertiary">
           {t("list.empty")}
         </Text>
       ) : (

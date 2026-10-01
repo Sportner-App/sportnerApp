@@ -183,7 +183,7 @@ export function AuthScreen() {
             <Text className="font-display text-display leading-[52px] text-text-primary">
               {copy.title}
             </Text>
-            <Text className="mt-3 font-body text-body leading-6 text-brand-neutral">
+            <Text className="mt-3 font-body text-body leading-6 text-text-tertiary">
               {copy.subtitle}
             </Text>
           </Animated.View>
@@ -334,7 +334,7 @@ export function AuthScreen() {
                     ) : null}
                   </View>
                   {/* Belge adları metni açar; satırın geri kalanı kutuyu işaretler. */}
-                  <Text className="flex-1 font-body text-caption leading-5 text-brand-neutral">
+                  <Text className="flex-1 font-body text-caption leading-5 text-text-tertiary">
                     {t("consent.prefix")}{" "}
                     <Text
                       accessibilityRole="link"
@@ -384,7 +384,7 @@ export function AuthScreen() {
 
           <View className="mt-5 flex-row items-center gap-3">
             <View className="h-px flex-1 bg-border-default" />
-            <Text className="font-body text-caption text-brand-neutral">
+            <Text className="font-body text-caption text-text-tertiary">
               {t("common:or")}
             </Text>
             <View className="h-px flex-1 bg-border-default" />

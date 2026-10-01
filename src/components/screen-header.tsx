@@ -2,7 +2,6 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
 
-import { colorPalette } from "@/constants/colors";
 import { themeColors } from "@/constants/theme";
 import type { ScreenHeaderProps } from "@/types/components";
 
@@ -43,13 +42,13 @@ export function ScreenHeader({
         className={`h-10 w-10 items-center justify-center rounded-full border active:opacity-80 ${
           isLight
             ? "border-border-default bg-surface-primary"
-            : "border-white/10 bg-brand-surface/90"
+            : "border-white/10 bg-surface-primary/90"
         }`}
       >
         <FontAwesome6
           name="arrow-left"
           size={14}
-          color={isLight ? themeColors.text.primary : colorPalette.white}
+          color={isLight ? themeColors.text.primary : themeColors.text.inverse}
         />
       </Pressable>
     ) : brand ? (
@@ -73,8 +72,8 @@ export function ScreenHeader({
           <Text
             numberOfLines={2}
             ellipsizeMode="tail"
-            className={`min-w-0 flex-1 px-3 text-center font-mono text-caption leading-4 tracking-[4px] ${
-              isLight ? "text-text-secondary" : "text-brand-neutral"
+            className={`min-w-0 flex-1 px-3 text-center font-body-bold text-caption leading-4 tracking-[4px] ${
+              isLight ? "text-text-secondary" : "text-text-tertiary"
             }`}
           >
             {title}

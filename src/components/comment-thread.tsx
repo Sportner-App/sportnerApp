@@ -213,7 +213,7 @@ function CommentRow({
             ) : null}
             {comment.content}
           </Text>
-          <Text className={`shrink-0 font-mono text-overline ${actionColor}`}>
+          <Text className={`shrink-0 font-body-bold text-overline ${actionColor}`}>
             {formatCompactRelativeTime(comment.createdAt)}
           </Text>
         </View>

@@ -53,7 +53,7 @@ export function SportsEditScreen() {
           <Text className="font-display text-heading-lg text-text-primary">
             {t("profile:sportsEdit.heading")}
           </Text>
-          <Text className="font-body text-body-sm text-brand-neutral">
+          <Text className="font-body text-body-sm text-text-tertiary">
             {t("profile:sportsEdit.subtitle")}
           </Text>
 
@@ -74,7 +74,7 @@ export function SportsEditScreen() {
                   <Text className="font-body text-body-sm font-semibold text-text-primary">
                     {sport.sportName}
                   </Text>
-                  <Text className="font-body text-caption text-brand-neutral">
+                  <Text className="font-body text-caption text-text-tertiary">
                     {SKILL_LEVEL_LABELS[skillKeyFromCode(sport.skillLevel)]}
                     {sport.isPrimary
                       ? ` · ${t("profile:sportsEdit.primaryBadge")}`
@@ -113,7 +113,7 @@ export function SportsEditScreen() {
                     >
                       <Text
                         className={`font-body text-caption ${
-                          active ? "text-brand-secondary" : "text-text-primary"
+                          active ? "text-background-primary" : "text-text-primary"
                         }`}
                       >
                         {option.shortLabel}

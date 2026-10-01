@@ -29,19 +29,19 @@ function TimeSlot({
       className={`flex-1 items-center rounded-2xl border px-2 py-2.5 ${
         active
           ? "border-brand-primary/35 bg-brand-primary/12"
-          : "border-white/10 bg-brand-raised/80"
+          : "border-white/10 bg-surface-secondary/80"
       }`}
     >
       <Text
-        className={`font-mono text-overline ${
-          active ? "text-brand-primary" : "text-brand-neutral"
+        className={`font-body-bold text-overline ${
+          active ? "text-brand-primary" : "text-text-tertiary"
         }`}
       >
         {time}
       </Text>
       <Text
         className={`mt-1 font-body text-caption ${
-          active ? "text-white" : "text-brand-neutral"
+          active ? "text-white" : "text-text-tertiary"
         }`}
       >
         {label}
@@ -92,18 +92,18 @@ export function IntroEventsVisual() {
       >
         <View className="flex-row items-center gap-2">
           <View className="h-1.5 w-1.5 rounded-full bg-brand-primary" />
-          <Text className="font-mono text-overline tracking-[2px] text-white/70">
+          <Text className="font-body-bold text-overline tracking-[2px] text-white/70">
             {t("visuals.events.today")}
           </Text>
         </View>
-        <Text className="font-body text-caption text-brand-neutral">
+        <Text className="font-body text-caption text-text-tertiary">
           {t("visuals.events.openMatchesCount")}
         </Text>
       </Animated.View>
 
       <Animated.View
         entering={heroFadeUp(220, 40, 10)}
-        className="overflow-hidden rounded-[28px] border border-white/10 bg-brand-surface/95 p-4"
+        className="overflow-hidden rounded-[28px] border border-white/10 bg-surface-primary/95 p-4"
       >
         <View className="flex-row items-start justify-between">
           <View>
@@ -113,13 +113,13 @@ export function IntroEventsVisual() {
             <Text className="mt-2 font-body text-heading-sm font-semibold text-white">
               {t("visuals.events.venueTurf")}
             </Text>
-            <Text className="mt-1 font-body text-body-sm text-brand-neutral">
+            <Text className="mt-1 font-body text-body-sm text-text-tertiary">
               Kadıköy · Futbol
             </Text>
           </View>
           <View className="items-end gap-2">
             <View className="rounded-full bg-brand-primary px-2.5 py-1">
-              <Text className="font-mono text-overline text-brand-secondary">
+              <Text className="font-body-bold text-overline text-background-primary">
                 {t("visuals.events.openBadge")}
               </Text>
             </View>
@@ -131,11 +131,11 @@ export function IntroEventsVisual() {
 
         <View className="mt-4 flex-row items-center gap-3">
           <CapacityBar />
-          <Text className="font-mono text-caption text-brand-primary">
+          <Text className="font-body-bold text-caption text-brand-primary">
             3 / 5
           </Text>
         </View>
-        <Text className="mt-2 font-body text-caption text-brand-neutral">
+        <Text className="mt-2 font-body text-caption text-text-tertiary">
           {t("visuals.events.spotsRemaining")}
         </Text>
       </Animated.View>

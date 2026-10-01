@@ -78,7 +78,7 @@ export function AlbumsScreen() {
               <Text className="font-body text-body-sm font-semibold text-text-primary">
                 {album.title}
               </Text>
-              <Text className="font-body text-caption text-brand-neutral">
+              <Text className="font-body text-caption text-text-tertiary">
                 {t("list.photoCount", { count: album.mediaCount })}
               </Text>
             </Pressable>

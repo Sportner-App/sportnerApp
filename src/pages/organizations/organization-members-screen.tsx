@@ -192,7 +192,7 @@ export function OrganizationMembersScreen() {
   if (!organizationId) {
     return (
       <AppScreen header={<ScreenHeader title={t("members.title")} showBack />}>
-        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-text-tertiary">
           {t("members.notFound")}
         </Text>
       </AppScreen>
@@ -250,11 +250,11 @@ export function OrganizationMembersScreen() {
           <SportLoader size={120} />
         </View>
       ) : !organization ? (
-        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-text-tertiary">
           {t("members.notFound")}
         </Text>
       ) : visibleMembers.length === 0 ? (
-        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-text-tertiary">
           {query.trim()
             ? t("members.emptySearch")
             : tab === "pending"

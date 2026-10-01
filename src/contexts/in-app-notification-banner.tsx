@@ -246,7 +246,7 @@ export function InAppNotificationBanner() {
               elevation: 8,
             },
           ]}
-          className="mx-4 overflow-hidden rounded-2xl border border-white/10 bg-brand-surface"
+          className="mx-4 overflow-hidden rounded-2xl border border-white/10 bg-surface-primary"
         >
           <Pressable
             onPress={handlePress}
@@ -268,7 +268,7 @@ export function InAppNotificationBanner() {
               {!!banner.body && (
                 <Text
                   numberOfLines={2}
-                  className="mt-0.5 font-body text-caption text-brand-neutral"
+                  className="mt-0.5 font-body text-caption text-text-tertiary"
                 >
                   {banner.body}
                 </Text>

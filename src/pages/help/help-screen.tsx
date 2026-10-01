@@ -29,17 +29,17 @@ export function HelpScreen() {
           <Text className="font-body text-body-sm font-semibold text-text-primary">
             {item.q}
           </Text>
-          <Text className="mt-2 font-body text-body-sm text-brand-neutral">
+          <Text className="mt-2 font-body text-body-sm text-text-tertiary">
             {item.a}
           </Text>
         </View>
       ))}
 
-      <View className="gap-3 rounded-3xl border border-white/10 bg-brand-surface/90 p-4">
+      <View className="gap-3 rounded-3xl border border-white/10 bg-surface-primary/90 p-4">
         <Text className="font-body text-body-sm font-semibold text-white">
           {t("feedback.title")}
         </Text>
-        <Text className="font-body text-body-sm text-brand-neutral">
+        <Text className="font-body text-body-sm text-text-tertiary">
           {t("feedback.description")}
         </Text>
         <Button

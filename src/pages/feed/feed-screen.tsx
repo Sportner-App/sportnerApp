@@ -120,7 +120,7 @@ export function FeedScreen() {
           <SportLoader size={120} label={t("feed:loading")} />
         </View>
       ) : posts.length === 0 ? (
-        <Text className="py-10 text-center font-body text-body-sm text-brand-neutral">
+        <Text className="py-10 text-center font-body text-body-sm text-text-tertiary">
           {t("feed:empty")}
         </Text>
       ) : (
@@ -159,11 +159,11 @@ export function FeedScreen() {
                   }
                 }}
               >
-                <Text className="font-mono text-caption text-brand-primary">
+                <Text className="font-body-bold text-caption text-brand-primary">
                   {t("social:likesCount", { count: post.likeCount })}
                 </Text>
               </Pressable>
-              <Text className="font-mono text-caption text-brand-neutral">
+              <Text className="font-body-bold text-caption text-text-tertiary">
                 {t("social:commentsCount", { count: post.commentCount })}
               </Text>
             </View>

@@ -39,7 +39,7 @@ export function ActivityScreen() {
         <Text className="font-display text-heading-lg text-text-primary">
           {copy.title}
         </Text>
-        <Text className="font-body text-body-sm text-brand-neutral">
+        <Text className="font-body text-body-sm text-text-tertiary">
           {copy.subtitle}
         </Text>
       </View>
@@ -58,7 +58,7 @@ export function ActivityScreen() {
       ) : error && events.length === 0 ? (
         <View className="items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
           <FontAwesome6 name="triangle-exclamation" size={22} color="#64748b" />
-          <Text className="text-center font-body text-body-sm text-brand-neutral">
+          <Text className="text-center font-body text-body-sm text-text-tertiary">
             {error}
           </Text>
           <Button
@@ -71,7 +71,7 @@ export function ActivityScreen() {
       ) : events.length === 0 ? (
         <View className="items-center gap-2 rounded-3xl border border-border-default bg-surface-primary px-6 py-12">
           <FontAwesome6 name="calendar-check" size={22} color="#64748b" />
-          <Text className="text-center font-body text-body-sm text-brand-neutral">
+          <Text className="text-center font-body text-body-sm text-text-tertiary">
             {empty.message}
           </Text>
           <Button
@@ -83,7 +83,7 @@ export function ActivityScreen() {
         </View>
       ) : (
         <View className="gap-3">
-          <Text className="font-mono text-caption text-brand-neutral">
+          <Text className="font-body-bold text-caption text-text-tertiary">
             {copy.eventCount(totalCount)}
           </Text>
           {events.map((event) => (

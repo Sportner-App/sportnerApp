@@ -33,7 +33,7 @@ export function PlaceholderTab({
         <Text className="font-display text-heading-md text-text-primary">
           {title}
         </Text>
-        <Text className="max-w-[260px] text-center font-body text-body-sm leading-5 text-brand-neutral">
+        <Text className="max-w-[260px] text-center font-body text-body-sm leading-5 text-text-tertiary">
           {description}
         </Text>
       </Animated.View>

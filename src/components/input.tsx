@@ -10,13 +10,12 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { colorPalette } from "@/constants/colors";
 import { themeColors } from "@/constants/theme";
 import type { InputProps } from "@/types/components";
 import { AppText as Text } from "@/components/app-text";
 
-const ERROR_COLOR = colorPalette.warning;
-const FOCUS_COLOR = colorPalette.primary;
+const ERROR_COLOR = themeColors.warning;
+const FOCUS_COLOR = themeColors.brand.primary;
 const IDLE_COLOR = themeColors.text.tertiary;
 const IDLE_BORDER = themeColors.border.default;
 const ACCENT_DURATION = 160;

@@ -128,7 +128,7 @@ export function EventEditScreen() {
         <Text className="font-display text-heading-lg text-text-primary">
           {t("edit.heading")}
         </Text>
-        <Text className="font-body text-body-sm text-brand-neutral">
+        <Text className="font-body text-body-sm text-text-tertiary">
           {t("edit.subtitle")}
         </Text>
       </View>

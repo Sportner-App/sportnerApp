@@ -132,7 +132,7 @@ export function NotificationsScreen() {
           <SportLoader size={120} label={t("notifications:loading")} />
         </View>
       ) : items.length === 0 ? (
-        <Text className="py-12 text-center font-body text-body-sm text-brand-neutral">
+        <Text className="py-12 text-center font-body text-body-sm text-text-tertiary">
           {t("notifications:empty")}
         </Text>
       ) : (
@@ -152,7 +152,7 @@ export function NotificationsScreen() {
                 {copy.title}
               </Text>
               {copy.body && copy.body !== copy.title ? (
-                <Text className="mt-1 font-body text-caption text-brand-neutral">
+                <Text className="mt-1 font-body text-caption text-text-tertiary">
                   {copy.body}
                 </Text>
               ) : null}

@@ -15,7 +15,7 @@ function Initials({
 }) {
   return (
     <View
-      className={`h-12 w-12 items-center justify-center rounded-full border border-brand-primary/30 bg-brand-raised ${className ?? ""}`}
+      className={`h-12 w-12 items-center justify-center rounded-full border border-brand-primary/30 bg-surface-secondary ${className ?? ""}`}
     >
       <Text className="font-display text-body-sm text-brand-primary">
         {letters}
@@ -38,7 +38,7 @@ function SportChip({
   return (
     <Animated.View
       entering={heroFadeUp(200, delay, 6)}
-      className={`absolute flex-row items-center gap-2 rounded-full border border-white/10 bg-brand-surface/95 px-3.5 py-2 ${className}`}
+      className={`absolute flex-row items-center gap-2 rounded-full border border-white/10 bg-surface-primary/95 px-3.5 py-2 ${className}`}
     >
       <FontAwesome6 name={icon} size={12} color="#ccff00" />
       <Text className="font-body text-body-sm text-white">{label}</Text>
@@ -107,9 +107,9 @@ export function WelcomeVisual() {
 
         <Animated.View
           entering={heroFadeUp(200, 100, 6)}
-          className="absolute bottom-5 right-16 rounded-full border border-white/10 bg-brand-raised px-2.5 py-1"
+          className="absolute bottom-5 right-16 rounded-full border border-white/10 bg-surface-secondary px-2.5 py-1"
         >
-          <Text className="font-mono text-overline text-brand-primary">
+          <Text className="font-body-bold text-overline text-brand-primary">
             {t("visuals.welcome.live")}
           </Text>
         </Animated.View>
@@ -119,13 +119,13 @@ export function WelcomeVisual() {
         entering={heroFadeUp(200, 150, 6)}
         className="flex-row justify-center gap-2 pb-1"
       >
-        <View className="flex-row items-center gap-1.5 rounded-full border border-white/10 bg-brand-surface/90 px-3 py-1.5">
+        <View className="flex-row items-center gap-1.5 rounded-full border border-white/10 bg-surface-primary/90 px-3 py-1.5">
           <FontAwesome6 name="user-group" size={10} color="#ccff00" />
           <Text className="font-body text-caption text-white">
             {t("visuals.welcome.athletesNearby")}
           </Text>
         </View>
-        <View className="flex-row items-center gap-1.5 rounded-full border border-white/10 bg-brand-surface/90 px-3 py-1.5">
+        <View className="flex-row items-center gap-1.5 rounded-full border border-white/10 bg-surface-primary/90 px-3 py-1.5">
           <FontAwesome6 name="calendar-days" size={10} color="#ccff00" />
           <Text className="font-body text-caption text-white">
             {t("visuals.welcome.openMatches")}

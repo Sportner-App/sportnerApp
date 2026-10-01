@@ -21,7 +21,7 @@ export function Hero({ onCreatePress }: HeroProps) {
   return (
     <Animated.View
       entering={FadeInDown.duration(520).delay(100)}
-      className="overflow-hidden rounded-hero border border-border-default bg-surface-primary"
+      className="overflow-hidden rounded-xlarge border border-border-default bg-surface-primary"
       style={shadows.lg}
     >
       <ImageBackground

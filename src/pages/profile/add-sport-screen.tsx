@@ -148,7 +148,7 @@ export function AddSportScreen() {
               </Text>
             </View>
             <View className="rounded-full bg-brand-primary px-2.5 py-1">
-              <Text className="font-mono-bold text-overline text-brand-secondary">
+              <Text className="font-body-bold text-overline text-background-primary">
                 {t("addSport.selectedCount", { count: selectedSports.length })}
               </Text>
             </View>
@@ -237,7 +237,7 @@ export function AddSportScreen() {
                     <Text
                       className={`font-body text-caption font-semibold ${
                         activeSelection.level === option.level
-                          ? "text-brand-secondary"
+                          ? "text-background-primary"
                           : "text-text-primary"
                       }`}
                     >
@@ -282,7 +282,7 @@ export function AddSportScreen() {
             <Text className="font-body-bold text-label text-text-secondary">
               {group.label}
             </Text>
-            <Text className="font-mono text-overline text-text-tertiary">
+            <Text className="font-body-bold text-overline text-text-tertiary">
               {group.sports.length}
             </Text>
           </View>

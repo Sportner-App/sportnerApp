@@ -81,7 +81,7 @@ export function OrganizationsSection({
               onPress={onPressList}
               className="rounded-full border border-border-default bg-surface-primary px-3 py-2.5"
             >
-              <Text className="font-mono text-caption text-text-secondary">
+              <Text className="font-body-bold text-caption text-text-secondary">
                 +{remaining}
               </Text>
             </Pressable>

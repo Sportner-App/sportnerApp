@@ -3,7 +3,6 @@ export type TextStyleToken = {
   fontSize: number;
   lineHeight: number;
   letterSpacing: number;
-  textTransform?: "uppercase" | "none";
 };
 
 export type NativeShadow = {
@@ -70,77 +69,30 @@ export type SportAccentName =
   | "golf"
   | "archery";
 
-export type LegacyScheme = {
-  text: string;
-  textMuted: string;
-  textSoft: string;
-  background: string;
-  backgroundCanvas: string;
-  surface: string;
-  surfaceRaised: string;
-  surfaceMuted: string;
-  border: string;
-  borderStrong: string;
-  tint: string;
-  tabIconDefault: string;
-  tabIconSelected: string;
-  cardAccent: string;
-  cardHighlight: string;
-  metric: string;
-  searchBackground: string;
-  destructive: string;
-};
-
 export type DesignTokens = {
   palette: {
     lime: string;
-    cream: string;
-    creamMuted: string;
-    white: string;
-    parchment: string;
-    mist: string;
-    oliveDeep: string;
-    olive: string;
-    oliveSoft: string;
-    charcoal: string;
-    charcoalRaised: string;
+    canvas: string;
+    canvasRaised: string;
+    surface: string;
+    surfaceRaised: string;
     ink: string;
     inkMuted: string;
     inkSoft: string;
-    inkInverse: string;
     line: string;
     lineStrong: string;
+    white: string;
     overlay: string;
+    photoScrim: string;
     success: string;
     warning: string;
     destructive: string;
-    navy: string;
-    navyMuted: string;
-    navySurface: string;
-    navyRaised: string;
-    navyHighlight: string;
-    navyCanvas: string;
-    navySearch: string;
-    slate50: string;
-    slate950: string;
-    slate300: string;
-    slate400: string;
-    slate500: string;
-    slateTab: string;
-    metric: string;
-    limeBorder: string;
-    limeBorderStrong: string;
   };
   colors: {
     brand: { primary: string };
-    background: {
-      primary: string;
-      secondary: string;
-      oliveTop: string;
-      oliveMiddle: string;
-      oliveBottom: string;
-    };
-    surface: { primary: string; secondary: string; dark: string };
+    action: { primary: string; onPrimary: string };
+    background: { primary: string; secondary: string };
+    surface: { primary: string; secondary: string };
     text: {
       primary: string;
       secondary: string;
@@ -149,7 +101,7 @@ export type DesignTokens = {
       onPrimary: string;
     };
     border: { default: string; strong: string };
-    overlay: { dark: string };
+    overlay: { dark: string; photo: string };
     success: string;
     warning: string;
     destructive: string;
@@ -160,8 +112,6 @@ export type DesignTokens = {
     displaySemiBold: string;
     body: string;
     bodyBold: string;
-    mono: string;
-    monoBold: string;
   };
   typography: {
     display: TextStyleToken;
@@ -195,85 +145,10 @@ export type DesignTokens = {
     sm: ShadowToken;
     md: ShadowToken;
     lg: ShadowToken;
-    glow: ShadowToken;
   };
   media: {
     cardRadius: number;
-    heroRadius: number;
-    overlayOpacity: number;
     overlayColor: string;
-  };
-  components: {
-    button: {
-      primary: { background: string; foreground: string; border: string };
-      secondary: { background: string; foreground: string; border: string };
-      ghost: { background: string; foreground: string; border: string };
-      destructive: { background: string; foreground: string; border: string };
-    };
-    card: {
-      default: { background: string; border: string; radius: number };
-      elevated: {
-        background: string;
-        border: string;
-        radius: number;
-        shadow: "md";
-      };
-      dark: {
-        background: string;
-        foreground: string;
-        border: string;
-        radius: number;
-      };
-      media: {
-        background: string;
-        radius: number;
-        overlayOpacity: number;
-      };
-    };
-    chip: {
-      default: {
-        background: string;
-        foreground: string;
-        border: string;
-        radius: number;
-      };
-      selected: {
-        background: string;
-        foreground: string;
-        border: string;
-        radius: number;
-      };
-      sport: { radius: number };
-    };
-    badge: {
-      sport: { radius: number };
-      status: {
-        radius: number;
-        success: string;
-        warning: string;
-        destructive: string;
-      };
-    };
-  };
-  legacy: {
-    palette: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-      neutral: string;
-      white: string;
-      black: string;
-      success: string;
-      warning: string;
-    };
-    scheme: LegacyScheme;
-    navy: string;
-    navyMuted: string;
-    navySurface: string;
-    navyRaised: string;
-    navyHighlight: string;
-    navyCanvas: string;
-    navySearch: string;
   };
 };
 

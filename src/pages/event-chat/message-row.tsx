@@ -77,7 +77,7 @@ export function MessageRow({
         ) : null}
         <View
           className={`rounded-2xl px-3 py-2 ${
-            mine ? "bg-brand-primary/20" : "bg-brand-surface"
+            mine ? "bg-brand-primary/20" : "bg-surface-primary"
           }`}
           style={isPending ? { opacity: 0.55 } : undefined}
         >
@@ -91,12 +91,12 @@ export function MessageRow({
             hitSlop={8}
             className="mt-1 active:opacity-70"
           >
-            <Text className="font-mono text-overline text-destructive">
+            <Text className="font-body-bold text-overline text-destructive">
               {t("messaging:message.failed")}
             </Text>
           </Pressable>
         ) : (
-          <Text className="mt-1 font-mono text-overline text-brand-neutral">
+          <Text className="mt-1 font-body-bold text-overline text-text-tertiary">
             {isPending
               ? t("messaging:message.sending")
               : formatMessageTime(message.createdAt)}

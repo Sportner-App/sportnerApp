@@ -14,6 +14,7 @@ import { themeColors } from "@/constants/theme";
 import {
   DARK_THEME_COLORS,
   LIGHT_THEME_COLORS,
+  type ThemeColors,
   type ThemePreference,
 } from "@/constants/theme-palettes";
 
@@ -29,11 +30,11 @@ function hexRgb(hex: string) {
   return `${parseInt(value.slice(0, 2), 16)} ${parseInt(value.slice(2, 4), 16)} ${parseInt(value.slice(4, 6), 16)}`;
 }
 
-export function createThemeVariables(
-  colors: typeof DARK_THEME_COLORS | typeof LIGHT_THEME_COLORS,
-) {
+export function createThemeVariables(colors: ThemeColors) {
   return vars({
     "--color-brand-primary": hexRgb(colors.brand.primary),
+    "--color-action-primary": hexRgb(colors.action.primary),
+    "--color-action-on-primary": hexRgb(colors.action.onPrimary),
     "--color-background-primary": hexRgb(colors.background.primary),
     "--color-background-secondary": hexRgb(colors.background.secondary),
     "--color-surface-primary": hexRgb(colors.surface.primary),
@@ -54,6 +55,7 @@ export function ThemePreferenceProvider({ children }: PropsWithChildren) {
     resolvedScheme === "dark" ? DARK_THEME_COLORS : LIGHT_THEME_COLORS;
 
   Object.assign(themeColors.brand, colors.brand);
+  Object.assign(themeColors.action, colors.action);
   Object.assign(themeColors.background, colors.background);
   Object.assign(themeColors.surface, colors.surface);
   Object.assign(themeColors.text, colors.text);

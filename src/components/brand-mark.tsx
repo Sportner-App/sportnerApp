@@ -34,7 +34,7 @@ export function BrandMark({
         className={
           isLight
             ? "font-display text-heading-sm text-text-primary"
-            : "font-mono text-heading-sm text-white/85"
+            : "font-body-bold text-heading-sm text-white/85"
         }
         style={{
           flexShrink: 1,

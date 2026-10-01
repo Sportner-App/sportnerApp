@@ -77,7 +77,7 @@ export function BlockedUsersScreen() {
         onRefresh: () => load("refresh"),
       })}
     >
-      <Text className="font-body text-body-sm text-brand-neutral">
+      <Text className="font-body text-body-sm text-text-tertiary">
         {t("blocked.description")}
       </Text>
 
@@ -86,7 +86,7 @@ export function BlockedUsersScreen() {
           <SportLoader size={120} />
         </View>
       ) : items.length === 0 ? (
-        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-text-tertiary">
           {t("blocked.empty")}
         </Text>
       ) : (

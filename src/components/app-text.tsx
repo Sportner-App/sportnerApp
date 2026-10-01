@@ -22,7 +22,7 @@ const VARIANT_CLASSES: Record<AppTextVariant, string> = {
   bodySmall: "font-body text-body-sm",
   label: "font-body-bold text-label",
   caption: "font-body text-caption",
-  overline: "font-mono text-overline",
+  overline: "font-body-bold text-overline",
 };
 
 type AppTextProps = TextProps & {

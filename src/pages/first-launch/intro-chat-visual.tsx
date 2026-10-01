@@ -14,14 +14,14 @@ export function IntroChatVisual() {
       <View className="absolute -right-8 top-2 h-40 w-40 rounded-full bg-brand-primary/10" />
       <Animated.View
         entering={heroFadeUp(220, 0, 8)}
-        className="overflow-hidden rounded-[28px] border border-white/10 bg-brand-surface/95"
+        className="overflow-hidden rounded-[28px] border border-white/10 bg-surface-primary/95"
       >
         <View className="flex-row items-center gap-3 border-b border-white/10 p-4">
           <View className="relative h-11 w-11 items-center justify-center rounded-full bg-brand-primary/15">
             <Text className="font-display text-body-sm text-brand-primary">
               AY
             </Text>
-            <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-brand-surface bg-brand-primary" />
+            <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-surface-primary bg-brand-primary" />
           </View>
           <View className="flex-1">
             <Text className="font-body-bold text-body-sm text-white">
@@ -47,7 +47,7 @@ export function IntroChatVisual() {
             entering={heroFadeScale(180, 180, 0.94)}
             className="self-end rounded-2xl rounded-tr-sm bg-brand-primary px-3 py-2.5"
           >
-            <Text className="font-body-bold text-caption leading-5 text-brand-secondary">
+            <Text className="font-body-bold text-caption leading-5 text-background-primary">
               {t("visuals.chat.reply")}
             </Text>
           </Animated.View>

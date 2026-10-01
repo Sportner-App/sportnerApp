@@ -8,7 +8,7 @@ import ViewShot, { captureRef } from "react-native-view-shot";
 import { useTranslation } from "react-i18next";
 
 import { BottomSheet } from "@/components";
-import { sportAccentToken, themeColors } from "@/constants/theme";
+import { fonts, sportAccentToken, themeColors } from "@/constants/theme";
 import { useToast } from "@/contexts";
 import type { EventDetail } from "@/types/events";
 import { eventShareUrl } from "@/utils/event-links";
@@ -401,12 +401,11 @@ function EventShareArtwork({
           <Text
             style={{
               color: foregroundColor,
-              fontFamily: "JetBrainsMono_700Bold",
-              fontSize: 14,
-              letterSpacing: 5,
+              fontFamily: fonts.display,
+              fontSize: 16,
             }}
           >
-            SPORTNER
+            Sportner
           </Text>
         </View>
         <View

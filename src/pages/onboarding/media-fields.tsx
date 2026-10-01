@@ -41,13 +41,13 @@ export function MediaFields({
           </Text>
         </Pressable>
         {hasExistingAvatar ? (
-          <Text className="text-center font-body text-caption text-brand-neutral">
+          <Text className="text-center font-body text-caption text-text-tertiary">
             {t("media.googlePhotoReady")}
           </Text>
         ) : null}
         {avatar && onClearAvatar ? (
           <Pressable onPress={onClearAvatar} hitSlop={8}>
-            <Text className="font-body text-caption text-brand-neutral">
+            <Text className="font-body text-caption text-text-tertiary">
               {existingAvatarUrl
                 ? t("media.revertToGoogle")
                 : t("media.remove")}

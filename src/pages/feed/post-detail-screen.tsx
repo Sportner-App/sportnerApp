@@ -256,13 +256,13 @@ export function PostDetailScreen() {
                   size={16}
                   color={post.likedByMe ? "#ccff00" : "#94a3b8"}
                 />
-                <Text className="font-mono text-caption text-white">
+                <Text className="font-body-bold text-caption text-white">
                   {t("social:likesCount", { count: post.likeCount })}
                 </Text>
               </Pressable>
               <View className="flex-row items-center gap-2">
                 <FontAwesome6 name="comment" size={15} color="#94a3b8" />
-                <Text className="font-mono text-caption text-brand-neutral">
+                <Text className="font-body-bold text-caption text-text-tertiary">
                   {t("social:commentsCount", { count: post.commentCount })}
                 </Text>
               </View>
@@ -273,7 +273,7 @@ export function PostDetailScreen() {
                 {t("social:comments.title")}
               </Text>
               {comments.length === 0 ? (
-                <Text className="font-body text-body-sm text-brand-neutral">
+                <Text className="font-body text-body-sm text-text-tertiary">
                   {t("social:comments.firstComment")}
                 </Text>
               ) : (
@@ -290,7 +290,7 @@ export function PostDetailScreen() {
 
             {replyingTo ? (
               <View className="flex-row items-center justify-between">
-                <Text className="flex-1 font-body text-caption text-brand-neutral">
+                <Text className="flex-1 font-body text-caption text-text-tertiary">
                   {t("social:comments.replyTo", { username: replyUsername })}
                 </Text>
                 <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>

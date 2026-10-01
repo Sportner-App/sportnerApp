@@ -154,7 +154,7 @@ export function OrganizerPanel({
               {t("organizerPanel.attendanceCompleteTitle")}
             </Text>
           </View>
-          <Text className="font-body text-caption leading-5 text-brand-neutral">
+          <Text className="font-body text-caption leading-5 text-text-tertiary">
             {t("organizerPanel.attendanceCompleteSubtitle")}
           </Text>
           <Button

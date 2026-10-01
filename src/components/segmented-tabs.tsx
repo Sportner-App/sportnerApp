@@ -91,8 +91,8 @@ export function SegmentedTabs<T extends string>({
                 options.length >= 3 ? "text-overline" : "text-body-sm"
               } ${
                 option.key === value
-                  ? "text-brand-secondary"
-                  : "text-brand-neutral"
+                  ? "text-background-primary"
+                  : "text-text-tertiary"
               }`}
             >
               {option.label}
@@ -120,7 +120,7 @@ function CountBadge({
     <View
       className={`h-4 min-w-4 shrink-0 items-center justify-center rounded-full px-1 ${
         selected
-          ? "bg-brand-secondary/15"
+          ? "bg-background-primary/15"
           : option.badge > 0
             ? "bg-brand-primary/15"
             : "bg-surface-secondary"
@@ -129,9 +129,9 @@ function CountBadge({
       <Text
         numberOfLines={1}
         style={{ fontVariant: ["tabular-nums"] }}
-        className={`font-mono text-overline leading-[14px] ${
+        className={`font-body-bold text-overline leading-[14px] ${
           selected
-            ? "text-brand-secondary"
+            ? "text-background-primary"
             : option.badge > 0
               ? "text-brand-primary"
               : "text-text-tertiary"

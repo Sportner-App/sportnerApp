@@ -14,7 +14,7 @@ export function IntroPeopleVisual() {
       <View className="absolute -right-8 top-2 h-40 w-40 rounded-full bg-brand-primary/10" />
       <Animated.View
         entering={heroFadeUp(220, 0, 8)}
-        className="rounded-[28px] border border-white/10 bg-brand-surface/95 p-4"
+        className="rounded-[28px] border border-white/10 bg-surface-primary/95 p-4"
       >
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-2">
@@ -25,13 +25,13 @@ export function IntroPeopleVisual() {
               <Text className="font-body-bold text-body text-white">
                 {t("visuals.people.eveningMatch")}
               </Text>
-              <Text className="font-body text-caption text-brand-neutral">
+              <Text className="font-body text-caption text-text-tertiary">
                 20:30 · Kadıköy
               </Text>
             </View>
           </View>
           <View className="rounded-full bg-brand-primary px-2.5 py-1">
-            <Text className="font-mono text-overline text-brand-secondary">
+            <Text className="font-body-bold text-overline text-background-primary">
               {t("visuals.people.createdBadge")}
             </Text>
           </View>
@@ -41,7 +41,7 @@ export function IntroPeopleVisual() {
             <Animated.View
               key={name}
               entering={heroFadeScale(180, 80 + index * 45, 0.94)}
-              className="h-10 w-10 items-center justify-center rounded-full border-2 border-brand-surface bg-brand-raised"
+              className="h-10 w-10 items-center justify-center rounded-full border-2 border-surface-primary bg-surface-secondary"
               style={{ marginLeft: index ? -8 : 0 }}
             >
               <Text className="font-display text-caption text-brand-primary">

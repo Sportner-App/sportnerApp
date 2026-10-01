@@ -63,7 +63,7 @@ export function FeedbackScreen() {
         <Text className="font-display text-heading-lg text-white">
           {t("heading")}
         </Text>
-        <Text className="font-body text-body-sm leading-5 text-brand-neutral">
+        <Text className="font-body text-body-sm leading-5 text-text-tertiary">
           {t("subtitle")}
         </Text>
       </View>

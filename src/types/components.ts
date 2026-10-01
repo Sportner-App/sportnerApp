@@ -222,8 +222,6 @@ export type AppScreenProps = PropsWithChildren<{
   /** Header'ı akışta satır kaplamak yerine içeriğin üzerine bindirir; `edgeToEdgeTop`
    * ile birlikte medyanın ekranın en üstüne kadar uzanmasını sağlar. */
   headerOverlay?: boolean;
-  /** Light ekran için opsiyonel premium zeytin gradient zemini. */
-  backdrop?: "default" | "olive";
   /** `light` uses background.primary. Default stays legacy navy. */
   tone?: UiTone;
   /** Scroll listenin sonuna yaklaşılınca (sayfalama) tetiklenir. */

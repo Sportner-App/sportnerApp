@@ -160,7 +160,7 @@ export function SportLoader({ size = 168, label }: SportLoaderProps) {
 
       {resolvedLabel ? (
         <Animated.View style={labelStyle}>
-          <Text className="font-mono text-caption uppercase tracking-[4px] text-brand-primary">
+          <Text className="font-body-bold text-caption uppercase tracking-[4px] text-brand-primary">
             {resolvedLabel}
           </Text>
         </Animated.View>

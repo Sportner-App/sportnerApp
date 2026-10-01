@@ -1,9 +1,9 @@
 /**
  * Sportner design-system API.
  *
- * Source of truth: `design-tokens.js`.
- * Existing screens keep using NativeWind `brand-*` classes and
- * `@/constants/colors`. New screens should import `appTheme` / helpers here.
+ * Tek kaynak: `design-tokens.js`. Ekranlar renkleri NativeWind sınıflarından
+ * (`bg-surface-primary`, `text-text-secondary`…) ya da buradaki `themeColors`
+ * üzerinden alır; ekran dosyalarında hex yazılmaz.
  */
 import type { TextStyle } from "react-native";
 
@@ -99,22 +99,13 @@ export const typography = tokens.typography;
 export const spacing = tokens.spacing;
 export const radius = tokens.radius;
 export const media = tokens.media;
-export const componentTokens = tokens.components;
-export const legacyTokens = tokens.legacy;
 
-export const shadows: Record<"sm" | "md" | "lg" | "glow", NativeShadow> = {
+/** Gölge yalnızca gerçekten yüzen öğelerde (sheet, modal, harita pini). */
+export const shadows: Record<"sm" | "md" | "lg", NativeShadow> = {
   sm: tokens.shadows.sm.native,
   md: tokens.shadows.md.native,
   lg: tokens.shadows.lg.native,
-  glow: tokens.shadows.glow.native,
 };
-
-export const shadowCss = {
-  sm: tokens.shadows.sm.css,
-  md: tokens.shadows.md.css,
-  lg: tokens.shadows.lg.css,
-  glow: tokens.shadows.glow.css,
-} as const;
 
 export function sportKeyForSlug(
   slug: string | null | undefined,
@@ -152,19 +143,3 @@ export const typeStyles: Record<keyof typeof typography, TextStyle> = {
   caption: typography.caption,
   overline: typography.overline,
 };
-
-export const appTheme = {
-  colors: themeColors,
-  sports: sportAccents,
-  fonts,
-  typography,
-  typeStyles,
-  spacing,
-  radius,
-  shadows,
-  media,
-  components: componentTokens,
-  legacy: legacyTokens,
-} as const;
-
-export type AppTheme = typeof appTheme;

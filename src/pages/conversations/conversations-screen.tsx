@@ -371,13 +371,13 @@ function ConversationRow({
                 </Text>
                 {isEvent && item.isClosed ? (
                   <View className="rounded-full bg-white/10 px-2 py-0.5">
-                    <Text className="font-mono text-overline uppercase tracking-wide text-text-tertiary">
+                    <Text className="font-body-bold text-overline uppercase tracking-wide text-text-tertiary">
                       {t("messaging:row.closed")}
                     </Text>
                   </View>
                 ) : null}
                 {item.lastMessageAt ? (
-                  <Text className="font-mono text-overline text-text-tertiary">
+                  <Text className="font-body-bold text-overline text-text-tertiary">
                     {formatConversationTime(item.lastMessageAt)}
                   </Text>
                 ) : null}
@@ -395,7 +395,7 @@ function ConversationRow({
                 </Text>
                 {item.unreadCount > 0 ? (
                   <View className="min-w-5 items-center justify-center rounded-full bg-brand-primary px-1.5 py-0.5">
-                    <Text className="font-mono text-overline text-text-on-primary">
+                    <Text className="font-body-bold text-overline text-text-on-primary">
                       {item.unreadCount > 99 ? "99+" : item.unreadCount}
                     </Text>
                   </View>

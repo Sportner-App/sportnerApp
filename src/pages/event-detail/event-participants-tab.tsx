@@ -66,7 +66,7 @@ export function EventParticipantsTab({
           <Text className="font-body-bold text-body text-text-primary">
             {t("participantTab.heading")}
           </Text>
-          <Text className="font-mono text-caption text-text-secondary">
+          <Text className="font-body-bold text-caption text-text-secondary">
             {t("participantTab.count", { count: participants.length })}
           </Text>
         </View>

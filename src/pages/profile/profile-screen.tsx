@@ -96,7 +96,7 @@ export function ProfileScreen() {
             size={24}
             color="#64748b"
           />
-          <Text className="text-center font-body text-body-sm text-brand-neutral">
+          <Text className="text-center font-body text-body-sm text-text-tertiary">
             {error ?? PROFILE_COPY.notFound}
           </Text>
           <Button

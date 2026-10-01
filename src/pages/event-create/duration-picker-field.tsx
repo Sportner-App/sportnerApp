@@ -306,9 +306,9 @@ const Wheel = forwardRef<
               className="flex-row items-center justify-center gap-2"
             >
               <Text
-                className={`font-mono text-heading-lg ${
+                className={`font-body-bold text-heading-lg ${
                   active
-                    ? "font-mono-bold text-brand-primary"
+                    ? "font-body-bold text-brand-primary"
                     : "text-text-tertiary"
                 }`}
               >

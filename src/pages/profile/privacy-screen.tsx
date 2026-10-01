@@ -152,13 +152,13 @@ export function PrivacyScreen() {
           <Text className="font-display text-heading-lg text-text-primary">
             {t("profile:privacy.heading")}
           </Text>
-          <Text className="font-body text-body-sm text-brand-neutral">
+          <Text className="font-body text-body-sm text-text-tertiary">
             {t("profile:privacy.subtitle")}
           </Text>
 
           {profile.email ? (
             <View className="gap-2">
-              <Text className="font-body text-caption font-semibold uppercase tracking-wide text-brand-neutral">
+              <Text className="font-body text-caption font-semibold uppercase tracking-wide text-text-tertiary">
                 {t("profile:privacy.emailVerification.sectionTitle")}
               </Text>
               <Pressable
@@ -185,7 +185,7 @@ export function PrivacyScreen() {
                       ? t("profile:privacy.emailVerification.verifiedTitle")
                       : t("profile:privacy.emailVerification.unverifiedTitle")}
                   </Text>
-                  <Text className="mt-0.5 font-body text-caption text-brand-neutral">
+                  <Text className="mt-0.5 font-body text-caption text-text-tertiary">
                     {profile.isEmailVerified
                       ? t(
                           "profile:privacy.emailVerification.verifiedDescription",
@@ -219,7 +219,7 @@ export function PrivacyScreen() {
               <Text className="font-body text-body font-semibold text-text-primary">
                 {t("profile:privacy.blockedTitle")}
               </Text>
-              <Text className="mt-0.5 font-body text-caption text-brand-neutral">
+              <Text className="mt-0.5 font-body text-caption text-text-tertiary">
                 {t("profile:privacy.blockedDescription")}
               </Text>
             </View>
@@ -241,7 +241,7 @@ export function PrivacyScreen() {
                 <Text className="font-body text-body font-semibold text-destructive">
                   {t("profile:privacy.deleteAccount.title")}
                 </Text>
-                <Text className="mt-0.5 font-body text-caption text-brand-neutral">
+                <Text className="mt-0.5 font-body text-caption text-text-tertiary">
                   {t("profile:privacy.deleteAccount.description")}
                 </Text>
               </View>

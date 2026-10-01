@@ -222,7 +222,7 @@ export function JoinBar({
             <Text
               className={
                 bar.statusSubtitle
-                  ? "font-mono-bold text-heading-sm text-text-primary"
+                  ? "font-body-bold text-heading-sm text-text-primary"
                   : "max-w-[120px] font-body-bold text-body-sm text-text-primary"
               }
             >

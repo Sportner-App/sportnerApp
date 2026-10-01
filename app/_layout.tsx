@@ -1,4 +1,3 @@
-import { colors } from "@/constants/colors";
 import {
   edgeBackStackOptions,
   fullScreenBackStackOptions,
@@ -10,6 +9,10 @@ import {
   ThemePreferenceProvider,
   useThemePreference,
 } from "@/contexts/theme-preference-provider";
+import {
+  DARK_THEME_COLORS,
+  LIGHT_THEME_COLORS,
+} from "@/constants/theme-palettes";
 import {
   DarkTheme,
   DefaultTheme,
@@ -45,13 +48,10 @@ configureMapbox();
 export default function RootLayout() {
   const [splashDone, setSplashDone] = useState(false);
   const [loaded, error] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     Anybody_600SemiBold: require("@expo-google-fonts/anybody/600SemiBold/Anybody_600SemiBold.ttf"),
     Anybody_700Bold: require("@expo-google-fonts/anybody/700Bold/Anybody_700Bold.ttf"),
     HankenGrotesk_500Medium: require("@expo-google-fonts/hanken-grotesk/500Medium/HankenGrotesk_500Medium.ttf"),
     HankenGrotesk_700Bold: require("@expo-google-fonts/hanken-grotesk/700Bold/HankenGrotesk_700Bold.ttf"),
-    JetBrainsMono_500Medium: require("@expo-google-fonts/jetbrains-mono/500Medium/JetBrainsMono_500Medium.ttf"),
-    JetBrainsMono_700Bold: require("@expo-google-fonts/jetbrains-mono/700Bold/JetBrainsMono_700Bold.ttf"),
   });
 
   const handleSplashFinish = useCallback(() => {
@@ -93,7 +93,8 @@ function RootLayoutNav() {
 function ThemedRootLayoutNav() {
   const { t } = useTranslation("common");
   const { resolvedScheme: colorScheme } = useThemePreference();
-  const appColors = colors[colorScheme];
+  const appColors =
+    colorScheme === "dark" ? DARK_THEME_COLORS : LIGHT_THEME_COLORS;
   const navigationTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
 
   return (
@@ -105,12 +106,12 @@ function ThemedRootLayoutNav() {
               ...navigationTheme,
               colors: {
                 ...navigationTheme.colors,
-                background: appColors.background,
-                card: appColors.surface,
-                border: appColors.border,
-                notification: appColors.tint,
-                primary: appColors.tint,
-                text: appColors.text,
+                background: appColors.background.primary,
+                card: appColors.surface.primary,
+                border: appColors.border.default,
+                notification: appColors.brand.primary,
+                primary: appColors.brand.primary,
+                text: appColors.text.primary,
               },
             }}
           >
@@ -148,15 +149,15 @@ function ThemedRootLayoutNav() {
 
 const keyboardToolbarTheme: KeyboardToolbarProps["theme"] = {
   light: {
-    primary: "#18222b",
-    disabled: "#94a0aa",
-    background: "#f4f6f2",
-    ripple: "#c8d0c8",
+    primary: LIGHT_THEME_COLORS.text.primary,
+    disabled: LIGHT_THEME_COLORS.text.tertiary,
+    background: LIGHT_THEME_COLORS.background.secondary,
+    ripple: LIGHT_THEME_COLORS.border.strong,
   },
   dark: {
-    primary: "#ccff00",
-    disabled: "#667581",
-    background: "#10212f",
-    ripple: "#43515b",
+    primary: DARK_THEME_COLORS.text.primary,
+    disabled: DARK_THEME_COLORS.text.tertiary,
+    background: DARK_THEME_COLORS.surface.secondary,
+    ripple: DARK_THEME_COLORS.border.strong,
   },
 };

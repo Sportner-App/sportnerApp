@@ -131,7 +131,7 @@ export function FriendsScreen() {
         </View>
       ) : tab === "friends" ? (
         friends.length === 0 ? (
-          <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
+          <Text className="py-8 text-center font-body text-body-sm text-text-tertiary">
             {t("empty.friends")}
           </Text>
         ) : (
@@ -161,7 +161,7 @@ export function FriendsScreen() {
         )
       ) : tab === "requests" ? (
         requests.length === 0 ? (
-          <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
+          <Text className="py-8 text-center font-body text-body-sm text-text-tertiary">
             {t("empty.requests")}
           </Text>
         ) : (
@@ -233,7 +233,7 @@ export function FriendsScreen() {
           })
         )
       ) : suggestions.length === 0 ? (
-        <Text className="py-8 text-center font-body text-body-sm text-brand-neutral">
+        <Text className="py-8 text-center font-body text-body-sm text-text-tertiary">
           {t("empty.suggestions")}
         </Text>
       ) : (

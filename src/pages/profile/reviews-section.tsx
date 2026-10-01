@@ -94,7 +94,7 @@ export function ReviewsSection({
                   />
                 </View>
                 <View className="flex-row items-center gap-1 rounded-full bg-brand-primary/10 px-2 py-1">
-                  <Text className="font-mono-bold text-overline text-brand-primary">
+                  <Text className="font-body-bold text-overline text-brand-primary">
                     {Number(review.rating).toFixed(1)}
                   </Text>
                   <Text className="text-overline text-brand-primary">★</Text>

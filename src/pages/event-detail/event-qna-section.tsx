@@ -330,7 +330,7 @@ function QnARow({
               }`}
             >
               <Text
-                className={`font-mono text-overline uppercase tracking-wide ${
+                className={`font-body-bold text-overline uppercase tracking-wide ${
                   badge.tone === "owner"
                     ? "text-brand-primary"
                     : "text-text-tertiary"

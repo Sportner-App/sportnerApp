@@ -120,7 +120,7 @@ export function PendingRequestsBanner({
         <FontAwesome6 name="user-group" size={12} color="#ccff00" />
       </View>
       <Text className="flex-1 font-body text-body-sm text-text-primary">
-        <Text className="font-mono text-brand-primary">{count}</Text>{" "}
+        <Text className="font-body-bold text-brand-primary">{count}</Text>{" "}
         {t("pendingEntry.bannerText")}
       </Text>
       <FontAwesome6 name="chevron-right" size={12} color="#64748b" />

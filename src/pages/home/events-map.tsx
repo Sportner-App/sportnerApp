@@ -639,7 +639,7 @@ function EventMapPreviewCard({
                   </View>
                 ) : null}
                 {whenLabel ? (
-                  <Text className="font-mono text-overline text-white/75">
+                  <Text className="font-body-bold text-overline text-white/75">
                     {whenLabel}
                   </Text>
                 ) : null}

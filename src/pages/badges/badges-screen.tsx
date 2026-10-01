@@ -53,7 +53,7 @@ export function BadgesScreen() {
             {t("sections.earned")}
           </Text>
           {badges.length === 0 ? (
-            <Text className="font-body text-body-sm text-brand-neutral">
+            <Text className="font-body text-body-sm text-text-tertiary">
               {t("empty.badges")}
             </Text>
           ) : (
@@ -85,7 +85,7 @@ export function BadgesScreen() {
             {t("sections.quests")}
           </Text>
           {quests.length === 0 ? (
-            <Text className="font-body text-body-sm text-brand-neutral">
+            <Text className="font-body text-body-sm text-text-tertiary">
               {t("empty.quests")}
             </Text>
           ) : (
@@ -112,7 +112,7 @@ function Card({ title, body }: { title: string; body: string }) {
       <Text className="font-body text-body-sm font-semibold text-text-primary">
         {title}
       </Text>
-      <Text className="mt-1 font-body text-caption text-brand-neutral">
+      <Text className="mt-1 font-body text-caption text-text-tertiary">
         {body}
       </Text>
     </View>

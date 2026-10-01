@@ -37,7 +37,7 @@ export function SocialRegistrationOverlay({ social }: Props) {
           <Text className="font-display text-heading-lg text-text-primary">
             {t("socialRegistration.title")}
           </Text>
-          <Text className="mt-3 font-body text-body leading-6 text-brand-neutral">
+          <Text className="mt-3 font-body text-body leading-6 text-text-tertiary">
             {t("socialRegistration.subtitle")}
           </Text>
           <View className="mt-8 gap-3 rounded-[28px] border border-border-default bg-surface-primary p-5">
