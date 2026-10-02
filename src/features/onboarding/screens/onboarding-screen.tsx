@@ -18,6 +18,7 @@ import { AnimatedBackground } from "@/components/animated-background";
 
 import { MediaFields } from "@/components/media-fields";
 import { SportsPickerStep } from "@/features/onboarding/components/sports-picker-step";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 
 export function OnboardingScreen() {
   const { t } = useTranslation(["onboarding", "profile"]);
@@ -52,13 +53,17 @@ export function OnboardingScreen() {
               className="mb-8 flex-row items-center gap-3"
             >
               <Pressable
-                hitSlop={8}
+                hitSlop={HIT_SLOP}
                 onPress={() => form.setStep("sports")}
                 accessibilityRole="button"
                 accessibilityLabel={detailsCopy.backAccessibility}
                 className="h-11 w-11 items-center justify-center rounded-full border border-border-default bg-surface-primary active:opacity-80"
               >
-                <FontAwesome6 name="arrow-left" size={14} color="#ccff00" />
+                <FontAwesome6
+                  name="arrow-left"
+                  size={14}
+                  color={themeColors.brand.primary}
+                />
               </Pressable>
 
               <View className="flex-1 flex-row items-center gap-2.5">

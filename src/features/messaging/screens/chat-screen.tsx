@@ -17,7 +17,7 @@ import {
   EmptyState,
   ScreenHeader,
 } from "@/components";
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { useSession, useToast } from "@/contexts";
 import { getCurrentLocale } from "@/i18n";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
@@ -399,7 +399,7 @@ export function EventChatScreen({
               accessibilityLabel={t("delete.a11y", { title: headerTitle })}
               accessibilityState={{ disabled: !conversationId || isDeleting }}
               disabled={!conversationId || isDeleting}
-              hitSlop={8}
+              hitSlop={HIT_SLOP}
               onPress={confirmDelete}
               className="h-10 w-10 items-center justify-center rounded-full border border-destructive/25 bg-destructive/10 active:opacity-70"
             >
@@ -429,9 +429,9 @@ export function EventChatScreen({
                 setDraft(value);
               }}
               placeholder={t("chat.placeholder")}
-              placeholderTextColor="#64748b"
+              placeholderTextColor={themeColors.placeholder}
               textAlignVertical="center"
-              hitSlop={8}
+              hitSlop={HIT_SLOP}
               returnKeyType="send"
               blurOnSubmit={false}
               onSubmitEditing={send}

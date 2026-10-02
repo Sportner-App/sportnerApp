@@ -8,7 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { lightImpact } from "@/utils/haptics";
 import { AppText as Text } from "@/components";
 
@@ -51,7 +51,7 @@ export function PendingRequestsHeaderAction({
     <AnimatedPressable
       accessibilityRole="button"
       accessibilityLabel={t("pendingEntry.accessibility", { count })}
-      hitSlop={8}
+      hitSlop={HIT_SLOP}
       onPress={() => {
         lightImpact();
         onPress();
@@ -117,13 +117,21 @@ export function PendingRequestsBanner({
       className="flex-row items-center gap-3 rounded-2xl border border-white/10 bg-surface-primary/60 px-4 py-3"
     >
       <View className="h-8 w-8 items-center justify-center rounded-full bg-brand-primary/15">
-        <FontAwesome6 name="user-group" size={12} color="#ccff00" />
+        <FontAwesome6
+          name="user-group"
+          size={12}
+          color={themeColors.brand.primary}
+        />
       </View>
       <Text className="flex-1 font-body text-body-sm text-text-primary">
         <Text className="font-body-bold text-brand-primary">{count}</Text>{" "}
         {t("pendingEntry.bannerText")}
       </Text>
-      <FontAwesome6 name="chevron-right" size={12} color="#64748b" />
+      <FontAwesome6
+        name="chevron-right"
+        size={12}
+        color={themeColors.icon.muted}
+      />
     </AnimatedPressable>
   );
 }

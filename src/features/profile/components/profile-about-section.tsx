@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { useProfileQuickActions } from "@/features/profile/copy";
 import { AppText as Text } from "@/components";
+import { themeColors } from "@/constants/theme";
 
 type ProfileAboutSectionProps = {
   bio: string | null;
@@ -40,7 +41,11 @@ export function ProfileAboutSection({
               accessibilityLabel={item.label}
               className="min-h-[44px] flex-1 flex-row items-center justify-center gap-2 rounded-2xl border border-border-default bg-surface-primary px-3 active:opacity-65"
             >
-              <FontAwesome6 name={item.icon} size={12} color="#ccff00" />
+              <FontAwesome6
+                name={item.icon}
+                size={12}
+                color={themeColors.brand.primary}
+              />
               <Text className="font-body-bold text-caption text-text-primary">
                 {item.label}
               </Text>

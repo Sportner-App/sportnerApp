@@ -15,7 +15,7 @@ import {
   LinearRefreshBar,
   ScreenLoader,
 } from "@/components";
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { usePaginatedList } from "@/hooks/use-paginated-list";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { discoverUsers } from "@/features/social/services/users-service";
@@ -208,7 +208,7 @@ function PeopleSearchHeader({
     <View className="flex-row items-center gap-3 border-b border-border-default px-5 pb-3 pt-2">
       <Pressable
         onPress={() => router.back()}
-        hitSlop={8}
+        hitSlop={HIT_SLOP}
         accessibilityRole="button"
         accessibilityLabel={t("back")}
         className="h-11 w-9 items-start justify-center active:opacity-65"

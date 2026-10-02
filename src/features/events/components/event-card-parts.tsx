@@ -16,9 +16,10 @@ import {
 } from "@/features/sports/sport-images";
 import type { IconName } from "@/types/components";
 import type { ParticipantAvatarPreview } from "@/features/events/types";
+import { themeColors } from "@/constants/theme";
 
 // Fotoğraf üzerindeki içerik her iki temada da koyu overlay üzerinde okunur.
-export const MIST = "#06111a";
+export const MIST = themeColors.background.primary;
 
 export function MetaItem({
   icon,
@@ -31,7 +32,11 @@ export function MetaItem({
 }) {
   return (
     <View className="flex-row items-center gap-1.5">
-      <FontAwesome6 name={icon} size={12} color={accent ?? "#cbd5e1"} />
+      <FontAwesome6
+        name={icon}
+        size={12}
+        color={accent ?? themeColors.icon.soft}
+      />
       <Text
         numberOfLines={1}
         className="max-w-[200px] font-body-bold text-label text-white"

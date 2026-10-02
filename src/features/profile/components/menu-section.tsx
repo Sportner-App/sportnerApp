@@ -6,6 +6,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { useProfileMenuGroups } from "@/features/profile/copy";
 import { useLanguagePreference } from "@/contexts";
 import { AppText as Text } from "@/components";
+import { themeColors } from "@/constants/theme";
 
 type MenuSectionProps = {
   onItemPress: (key: string) => void;
@@ -60,7 +61,11 @@ export function MenuSection({
                     <FontAwesome6
                       name={item.icon}
                       size={12}
-                      color={item.danger ? "#ef4444" : "#ccff00"}
+                      color={
+                        item.danger
+                          ? themeColors.destructive
+                          : themeColors.brand.primary
+                      }
                     />
                   </View>
                   <Text
@@ -83,12 +88,15 @@ export function MenuSection({
                       />
                     </View>
                   ) : isBusy ? (
-                    <ActivityIndicator size="small" color="#ef4444" />
+                    <ActivityIndicator
+                      size="small"
+                      color={themeColors.destructive}
+                    />
                   ) : item.danger ? null : (
                     <FontAwesome6
                       name="chevron-right"
                       size={10}
-                      color="#6f7d86"
+                      color={themeColors.text.tertiary}
                     />
                   )}
                 </Pressable>

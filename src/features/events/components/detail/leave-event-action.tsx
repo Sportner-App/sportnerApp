@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 
 import { AppText as Text, BottomSheet, Button } from "@/components";
 import { lightImpact } from "@/utils/haptics";
+import { themeColors } from "@/constants/theme";
 
 type LeaveEventActionProps = {
   isLeaving: boolean;
@@ -63,9 +64,9 @@ export function LeaveEventAction({
         <FontAwesome6
           name="arrow-right-from-bracket"
           size={12}
-          color="#ef4444"
+          color={themeColors.destructive}
         />
-        <Text className="font-body text-body-sm text-[#ef4444]">
+        <Text className="font-body text-body-sm text-destructive">
           {isLeaving ? t("leave.leaving") : t("leave.action")}
         </Text>
       </AnimatedPressable>

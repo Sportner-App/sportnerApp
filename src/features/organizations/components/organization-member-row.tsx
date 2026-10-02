@@ -73,7 +73,7 @@ function MemberActionChip({
     tone === "primary"
       ? themeColors.brand.primary
       : tone === "danger"
-        ? "#fca5a5"
+        ? themeColors.warning
         : themeColors.text.secondary;
 
   return (

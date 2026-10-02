@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { AppText as Text, Avatar } from "@/components";
 import type { PickedMedia } from "@/utils/media-picker";
+import { HIT_SLOP } from "@/constants/theme";
 
 type MediaFieldsProps = {
   avatar: PickedMedia | null;
@@ -34,7 +35,7 @@ export function MediaFields({
           onPress={onPickAvatar}
           accessibilityLabel={t("media.selectPhotoAccessibility")}
         />
-        <Pressable onPress={onPickAvatar} hitSlop={8}>
+        <Pressable onPress={onPickAvatar} hitSlop={HIT_SLOP}>
           <Text className="font-body text-caption text-brand-primary">
             {avatarUri ? t("media.changePhoto") : t("media.addPhotoRequired")}
           </Text>
@@ -45,7 +46,7 @@ export function MediaFields({
           </Text>
         ) : null}
         {avatar && onClearAvatar ? (
-          <Pressable onPress={onClearAvatar} hitSlop={8}>
+          <Pressable onPress={onClearAvatar} hitSlop={HIT_SLOP}>
             <Text className="font-body text-caption text-text-tertiary">
               {existingAvatarUrl
                 ? t("media.revertToGoogle")

@@ -23,6 +23,8 @@ import { toastService } from "@/lib/toast-bus";
 import type { IconName } from "@/types/components";
 import type { ToastContextValue, ToastPayload, ToastType } from "@/types/toast";
 import { AppText as Text } from "@/components/app-text";
+import { themeColors } from "@/constants/theme";
+import { OVERLAY_HIDE_MS } from "@/constants/motion";
 
 type ToastState = {
   id: number;
@@ -32,14 +34,13 @@ type ToastState = {
 };
 
 const DEFAULT_DURATION_MS = 2200;
-const HIDE_ANIMATION_MS = 180;
 const STRIPE_COUNT = 12;
 const STRIPE_GAP = 34;
 
 const toastTheme: Record<ToastType, { accent: string; icon: IconName }> = {
-  success: { accent: "#ccff00", icon: "check" },
-  error: { accent: "#ed4a3e", icon: "triangle-exclamation" },
-  info: { accent: "#5eead4", icon: "circle-info" },
+  success: { accent: themeColors.brand.primary, icon: "check" },
+  error: { accent: themeColors.destructive, icon: "triangle-exclamation" },
+  info: { accent: themeColors.success, icon: "circle-info" },
 };
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -66,12 +67,12 @@ export function ToastProvider({ children }: PropsWithChildren) {
     (toastId: number) => {
       clearPendingTimeout();
 
-      opacity.value = withTiming(0, { duration: HIDE_ANIMATION_MS });
-      translateY.value = withTiming(-12, { duration: HIDE_ANIMATION_MS });
+      opacity.value = withTiming(0, { duration: OVERLAY_HIDE_MS });
+      translateY.value = withTiming(-12, { duration: OVERLAY_HIDE_MS });
 
       timeoutRef.current = setTimeout(() => {
         setToast((prev) => (prev?.id === toastId ? null : prev));
-      }, HIDE_ANIMATION_MS + 20);
+      }, OVERLAY_HIDE_MS + 20);
     },
     [clearPendingTimeout, opacity, translateY],
   );

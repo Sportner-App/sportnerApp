@@ -263,7 +263,11 @@ function TemplateOption({
         </View>
         {loading ? (
           <View className="absolute inset-0 items-center justify-center bg-black/55">
-            <FontAwesome6 name="spinner" size={20} color="#ccff00" />
+            <FontAwesome6
+              name="spinner"
+              size={20}
+              color={themeColors.brand.primary}
+            />
           </View>
         ) : null}
       </View>

@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
-import { themeColors, typeStyles } from "@/constants/theme";
+import { HIT_SLOP, themeColors, typeStyles } from "@/constants/theme";
 import type { EventDetail } from "@/features/events/types";
 import { noDescriptionLabel } from "@/features/events/format";
 import { AppText as Text } from "@/components";
@@ -50,7 +50,7 @@ export function AboutSection({ event }: AboutSectionProps) {
           {isLong ? (
             <Pressable
               onPress={() => setExpanded((value) => !value)}
-              hitSlop={8}
+              hitSlop={HIT_SLOP}
             >
               <Text
                 className="font-body-bold text-label"

@@ -11,6 +11,7 @@ import {
 import type { UserProfile } from "@/features/profile/types";
 import { sportIconForSlug } from "@/features/sports/sports";
 import { AppText as Text } from "@/components";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 
 type SportsSectionProps = {
   profile: UserProfile;
@@ -43,7 +44,7 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
         {onPress ? (
           <Pressable
             onPress={onPress}
-            hitSlop={8}
+            hitSlop={HIT_SLOP}
             accessibilityRole="button"
             accessibilityLabel={t("sports.editAccessibility")}
             className="min-h-[36px] flex-row items-center gap-1.5 rounded-full px-2 active:opacity-65"
@@ -90,7 +91,7 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
                   <FontAwesome6
                     name={sportIconForSlug(sport.sportSlug)}
                     size={11}
-                    color="#ccff00"
+                    color={themeColors.brand.primary}
                   />
                   <Text className="font-body-bold text-caption text-text-primary">
                     {sport.sportName}
@@ -105,7 +106,11 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
                 accessibilityLabel={t("sports.addAccessibility")}
                 className="h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-primary active:opacity-75"
               >
-                <FontAwesome6 name="plus" size={13} color="#06111a" />
+                <FontAwesome6
+                  name="plus"
+                  size={13}
+                  color={themeColors.background.primary}
+                />
               </Pressable>
             ) : null}
           </View>
@@ -135,7 +140,11 @@ export function SportsSection({ profile, onPress, onAdd }: SportsSectionProps) {
                 <Text className="font-display text-heading-sm text-brand-primary">
                   {Number(rating).toFixed(1)}
                 </Text>
-                <FontAwesome6 name="star" size={12} color="#ccff00" />
+                <FontAwesome6
+                  name="star"
+                  size={12}
+                  color={themeColors.brand.primary}
+                />
               </View>
               <Text className="mt-1 font-body text-overline text-text-secondary">
                 {t("sports.reviewCount", { count: reviewCount })}

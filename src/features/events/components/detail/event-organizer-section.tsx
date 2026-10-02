@@ -4,7 +4,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
 import { AppText as Text, Avatar } from "@/components";
-import { themeColors, typeStyles } from "@/constants/theme";
+import { HIT_SLOP, themeColors, typeStyles } from "@/constants/theme";
 import type { EventDetail } from "@/features/events/types";
 import { canAccessEventChat } from "@/features/events/status";
 import { lightImpact } from "@/utils/haptics";
@@ -81,7 +81,7 @@ export function EventOrganizerSection({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t("organizerSection.chatAccessibility")}
-            hitSlop={8}
+            hitSlop={HIT_SLOP}
             onPress={() => {
               lightImpact();
               onChat();

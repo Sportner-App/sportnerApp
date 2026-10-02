@@ -7,6 +7,7 @@ import { useProfileCopy } from "@/features/profile/copy";
 import { useMyOrganizations } from "@/features/organizations/hooks/use-organizations";
 import { ORGANIZATION_STATUS } from "@/features/organizations/types";
 import { AppText as Text } from "@/components";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 
 type OrganizationsSectionProps = {
   onPressList?: () => void;
@@ -33,7 +34,7 @@ export function OrganizationsSection({
           {PROFILE_COPY.organizationsTitle}
         </Text>
         {onPressList ? (
-          <Pressable onPress={onPressList} hitSlop={8}>
+          <Pressable onPress={onPressList} hitSlop={HIT_SLOP}>
             <Text className="font-body-bold text-overline text-brand-primary">
               {items.length === 0
                 ? t("profile:organizations.add")
@@ -65,7 +66,11 @@ export function OrganizationsSection({
                   : "border-brand-primary/30 bg-brand-primary/10"
               }`}
             >
-              <FontAwesome6 name="users" size={11} color="#ccff00" />
+              <FontAwesome6
+                name="users"
+                size={11}
+                color={themeColors.brand.primary}
+              />
               <Text className="font-body-bold text-caption text-text-primary">
                 {item.name}
               </Text>

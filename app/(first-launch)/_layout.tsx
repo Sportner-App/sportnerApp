@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 
 import { StartupGate } from "@/features/auth/components/startup-gate";
+import { themeColors } from "@/constants/theme";
 
 export default function FirstLaunchLayout() {
   return (
@@ -10,7 +11,7 @@ export default function FirstLaunchLayout() {
           headerShown: false,
           animation: "fade",
           animationDuration: 220,
-          contentStyle: { backgroundColor: "#06111a" },
+          contentStyle: { backgroundColor: themeColors.background.primary },
         }}
       />
     </StartupGate>

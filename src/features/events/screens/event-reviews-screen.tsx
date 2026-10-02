@@ -23,6 +23,7 @@ import {
 import type { ApiReview, ApiReviewablePeer } from "@/features/events/types";
 import { lightImpact } from "@/utils/haptics";
 import { displayHandle, formatHandle } from "@/utils/person";
+import { themeColors } from "@/constants/theme";
 
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -173,7 +174,11 @@ export function EventReviewsScreen() {
                 className="flex-row items-center gap-3 p-4 active:opacity-80"
               >
                 <View className="h-10 w-10 items-center justify-center rounded-full bg-white/10">
-                  <FontAwesome6 name="people-group" size={15} color="#cbd5e1" />
+                  <FontAwesome6
+                    name="people-group"
+                    size={15}
+                    color={themeColors.icon.soft}
+                  />
                 </View>
                 <View className="flex-1">
                   <Text className="font-body-bold text-body-sm text-text-primary">
@@ -188,7 +193,7 @@ export function EventReviewsScreen() {
                 <FontAwesome6
                   name={showTeammates ? "chevron-up" : "chevron-down"}
                   size={12}
-                  color="#94a3b8"
+                  color={themeColors.icon.subtle}
                 />
               </Pressable>
               {showTeammates ? (
@@ -251,7 +256,11 @@ function OrganizerCard({
           {t("eventReviews:choose.organizerHint")}
         </Text>
       </View>
-      <FontAwesome6 name="chevron-right" size={12} color="#ccff00" />
+      <FontAwesome6
+        name="chevron-right"
+        size={12}
+        color={themeColors.brand.primary}
+      />
     </Pressable>
   );
 }
@@ -278,7 +287,11 @@ function PeerRow({
       <Text className="flex-1 font-body text-body-sm text-text-primary">
         {formatHandle(peer.username)}
       </Text>
-      <FontAwesome6 name="chevron-right" size={11} color="#94a3b8" />
+      <FontAwesome6
+        name="chevron-right"
+        size={11}
+        color={themeColors.icon.subtle}
+      />
     </Pressable>
   );
 }
@@ -369,7 +382,7 @@ function RatingForm({
         multiline
         maxLength={1000}
         placeholder={t("eventReviews:form.commentPlaceholder")}
-        placeholderTextColor="#64748b"
+        placeholderTextColor={themeColors.placeholder}
         className="min-h-[94px] rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
       />
       <Button

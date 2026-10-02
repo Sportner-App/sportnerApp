@@ -30,6 +30,7 @@ import { ForgotPasswordSheet } from "@/features/auth/components/forgot-password-
 import { LegalConsentModal } from "@/features/auth/components/legal-consent-modal";
 import { SocialAuthButton } from "@/features/auth/components/social-auth-button";
 import { SocialRegistrationOverlay } from "@/features/auth/components/social-registration-overlay";
+import { HIT_SLOP } from "@/constants/theme";
 
 const cardTransition = LinearTransition.duration(220);
 const SHIFT = 12;
@@ -292,7 +293,7 @@ export function AuthScreen() {
               {form.isLogin ? (
                 <Pressable
                   onPress={() => setIsForgotPasswordVisible(true)}
-                  hitSlop={8}
+                  hitSlop={HIT_SLOP}
                   className="items-end"
                 >
                   <Text className="font-body-bold text-caption text-brand-primary">

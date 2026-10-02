@@ -10,7 +10,7 @@ import {
 import { AppTextInput } from "@/components/app-text-input";
 
 import { BottomSheet } from "@/components/bottom-sheet";
-import { sportAccentToken, themeColors } from "@/constants/theme";
+import { HIT_SLOP, sportAccentToken, themeColors } from "@/constants/theme";
 import { normalizeSearch } from "@/utils/search";
 import type { SelectOption, SelectSheetProps } from "@/types/components";
 import { useTranslation } from "react-i18next";
@@ -118,7 +118,7 @@ export function SelectSheet<T extends string>({
           />
           {query.length > 0 ? (
             <Pressable
-              hitSlop={8}
+              hitSlop={HIT_SLOP}
               onPress={() => setQuery("")}
               className="active:opacity-70"
             >

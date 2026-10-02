@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { AppText as Text, Avatar, Button, Input } from "@/components";
 import { useToast } from "@/contexts";
-import { themeColors, typeStyles } from "@/constants/theme";
+import { HIT_SLOP, themeColors, typeStyles } from "@/constants/theme";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import {
   askEventQuestion,
@@ -213,7 +213,7 @@ export function EventQnASection({
                   t("events:fallback.athlete"),
               })}
             </Text>
-            <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>
+            <Pressable hitSlop={HIT_SLOP} onPress={() => setReplyingTo(null)}>
               <Text className="font-body-bold text-caption text-text-secondary">
                 {t("qna.cancelReply")}
               </Text>
@@ -350,7 +350,7 @@ function QnARow({
         </Text>
         {canReply ? (
           <Pressable
-            hitSlop={8}
+            hitSlop={HIT_SLOP}
             onPress={() => onReply(item)}
             className="self-start py-0.5"
           >

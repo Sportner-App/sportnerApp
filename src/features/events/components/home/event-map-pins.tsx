@@ -8,7 +8,7 @@ import {
   FALLBACK_SPORT_IMAGE,
   resolveEventPhoto,
 } from "@/features/sports/sport-images";
-import { shadows, themeColors } from "@/constants/theme";
+import { HIT_SLOP, shadows, themeColors } from "@/constants/theme";
 import { AppText as Text, Chip } from "@/components";
 import type { IconName } from "@/types/components";
 import type { EventSummary } from "@/features/events/types";
@@ -159,7 +159,7 @@ export function EventMapPreviewCard({
         accessibilityRole="button"
         accessibilityLabel={t("map.closePreviewAccessibility")}
         onPress={onClose}
-        hitSlop={8}
+        hitSlop={HIT_SLOP}
         className="absolute -top-3 -right-1 h-7 w-7 items-center justify-center rounded-full border border-border-default bg-background-primary active:opacity-80"
       >
         <FontAwesome6

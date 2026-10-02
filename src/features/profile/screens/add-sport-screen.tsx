@@ -23,6 +23,7 @@ import {
   groupSportsByCategory,
   sportIconForSlug,
 } from "@/features/sports/sports";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 
 export function AddSportScreen() {
   const { t } = useTranslation("profile");
@@ -128,17 +129,25 @@ export function AddSportScreen() {
       </View>
 
       <View className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4">
-        <FontAwesome6 name="magnifying-glass" size={13} color="#6f7d86" />
+        <FontAwesome6
+          name="magnifying-glass"
+          size={13}
+          color={themeColors.text.tertiary}
+        />
         <AppTextInput
           value={query}
           onChangeText={setQuery}
           placeholder={t("addSport.searchPlaceholder")}
-          placeholderTextColor="#64748b"
+          placeholderTextColor={themeColors.placeholder}
           className="min-h-[52px] flex-1 font-body text-body text-text-primary"
         />
         {query ? (
-          <Pressable onPress={() => setQuery("")} hitSlop={8}>
-            <FontAwesome6 name="circle-xmark" size={15} color="#6f7d86" />
+          <Pressable onPress={() => setQuery("")} hitSlop={HIT_SLOP}>
+            <FontAwesome6
+              name="circle-xmark"
+              size={15}
+              color={themeColors.text.tertiary}
+            />
           </Pressable>
         ) : null}
       </View>
@@ -185,7 +194,7 @@ export function AddSportScreen() {
                       <FontAwesome6
                         name={sportIconForSlug(sport.slug)}
                         size={10}
-                        color="#ccff00"
+                        color={themeColors.brand.primary}
                       />
                     </View>
                     <Text className="font-body-bold text-caption text-text-primary">
@@ -200,7 +209,11 @@ export function AddSportScreen() {
                     })}
                     className="h-6 w-6 items-center justify-center"
                   >
-                    <FontAwesome6 name="xmark" size={11} color="#6f7d86" />
+                    <FontAwesome6
+                      name="xmark"
+                      size={11}
+                      color={themeColors.text.tertiary}
+                    />
                   </Pressable>
                 </View>
               );
@@ -213,7 +226,7 @@ export function AddSportScreen() {
                 <FontAwesome6
                   name={sportIconForSlug(activeSelection.sport.slug)}
                   size={12}
-                  color="#ccff00"
+                  color={themeColors.brand.primary}
                 />
                 <Text className="font-body-bold text-body-sm text-text-primary">
                   {t("addSport.levelForSport", {
@@ -270,7 +283,11 @@ export function AddSportScreen() {
       ) : (
         <View className="flex-row items-center gap-3 rounded-[20px] border border-dashed border-border-strong px-4 py-4">
           <View className="h-9 w-9 items-center justify-center rounded-full bg-brand-primary/10">
-            <FontAwesome6 name="plus" size={13} color="#ccff00" />
+            <FontAwesome6
+              name="plus"
+              size={13}
+              color={themeColors.brand.primary}
+            />
           </View>
           <View className="flex-1">
             <Text className="font-display text-heading-sm text-text-primary">
@@ -315,7 +332,11 @@ export function AddSportScreen() {
                     <FontAwesome6
                       name={sportIconForSlug(sport.slug)}
                       size={18}
-                      color={active ? "#06111a" : "#ccff00"}
+                      color={
+                        active
+                          ? themeColors.background.primary
+                          : themeColors.brand.primary
+                      }
                     />
                   </View>
                   <Text className="text-center font-body-bold text-body-sm text-text-primary">
@@ -326,7 +347,7 @@ export function AddSportScreen() {
                       <FontAwesome6
                         name="circle-check"
                         size={15}
-                        color="#ccff00"
+                        color={themeColors.brand.primary}
                       />
                     </View>
                   ) : null}
@@ -339,7 +360,11 @@ export function AddSportScreen() {
 
       {filtered.length === 0 ? (
         <View className="items-center gap-2 rounded-[22px] border border-dashed border-border-strong px-5 py-8">
-          <FontAwesome6 name="person-running" size={22} color="#ccff00" />
+          <FontAwesome6
+            name="person-running"
+            size={22}
+            color={themeColors.brand.primary}
+          />
           <Text className="font-body text-body-sm text-text-secondary">
             {t("addSport.emptyResults")}
           </Text>

@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useAppTourCopy } from "@/features/app-shell/copy";
 import { useAppTour } from "@/contexts/app-tour-context";
 import { AppText as Text } from "@/components/app-text";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 
 type TargetRect = { x: number; y: number; width: number; height: number };
 
@@ -133,7 +134,7 @@ export function AppTourOverlay() {
               accessibilityRole="button"
               accessibilityLabel={t("appTour.skipAccessibility")}
               onPress={dismiss}
-              hitSlop={8}
+              hitSlop={HIT_SLOP}
             >
               <Text className="font-body-bold text-body-sm text-white/60">
                 {t("appTour.skip")}
@@ -157,7 +158,7 @@ export function AppTourOverlay() {
             <FontAwesome6
               name={step === 2 ? "check" : "arrow-right"}
               size={12}
-              color="#06111a"
+              color={themeColors.background.primary}
             />
           </Pressable>
         </View>

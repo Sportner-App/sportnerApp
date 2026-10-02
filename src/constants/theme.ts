@@ -143,3 +143,6 @@ export const typeStyles: Record<keyof typeof typography, TextStyle> = {
   caption: typography.caption,
   overline: typography.overline,
 };
+
+/** Küçük ikon butonlarının standart dokunma payı (pt). */
+export const HIT_SLOP = 8;

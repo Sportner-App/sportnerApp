@@ -9,7 +9,7 @@ import Animated, {
 import { useTranslation } from "react-i18next";
 
 import { CREATE_EVENT_LIMITS } from "@/features/events/copy";
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { AppText as Text, AppTextInput } from "@/components";
 
 type PlayersStepperProps = {
@@ -81,7 +81,7 @@ export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
       </Text>
       <View className="flex-row items-center justify-between">
         <AnimatedPressable
-          hitSlop={8}
+          hitSlop={HIT_SLOP}
           onPress={() => bump(-1)}
           disabled={count <= MIN}
           onPressIn={() => {
@@ -124,7 +124,7 @@ export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
         </View>
 
         <AnimatedPressable
-          hitSlop={8}
+          hitSlop={HIT_SLOP}
           onPress={() => bump(1)}
           disabled={count >= MAX}
           onPressIn={() => {

@@ -5,6 +5,7 @@ import Animated from "react-native-reanimated";
 
 import { heroFadeScale, heroFadeUp } from "./hero-enter";
 import { AppText as Text } from "@/components";
+import { themeColors } from "@/constants/theme";
 
 export function IntroChatVisual() {
   const { t } = useTranslation("firstLaunch");
@@ -31,7 +32,11 @@ export function IntroChatVisual() {
               {t("visuals.chat.online")}
             </Text>
           </View>
-          <FontAwesome6 name="phone" size={14} color="#9aa7af" />
+          <FontAwesome6
+            name="phone"
+            size={14}
+            color={themeColors.text.secondary}
+          />
         </View>
 
         <View className="gap-2.5 p-4">
@@ -58,7 +63,11 @@ export function IntroChatVisual() {
         entering={heroFadeUp(180, 280, 6)}
         className="mt-3 flex-row items-center gap-2 self-start rounded-full border border-brand-primary/25 bg-brand-primary/10 px-3.5 py-2"
       >
-        <FontAwesome6 name="comment-dots" size={11} color="#ccff00" />
+        <FontAwesome6
+          name="comment-dots"
+          size={11}
+          color={themeColors.brand.primary}
+        />
         <Text className="font-body text-body-sm text-brand-primary">
           {t("visuals.chat.friendsAvailable")}
         </Text>

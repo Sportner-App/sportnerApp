@@ -39,6 +39,7 @@ import type { ApiComment, ApiPost } from "@/features/feed/types";
 import { POST_MEDIA_TYPE } from "@/features/feed/types";
 import { resolveMediaUrl } from "@/utils/media-url";
 import { formatHandle } from "@/utils/person";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 
 const HEADER_ROW_HEIGHT = 64;
 
@@ -251,14 +252,22 @@ export function PostDetailScreen() {
                 <FontAwesome6
                   name="heart"
                   size={16}
-                  color={post.likedByMe ? "#ccff00" : "#94a3b8"}
+                  color={
+                    post.likedByMe
+                      ? themeColors.brand.primary
+                      : themeColors.icon.subtle
+                  }
                 />
                 <Text className="font-body-bold text-caption text-white">
                   {t("social:likesCount", { count: post.likeCount })}
                 </Text>
               </Pressable>
               <View className="flex-row items-center gap-2">
-                <FontAwesome6 name="comment" size={15} color="#94a3b8" />
+                <FontAwesome6
+                  name="comment"
+                  size={15}
+                  color={themeColors.icon.subtle}
+                />
                 <Text className="font-body-bold text-caption text-text-tertiary">
                   {t("social:commentsCount", { count: post.commentCount })}
                 </Text>
@@ -290,7 +299,10 @@ export function PostDetailScreen() {
                 <Text className="flex-1 font-body text-caption text-text-tertiary">
                   {t("social:comments.replyTo", { username: replyUsername })}
                 </Text>
-                <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>
+                <Pressable
+                  hitSlop={HIT_SLOP}
+                  onPress={() => setReplyingTo(null)}
+                >
                   <Text className="font-body-bold text-caption text-brand-primary">
                     {t("common:cancel")}
                   </Text>
@@ -308,7 +320,7 @@ export function PostDetailScreen() {
                     })
                   : t("social:comments.placeholder")
               }
-              placeholderTextColor="#64748b"
+              placeholderTextColor={themeColors.placeholder}
               className="rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
             />
             <Button

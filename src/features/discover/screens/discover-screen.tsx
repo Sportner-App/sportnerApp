@@ -17,6 +17,7 @@ import { useDiscover } from "@/features/discover/hooks/use-discover";
 import { useRequireAuth } from "@/features/auth/hooks/use-require-auth";
 
 import { DiscoverPost } from "@/features/discover/components/discover-post";
+import { HIT_SLOP } from "@/constants/theme";
 
 export function DiscoverScreen() {
   const router = useRouter();
@@ -60,7 +61,7 @@ export function DiscoverScreen() {
               key={option}
               accessibilityRole="radio"
               accessibilityState={{ selected: active }}
-              hitSlop={8}
+              hitSlop={HIT_SLOP}
               onPress={() => {
                 if (
                   option === "friends" &&
@@ -95,7 +96,10 @@ export function DiscoverScreen() {
             <Text className="font-body-bold text-overline text-text-tertiary">
               {t("discover:people.title")}
             </Text>
-            <Pressable hitSlop={8} onPress={() => router.push("/people")}>
+            <Pressable
+              hitSlop={HIT_SLOP}
+              onPress={() => router.push("/people")}
+            >
               <Text className="font-body-bold text-overline text-brand-primary">
                 {t("discover:people.seeAll")}
               </Text>

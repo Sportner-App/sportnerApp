@@ -123,7 +123,7 @@ export function Input({
             <Animated.Text
               key={error}
               entering={errorEntering}
-              className="mt-2 font-body text-body-sm text-[#fda4af]"
+              className="mt-2 font-body text-body-sm text-warning"
             >
               {error}
             </Animated.Text>

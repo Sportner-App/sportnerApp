@@ -19,6 +19,7 @@ import {
   organizationRoleLabel,
   organizationStatusLabel,
 } from "@/features/organizations/types";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 
 export function OrganizationsListScreen() {
   const { t } = useTranslation("organizations");
@@ -34,11 +35,15 @@ export function OrganizationsListScreen() {
           showBack
           right={
             <Pressable
-              hitSlop={8}
+              hitSlop={HIT_SLOP}
               onPress={() => router.push("/organizations/create")}
               className="h-10 w-10 items-center justify-center rounded-full border border-border-default bg-surface-primary"
             >
-              <FontAwesome6 name="plus" size={14} color="#ccff00" />
+              <FontAwesome6
+                name="plus"
+                size={14}
+                color={themeColors.brand.primary}
+              />
             </Pressable>
           }
         />

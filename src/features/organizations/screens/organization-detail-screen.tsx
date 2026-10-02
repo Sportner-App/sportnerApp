@@ -16,7 +16,7 @@ import {
   ScreenHeader,
   ScreenLoader,
 } from "@/components";
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { useToast } from "@/contexts";
 import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -280,7 +280,7 @@ export function OrganizationDetailScreen() {
                         "organizations:detail.copyCodeAccessibility",
                       )}
                       onPress={() => void copyCode()}
-                      hitSlop={8}
+                      hitSlop={HIT_SLOP}
                       className="h-12 w-12 items-center justify-center rounded-2xl border border-border-default bg-surface-secondary active:bg-surface-primary"
                     >
                       <FontAwesome6
@@ -335,7 +335,7 @@ export function OrganizationDetailScreen() {
                         params: { organizationId: organization.id },
                       })
                     }
-                    hitSlop={8}
+                    hitSlop={HIT_SLOP}
                   >
                     <Text className="font-body-bold text-overline text-brand-primary">
                       {t("organizations:detail.createEvent")}
@@ -381,7 +381,7 @@ export function OrganizationDetailScreen() {
                 </View>
                 {showAllMembersLink ? (
                   <Pressable
-                    hitSlop={8}
+                    hitSlop={HIT_SLOP}
                     onPress={() =>
                       router.push({
                         pathname: "/organizations/[id]/members",

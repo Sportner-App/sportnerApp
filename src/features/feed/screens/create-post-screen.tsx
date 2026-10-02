@@ -24,6 +24,7 @@ import {
   pickPostImages,
   type PickedMedia,
 } from "@/utils/media-picker";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 
 const MAX_PHOTOS = 10;
 
@@ -126,13 +127,16 @@ export function CreatePostScreen() {
           showBack
           right={
             <Pressable
-              hitSlop={8}
+              hitSlop={HIT_SLOP}
               disabled={!canShare || saving}
               onPress={() => void submit()}
               className="min-w-[44px] items-end px-1 py-2"
             >
               {saving ? (
-                <ActivityIndicator size="small" color="#ccff00" />
+                <ActivityIndicator
+                  size="small"
+                  color={themeColors.brand.primary}
+                />
               ) : (
                 <Text
                   className={`font-body-bold text-body-sm ${
@@ -182,11 +186,15 @@ export function CreatePostScreen() {
             </View>
           ) : null}
           <Pressable
-            hitSlop={8}
+            hitSlop={HIT_SLOP}
             onPress={() => void choosePhotos()}
             className="absolute bottom-3 right-3 h-10 w-10 items-center justify-center rounded-full bg-background-primary/70 active:opacity-80"
           >
-            <FontAwesome6 name="plus" size={14} color="#f8fafc" />
+            <FontAwesome6
+              name="plus"
+              size={14}
+              color={themeColors.icon.bright}
+            />
           </Pressable>
         </View>
       ) : (
@@ -195,7 +203,11 @@ export function CreatePostScreen() {
           className="aspect-square w-full items-center justify-center gap-3 overflow-hidden rounded-2xl border border-border-default bg-surface-primary px-8"
         >
           <View className="h-14 w-14 items-center justify-center rounded-full bg-brand-primary/15">
-            <FontAwesome6 name="camera" size={20} color="#ccff00" />
+            <FontAwesome6
+              name="camera"
+              size={20}
+              color={themeColors.brand.primary}
+            />
           </View>
           <Text className="text-center font-body-bold text-body-sm text-text-primary">
             {t("feed:create.addPhoto")}
@@ -227,11 +239,15 @@ export function CreatePostScreen() {
                 }`}
               />
               <Pressable
-                hitSlop={8}
+                hitSlop={HIT_SLOP}
                 onPress={() => removePhoto(photo.uri)}
                 className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-background-primary"
               >
-                <FontAwesome6 name="xmark" size={9} color="#f8fafc" />
+                <FontAwesome6
+                  name="xmark"
+                  size={9}
+                  color={themeColors.icon.bright}
+                />
               </Pressable>
             </Pressable>
           ))}
@@ -240,7 +256,11 @@ export function CreatePostScreen() {
               onPress={() => void choosePhotos()}
               className="h-16 w-16 items-center justify-center rounded-xl border border-dashed border-border-default active:opacity-70"
             >
-              <FontAwesome6 name="plus" size={14} color="#64748b" />
+              <FontAwesome6
+                name="plus"
+                size={14}
+                color={themeColors.icon.muted}
+              />
             </Pressable>
           ) : null}
         </ScrollView>

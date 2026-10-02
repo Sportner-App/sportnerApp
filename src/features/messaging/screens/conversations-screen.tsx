@@ -22,7 +22,7 @@ import {
 } from "@/components";
 import { useConversationsTabCopy } from "@/features/messaging/copy";
 import { useToast } from "@/contexts";
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
   deleteConversation,
@@ -143,7 +143,7 @@ export function ConversationsScreen() {
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={t("messaging:newChatA11y")}
-                hitSlop={8}
+                hitSlop={HIT_SLOP}
                 onPress={() => setComposeOpen(true)}
                 className="h-9 w-9 items-center justify-center rounded-full border border-border-default bg-surface-primary active:opacity-70"
               >

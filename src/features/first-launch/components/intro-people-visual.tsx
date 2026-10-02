@@ -5,6 +5,7 @@ import Animated from "react-native-reanimated";
 
 import { heroFadeScale, heroFadeUp } from "./hero-enter";
 import { AppText as Text } from "@/components";
+import { themeColors } from "@/constants/theme";
 
 export function IntroPeopleVisual() {
   const { t } = useTranslation("firstLaunch");
@@ -19,7 +20,11 @@ export function IntroPeopleVisual() {
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-2">
             <View className="h-10 w-10 items-center justify-center rounded-2xl bg-brand-primary/15">
-              <FontAwesome6 name="calendar-plus" size={15} color="#ccff00" />
+              <FontAwesome6
+                name="calendar-plus"
+                size={15}
+                color={themeColors.brand.primary}
+              />
             </View>
             <View>
               <Text className="font-body-bold text-body text-white">
@@ -58,7 +63,11 @@ export function IntroPeopleVisual() {
         entering={heroFadeUp(180, 180, 8)}
         className="ml-8 flex-row items-center gap-2 self-start rounded-full border border-brand-primary/25 bg-brand-primary/10 px-3.5 py-2"
       >
-        <FontAwesome6 name="users" size={11} color="#ccff00" />
+        <FontAwesome6
+          name="users"
+          size={11}
+          color={themeColors.brand.primary}
+        />
         <Text className="font-body text-body-sm text-brand-primary">
           {t("visuals.people.teamReady")}
         </Text>

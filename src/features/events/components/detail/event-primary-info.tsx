@@ -130,7 +130,11 @@ export function EventPrimaryInfo({
 
       {event.organizationName ? (
         <View className="flex-row items-center gap-2 rounded-full border border-brand-primary/30 bg-brand-primary/10 self-start px-3 py-1.5">
-          <FontAwesome6 name="users" size={10} color="#ccff00" />
+          <FontAwesome6
+            name="users"
+            size={10}
+            color={themeColors.brand.primary}
+          />
           <Text className="font-body-bold text-caption text-text-primary">
             {event.organizationName}
           </Text>

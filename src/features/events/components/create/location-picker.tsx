@@ -21,7 +21,7 @@ import {
   MAPBOX_STYLE_URL,
   toMapboxCoord,
 } from "@/constants/map";
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { useLocationSearch } from "@/features/location/hooks/use-location-search";
 import { hasMapboxToken, zoomForLongitudeSpan } from "@/lib/mapbox";
 import type {
@@ -178,7 +178,7 @@ export function LocationPicker({
               />
             ) : query.length > 0 ? (
               <Pressable
-                hitSlop={8}
+                hitSlop={HIT_SLOP}
                 onPress={() => {
                   setQuery("");
                   clearSuggestions();

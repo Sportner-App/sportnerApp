@@ -12,7 +12,7 @@ import {
   ScreenLoader,
   SportLoader,
 } from "@/components";
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { createDirectConversation } from "@/features/messaging/services/messaging-service";
@@ -121,7 +121,7 @@ export function NewConversationSheet({
         />
         {query.length > 0 ? (
           <Pressable
-            hitSlop={8}
+            hitSlop={HIT_SLOP}
             onPress={() => setQuery("")}
             className="active:opacity-70"
           >

@@ -16,7 +16,7 @@ import {
   MapPin,
   MapUnavailable,
 } from "@/components";
-import { themeColors, typeStyles } from "@/constants/theme";
+import { HIT_SLOP, themeColors, typeStyles } from "@/constants/theme";
 import { staticMapUrl, zoomForLongitudeSpan } from "@/lib/mapbox";
 import type { EventDetail } from "@/features/events/types";
 import type { DirectionsTarget } from "@/utils/open-directions";
@@ -104,7 +104,7 @@ export function LocationMap({ event }: LocationMapProps) {
             {t("location.heading")}
           </Text>
           <AnimatedPressable
-            hitSlop={8}
+            hitSlop={HIT_SLOP}
             onPress={() => {
               lightImpact();
               openSheet();

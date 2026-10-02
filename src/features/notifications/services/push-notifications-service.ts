@@ -7,6 +7,7 @@ import { Platform } from "react-native";
 import i18n from "@/i18n";
 import { STORAGE_KEYS } from "@/constants/storage-keys";
 import { apiClient } from "@/lib/api/client";
+import { themeColors } from "@/constants/theme";
 
 type DeviceResponse = {
   id: string;
@@ -51,7 +52,7 @@ export async function registerCurrentDeviceForPush() {
       name: i18n.t("notifications:push.channelName"),
       importance: Notifications.AndroidImportance.HIGH,
       vibrationPattern: [0, 250, 150, 250],
-      lightColor: "#CCFF00",
+      lightColor: themeColors.brand.primary,
       sound: "default",
     });
   }

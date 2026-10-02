@@ -5,6 +5,7 @@ import Animated from "react-native-reanimated";
 
 import { heroFadeScale, heroFadeUp } from "./hero-enter";
 import { AppText as Text } from "@/components";
+import { themeColors } from "@/constants/theme";
 
 function Initials({
   letters,
@@ -40,7 +41,7 @@ function SportChip({
       entering={heroFadeUp(200, delay, 6)}
       className={`absolute flex-row items-center gap-2 rounded-full border border-white/10 bg-surface-primary/95 px-3.5 py-2 ${className}`}
     >
-      <FontAwesome6 name={icon} size={12} color="#ccff00" />
+      <FontAwesome6 name={icon} size={12} color={themeColors.brand.primary} />
       <Text className="font-body text-body-sm text-white">{label}</Text>
     </Animated.View>
   );
@@ -120,13 +121,21 @@ export function WelcomeVisual() {
         className="flex-row justify-center gap-2 pb-1"
       >
         <View className="flex-row items-center gap-1.5 rounded-full border border-white/10 bg-surface-primary/90 px-3 py-1.5">
-          <FontAwesome6 name="user-group" size={10} color="#ccff00" />
+          <FontAwesome6
+            name="user-group"
+            size={10}
+            color={themeColors.brand.primary}
+          />
           <Text className="font-body text-caption text-white">
             {t("visuals.welcome.athletesNearby")}
           </Text>
         </View>
         <View className="flex-row items-center gap-1.5 rounded-full border border-white/10 bg-surface-primary/90 px-3 py-1.5">
-          <FontAwesome6 name="calendar-days" size={10} color="#ccff00" />
+          <FontAwesome6
+            name="calendar-days"
+            size={10}
+            color={themeColors.brand.primary}
+          />
           <Text className="font-body text-caption text-white">
             {t("visuals.welcome.openMatches")}
           </Text>

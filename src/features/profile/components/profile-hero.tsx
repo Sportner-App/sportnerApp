@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { AppText as Text, Avatar } from "@/components";
 import type { UserProfile } from "@/features/profile/types";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 
 type ProfileHeroProps = {
   profile: UserProfile;
@@ -51,14 +52,22 @@ export function ProfileHero({ profile, onEdit }: ProfileHeroProps) {
             {profile.fullName}
           </Text>
           {!profile.isProfilePublic ? (
-            <FontAwesome6 name="lock" size={9} color="#6f7d86" />
+            <FontAwesome6
+              name="lock"
+              size={9}
+              color={themeColors.text.tertiary}
+            />
           ) : null}
         </View>
         {ageGenderLabel || profile.city ? (
           <View className="mt-0.5 flex-row flex-wrap items-center gap-x-3 gap-y-1.5">
             {ageGenderLabel ? (
               <View className="flex-row items-center gap-1.5">
-                <FontAwesome6 name="cake-candles" size={10} color="#ccff00" />
+                <FontAwesome6
+                  name="cake-candles"
+                  size={10}
+                  color={themeColors.brand.primary}
+                />
                 <Text className="font-body text-caption text-text-tertiary">
                   {ageGenderLabel}
                 </Text>
@@ -66,7 +75,11 @@ export function ProfileHero({ profile, onEdit }: ProfileHeroProps) {
             ) : null}
             {profile.city ? (
               <View className="flex-row items-center gap-1.5">
-                <FontAwesome6 name="location-dot" size={10} color="#ccff00" />
+                <FontAwesome6
+                  name="location-dot"
+                  size={10}
+                  color={themeColors.brand.primary}
+                />
                 <Text className="font-body text-caption text-text-tertiary">
                   {profile.city}
                 </Text>
@@ -79,12 +92,16 @@ export function ProfileHero({ profile, onEdit }: ProfileHeroProps) {
       {onEdit ? (
         <Pressable
           onPress={onEdit}
-          hitSlop={8}
+          hitSlop={HIT_SLOP}
           accessibilityRole="button"
           accessibilityLabel={t("hero.editAccessibility")}
           className="h-10 w-10 items-center justify-center rounded-full border border-border-strong bg-surface-primary active:opacity-70"
         >
-          <FontAwesome6 name="pen" size={11} color="#ccff00" />
+          <FontAwesome6
+            name="pen"
+            size={11}
+            color={themeColors.brand.primary}
+          />
         </Pressable>
       ) : null}
     </Animated.View>

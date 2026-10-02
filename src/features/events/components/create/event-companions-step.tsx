@@ -3,7 +3,7 @@ import { Pressable, ScrollView, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { AppText as Text, AppTextInput, Avatar } from "@/components";
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { isValidEmail } from "@/constants/validation";
 import type { ApiFriend } from "@/features/social/types";
 import { formatHandle } from "@/utils/person";
@@ -107,7 +107,7 @@ export function EventCompanionsStep({
                 </Text>
               </View>
               <Pressable
-                hitSlop={8}
+                hitSlop={HIT_SLOP}
                 onPress={() => onRemoveGuest(guest.localId)}
               >
                 <FontAwesome6

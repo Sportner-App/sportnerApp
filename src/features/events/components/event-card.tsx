@@ -277,7 +277,9 @@ export function EventCard({ event, onPress }: EventCardProps) {
                             className="h-full rounded-full"
                             style={{
                               width: `${fillRatio * 100}%`,
-                              backgroundColor: isEnded ? "#64748b" : sportColor,
+                              backgroundColor: isEnded
+                                ? themeColors.icon.muted
+                                : sportColor,
                             }}
                           />
                         </View>
@@ -308,10 +310,10 @@ export function EventCard({ event, onPress }: EventCardProps) {
                     className="mt-0.5 font-body text-caption"
                     style={{
                       color: isEnded
-                        ? "#94a3b8"
+                        ? themeColors.icon.subtle
                         : isFull
                           ? themeColors.warning
-                          : "#cbd5e1",
+                          : themeColors.icon.soft,
                     }}
                   >
                     {remainingLabel}

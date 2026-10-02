@@ -6,6 +6,7 @@ import { BottomSheet } from "@/components/bottom-sheet";
 import { useDirectionsOptions } from "./copy";
 import { openDirections, type DirectionsTarget } from "@/utils/open-directions";
 import { AppText as Text } from "@/components/app-text";
+import { themeColors } from "@/constants/theme";
 
 type DirectionsSheetProps = {
   visible: boolean;
@@ -45,7 +46,11 @@ export function DirectionsSheet({
             className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-background-secondary px-4 py-3.5 active:opacity-80"
           >
             <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-primary/15">
-              <FontAwesome6 name={option.icon} size={16} color="#ccff00" />
+              <FontAwesome6
+                name={option.icon}
+                size={16}
+                color={themeColors.brand.primary}
+              />
             </View>
             <View className="flex-1">
               <Text className="font-body-bold text-body-sm text-text-primary">
@@ -55,7 +60,11 @@ export function DirectionsSheet({
                 {option.description}
               </Text>
             </View>
-            <FontAwesome6 name="chevron-right" size={12} color="#64748b" />
+            <FontAwesome6
+              name="chevron-right"
+              size={12}
+              color={themeColors.icon.muted}
+            />
           </Pressable>
         ))}
       </View>

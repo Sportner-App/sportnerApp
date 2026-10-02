@@ -8,7 +8,7 @@ import { ScrollView as GestureScrollView } from "react-native-gesture-handler";
 import { AppText as Text, AppTextInput, Avatar } from "@/components";
 import { CommentThread } from "@/features/feed/components/comment-thread";
 import { useSession, useToast } from "@/contexts";
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { sendFriendRequest } from "@/features/social/services/social-service";
 import { listComments } from "@/features/feed/services/posts-service";
@@ -228,7 +228,7 @@ export function DiscoverPost({
 
         {canAddFriend ? (
           <Pressable
-            hitSlop={8}
+            hitSlop={HIT_SLOP}
             disabled={friendRequestSent || isAddingFriend}
             onPress={() => void addFriend()}
             className="active:opacity-70"
@@ -319,7 +319,7 @@ export function DiscoverPost({
       <View className="gap-3 px-4 pt-3">
         <View className="flex-row items-center gap-2">
           <Pressable
-            hitSlop={8}
+            hitSlop={HIT_SLOP}
             onPress={() => void like()}
             className={`min-h-9 flex-row items-center gap-2 rounded-full border px-3 ${
               post.likedByMe
@@ -341,7 +341,7 @@ export function DiscoverPost({
             </Text>
           </Pressable>
           <Pressable
-            hitSlop={8}
+            hitSlop={HIT_SLOP}
             onPress={() => setCommentsOpen((open) => !open)}
             className="min-h-9 flex-row items-center gap-2 rounded-full border border-border-default bg-background-secondary px-3"
           >
@@ -401,7 +401,7 @@ export function DiscoverPost({
             <Text className="flex-1 font-body text-caption text-text-secondary">
               {t("social:comments.replyTo", { username: replyUsername })}
             </Text>
-            <Pressable hitSlop={8} onPress={() => setReplyingTo(null)}>
+            <Pressable hitSlop={HIT_SLOP} onPress={() => setReplyingTo(null)}>
               <Text className="font-body-bold text-caption text-brand-primary">
                 {t("common:cancel")}
               </Text>
@@ -425,7 +425,7 @@ export function DiscoverPost({
             className="min-h-[44px] flex-1 font-body text-body-sm text-text-primary"
           />
           <Pressable
-            hitSlop={8}
+            hitSlop={HIT_SLOP}
             disabled={!draft.trim() || isCommenting}
             onPress={() => void submitComment()}
           >

@@ -90,9 +90,21 @@ function HeroOverlay() {
       <Svg width="100%" height="100%">
         <Defs>
           <LinearGradient id="hero-fade" x1="0" y1="0" x2="1" y2="0">
-            <Stop offset="0" stopColor="#06111a" stopOpacity="0.55" />
-            <Stop offset="0.5" stopColor="#06111a" stopOpacity="0.22" />
-            <Stop offset="1" stopColor="#06111a" stopOpacity="0" />
+            <Stop
+              offset="0"
+              stopColor={themeColors.background.primary}
+              stopOpacity="0.55"
+            />
+            <Stop
+              offset="0.5"
+              stopColor={themeColors.background.primary}
+              stopOpacity="0.22"
+            />
+            <Stop
+              offset="1"
+              stopColor={themeColors.background.primary}
+              stopOpacity="0"
+            />
           </LinearGradient>
         </Defs>
         <Rect width="100%" height="100%" fill="url(#hero-fade)" />

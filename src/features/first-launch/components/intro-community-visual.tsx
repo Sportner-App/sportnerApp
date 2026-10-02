@@ -5,6 +5,7 @@ import Animated from "react-native-reanimated";
 
 import { heroFadeScale, heroFadeUp } from "./hero-enter";
 import { AppText as Text } from "@/components";
+import { themeColors } from "@/constants/theme";
 
 export function IntroCommunityVisual() {
   const { t } = useTranslation(["firstLaunch", "events"]);
@@ -30,7 +31,11 @@ export function IntroCommunityVisual() {
               Koşu · {t("events:duration.minutes", { count: 12 })}
             </Text>
           </View>
-          <FontAwesome6 name="ellipsis" size={14} color="#6f7d86" />
+          <FontAwesome6
+            name="ellipsis"
+            size={14}
+            color={themeColors.text.tertiary}
+          />
         </View>
         <View className="h-36 overflow-hidden bg-surface-secondary">
           <Image
@@ -53,17 +58,29 @@ export function IntroCommunityVisual() {
             entering={heroFadeScale(180, 180, 0.9)}
             className="flex-row items-center gap-1.5"
           >
-            <FontAwesome6 name="heart" size={14} color="#ccff00" />
+            <FontAwesome6
+              name="heart"
+              size={14}
+              color={themeColors.brand.primary}
+            />
             <Text className="font-body-bold text-caption text-white">24</Text>
           </Animated.View>
           <View className="flex-row items-center gap-1.5">
-            <FontAwesome6 name="comment" size={14} color="#9aa7af" />
+            <FontAwesome6
+              name="comment"
+              size={14}
+              color={themeColors.text.secondary}
+            />
             <Text className="font-body text-caption text-white/65">
               {t("firstLaunch:visuals.community.commentsCount")}
             </Text>
           </View>
           <View className="ml-auto">
-            <FontAwesome6 name="paper-plane" size={14} color="#9aa7af" />
+            <FontAwesome6
+              name="paper-plane"
+              size={14}
+              color={themeColors.text.secondary}
+            />
           </View>
         </View>
       </Animated.View>
@@ -71,7 +88,11 @@ export function IntroCommunityVisual() {
         entering={heroFadeUp(180, 280, 6)}
         className="mt-3 flex-row items-center gap-2 self-start rounded-full border border-brand-primary/25 bg-brand-primary/10 px-3.5 py-2"
       >
-        <FontAwesome6 name="users" size={11} color="#ccff00" />
+        <FontAwesome6
+          name="users"
+          size={11}
+          color={themeColors.brand.primary}
+        />
         <Text className="font-body text-body-sm text-brand-primary">
           {t("firstLaunch:visuals.community.communityActive")}
         </Text>

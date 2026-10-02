@@ -16,7 +16,7 @@ import {
   ScreenHeader,
   ScreenLoader,
 } from "@/components";
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { useSession, useToast } from "@/contexts";
 import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -303,7 +303,7 @@ function ParticipantRow({
       ) : null}
       {canRemove ? (
         <Pressable
-          hitSlop={8}
+          hitSlop={HIT_SLOP}
           accessibilityRole="button"
           accessibilityLabel={t("eventParticipants:removeAccessibility", {
             name: participant.name,

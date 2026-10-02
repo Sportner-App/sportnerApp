@@ -18,6 +18,8 @@ import { resolveNotificationRoute } from "@/features/notifications/notification-
 import { markNotificationRead } from "@/features/notifications/services/notifications-service";
 import { listNotifications } from "@/features/notifications/services/notifications-service";
 import { AppText as Text } from "@/components/app-text";
+import { themeColors } from "@/constants/theme";
+import { OVERLAY_HIDE_MS } from "@/constants/motion";
 
 type BannerState = {
   id: string;
@@ -28,7 +30,6 @@ type BannerState = {
 };
 
 const VISIBLE_DURATION_MS = 1800;
-const HIDE_ANIMATION_MS = 180;
 const SWIPE_DISMISS_DISTANCE = -24;
 const SWIPE_DISMISS_VELOCITY = -600;
 
@@ -68,12 +69,12 @@ export function InAppNotificationBanner() {
   const hide = useCallback(
     (bannerId: string) => {
       clearPendingTimeout();
-      opacity.value = withTiming(0, { duration: HIDE_ANIMATION_MS });
-      translateY.value = withTiming(-16, { duration: HIDE_ANIMATION_MS });
-      dragY.value = withTiming(0, { duration: HIDE_ANIMATION_MS });
+      opacity.value = withTiming(0, { duration: OVERLAY_HIDE_MS });
+      translateY.value = withTiming(-16, { duration: OVERLAY_HIDE_MS });
+      dragY.value = withTiming(0, { duration: OVERLAY_HIDE_MS });
       timeoutRef.current = setTimeout(() => {
         dismissBanner(bannerId);
-      }, HIDE_ANIMATION_MS + 20);
+      }, OVERLAY_HIDE_MS + 20);
     },
     [clearPendingTimeout, dismissBanner, dragY, opacity, translateY],
   );
@@ -197,10 +198,10 @@ export function InAppNotificationBanner() {
             event.velocityY < SWIPE_DISMISS_VELOCITY;
 
           if (shouldDismiss) {
-            opacity.value = withTiming(0, { duration: HIDE_ANIMATION_MS });
+            opacity.value = withTiming(0, { duration: OVERLAY_HIDE_MS });
             translateY.value = withTiming(
               -80,
-              { duration: HIDE_ANIMATION_MS },
+              { duration: OVERLAY_HIDE_MS },
               (finished) => {
                 if (finished) scheduleOnRN(dismissFromGesture);
               },
@@ -253,7 +254,11 @@ export function InAppNotificationBanner() {
             className="flex-row items-center gap-3 px-4 py-3.5 active:opacity-80"
           >
             <View className="h-9 w-9 items-center justify-center rounded-xl border border-brand-primary/30 bg-brand-primary/10">
-              <FontAwesome6 name="bell" size={14} color="#ccff00" />
+              <FontAwesome6
+                name="bell"
+                size={14}
+                color={themeColors.brand.primary}
+              />
             </View>
 
             <View className="flex-1">

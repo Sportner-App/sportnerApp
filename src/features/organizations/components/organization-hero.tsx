@@ -5,7 +5,7 @@ import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { AppText as Text } from "@/components";
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { getCurrentLocale } from "@/i18n";
 import {
   type ApiOrganizationDetail,
@@ -62,7 +62,7 @@ export function OrganizationHero({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t("detail.editAccessibility")}
-            hitSlop={8}
+            hitSlop={HIT_SLOP}
             onPress={onEdit}
             className="h-10 w-10 items-center justify-center rounded-full border border-border-strong bg-background-secondary/80 active:opacity-70"
           >

@@ -25,6 +25,7 @@ import { createThemeVariables } from "@/contexts/theme-preference-provider";
 import type { IconName } from "@/types/components";
 
 import { OnboardingProgress } from "./onboarding-progress";
+import { themeColors } from "@/constants/theme";
 
 const DARK_THEME_VARIABLES = createThemeVariables(DARK_THEME_COLORS);
 
@@ -274,15 +275,43 @@ function PhotoOverlay({ overlayId }: { overlayId: string }) {
       <Svg width="100%" height="100%">
         <Defs>
           <LinearGradient id={topId} x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#06111a" stopOpacity="0.88" />
-            <Stop offset="0.38" stopColor="#06111a" stopOpacity="0.12" />
-            <Stop offset="1" stopColor="#06111a" stopOpacity="0" />
+            <Stop
+              offset="0"
+              stopColor={themeColors.background.primary}
+              stopOpacity="0.88"
+            />
+            <Stop
+              offset="0.38"
+              stopColor={themeColors.background.primary}
+              stopOpacity="0.12"
+            />
+            <Stop
+              offset="1"
+              stopColor={themeColors.background.primary}
+              stopOpacity="0"
+            />
           </LinearGradient>
           <LinearGradient id={bottomId} x1="0" y1="1" x2="0" y2="0">
-            <Stop offset="0" stopColor="#06111a" stopOpacity="1" />
-            <Stop offset="0.48" stopColor="#06111a" stopOpacity="0.78" />
-            <Stop offset="0.78" stopColor="#06111a" stopOpacity="0.08" />
-            <Stop offset="1" stopColor="#06111a" stopOpacity="0" />
+            <Stop
+              offset="0"
+              stopColor={themeColors.background.primary}
+              stopOpacity="1"
+            />
+            <Stop
+              offset="0.48"
+              stopColor={themeColors.background.primary}
+              stopOpacity="0.78"
+            />
+            <Stop
+              offset="0.78"
+              stopColor={themeColors.background.primary}
+              stopOpacity="0.08"
+            />
+            <Stop
+              offset="1"
+              stopColor={themeColors.background.primary}
+              stopOpacity="0"
+            />
           </LinearGradient>
         </Defs>
         <Rect width="100%" height="100%" fill={`url(#${topId})`} />

@@ -2,7 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
 
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import type { ScreenHeaderProps } from "@/types/components";
 
 import { BrandMark } from "./brand-mark";
@@ -37,7 +37,7 @@ export function ScreenHeader({
     left ??
     (showBack ? (
       <Pressable
-        hitSlop={8}
+        hitSlop={HIT_SLOP}
         onPress={handleBack}
         className={`h-10 w-10 items-center justify-center rounded-full border active:opacity-80 ${
           isLight

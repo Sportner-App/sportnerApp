@@ -28,9 +28,17 @@ export const LIGHT_THEME_COLORS: ThemeColors = {
     dark: "rgba(12, 20, 14, 0.48)",
     photo: "rgba(6, 17, 26, 0.72)",
   },
+  icon: {
+    bright: "#172018",
+    soft: "#526057",
+    subtle: "#6b7870",
+    muted: "#7c8980",
+  },
+  placeholder: "#7c8980",
   success: "#0f8b76",
   warning: "#d85b70",
   destructive: "#dc2626",
+  destructiveSoft: "#b91c1c",
 };
 
 export type ThemePreference = "light" | "dark";

@@ -24,6 +24,7 @@ import {
   updateSportSkill,
 } from "@/features/profile/services/profile-service";
 import { sportIconForSlug } from "@/features/sports/sports";
+import { themeColors } from "@/constants/theme";
 
 export function SportsEditScreen() {
   const { t } = useTranslation(["profile", "common"]);
@@ -73,7 +74,7 @@ export function SportsEditScreen() {
                   <FontAwesome6
                     name={sportIconForSlug(sport.sportSlug)}
                     size={15}
-                    color="#ccff00"
+                    color={themeColors.brand.primary}
                   />
                 </View>
                 <View className="flex-1">
@@ -95,7 +96,11 @@ export function SportsEditScreen() {
                     )
                   }
                 >
-                  <FontAwesome6 name="trash" size={13} color="#fda4af" />
+                  <FontAwesome6
+                    name="trash"
+                    size={13}
+                    color={themeColors.warning}
+                  />
                 </Pressable>
               </View>
 

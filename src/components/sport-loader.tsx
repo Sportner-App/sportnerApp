@@ -14,9 +14,10 @@ import { useTranslation } from "react-i18next";
 
 import type { IconName, SportLoaderProps } from "@/types/components";
 import { AppText as Text } from "@/components/app-text";
+import { themeColors } from "@/constants/theme";
 
-const LIME = "#ccff00";
-const SLATE = "#64748b";
+const LIME = themeColors.brand.primary;
+const SLATE = themeColors.icon.muted;
 
 const ORBIT_ICONS: { name: IconName; color: string }[] = [
   { name: "futbol", color: LIME },

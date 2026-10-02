@@ -25,6 +25,7 @@ import type { useOnboarding } from "@/features/onboarding/hooks/use-onboarding";
 import type { OnboardingSportDraft } from "@/features/onboarding/types";
 import type { Sport } from "@/features/sports/types";
 import { sportIconForSlug } from "@/features/sports/sports";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 
 type Form = ReturnType<typeof useOnboarding>;
 
@@ -65,7 +66,11 @@ function SportTile({
         <FontAwesome6
           name={sportIconForSlug(sport.slug)}
           size={15}
-          color={isSelected ? "#06111a" : "#ccff00"}
+          color={
+            isSelected
+              ? themeColors.background.primary
+              : themeColors.brand.primary
+          }
         />
       </View>
       <Text
@@ -76,7 +81,11 @@ function SportTile({
       </Text>
       {isPrimary ? (
         <View className="mt-1.5 flex-row items-center gap-1">
-          <FontAwesome6 name="star" size={9} color="#ccff00" />
+          <FontAwesome6
+            name="star"
+            size={9}
+            color={themeColors.brand.primary}
+          />
           <Text className="font-body-bold text-overline tracking-wide text-brand-primary">
             {primaryBadge}
           </Text>
@@ -133,23 +142,31 @@ export function SportsPickerStep({ form }: { form: Form }) {
         </Text>
 
         <View className="mt-5 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-3">
-          <FontAwesome6 name="magnifying-glass" size={14} color="#64748b" />
+          <FontAwesome6
+            name="magnifying-glass"
+            size={14}
+            color={themeColors.icon.muted}
+          />
           <AppTextInput
             value={form.query}
             onChangeText={form.setQuery}
             placeholder={copy.searchPlaceholder}
-            placeholderTextColor="#64748b"
+            placeholderTextColor={themeColors.placeholder}
             autoCorrect={false}
             autoCapitalize="none"
             className="flex-1 font-body text-body text-text-primary"
           />
           {form.query.length > 0 ? (
             <Pressable
-              hitSlop={8}
+              hitSlop={HIT_SLOP}
               onPress={() => form.setQuery("")}
               className="active:opacity-70"
             >
-              <FontAwesome6 name="xmark" size={14} color="#94a3b8" />
+              <FontAwesome6
+                name="xmark"
+                size={14}
+                color={themeColors.icon.subtle}
+              />
             </Pressable>
           ) : null}
         </View>
@@ -222,7 +239,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
                 <FontAwesome6
                   name="magnifying-glass"
                   size={22}
-                  color="#64748b"
+                  color={themeColors.icon.muted}
                 />
                 <Text className="mt-3 text-center font-body text-body-sm text-text-tertiary">
                   {copy.noResults}
@@ -338,7 +355,7 @@ function SelectedSportChip({
       <FontAwesome6
         name={sportIconForSlug(draft.sportSlug)}
         size={12}
-        color="#ccff00"
+        color={themeColors.brand.primary}
       />
       <Text className="font-body-bold text-caption text-text-primary">
         {draft.sportName}
@@ -349,10 +366,10 @@ function SelectedSportChip({
         </Text>
       </View>
       {isPrimary ? (
-        <FontAwesome6 name="star" size={10} color="#ccff00" />
+        <FontAwesome6 name="star" size={10} color={themeColors.brand.primary} />
       ) : null}
       <Pressable hitSlop={10} onPress={onRemove} className="pl-0.5">
-        <FontAwesome6 name="xmark" size={11} color="#94a3b8" />
+        <FontAwesome6 name="xmark" size={11} color={themeColors.icon.subtle} />
       </Pressable>
     </Pressable>
   );
@@ -431,7 +448,9 @@ function SportConfigSheet({
             <FontAwesome6
               name="star"
               size={14}
-              color={isPrimary ? "#ccff00" : "#64748b"}
+              color={
+                isPrimary ? themeColors.brand.primary : themeColors.icon.muted
+              }
             />
             <View className="flex-1">
               <Text className="font-body-bold text-body-sm text-text-primary">
@@ -442,7 +461,11 @@ function SportConfigSheet({
               </Text>
             </View>
             {isPrimary ? (
-              <FontAwesome6 name="circle-check" size={16} color="#ccff00" />
+              <FontAwesome6
+                name="circle-check"
+                size={16}
+                color={themeColors.brand.primary}
+              />
             ) : null}
           </Pressable>
         </View>

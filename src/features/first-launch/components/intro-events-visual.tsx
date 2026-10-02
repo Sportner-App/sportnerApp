@@ -11,6 +11,7 @@ import Animated, {
 
 import { heroFadeUp } from "./hero-enter";
 import { AppText as Text } from "@/components";
+import { themeColors } from "@/constants/theme";
 
 function TimeSlot({
   time,
@@ -124,7 +125,11 @@ export function IntroEventsVisual() {
               </Text>
             </View>
             <View className="h-11 w-11 items-center justify-center rounded-2xl border border-brand-primary/25 bg-brand-primary/10">
-              <FontAwesome6 name="futbol" size={16} color="#ccff00" />
+              <FontAwesome6
+                name="futbol"
+                size={16}
+                color={themeColors.brand.primary}
+              />
             </View>
           </View>
         </View>
@@ -152,7 +157,7 @@ export function IntroEventsVisual() {
         entering={heroFadeUp(200, 300, 6)}
         className="mt-3 flex-row items-center gap-2 self-start rounded-full border border-brand-primary/25 bg-brand-primary/10 px-3.5 py-2"
       >
-        <FontAwesome6 name="bolt" size={11} color="#ccff00" />
+        <FontAwesome6 name="bolt" size={11} color={themeColors.brand.primary} />
         <Text className="font-body text-body-sm text-brand-primary">
           {t("visuals.events.neighborhoodOpen")}
         </Text>

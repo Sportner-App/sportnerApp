@@ -25,7 +25,7 @@ function TabsNavigator() {
         tabBar={(props) => <GlassTabBar {...props} />}
         screenOptions={{
           headerShown: false,
-          sceneStyle: { backgroundColor: "#06111a" },
+          sceneStyle: { backgroundColor: themeColors.background.primary },
         }}
       >
         <Tabs.Screen

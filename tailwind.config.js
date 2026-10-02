@@ -71,7 +71,10 @@ module.exports = {
         },
         success: colors.success,
         warning: colors.warning,
-        destructive: colors.destructive,
+        destructive: {
+          DEFAULT: colors.destructive,
+          soft: colors.destructiveSoft,
+        },
       },
       fontFamily: {
         display: [fonts.display],

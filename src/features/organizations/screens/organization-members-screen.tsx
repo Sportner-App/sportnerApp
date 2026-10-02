@@ -15,7 +15,7 @@ import {
   ScreenLoader,
   SegmentedTabs,
 } from "@/components";
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { useSession, useToast } from "@/contexts";
 import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
 import { getApiErrorMessage } from "@/lib/api/errors";
@@ -224,7 +224,7 @@ export function OrganizationMembersScreen() {
           className="flex-1 font-body text-body text-text-primary"
         />
         {query.length > 0 ? (
-          <Pressable hitSlop={8} onPress={() => setQuery("")}>
+          <Pressable hitSlop={HIT_SLOP} onPress={() => setQuery("")}>
             <FontAwesome6
               name="xmark"
               size={14}

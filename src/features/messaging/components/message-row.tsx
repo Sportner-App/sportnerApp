@@ -5,6 +5,7 @@ import { AppText as Text, Avatar } from "@/components";
 import type { ChatMessage } from "@/features/messaging/types";
 import { formatFullName, formatHandle } from "@/utils/person";
 import { formatClockTime } from "@/utils/date-format";
+import { HIT_SLOP } from "@/constants/theme";
 
 type MessageRowProps = {
   message: ChatMessage;
@@ -86,7 +87,7 @@ export function MessageRow({
             accessibilityRole="button"
             accessibilityLabel={t("messaging:message.retryA11y")}
             onPress={onRetry}
-            hitSlop={8}
+            hitSlop={HIT_SLOP}
             className="mt-1 active:opacity-70"
           >
             <Text className="font-body-bold text-overline text-destructive">

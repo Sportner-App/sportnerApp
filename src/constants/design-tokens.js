@@ -22,6 +22,12 @@ const palette = {
   success: "#5eead4",
   warning: "#fda4af",
   destructive: "#ef4444",
+  destructiveSoft: "#f87171",
+  /** İkon ve yer tutucu griler (palet dışı, ikincil bilgi için). */
+  slate50: "#f8fafc",
+  slate300: "#cbd5e1",
+  slate400: "#94a3b8",
+  slate500: "#64748b",
 };
 
 const colors = {
@@ -57,9 +63,20 @@ const colors = {
     dark: palette.overlay,
     photo: palette.photoScrim,
   },
+  /** Metin rengine eşlik etmeyen bağımsız ikonlar (chevron, arama, yorum…). */
+  icon: {
+    bright: palette.slate50,
+    soft: palette.slate300,
+    subtle: palette.slate400,
+    muted: palette.slate500,
+  },
+  /** TextInput `placeholderTextColor`. */
+  placeholder: palette.slate500,
   success: palette.success,
   warning: palette.warning,
   destructive: palette.destructive,
+  /** Koyu zeminde okunur kırmızı metin (ör. outline tehlike butonu). */
+  destructiveSoft: palette.destructiveSoft,
 };
 
 function relativeLuminance(hexColor) {

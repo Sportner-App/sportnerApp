@@ -20,6 +20,7 @@ import {
   VERIFICATION_CODE_LENGTH,
 } from "@/constants/validation";
 import { useCountdown } from "@/hooks/use-countdown";
+import { themeColors } from "@/constants/theme";
 
 export function PrivacyScreen() {
   const { t } = useTranslation(["profile", "common"]);
@@ -171,7 +172,11 @@ export function PrivacyScreen() {
                   <FontAwesome6
                     name={profile.isEmailVerified ? "circle-check" : "envelope"}
                     size={12}
-                    color={profile.isEmailVerified ? "#22c55e" : "#ccff00"}
+                    color={
+                      profile.isEmailVerified
+                        ? themeColors.success
+                        : themeColors.brand.primary
+                    }
                   />
                 </View>
                 <View className="min-w-0 flex-1">
@@ -208,7 +213,11 @@ export function PrivacyScreen() {
             className="mt-2 flex-row items-center gap-3 rounded-3xl border border-border-default bg-surface-primary px-4 py-4 active:opacity-70"
           >
             <View className="h-8 w-8 items-center justify-center rounded-full bg-background-secondary">
-              <FontAwesome6 name="ban" size={12} color="#ccff00" />
+              <FontAwesome6
+                name="ban"
+                size={12}
+                color={themeColors.brand.primary}
+              />
             </View>
             <View className="min-w-0 flex-1">
               <Text className="font-body-bold text-body text-text-primary">
@@ -218,7 +227,11 @@ export function PrivacyScreen() {
                 {t("profile:privacy.blockedDescription")}
               </Text>
             </View>
-            <FontAwesome6 name="chevron-right" size={10} color="#6f7d86" />
+            <FontAwesome6
+              name="chevron-right"
+              size={10}
+              color={themeColors.text.tertiary}
+            />
           </Pressable>
 
           <View className="mt-4 gap-2">
@@ -230,7 +243,11 @@ export function PrivacyScreen() {
               className="flex-row items-center gap-3 rounded-3xl border border-destructive/30 bg-destructive/5 px-4 py-4 active:opacity-70"
             >
               <View className="h-8 w-8 items-center justify-center rounded-full bg-destructive/10">
-                <FontAwesome6 name="trash" size={12} color="#ef4444" />
+                <FontAwesome6
+                  name="trash"
+                  size={12}
+                  color={themeColors.destructive}
+                />
               </View>
               <View className="min-w-0 flex-1">
                 <Text className="font-body-bold text-body text-destructive">

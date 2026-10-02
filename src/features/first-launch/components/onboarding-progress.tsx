@@ -6,6 +6,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { themeColors } from "@/constants/theme";
 
 type OnboardingProgressProps = {
   step: 1 | 2 | 3 | 4;
@@ -112,7 +113,7 @@ export function OnboardingProgress({ step }: OnboardingProgressProps) {
               width: SLOT,
               height: HEIGHT,
               borderRadius: 999,
-              backgroundColor: "#ccff00",
+              backgroundColor: themeColors.brand.primary,
             },
             activeStyle,
           ]}
