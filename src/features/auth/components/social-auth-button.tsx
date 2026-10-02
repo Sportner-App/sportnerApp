@@ -6,7 +6,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { themeColors } from "@/constants/theme";
+import { brandColors, themeColors } from "@/constants/theme";
 import { AppText as Text } from "@/components";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -20,12 +20,12 @@ const PROVIDER_MARK: Record<
 > = {
   google: {
     chipClassName: "bg-white",
-    iconColor: "#4285F4",
+    iconColor: brandColors.google,
     iconSize: 15,
   },
   apple: {
     chipClassName: "bg-white/10",
-    iconColor: "#ffffff",
+    iconColor: brandColors.apple,
     iconSize: 17,
   },
 };

@@ -22,7 +22,7 @@ import {
 } from "@/components";
 import { useConversationsTabCopy } from "@/features/messaging/copy";
 import { useToast } from "@/contexts";
-import { HIT_SLOP, themeColors } from "@/constants/theme";
+import { HIT_SLOP, palette, themeColors } from "@/constants/theme";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
   deleteConversation,
@@ -326,7 +326,7 @@ function ConversationRow({
           onPress={onDelete}
           className="h-full w-full items-center justify-center gap-1 active:opacity-70"
         >
-          <FontAwesome6 name="trash-can" size={18} color="#ffffff" />
+          <FontAwesome6 name="trash-can" size={18} color={palette.white} />
           <Text className="font-body-bold text-overline text-white">
             {deleting
               ? t("messaging:delete.deleting")

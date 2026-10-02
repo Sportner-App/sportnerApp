@@ -92,6 +92,8 @@ const SPORT_ACCENT_BY_SLUG: Record<string, SportAccentName> = {
 };
 
 export const palette = tokens.palette;
+export const brandColors = tokens.brands;
+export const illustrationColors = tokens.illustration;
 export const themeColors = tokens.colors;
 export const sportAccents = tokens.sports;
 export const fonts = tokens.fonts;

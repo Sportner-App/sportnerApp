@@ -1,7 +1,7 @@
 import { type PropsWithChildren, useEffect, useRef } from "react";
 
 import { useAuth } from "@/features/auth/session/auth-context";
-import { useLanguagePreference } from "./language-preference-provider";
+import { useLanguagePreference } from "@/contexts/language-preference-provider";
 
 /**
  * `LanguagePreferenceProvider` (cihaz/app dili, sadece local) `AuthProvider`'ın

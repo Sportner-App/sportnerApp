@@ -74,6 +74,7 @@ export function ThemePreferenceProvider({ children }: PropsWithChildren) {
   themeColors.warning = colors.warning;
   themeColors.destructive = colors.destructive;
   themeColors.destructiveSoft = colors.destructiveSoft;
+  themeColors.verified = colors.verified;
 
   useEffect(() => {
     // Light theme is temporarily disabled; always stay on dark.

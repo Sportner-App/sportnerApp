@@ -2,7 +2,7 @@ import type { PropsWithChildren } from "react";
 
 import { AuthProvider } from "@/features/auth/session/auth-provider";
 import { FirstLaunchProvider } from "@/features/first-launch/first-launch-provider";
-import { LanguageSyncBridge } from "./language-sync-bridge";
+import { LanguageSyncBridge } from "@/features/auth/session/language-sync-bridge";
 import { PendingAttendancePrompt } from "@/features/events/components/pending-attendance-prompt";
 import { PushNotificationsProvider } from "@/features/notifications/push-notifications-provider";
 import { SessionProvider } from "@/features/auth/session/session-provider";

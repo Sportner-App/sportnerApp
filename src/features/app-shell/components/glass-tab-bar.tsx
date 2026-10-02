@@ -14,7 +14,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TAB_ITEMS } from "@/constants/tabs";
-import { themeColors } from "@/constants/theme";
+import { palette, themeColors } from "@/constants/theme";
 import { useAppTour, useSession } from "@/contexts";
 import { useRequireAuth } from "@/features/auth/hooks/use-require-auth";
 import { getMyProfile } from "@/features/profile/services/profile-service";
@@ -220,7 +220,7 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
         style={{
           backgroundColor: "rgba(6, 17, 26, 0)",
           overflow: "visible",
-          shadowColor: "#000000",
+          shadowColor: palette.black,
           shadowOpacity: 0.3,
           shadowRadius: 24,
           shadowOffset: { width: 0, height: 10 },

@@ -8,7 +8,7 @@ import {
   FALLBACK_SPORT_IMAGE,
   resolveEventPhoto,
 } from "@/features/sports/sport-images";
-import { HIT_SLOP, shadows, themeColors } from "@/constants/theme";
+import { HIT_SLOP, palette, shadows, themeColors } from "@/constants/theme";
 import { AppText as Text, Chip } from "@/components";
 import type { IconName } from "@/types/components";
 import type { EventSummary } from "@/features/events/types";
@@ -148,7 +148,11 @@ export function EventMapPreviewCard({
               </View>
 
               <View className="h-8 w-8 items-center justify-center rounded-full bg-white/15">
-                <FontAwesome6 name="chevron-right" size={12} color="#fff" />
+                <FontAwesome6
+                  name="chevron-right"
+                  size={12}
+                  color={palette.white}
+                />
               </View>
             </View>
           </View>

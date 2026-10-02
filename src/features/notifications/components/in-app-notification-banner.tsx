@@ -18,7 +18,7 @@ import { resolveNotificationRoute } from "@/features/notifications/notification-
 import { markNotificationRead } from "@/features/notifications/services/notifications-service";
 import { listNotifications } from "@/features/notifications/services/notifications-service";
 import { AppText as Text } from "@/components/app-text";
-import { themeColors } from "@/constants/theme";
+import { palette, themeColors } from "@/constants/theme";
 import { OVERLAY_HIDE_MS } from "@/constants/motion";
 
 type BannerState = {
@@ -152,9 +152,11 @@ export function InAppNotificationBanner() {
         route: resolveNotificationRoute(item),
       });
     };
-    void syncInbox().finally(() => {
-      initialLoad = false;
-    });
+    void syncInbox()
+      .catch(() => undefined)
+      .finally(() => {
+        initialLoad = false;
+      });
     const interval = setInterval(
       () => void syncInbox().catch(() => undefined),
       30000,
@@ -240,7 +242,7 @@ export function InAppNotificationBanner() {
           style={[
             cardStyle,
             {
-              shadowColor: "#000",
+              shadowColor: palette.black,
               shadowOpacity: 0.2,
               shadowRadius: 12,
               shadowOffset: { width: 0, height: 6 },

@@ -39,7 +39,7 @@ import type { ApiComment, ApiPost } from "@/features/feed/types";
 import { POST_MEDIA_TYPE } from "@/features/feed/types";
 import { resolveMediaUrl } from "@/utils/media-url";
 import { formatHandle } from "@/utils/person";
-import { HIT_SLOP, themeColors } from "@/constants/theme";
+import { HIT_SLOP, palette, themeColors } from "@/constants/theme";
 
 const HEADER_ROW_HEIGHT = 64;
 
@@ -50,8 +50,8 @@ function HeaderScrim({ height }: { height: number }) {
       <Svg width="100%" height={height}>
         <Defs>
           <LinearGradient id="post-detail-scrim" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#000000" stopOpacity="0.55" />
-            <Stop offset="1" stopColor="#000000" stopOpacity="0" />
+            <Stop offset="0" stopColor={palette.black} stopOpacity="0.55" />
+            <Stop offset="1" stopColor={palette.black} stopOpacity="0" />
           </LinearGradient>
         </Defs>
         <Rect width="100%" height={height} fill="url(#post-detail-scrim)" />

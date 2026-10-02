@@ -39,6 +39,7 @@ export const LIGHT_THEME_COLORS: ThemeColors = {
   warning: "#d85b70",
   destructive: "#dc2626",
   destructiveSoft: "#b91c1c",
+  verified: "#15803d",
 };
 
 export type ThemePreference = "light" | "dark";

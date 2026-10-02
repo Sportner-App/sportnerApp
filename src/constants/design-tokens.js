@@ -16,6 +16,7 @@ const palette = {
   line: "#203443",
   lineStrong: "#345064",
   white: "#ffffff",
+  black: "#000000",
   overlay: "rgba(2, 8, 13, 0.58)",
   /** Fotoğraf üstündeki metin için tek, düz karartma. */
   photoScrim: "rgba(6, 17, 26, 0.72)",
@@ -23,11 +24,29 @@ const palette = {
   warning: "#fda4af",
   destructive: "#ef4444",
   destructiveSoft: "#f87171",
+  verified: "#22c55e",
   /** İkon ve yer tutucu griler (palet dışı, ikincil bilgi için). */
   slate50: "#f8fafc",
   slate300: "#cbd5e1",
   slate400: "#94a3b8",
   slate500: "#64748b",
+};
+
+/** Üçüncü taraf marka işaretleri; değerleri markanın kendi kılavuzundan. */
+const brands = {
+  google: "#4285F4",
+  apple: palette.white,
+};
+
+/**
+ * Temadan bağımsız illüstrasyon tonları: süs ışımaları, fotoğraf karartması ve
+ * paylaşım görselleri (dışa aktarılan görsel açık temada da koyu kalır).
+ */
+const illustration = {
+  indigoGlow: "#818cf8",
+  photoBackdrop: "#02080d",
+  shareEnergyMuted: "#18301f",
+  shareMinimalMuted: "#52606a",
 };
 
 const colors = {
@@ -77,6 +96,8 @@ const colors = {
   destructive: palette.destructive,
   /** Koyu zeminde okunur kırmızı metin (ör. outline tehlike butonu). */
   destructiveSoft: palette.destructiveSoft,
+  /** Doğrulanmış durum işareti (e-posta doğrulandı); `success`'in teal'inden ayrı. */
+  verified: palette.verified,
 };
 
 function relativeLuminance(hexColor) {
@@ -402,6 +423,8 @@ const media = {
 
 const designTokens = {
   palette,
+  brands,
+  illustration,
   colors,
   sports,
   fonts,

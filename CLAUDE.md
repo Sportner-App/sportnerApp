@@ -63,3 +63,42 @@ SecureStore'un 2 KB değer sınırını aşabilir.
 
 `expo-secure-store` native bir modül — `ios/Podfile.lock` güncellenmesi için
 `npx pod-install` (EAS build bunu kendisi yapar).
+
+## Klasör yapısı
+
+Ayrıntılı tablo `src/README.md`'de. Özet:
+
+- `app/` yalnızca ince route dosyaları: ekranı `src/features/<ad>/screens/`
+  altından re-export eder ya da route grubunun layout'unu kurar.
+- `src/features/<ad>/` — her ürün alanı kendi klasöründe: `screens/`,
+  `components/`, `hooks/`, `services/`, `types.ts`, `mappers.ts`, `copy.ts`.
+  `apiClient` yalnızca `services/` içinde kullanılır.
+- Ortak katman: `src/components`, `hooks`, `lib`, `utils`, `constants`,
+  `types`, `i18n`, `contexts`. İki veya daha fazla feature'ın kullandığı UI
+  `components/`'e, saf yardımcı `utils/`'e çıkar.
+- Bir feature başka bir feature'ın servisini/tipini/hook'unu doğrudan
+  import edebilir; ortak katman ise hiçbir feature'ı import edemez.
+
+## Lint kuralları (`npm run lint`)
+
+`eslint.config.js` Expo ayarlarının üstüne üç proje kuralı ekler. Üçü de
+`error` seviyesinde; ihlal varsa kuralı gevşetme, kodu düzelt.
+
+1. **Ortak katman feature import edemez.** Aksi halde `components/` ya da
+   `utils/` bir feature'a bağlanır, feature'lar arasında döngüsel import
+   oluşur ve "paylaşılan" kod fiilen o feature'a kilitlenir. Tek istisna
+   `src/contexts/index.tsx`: uygulamanın provider kompozisyonu olduğu için
+   feature provider'larını (auth, bildirim, ilk açılış) bilerek toplar.
+   Feature'a bağımlı bir context/bileşen gerekiyorsa o feature'ın içine
+   konur (ör. `features/auth/session/language-sync-bridge.tsx`).
+2. **Ortam değişkeni yalnızca `src/constants/env.ts` içinde okunur.**
+   Yukarıdaki "Ortam değişkenleri" bölümünün koruması: tek okuma noktası
+   olmazsa hardcoded fallback'ler ve dinamik anahtarlar (Metro'nun
+   sabitleyemediği) geri sızar. `app.config.js` lint kapsamında değil
+   (build-time, `requiredEnv()` ile okunur).
+3. **Hex renk yazılmaz.** Renkler yalnızca `design-tokens.js` (koyu tema ve
+   sabit tonlar) ve `theme-palettes.ts` (açık tema) içinde tanımlanır.
+   Ekranlar `themeColors` (temayla değişen) ya da `palette` /
+   `brandColors` / `illustrationColors` (temadan bağımsız sabit) kullanır;
+   Tailwind'de `bg-[#…]` yerine token sınıfı. Sebep: light tema
+   açıldığında elle yazılmış her hex koyu kalır ve tek tek bulunması gerekir.

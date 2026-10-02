@@ -82,16 +82,25 @@ export type DesignTokens = {
     line: string;
     lineStrong: string;
     white: string;
+    black: string;
     overlay: string;
     photoScrim: string;
     success: string;
     warning: string;
     destructive: string;
     destructiveSoft: string;
+    verified: string;
     slate50: string;
     slate300: string;
     slate400: string;
     slate500: string;
+  };
+  brands: { google: string; apple: string };
+  illustration: {
+    indigoGlow: string;
+    photoBackdrop: string;
+    shareEnergyMuted: string;
+    shareMinimalMuted: string;
   };
   colors: {
     brand: { primary: string };
@@ -113,6 +122,7 @@ export type DesignTokens = {
     warning: string;
     destructive: string;
     destructiveSoft: string;
+    verified: string;
   };
   sports: Record<SportAccentName, SportAccentToken>;
   fluidType: { baseWidth: number; minScale: number; maxScale: number };

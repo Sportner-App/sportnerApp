@@ -9,7 +9,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import Svg, { Circle, Defs, RadialGradient, Stop } from "react-native-svg";
-import { themeColors } from "@/constants/theme";
+import { illustrationColors, themeColors } from "@/constants/theme";
 
 type GlowBlobProps = {
   id: string;
@@ -129,7 +129,7 @@ export function AnimatedBackground() {
       <GlowBlob
         id="auth-glow-indigo"
         size={300}
-        color="#818cf8"
+        color={illustrationColors.indigoGlow}
         opacity={0.1}
         duration={13500}
         driftX={34}

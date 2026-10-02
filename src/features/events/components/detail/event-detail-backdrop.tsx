@@ -6,11 +6,15 @@ import {
   FALLBACK_SPORT_IMAGE,
   resolveEventPhoto,
 } from "@/features/sports/sport-images";
-import { sportAccentToken, themeColors } from "@/constants/theme";
+import {
+  illustrationColors,
+  sportAccentToken,
+  themeColors,
+} from "@/constants/theme";
 import type { EventDetail } from "@/features/events/types";
 
 /** Fotoğrafın üzerine serilen karartma rengi (arka plan paletinin en koyu tonu). */
-const SCRIM = "#02080d";
+const SCRIM = illustrationColors.photoBackdrop;
 
 /** Tüm fotoğrafı eşit biçimde soğutan sabit peçe; gradient bunun üstüne biner. */
 const BASE_VEIL = 0.58;

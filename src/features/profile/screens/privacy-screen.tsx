@@ -174,7 +174,7 @@ export function PrivacyScreen() {
                     size={12}
                     color={
                       profile.isEmailVerified
-                        ? themeColors.success
+                        ? themeColors.verified
                         : themeColors.brand.primary
                     }
                   />

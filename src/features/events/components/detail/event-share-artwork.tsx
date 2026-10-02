@@ -6,7 +6,12 @@ import QRCode from "react-native-qrcode-svg";
 import { useTranslation } from "react-i18next";
 
 import { AppText as Text } from "@/components";
-import { fonts, sportAccentToken } from "@/constants/theme";
+import {
+  fonts,
+  illustrationColors,
+  palette,
+  sportAccentToken,
+} from "@/constants/theme";
 import type { EventDetail } from "@/features/events/types";
 import { getCurrentLocale } from "@/i18n";
 
@@ -24,13 +29,21 @@ export function EventShareArtwork({
   const { t } = useTranslation("eventDetail");
   const width = 360;
   const height = 640;
-  const accent = sportAccentToken(event.sport)?.accent ?? "#ccff00";
+  const accent = sportAccentToken(event.sport)?.accent ?? palette.lime;
   const isEnergy = template === "energy";
   const isMinimal = template === "minimal";
-  const backgroundColor = isEnergy ? accent : isMinimal ? "#f4f6f2" : "#06111a";
-  const foregroundColor = isEnergy || isMinimal ? "#06111a" : "#f4f6f2";
-  const mutedColor = isEnergy ? "#18301f" : isMinimal ? "#52606a" : "#a8b2b8";
-  const detailAccent = isEnergy ? "#06111a" : accent;
+  const backgroundColor = isEnergy
+    ? accent
+    : isMinimal
+      ? palette.ink
+      : palette.canvas;
+  const foregroundColor = isEnergy || isMinimal ? palette.canvas : palette.ink;
+  const mutedColor = isEnergy
+    ? illustrationColors.shareEnergyMuted
+    : isMinimal
+      ? illustrationColors.shareMinimalMuted
+      : palette.inkMuted;
+  const detailAccent = isEnergy ? palette.canvas : accent;
   const capacity = event.maxParticipants
     ? t("share.capacityWithMax", {
         count: event.participantCount,
@@ -70,7 +83,7 @@ export function EventShareArtwork({
         <FontAwesome6
           name={event.sportIcon}
           size={190}
-          color={isEnergy || isMinimal ? "#06111a" : accent}
+          color={isEnergy || isMinimal ? palette.canvas : accent}
         />
       </View>
 
@@ -98,14 +111,18 @@ export function EventShareArtwork({
           style={{
             alignSelf: "flex-start",
             borderRadius: 20,
-            backgroundColor: isMinimal || isEnergy ? "#06111a" : accent,
+            backgroundColor: isMinimal || isEnergy ? palette.canvas : accent,
             paddingHorizontal: 12,
             paddingVertical: 6,
           }}
         >
           <Text
             style={{
-              color: isMinimal ? "#f4f6f2" : isEnergy ? accent : "#06111a",
+              color: isMinimal
+                ? palette.ink
+                : isEnergy
+                  ? accent
+                  : palette.canvas,
               fontFamily: fonts.bodyBold,
               fontSize: 11,
               letterSpacing: 1.2,
@@ -191,11 +208,11 @@ export function EventShareArtwork({
         <View
           style={{
             borderRadius: 14,
-            backgroundColor: "#ffffff",
+            backgroundColor: palette.white,
             padding: 7,
           }}
         >
-          <QRCode value={eventUrl} size={58} color="#06111a" />
+          <QRCode value={eventUrl} size={58} color={palette.canvas} />
         </View>
       </View>
     </View>
