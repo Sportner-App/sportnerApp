@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { AppText as Text, Avatar } from "@/components";
 import { themeColors } from "@/constants/theme";
 import type { EventDetail } from "@/features/events/types";
-import { isCurrentParticipant } from "@/features/events/utils";
+import { isCurrentParticipant } from "@/features/events/status";
 import { lightImpact } from "@/utils/haptics";
 
 type EventParticipantsTabProps = {

@@ -7,7 +7,7 @@ import {
   skillKeyFromCode,
   useSkillLevelLabels,
 } from "@/features/sports/skill-levels";
-import { formatEventFee, parseFeeAmount } from "@/features/events/utils";
+import { formatEventFee, parseFeeAmount } from "@/features/events/format";
 import { sportAccentToken, themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { CreateEventFormValues } from "@/features/events/types";

@@ -24,25 +24,25 @@ import { EVENT_STATUS, PARTICIPANT_STATUS } from "@/features/events/types";
 import {
   hasApprovedParticipation,
   hasEventEnded,
-} from "@/features/events/utils";
+} from "@/features/events/status";
 
-import { AboutSection } from "./about-section";
-import { EventQnASection } from "./event-qna-section";
-import { EventDetailBackdrop } from "./event-detail-backdrop";
+import { AboutSection } from "@/features/events/components/detail/about-section";
+import { EventQnASection } from "@/features/events/components/detail/event-qna-section";
+import { EventDetailBackdrop } from "@/features/events/components/detail/event-detail-backdrop";
 import {
   EVENT_DETAIL_TOP_BAR_HEIGHT,
   EventDetailBadges,
   EventDetailTopBar,
-} from "./event-detail-top-bar";
-import { EventOrganizerSection } from "./event-organizer-section";
-import { EventParticipantsTab } from "./event-participants-tab";
-import { EventPrimaryInfo } from "./event-primary-info";
-import { EventShareSheet } from "./event-share-sheet";
-import { JoinBar } from "./join-bar";
-import { LeaveEventAction } from "./leave-event-action";
-import { LocationMap } from "./location-map";
-import { OrganizerPanel } from "./organizer-panel";
-import { PendingRequestsSheet } from "./pending-requests-sheet";
+} from "@/features/events/components/detail/event-detail-top-bar";
+import { EventOrganizerSection } from "@/features/events/components/detail/event-organizer-section";
+import { EventParticipantsTab } from "@/features/events/components/detail/event-participants-tab";
+import { EventPrimaryInfo } from "@/features/events/components/detail/event-primary-info";
+import { EventShareSheet } from "@/features/events/components/detail/event-share-sheet";
+import { JoinBar } from "@/features/events/components/detail/join-bar";
+import { LeaveEventAction } from "@/features/events/components/detail/leave-event-action";
+import { LocationMap } from "@/features/events/components/detail/location-map";
+import { OrganizerPanel } from "@/features/events/components/detail/organizer-panel";
+import { PendingRequestsSheet } from "@/features/events/components/detail/pending-requests-sheet";
 
 type EventDetailTab = "overview" | "participants" | "questions";
 

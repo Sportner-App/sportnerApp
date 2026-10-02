@@ -7,35 +7,25 @@ import {
   useState,
   type ComponentProps,
 } from "react";
-import {
-  ImageBackground,
-  Pressable,
-  useWindowDimensions,
-  View,
-} from "react-native";
-import Animated, { FadeInUp } from "react-native-reanimated";
+import { Pressable, useWindowDimensions, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import {
-  MAP_INITIAL_CAMERA,
-  MAPBOX_STYLE_URL,
-  toMapboxCoord,
-} from "@/constants/map";
-import {
-  FALLBACK_SPORT_IMAGE,
-  resolveEventPhoto,
-} from "@/features/sports/sport-images";
+import { MAPBOX_STYLE_URL, toMapboxCoord } from "@/constants/map";
 import { shadows, sportAccentToken, themeColors } from "@/constants/theme";
 import type {
   UserCoordinates,
   UserLocationStatus,
 } from "@/features/location/hooks/use-user-location";
 import { hasMapboxToken, zoomForLongitudeSpan } from "@/lib/mapbox";
-import { AppText as Text, Chip, MapUnavailable } from "@/components";
+import { AppText as Text, MapUnavailable } from "@/components";
 import type { IconName } from "@/types/components";
 import type { EventSummary } from "@/features/events/types";
-import { relativeEventBadge } from "@/features/events/utils";
-import { formatClockTime } from "@/utils/date-format";
+import { cameraForPoints } from "./map-camera";
+import {
+  CurrentLocationPin,
+  EventMapPin,
+  EventMapPreviewCard,
+} from "./event-map-pins";
 
 type EventsMapProps = {
   events: EventSummary[];
@@ -49,45 +39,10 @@ type EventsMapProps = {
   onRequestLocation?: () => void;
 };
 
-type Coordinate = { latitude: number; longitude: number };
-
 /** rnmapbox OnPressEvent'i paket kokunden export etmiyor; tipten turetiyoruz. */
 type ShapePressEvent = Parameters<
   NonNullable<ComponentProps<typeof Mapbox.ShapeSource>["onPress"]>
 >[0];
-
-/**
- * Kamerayı etkinliklerin üstüne oturtan sınırlar. Eski region hesabındaki
- * `delta * 1.6` payı yerine Mapbox'ın kendi padding'ini kullanıyoruz: üstteki
- * filtre şeridi ve alttaki önizleme kartı gerçek piksel değerleriyle hesaba
- * katıldığı için pinler artık arayüzün altında kalmıyor.
- */
-const BOUNDS_PADDING = {
-  paddingTop: 96,
-  paddingBottom: 160,
-  paddingLeft: 48,
-  paddingRight: 48,
-};
-
-function boundsForPoints(points: Coordinate[]) {
-  let minLat = points[0].latitude;
-  let maxLat = points[0].latitude;
-  let minLng = points[0].longitude;
-  let maxLng = points[0].longitude;
-
-  for (const point of points) {
-    minLat = Math.min(minLat, point.latitude);
-    maxLat = Math.max(maxLat, point.latitude);
-    minLng = Math.min(minLng, point.longitude);
-    maxLng = Math.max(maxLng, point.longitude);
-  }
-
-  return {
-    ne: [maxLng, maxLat] as [number, number],
-    sw: [minLng, minLat] as [number, number],
-    ...BOUNDS_PADDING,
-  };
-}
 
 /**
  * Cluster ayarları. clusterMaxZoomLevel'ın üstünde pinler tek tek görünür;
@@ -99,25 +54,6 @@ const CLUSTER_MAX_ZOOM = 14;
 /** Bir etkinliğin hangi pin görselini kullanacağı. İkon + aksan rengi çifti. */
 function pinKeyFor(icon: string, accent: string) {
   return `pin|${icon}|${accent}`;
-}
-
-/** Tek nokta / boş liste sınır hesabına uygun değil; merkez + zoom'a düşer. */
-function cameraForPoints(points: Coordinate[], singleZoom: number) {
-  if (points.length === 0) {
-    return {
-      centerCoordinate: [...MAP_INITIAL_CAMERA.centerCoordinate],
-      zoomLevel: MAP_INITIAL_CAMERA.zoomLevel,
-    };
-  }
-
-  if (points.length === 1) {
-    return {
-      centerCoordinate: toMapboxCoord(points[0]),
-      zoomLevel: singleZoom,
-    };
-  }
-
-  return { bounds: boundsForPoints(points) };
 }
 
 export function EventsMap({
@@ -507,162 +443,5 @@ export function EventsMap({
         />
       ) : null}
     </View>
-  );
-}
-
-/**
- * Kullanıcının kendi konumu. Spor pinlerinden kasıtlı olarak farklı bir
- * biçimde: yuvarlak nokta + hale, ikon yok — böylece etkinlik pinleriyle
- * karıştırılmaz.
- */
-function CurrentLocationPin() {
-  return (
-    <View className="h-8 w-8 items-center justify-center">
-      <View
-        className="absolute h-8 w-8 rounded-full"
-        style={{ backgroundColor: `${themeColors.brand.primary}33` }}
-      />
-      <View
-        className="h-3.5 w-3.5 rounded-full border-2 border-white"
-        style={{ backgroundColor: themeColors.brand.primary }}
-      />
-    </View>
-  );
-}
-
-function EventMapPin({
-  icon,
-  accent,
-  active,
-}: {
-  icon: IconName;
-  accent: string;
-  active: boolean;
-}) {
-  return (
-    <View className="items-center">
-      <View
-        className={`h-10 w-10 items-center justify-center rounded-full border-2 bg-background-primary ${
-          active ? "border-brand-primary" : "border-white/25"
-        }`}
-      >
-        <FontAwesome6 name={icon} size={15} color={accent} />
-      </View>
-      <View
-        className="-mt-1 h-2 w-2 rotate-45"
-        style={{
-          backgroundColor: active
-            ? themeColors.brand.primary
-            : "rgba(255,255,255,0.25)",
-        }}
-      />
-    </View>
-  );
-}
-
-function EventMapPreviewCard({
-  event,
-  onClose,
-  onPress,
-}: {
-  event: EventSummary;
-  onClose: () => void;
-  onPress: () => void;
-}) {
-  const { t } = useTranslation("home");
-  const [photoFailed, setPhotoFailed] = useState(false);
-  const photo = resolveEventPhoto(event.sportCoverImageUrl);
-  const badge = relativeEventBadge(event.eventDate);
-  const time = formatClockTime(event.eventDate);
-  const whenLabel = [badge, time].filter(Boolean).join(" · ");
-  const place = event.location.trim();
-  const sportLabel = event.sportName.trim();
-
-  return (
-    <Animated.View
-      entering={FadeInUp.duration(220)}
-      className="absolute inset-x-3 bottom-3"
-      style={shadows.lg}
-    >
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t("map.openPreviewAccessibility", {
-          title: event.title,
-        })}
-        onPress={onPress}
-        className="h-[136px] overflow-hidden rounded-[22px] border border-border-default active:opacity-90"
-      >
-        <ImageBackground
-          source={photoFailed ? FALLBACK_SPORT_IMAGE : photo}
-          resizeMode="cover"
-          onError={() => setPhotoFailed(true)}
-          style={{ flex: 1 }}
-        >
-          <View pointerEvents="none" className="absolute inset-0 bg-black/55" />
-
-          <View className="flex-1 justify-between p-3.5">
-            {sportLabel ? (
-              <Chip
-                variant="sport"
-                sport={event.sport}
-                icon={event.sportIcon}
-                label={sportLabel}
-              />
-            ) : (
-              <View />
-            )}
-
-            <View className="flex-row items-end justify-between gap-2">
-              <View className="min-w-0 flex-1 gap-1">
-                <Text
-                  numberOfLines={1}
-                  className="font-display text-body-lg text-white"
-                >
-                  {event.title.trim() || t("eventCard.untitled")}
-                </Text>
-                {place ? (
-                  <View className="flex-row items-center gap-1.5">
-                    <FontAwesome6
-                      name="location-dot"
-                      size={9}
-                      color="rgba(255,255,255,0.75)"
-                    />
-                    <Text
-                      numberOfLines={1}
-                      className="flex-1 font-body text-caption text-white/75"
-                    >
-                      {place}
-                    </Text>
-                  </View>
-                ) : null}
-                {whenLabel ? (
-                  <Text className="font-body-bold text-overline text-white/75">
-                    {whenLabel}
-                  </Text>
-                ) : null}
-              </View>
-
-              <View className="h-8 w-8 items-center justify-center rounded-full bg-white/15">
-                <FontAwesome6 name="chevron-right" size={12} color="#fff" />
-              </View>
-            </View>
-          </View>
-        </ImageBackground>
-      </Pressable>
-
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t("map.closePreviewAccessibility")}
-        onPress={onClose}
-        hitSlop={8}
-        className="absolute -top-3 -right-1 h-7 w-7 items-center justify-center rounded-full border border-border-default bg-background-primary active:opacity-80"
-      >
-        <FontAwesome6
-          name="xmark"
-          size={11}
-          color={themeColors.text.secondary}
-        />
-      </Pressable>
-    </Animated.View>
   );
 }

@@ -173,6 +173,14 @@ export async function completeOnboarding(): Promise<{
   }
 }
 
+/** Cihazda saklanan oturum kullanıcısını kısmen günceller. */
+export async function updateLocalUser(
+  patch: Record<string, unknown>,
+): Promise<void> {
+  const user = await apiClient.getUser();
+  await apiClient.setUser({ ...user, ...patch });
+}
+
 export async function markLocalOnboardingComplete(): Promise<void> {
   const user = await apiClient.getUser();
   if (!user) {

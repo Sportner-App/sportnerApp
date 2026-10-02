@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { AppText as Text, Avatar } from "@/components";
 import { themeColors, typeStyles } from "@/constants/theme";
 import type { EventDetail } from "@/features/events/types";
-import { canAccessEventChat } from "@/features/events/utils";
+import { canAccessEventChat } from "@/features/events/status";
 import { lightImpact } from "@/utils/haptics";
 import { formatHandle } from "@/utils/person";
 

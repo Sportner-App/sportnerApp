@@ -16,8 +16,8 @@ import { useEventDetail } from "@/features/events/hooks/use-event-detail";
 import { DurationPickerField } from "@/features/events/components/create/duration-picker-field";
 import { LocationPicker } from "@/features/events/components/create/location-picker";
 import { SubmitBar } from "@/features/events/components/create/submit-bar";
-import { updateEvent } from "@/features/events/services/events-service";
-import { noDescriptionLabel, parseFeeAmount } from "@/features/events/utils";
+import { updateEvent } from "@/features/events/services/organizer-service";
+import { noDescriptionLabel, parseFeeAmount } from "@/features/events/format";
 
 export function EventEditScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

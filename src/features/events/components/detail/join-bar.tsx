@@ -15,7 +15,7 @@ import {
   hasEventEnded,
   hasPendingParticipation,
   hasEventInvitation,
-} from "@/features/events/utils";
+} from "@/features/events/status";
 
 type JoinBarProps = {
   event: EventDetail;

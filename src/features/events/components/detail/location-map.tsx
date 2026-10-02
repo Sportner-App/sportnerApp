@@ -21,7 +21,7 @@ import { staticMapUrl, zoomForLongitudeSpan } from "@/lib/mapbox";
 import type { EventDetail } from "@/features/events/types";
 import type { DirectionsTarget } from "@/utils/open-directions";
 import { lightImpact } from "@/utils/haptics";
-import { noLocationLabel } from "@/features/events/utils";
+import { noLocationLabel } from "@/features/events/format";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 

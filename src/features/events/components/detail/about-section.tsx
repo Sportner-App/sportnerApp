@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { themeColors, typeStyles } from "@/constants/theme";
 import type { EventDetail } from "@/features/events/types";
-import { noDescriptionLabel } from "@/features/events/utils";
+import { noDescriptionLabel } from "@/features/events/format";
 import { AppText as Text } from "@/components";
 
 type AboutSectionProps = {

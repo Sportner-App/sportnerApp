@@ -3,26 +3,28 @@ import { useTranslation } from "react-i18next";
 
 import { useSession, useToast } from "@/contexts";
 import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
+import { getEventById } from "@/features/events/services/events-service";
 import {
-  acceptEventInvitation,
   approveParticipant,
   cancelEvent,
-  cancelParticipation,
   completeEvent,
   confirmAttendance,
-  getEventById,
-  joinEvent,
   markNoShow,
   promoteFromWaitlist,
   rejectParticipant,
+} from "@/features/events/services/organizer-service";
+import {
+  acceptEventInvitation,
+  cancelParticipation,
+  joinEvent,
   declineEventInvitation,
-} from "@/features/events/services/events-service";
+} from "@/features/events/services/participation-service";
 import { EVENT_STATUS, type EventDetail } from "@/features/events/types";
 import {
   hasActiveParticipation,
   hasEventEnded,
   hasPendingParticipation,
-} from "@/features/events/utils";
+} from "@/features/events/status";
 import { errorNotification, successNotification } from "@/utils/haptics";
 
 export function useEventDetail(id: string | undefined) {

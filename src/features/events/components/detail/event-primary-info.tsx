@@ -15,9 +15,9 @@ import { PARTICIPANT_STATUS } from "@/features/events/types";
 import {
   formatDurationLabel,
   formatEventFee,
-  isCurrentParticipant,
   noLocationLabel,
-} from "@/features/events/utils";
+} from "@/features/events/format";
+import { isCurrentParticipant } from "@/features/events/status";
 import { lightImpact } from "@/utils/haptics";
 
 import { InboxRow } from "./inbox-row";

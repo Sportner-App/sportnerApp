@@ -1,1 +1,1 @@
-export { EventCreateScreen as default } from "@/features/events/components/create/event-create-screen";
+export { EventCreateScreen as default } from "@/features/events/screens/event-create-screen";

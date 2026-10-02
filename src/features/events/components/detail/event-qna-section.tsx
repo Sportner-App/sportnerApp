@@ -14,7 +14,7 @@ import {
 } from "@/features/events/services/event-qna-service";
 import { EVENT_QNA_ROLE, type ApiEventQuestion } from "@/features/events/types";
 import type { EventDetail } from "@/features/events/types";
-import { hasEventEnded } from "@/features/events/utils";
+import { hasEventEnded } from "@/features/events/status";
 import { successNotification } from "@/utils/haptics";
 
 const MIN_LENGTH = 5;

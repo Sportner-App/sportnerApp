@@ -16,7 +16,7 @@ import {
   type EventParticipant,
   type EventWaitlistEntry,
 } from "@/features/events/types";
-import { participantStatusLabel } from "@/features/events/utils";
+import { participantStatusLabel } from "@/features/events/format";
 import { formatHandle } from "@/utils/person";
 
 export type OrganizerManageTab = "requests" | "waitlist" | "attendance";

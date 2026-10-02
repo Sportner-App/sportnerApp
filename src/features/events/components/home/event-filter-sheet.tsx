@@ -14,7 +14,7 @@ import {
   DEFAULT_EVENT_FILTERS,
   type EventListFilters,
 } from "@/features/events/hooks/use-events";
-import { AgeRangeSlider } from "@/features/events/components/create/age-range-slider";
+import { AgeRangeSlider } from "@/features/events/components/age-range-slider";
 import type { SelectOption } from "@/types/components";
 import type { ApiOrganizationListItem } from "@/features/organizations/types";
 import type { Sport } from "@/features/sports/types";

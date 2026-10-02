@@ -13,7 +13,7 @@ import {
   hasEventEnded,
   hasEventInvitation,
   hasPendingParticipation,
-} from "@/features/events/utils";
+} from "@/features/events/status";
 
 export type ActivityTab = "upcoming" | "past" | "pending" | "organized";
 

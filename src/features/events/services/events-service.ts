@@ -1,23 +1,16 @@
-import i18n from "@/i18n";
 import { apiClient } from "@/lib/api/client";
-import { getApiErrorMessage } from "@/lib/api/errors";
 import type { PagedResult } from "@/types/api";
 import type {
-  ApiApplyToEventResponse,
   ApiEventDetail,
   ApiEventListItem,
   ApiExploreEventItem,
   ApiParticipant,
   ApiPendingAttendanceEvent,
   ApiWaitlistEntry,
-  CreateEventPayload,
-  CreateEventResult,
   DiscoverEventsParams,
-  EventActionResult,
   EventDetail,
   EventListPage,
   EventParticipant,
-  EventParticipantAssignment,
   EventWaitlistEntry,
   ExploreEventItem,
   PendingAttendanceEvent,
@@ -29,7 +22,7 @@ import {
   mapParticipant,
   mapPendingAttendanceEvent,
   mapWaitlistEntry,
-} from "@/features/events/utils";
+} from "@/features/events/mappers";
 
 function toListPage(page?: PagedResult<ApiEventListItem>): EventListPage {
   const items = (page?.items ?? []).map(mapListItemToSummary);
@@ -39,21 +32,6 @@ function toListPage(page?: PagedResult<ApiEventListItem>): EventListPage {
     page: page?.page ?? 1,
     hasNext: Boolean(page?.hasNext),
   };
-}
-
-async function eventAction(
-  run: () => Promise<unknown>,
-  fallback: string,
-): Promise<EventActionResult<null>> {
-  try {
-    await run();
-    return { error: null, data: null };
-  } catch (error) {
-    return {
-      error: { message: getApiErrorMessage(error, fallback) },
-      data: null,
-    };
-  }
 }
 
 export async function getEvents(
@@ -150,122 +128,6 @@ export async function getEventParticipants(
   return (response.data ?? []).map(mapParticipant);
 }
 
-export async function joinEvent(id: string): Promise<EventActionResult> {
-  try {
-    const response = await apiClient.post<ApiApplyToEventResponse>(
-      `/api/events/${id}/apply`,
-    );
-    return { error: null, data: response.data };
-  } catch (error) {
-    return {
-      error: {
-        message: getApiErrorMessage(error, i18n.t("events:service.joinFailed")),
-      },
-      data: null,
-    };
-  }
-}
-
-export async function acceptEventInvitation(eventId: string) {
-  return eventAction(
-    () => apiClient.post(`/api/events/${eventId}/invitations/me/accept`),
-    i18n.t("events:service.acceptInvitationFailed"),
-  );
-}
-
-export async function declineEventInvitation(eventId: string) {
-  return eventAction(
-    () => apiClient.post(`/api/events/${eventId}/invitations/me/decline`),
-    i18n.t("events:service.declineInvitationFailed"),
-  );
-}
-
-export async function assignEventParticipants(
-  eventId: string,
-  assignment: EventParticipantAssignment,
-) {
-  const response = await apiClient.post<ApiEventDetail>(
-    `/api/events/${eventId}/participants/assign`,
-    assignment,
-  );
-  return response.data;
-}
-
-export async function removeEventParticipant(
-  eventId: string,
-  participantId: string,
-  payload: { reportReasonId: string; note?: string },
-) {
-  return eventAction(
-    () =>
-      apiClient.post(
-        `/api/events/${eventId}/participants/${participantId}/remove`,
-        payload,
-      ),
-    i18n.t("events:service.removeParticipantFailed"),
-  );
-}
-
-export async function cancelParticipation(id: string) {
-  return eventAction(
-    () => apiClient.post(`/api/events/${id}/participants/me/cancel`),
-    i18n.t("events:service.cancelParticipationFailed"),
-  );
-}
-
-export async function cancelEvent(id: string) {
-  return eventAction(
-    () => apiClient.post(`/api/events/${id}/cancel`),
-    i18n.t("events:service.cancelEventFailed"),
-  );
-}
-
-export async function completeEvent(id: string) {
-  return eventAction(
-    () => apiClient.post(`/api/events/${id}/complete`),
-    i18n.t("events:service.completeEventFailed"),
-  );
-}
-
-export async function approveParticipant(eventId: string, userId: string) {
-  return eventAction(
-    () =>
-      apiClient.post(`/api/events/${eventId}/participants/${userId}/approve`),
-    i18n.t("events:service.approveFailed"),
-  );
-}
-
-export async function rejectParticipant(eventId: string, userId: string) {
-  return eventAction(
-    () =>
-      apiClient.post(`/api/events/${eventId}/participants/${userId}/reject`),
-    i18n.t("events:service.rejectFailed"),
-  );
-}
-
-export async function promoteFromWaitlist(eventId: string, userId: string) {
-  return eventAction(
-    () => apiClient.post(`/api/events/${eventId}/waitlist/${userId}/promote`),
-    i18n.t("events:service.promoteWaitlistFailed"),
-  );
-}
-
-export async function confirmAttendance(eventId: string, userId: string) {
-  return eventAction(
-    () =>
-      apiClient.post(`/api/events/${eventId}/participants/${userId}/attended`),
-    i18n.t("events:service.attendanceFailed"),
-  );
-}
-
-export async function markNoShow(eventId: string, userId: string) {
-  return eventAction(
-    () =>
-      apiClient.post(`/api/events/${eventId}/participants/${userId}/no-show`),
-    i18n.t("events:service.attendanceFailed"),
-  );
-}
-
 /** GET /api/events/mine/pending-attendance */
 export async function listPendingAttendanceEvents(): Promise<
   PendingAttendanceEvent[]
@@ -276,23 +138,6 @@ export async function listPendingAttendanceEvents(): Promise<
   return (response.data ?? []).map(mapPendingAttendanceEvent);
 }
 
-/**
- * POST /api/events/{id}/attendance/confirm-all — marks every still-pending participant
- * Attended, except whoever is listed in `absentUserIds` (marked No-Show instead).
- */
-export async function confirmAllAttendance(
-  eventId: string,
-  absentUserIds?: string[],
-) {
-  return eventAction(
-    () =>
-      apiClient.post(`/api/events/${eventId}/attendance/confirm-all`, {
-        absentUserIds: absentUserIds?.length ? absentUserIds : null,
-      }),
-    i18n.t("events:service.attendanceFailed"),
-  );
-}
-
 export async function listWaitlist(
   eventId: string,
 ): Promise<EventWaitlistEntry[]> {
@@ -300,77 +145,6 @@ export async function listWaitlist(
     `/api/events/${eventId}/waitlist`,
   );
   return (response.data ?? []).map(mapWaitlistEntry);
-}
-
-export async function updateEventDetails(
-  eventId: string,
-  payload: { title: string; description: string | null },
-) {
-  return eventAction(
-    () => apiClient.put(`/api/events/${eventId}`, payload),
-    i18n.t("events:service.updateDetailsFailed"),
-  );
-}
-
-export async function updateEvent(
-  eventId: string,
-  payload: {
-    title: string;
-    description: string | null;
-    eventDate: string;
-    durationMinutes: number;
-    latitude: number;
-    longitude: number;
-    address: string;
-    maxParticipants: number | null;
-    isPaid: boolean;
-    feeAmount: number | null;
-  },
-) {
-  return eventAction(
-    () => apiClient.put(`/api/events/${eventId}/edit`, payload),
-    i18n.t("events:service.updateDetailsFailed"),
-  );
-}
-
-export async function updateEventSchedule(
-  eventId: string,
-  payload: { eventDate: string; durationMinutes: number },
-) {
-  return eventAction(
-    () => apiClient.put(`/api/events/${eventId}/schedule`, payload),
-    i18n.t("events:service.updateScheduleFailed"),
-  );
-}
-
-export async function updateEventLocation(
-  eventId: string,
-  payload: { latitude: number; longitude: number; address: string },
-) {
-  return eventAction(
-    () => apiClient.put(`/api/events/${eventId}/location`, payload),
-    i18n.t("events:service.updateLocationFailed"),
-  );
-}
-
-export async function updateEventCapacity(
-  eventId: string,
-  maxParticipants: number | null,
-) {
-  return eventAction(
-    () => apiClient.put(`/api/events/${eventId}/capacity`, { maxParticipants }),
-    i18n.t("events:service.updateCapacityFailed"),
-  );
-}
-
-export async function updateEventFee(
-  eventId: string,
-  payload: { isPaid: boolean; feeAmount: number | null },
-) {
-  return eventAction(
-    () => apiClient.put(`/api/events/${eventId}/fee`, payload),
-    i18n.t("events:service.updateFeeFailed"),
-  );
 }
 
 export async function exploreEvents(params: {
@@ -387,174 +161,4 @@ export async function exploreEvents(params: {
     { params: { ...params, limit: params.limit ?? 20 } },
   );
   return (response.data ?? []).map(mapExploreEvent);
-}
-
-export async function createEvent(
-  payload: CreateEventPayload,
-): Promise<CreateEventResult> {
-  const title = payload.title.trim();
-  const address = payload.address.trim();
-
-  if (!title) {
-    return {
-      data: null,
-      error: { message: i18n.t("events:service.validation.titleRequired") },
-    };
-  }
-
-  if (title.length > 150) {
-    return {
-      data: null,
-      error: { message: i18n.t("events:service.validation.titleTooLong") },
-    };
-  }
-
-  if (!payload.sportId) {
-    return {
-      data: null,
-      error: { message: i18n.t("events:service.validation.sportRequired") },
-    };
-  }
-
-  if (payload.durationMinutes <= 0) {
-    return {
-      data: null,
-      error: { message: i18n.t("events:service.validation.durationPositive") },
-    };
-  }
-
-  if (!address) {
-    return {
-      data: null,
-      error: { message: i18n.t("events:service.validation.addressRequired") },
-    };
-  }
-
-  if (
-    payload.latitude < -90 ||
-    payload.latitude > 90 ||
-    payload.longitude < -180 ||
-    payload.longitude > 180
-  ) {
-    return {
-      data: null,
-      error: {
-        message: i18n.t("events:service.validation.coordinatesInvalid"),
-      },
-    };
-  }
-
-  if (payload.maxParticipants <= 0) {
-    return {
-      data: null,
-      error: { message: i18n.t("events:service.validation.capacityPositive") },
-    };
-  }
-
-  if (
-    !Number.isInteger(payload.minParticipantAge) ||
-    !Number.isInteger(payload.maxParticipantAge) ||
-    payload.minParticipantAge < 13 ||
-    payload.maxParticipantAge > 120 ||
-    payload.minParticipantAge > payload.maxParticipantAge
-  ) {
-    return {
-      data: null,
-      error: {
-        message: i18n.t("events:service.validation.ageRangeInvalid"),
-      },
-    };
-  }
-
-  if (payload.isPaid) {
-    const fee = payload.feeAmount;
-    if (fee == null || fee <= 0 || fee > 99_999.99) {
-      return {
-        data: null,
-        error: {
-          message: i18n.t("events:service.validation.paidFeeRequired"),
-        },
-      };
-    }
-  }
-
-  let eventId: string | undefined;
-  let eventIds: string[] = [];
-
-  try {
-    const requestBody = {
-      sportId: payload.sportId,
-      title,
-      description: payload.description.trim() || null,
-      eventDate: payload.eventDate,
-      durationMinutes: payload.durationMinutes,
-      latitude: Number(payload.latitude.toFixed(6)),
-      longitude: Number(payload.longitude.toFixed(6)),
-      address,
-      maxParticipants: payload.maxParticipants,
-      minParticipantAge: payload.minParticipantAge,
-      maxParticipantAge: payload.maxParticipantAge,
-      participantGender: payload.participantGender,
-      skillLevel: payload.skillLevel,
-      isPaid: payload.isPaid,
-      feeAmount: payload.isPaid ? payload.feeAmount : null,
-      organizationId: payload.organizationId || undefined,
-    };
-    if ((payload.recurrenceCount ?? 1) > 1) {
-      const created = await apiClient.post<{
-        firstEventId: string;
-        eventIds: string[];
-      }>("/api/events/recurring", {
-        ...requestBody,
-        intervalWeeks: payload.recurrenceIntervalWeeks ?? 1,
-        occurrenceCount: payload.recurrenceCount,
-      });
-      eventId = created.data?.firstEventId;
-      eventIds = created.data?.eventIds ?? [];
-    } else {
-      const created = await apiClient.post<ApiEventDetail>(
-        "/api/events",
-        requestBody,
-      );
-      eventId = created.data?.id;
-      eventIds = eventId ? [eventId] : [];
-    }
-
-    if (!eventId) {
-      return {
-        data: null,
-        error: { message: i18n.t("events:service.createMissingId") },
-      };
-    }
-  } catch (error) {
-    return {
-      data: null,
-      error: {
-        message: getApiErrorMessage(
-          error,
-          i18n.t("events:service.createFailed"),
-        ),
-      },
-    };
-  }
-
-  try {
-    await Promise.all(
-      eventIds.map((id) => apiClient.post(`/api/events/${id}/publish`)),
-    );
-    return {
-      data: { id: eventId, ids: eventIds, published: true },
-      error: null,
-    };
-  } catch (error) {
-    return {
-      data: { id: eventId, ids: eventIds, published: false },
-      error: {
-        message: getApiErrorMessage(
-          error,
-          i18n.t("events:service.publishFailed"),
-        ),
-      },
-    };
-  }
 }

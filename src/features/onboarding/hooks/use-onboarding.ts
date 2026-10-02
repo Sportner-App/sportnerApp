@@ -8,15 +8,14 @@ import {
   useOnboardingCopy,
 } from "@/features/onboarding/copy";
 import { useSession, useToast } from "@/contexts";
-import i18n from "@/i18n";
 import { useCities } from "@/features/location/hooks/use-cities";
-import { apiClient } from "@/lib/api/client";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
   addMySportSafe,
   completeOnboarding,
   createMyProfile,
   markLocalOnboardingComplete,
+  updateLocalUser,
   upsertOnboardingProfileDetails,
 } from "@/features/onboarding/services/onboarding-service";
 import {
@@ -48,6 +47,7 @@ import {
   USERNAME_MIN_LENGTH,
   USERNAME_PATTERN,
 } from "@/constants/validation";
+import { suggestUsername } from "@/utils/username";
 
 type IdentityFieldErrors = {
   username?: string;
@@ -57,27 +57,6 @@ type IdentityFieldErrors = {
 
 /** Gender isn't collected on the social-signup identity step; default to "prefer not to say". */
 const DEFAULT_IDENTITY_GENDER = 0;
-
-const TURKISH_CHAR_MAP: Record<string, string> = {
-  ç: "c",
-  ğ: "g",
-  ı: "i",
-  ö: "o",
-  ş: "s",
-  ü: "u",
-};
-
-function suggestUsername(firstName?: string, lastName?: string) {
-  const base = `${firstName ?? ""}${lastName ?? ""}`
-    .toLowerCase()
-    .replace(/[çğıöşü]/g, (char) => TURKISH_CHAR_MAP[char] ?? char)
-    .replace(/[^a-z0-9]/g, "")
-    .slice(0, 20);
-
-  const suffix = Math.floor(1000 + Math.random() * 9000);
-
-  return `${base || i18n.t("events:fallback.athleteHandle")}${suffix}`;
-}
 
 export function useOnboarding() {
   const router = useRouter();
@@ -318,9 +297,7 @@ export function useOnboarding() {
         toApiBirthDate(birthDateState),
       );
 
-      const currentUser = await apiClient.getUser();
-      await apiClient.setUser({
-        ...currentUser,
+      await updateLocalUser({
         username: normalizedUsername,
         firstName: trimmedFirstName,
         lastName: trimmedLastName || undefined,

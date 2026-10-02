@@ -20,14 +20,12 @@ import { themeColors } from "@/constants/theme";
 import { useSession, useToast } from "@/contexts";
 import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
 import { getApiErrorMessage } from "@/lib/api/errors";
-import {
-  getEventById,
-  removeEventParticipant,
-} from "@/features/events/services/events-service";
+import { getEventById } from "@/features/events/services/events-service";
+import { removeEventParticipant } from "@/features/events/services/organizer-service";
 import { listReportReasons } from "@/features/support/services/reports-service";
 import type { EventDetail, EventParticipant } from "@/features/events/types";
 import type { ApiReportReason } from "@/features/support/types";
-import { isCurrentParticipant } from "@/features/events/utils";
+import { isCurrentParticipant } from "@/features/events/status";
 import { lightImpact } from "@/utils/haptics";
 
 export function EventParticipantsScreen() {

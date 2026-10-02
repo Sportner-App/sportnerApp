@@ -11,21 +11,15 @@ import {
   DEFAULT_EVENT_MIN_AGE,
 } from "@/features/events/copy";
 import { useToast } from "@/contexts";
-import { getApiErrorMessage } from "@/lib/api/errors";
 import { useMyOrganizations } from "@/features/organizations/hooks/use-organizations";
-import {
-  assignEventParticipants,
-  createEvent,
-} from "@/features/events/services/events-service";
-import { listFriends } from "@/features/social/services/social-service";
-import { isValidEmail } from "@/constants/validation";
-import { listSports } from "@/features/sports/services/sports-service";
+import { createEvent } from "@/features/events/services/create-event-service";
+import { useSportCatalog } from "@/features/sports/hooks/use-sport-catalog";
+import { useEventCompanions } from "@/features/events/hooks/use-event-companions";
 import type { CreateEventFormValues } from "@/features/events/types";
 import type { SelectedLocation } from "@/features/location/types";
 import { ORGANIZATION_STATUS } from "@/features/organizations/types";
 import type { Sport, SportOption } from "@/features/sports/types";
-import type { ApiFriend } from "@/features/social/types";
-import { parseFeeAmount } from "@/features/events/utils";
+import { parseFeeAmount } from "@/features/events/format";
 import { sportIconForSlug } from "@/features/sports/sports";
 
 function getDefaultEventDate() {
@@ -79,8 +73,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
   );
   const hasOrganizations = organizations.length > 0;
 
-  const [sports, setSports] = useState<Sport[]>([]);
-  const [isSportsLoading, setIsSportsLoading] = useState(true);
+  const { sports, isLoading: isSportsLoading } = useSportCatalog();
   const [values, setValues] = useState<CreateEventFormValues>({
     title: "",
     description: "",
@@ -102,72 +95,16 @@ export function useCreateEvent(initialOrganizationId?: string) {
     recurrenceCount: 4,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [friends, setFriends] = useState<ApiFriend[]>([]);
-  const [isFriendsLoading, setIsFriendsLoading] = useState(true);
-  const [guests, setGuests] = useState<
-    { localId: string; firstName: string; lastName: string; email: string }[]
-  >([]);
-  const [selectedFriendIds, setSelectedFriendIds] = useState<string[]>([]);
 
+  // Katalog gelince varsayılan spor katalogda yoksa ilk seçeneğe geç.
   useEffect(() => {
-    let cancelled = false;
-
-    void (async () => {
-      setIsSportsLoading(true);
-
-      try {
-        const catalog = await listSports();
-        if (cancelled) {
-          return;
-        }
-
-        setSports(catalog);
-
-        const options = toSportOptions(catalog);
-        setValues((prev) => {
-          if (options.some((option) => option.key === prev.sportSlug)) {
-            return prev;
-          }
-
-          return {
-            ...prev,
-            sportSlug: options[0]?.key ?? prev.sportSlug,
-          };
-        });
-      } catch {
-        if (!cancelled) {
-          setSports([]);
-        }
-      } finally {
-        if (!cancelled) {
-          setIsSportsLoading(false);
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    void listFriends(1, 20)
-      .then((page) => {
-        if (!cancelled) {
-          setFriends(page?.items ?? []);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setFriends([]);
-      })
-      .finally(() => {
-        if (!cancelled) setIsFriendsLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    const options = toSportOptions(sports);
+    setValues((prev) =>
+      options.some((option) => option.key === prev.sportSlug)
+        ? prev
+        : { ...prev, sportSlug: options[0]?.key ?? prev.sportSlug },
+    );
+  }, [sports]);
 
   const sportOptions = useMemo(() => toSportOptions(sports), [sports]);
   const sportGroups = useMemo(
@@ -283,79 +220,17 @@ export function useCreateEvent(initialOrganizationId?: string) {
     values.isPaid,
   ]);
 
-  const areGuestsValid = guests.every(
-    (guest) =>
-      guest.firstName.trim().length > 0 &&
-      guest.lastName.trim().length > 0 &&
-      isValidEmail(guest.email),
-  );
+  const companions = useEventCompanions({
+    maxPlayers: maxPlayersNumber,
+    isCapacityValid: isStep4Valid,
+  });
+
   const canSubmit =
     isStep1Valid &&
     isStep2Valid &&
     isStep3Valid &&
     isStep4Valid &&
-    areGuestsValid;
-  const reservedCount = guests.length + selectedFriendIds.length;
-  const remainingCompanionSlots = Math.max(
-    maxPlayersNumber - 1 - reservedCount,
-    0,
-  );
-
-  useEffect(() => {
-    if (!isStep4Valid) return;
-
-    const allowed = Math.max(Math.floor(maxPlayersNumber) - 1, 0);
-    if (reservedCount <= allowed) return;
-
-    setSelectedFriendIds((current) => {
-      const friendAllowance = Math.max(allowed - guests.length, 0);
-      return current.slice(0, friendAllowance);
-    });
-    setGuests((current) => current.slice(0, allowed));
-  }, [guests.length, isStep4Valid, maxPlayersNumber, reservedCount]);
-
-  const addGuest = () => {
-    if (remainingCompanionSlots <= 0) return;
-    setGuests((current) => [
-      ...current,
-      {
-        localId: `${Date.now()}-${current.length}`,
-        firstName: "",
-        lastName: "",
-        email: "",
-      },
-    ]);
-  };
-
-  const updateGuest = (
-    localId: string,
-    key: "firstName" | "lastName" | "email",
-    value: string,
-  ) => {
-    setGuests((current) =>
-      current.map((guest) =>
-        guest.localId === localId
-          ? { ...guest, [key]: value.slice(0, key === "email" ? 320 : 50) }
-          : guest,
-      ),
-    );
-  };
-
-  const removeGuest = (localId: string) => {
-    setGuests((current) =>
-      current.filter((guest) => guest.localId !== localId),
-    );
-  };
-
-  const toggleFriend = (userId: string) => {
-    setSelectedFriendIds((current) => {
-      if (current.includes(userId)) {
-        return current.filter((id) => id !== userId);
-      }
-      if (remainingCompanionSlots <= 0) return current;
-      return [...current, userId];
-    });
-  };
+    companions.areGuestsValid;
 
   const submit = async () => {
     if (
@@ -425,12 +300,12 @@ export function useCreateEvent(initialOrganizationId?: string) {
           title: t("toast.draftSavedTitle"),
           description: error?.message ?? t("toast.draftSavedDescription"),
         });
-        await assignIfNeeded(data.id);
+        await companions.assignTo(data.id);
         router.replace(`/events/${data.id}`);
         return;
       }
 
-      const assignment = await assignIfNeeded(data.ids ?? [data.id]);
+      const assignment = await companions.assignTo(data.ids ?? [data.id]);
 
       void Haptics.notificationAsync(
         assignment.ok
@@ -449,7 +324,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
             ? t("toast.seriesDescription", {
                 count: values.recurrenceCount - 1,
               })
-            : selectedFriendIds.length > 0
+            : companions.selectedFriendIds.length > 0
               ? t("toast.friendInviteSent")
               : t("toast.waitingForPlayers")
           : t("toast.invitesFailedDescription", {
@@ -460,45 +335,6 @@ export function useCreateEvent(initialOrganizationId?: string) {
       router.replace(`/events/${data.id}`);
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  /**
-   * Davet/misafir atamasını yapar. Hata durumunda backend'in gerçek sebebini
-   * geri döner — yutulursa kullanıcı da biz de neden başarısız olduğunu
-   * göremiyoruz (ör. yaş aralığı, kapasite, arkadaşlık durumu).
-   */
-  const assignIfNeeded = async (
-    eventIds: string | string[],
-  ): Promise<{ ok: boolean; reason?: string }> => {
-    if (guests.length === 0 && selectedFriendIds.length === 0) {
-      return { ok: true };
-    }
-
-    const ids = Array.isArray(eventIds) ? eventIds : [eventIds];
-
-    try {
-      await Promise.all(
-        ids.map((eventId) =>
-          assignEventParticipants(eventId, {
-            guests: guests.map((guest) => ({
-              firstName: guest.firstName.trim(),
-              lastName: guest.lastName.trim(),
-              email: guest.email.trim().toLowerCase(),
-            })),
-            friendUserIds: selectedFriendIds,
-          }),
-        ),
-      );
-      return { ok: true };
-    } catch (assignError) {
-      return {
-        ok: false,
-        reason: getApiErrorMessage(
-          assignError,
-          t("toast.invitesGenericFailure"),
-        ),
-      };
     }
   };
 
@@ -518,21 +354,23 @@ export function useCreateEvent(initialOrganizationId?: string) {
     isStep2Valid,
     isStep3Valid,
     isStep4Valid,
-    areGuestsValid,
+    areGuestsValid: companions.areGuestsValid,
     canSubmit,
     isSubmitting,
     isSportsLoading,
     sportOptions,
     sportGroups,
-    friends,
-    isFriendsLoading,
-    guests,
-    selectedFriendIds,
-    remainingCompanionSlots,
-    addGuest,
-    updateGuest,
-    removeGuest,
-    toggleFriend,
+    friends: companions.friends,
+    isFriendsLoading: companions.isFriendsLoading,
+    guests: companions.guests,
+    selectedFriendIds: companions.selectedFriendIds,
+    remainingCompanionSlots: companions.remainingSlots,
+    addGuest: companions.addGuest,
+    updateGuest: companions.updateGuest,
+    removeGuest: companions.removeGuest,
+    toggleFriend: companions.toggleFriend,
     submit,
   };
 }
+
+export type CreateEventForm = ReturnType<typeof useCreateEvent>;

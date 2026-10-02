@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { EventDetail } from "@/features/events/types";
-import { relativeEventBadge } from "@/features/events/utils";
+import { relativeEventBadge } from "@/features/events/format";
 
 import { PendingRequestsHeaderAction } from "./pending-requests-entry";
 import { AppText as Text, Chip } from "@/components";

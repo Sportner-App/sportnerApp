@@ -17,10 +17,8 @@ import { Avatar } from "@/components/avatar";
 import { BottomSheet } from "@/components/bottom-sheet";
 import { Button } from "@/components/button";
 import { themeColors } from "@/constants/theme";
-import {
-  confirmAllAttendance,
-  listPendingAttendanceEvents,
-} from "@/features/events/services/events-service";
+import { listPendingAttendanceEvents } from "@/features/events/services/events-service";
+import { confirmAllAttendance } from "@/features/events/services/organizer-service";
 import type { PendingAttendanceEvent } from "@/features/events/types";
 
 import { useAuth } from "@/features/auth/session/auth-context";
