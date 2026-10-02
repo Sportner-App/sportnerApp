@@ -1,1 +1,1 @@
-export { FeedScreen as default } from "@/pages/feed/feed-screen";
+export { FeedScreen as default } from "@/features/feed/screens/feed-screen";

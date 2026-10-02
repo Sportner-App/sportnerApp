@@ -1,1 +1,1 @@
-export { EventReviewsScreen as default } from "@/pages/event-reviews/event-reviews-screen";
+export { EventReviewsScreen as default } from "@/features/events/screens/event-reviews-screen";

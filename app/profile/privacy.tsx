@@ -1,1 +1,1 @@
-export { PrivacyScreen as default } from "@/pages/profile/privacy-screen";
+export { PrivacyScreen as default } from "@/features/profile/screens/privacy-screen";

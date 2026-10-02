@@ -1,5 +1,7 @@
 import type { IconName } from "@/types/components";
-import type { AppTabKey } from "@/types/tabs";
+
+export type AppTabKey =
+  "index" | "discover" | "create" | "activity" | "profile";
 
 export type TabItem = {
   key: AppTabKey;

@@ -1,1 +1,1 @@
-export { BlockedUsersScreen as default } from "@/pages/profile/blocked-users-screen";
+export { BlockedUsersScreen as default } from "@/features/social/screens/blocked-users-screen";

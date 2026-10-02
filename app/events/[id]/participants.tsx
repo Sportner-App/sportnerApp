@@ -1,1 +1,1 @@
-export { EventParticipantsScreen as default } from "@/pages/event-participants/event-participants-screen";
+export { EventParticipantsScreen as default } from "@/features/events/screens/event-participants-screen";

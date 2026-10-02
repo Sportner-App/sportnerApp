@@ -1,1 +1,1 @@
-export { SportsEditScreen as default } from "@/pages/profile/sports-edit-screen";
+export { SportsEditScreen as default } from "@/features/profile/screens/sports-edit-screen";

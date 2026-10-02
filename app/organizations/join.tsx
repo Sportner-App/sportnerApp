@@ -1,1 +1,1 @@
-export { OrganizationJoinScreen as default } from "@/pages/organizations/organization-join-screen";
+export { OrganizationJoinScreen as default } from "@/features/organizations/screens/organization-join-screen";

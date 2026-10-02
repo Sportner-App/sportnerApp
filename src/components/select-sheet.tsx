@@ -11,7 +11,7 @@ import { AppTextInput } from "@/components/app-text-input";
 
 import { BottomSheet } from "@/components/bottom-sheet";
 import { sportAccentToken, themeColors } from "@/constants/theme";
-import { getCurrentLocale } from "@/i18n";
+import { normalizeSearch } from "@/utils/search";
 import type { SelectOption, SelectSheetProps } from "@/types/components";
 import { useTranslation } from "react-i18next";
 import { AppText as Text } from "@/components/app-text";
@@ -19,10 +19,6 @@ import { AppText as Text } from "@/components/app-text";
 const GRID_COLUMNS = 3;
 const GRID_GAP = 10;
 const SHEET_HORIZONTAL_PADDING = 20;
-
-function normalizeSearch(value: string) {
-  return value.trim().toLocaleLowerCase(getCurrentLocale());
-}
 
 function filterOptions<T extends string>(
   options: SelectOption<T>[],

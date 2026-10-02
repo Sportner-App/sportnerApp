@@ -1,6 +1,6 @@
 import { type PropsWithChildren, useEffect, useRef } from "react";
 
-import { useAuth } from "./auth-context";
+import { useAuth } from "@/features/auth/session/auth-context";
 import { useLanguagePreference } from "./language-preference-provider";
 
 /**

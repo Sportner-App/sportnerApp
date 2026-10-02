@@ -37,6 +37,24 @@ export type StoredAuthSession = {
   user?: Record<string, unknown>;
 };
 
+/** Sayfa numaralı liste yanıtı (`?page=&pageSize=`). */
+export type PagedResult<T> = {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+};
+
+/** Ekranların kullandığı alt küme; servisler eşlenmiş öğelerle döner. */
+export type PageSummary<T> = Pick<
+  PagedResult<T>,
+  "items" | "page" | "totalCount" | "hasNext"
+>;
+
+/** İmleç tabanlı liste yanıtı (`?before=&limit=`). */
 export type CursorPagedResult<T> = {
   items: T[];
   nextCursor: string | null;

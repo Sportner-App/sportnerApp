@@ -1,8 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { type AxiosInstance } from "axios";
 
+import { STORAGE_KEYS } from "@/constants/storage-keys";
 import { getCurrentAppLanguage, toAcceptLanguageHeader } from "@/i18n";
-import { toastService } from "@/services/toast-service";
+import { toastService } from "@/lib/toast-bus";
 import type {
   ApiFeedbackMessage,
   ApiRequestConfig,
@@ -18,10 +19,6 @@ import {
   getSecureItem,
   setSecureItem,
 } from "./secure-storage";
-
-const TOKEN_STORAGE_KEY = "api_token";
-const REFRESH_TOKEN_STORAGE_KEY = "api_refresh_token";
-const USER_STORAGE_KEY = "api_user";
 
 function isFormData(value: unknown): value is FormData {
   return (
@@ -84,7 +81,7 @@ class APIClient {
       );
 
       try {
-        const token = await getSecureItem(TOKEN_STORAGE_KEY);
+        const token = await getSecureItem(STORAGE_KEYS.accessToken);
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -208,12 +205,12 @@ class APIClient {
 
   async setSession(session: StoredAuthSession) {
     try {
-      await setSecureItem(TOKEN_STORAGE_KEY, session.accessToken);
-      await setSecureItem(REFRESH_TOKEN_STORAGE_KEY, session.refreshToken);
+      await setSecureItem(STORAGE_KEYS.accessToken, session.accessToken);
+      await setSecureItem(STORAGE_KEYS.refreshToken, session.refreshToken);
 
       if (session.user) {
         await AsyncStorage.setItem(
-          USER_STORAGE_KEY,
+          STORAGE_KEYS.user,
           JSON.stringify(session.user),
         );
       }
@@ -228,10 +225,10 @@ class APIClient {
   async setToken(token: string | null | undefined) {
     try {
       if (!token) {
-        await deleteSecureItem(TOKEN_STORAGE_KEY);
+        await deleteSecureItem(STORAGE_KEYS.accessToken);
         return;
       }
-      await setSecureItem(TOKEN_STORAGE_KEY, token);
+      await setSecureItem(STORAGE_KEYS.accessToken, token);
     } catch (error) {
       console.error("Token kaydedilemedi:", error);
       throw error;
@@ -243,10 +240,10 @@ class APIClient {
   async setRefreshToken(token: string | null | undefined) {
     try {
       if (!token) {
-        await deleteSecureItem(REFRESH_TOKEN_STORAGE_KEY);
+        await deleteSecureItem(STORAGE_KEYS.refreshToken);
         return;
       }
-      await setSecureItem(REFRESH_TOKEN_STORAGE_KEY, token);
+      await setSecureItem(STORAGE_KEYS.refreshToken, token);
     } catch (error) {
       console.error("Refresh token kaydedilemedi:", error);
       throw error;
@@ -255,9 +252,9 @@ class APIClient {
 
   async clearToken() {
     try {
-      await deleteSecureItem(TOKEN_STORAGE_KEY);
-      await deleteSecureItem(REFRESH_TOKEN_STORAGE_KEY);
-      await AsyncStorage.removeItem(USER_STORAGE_KEY);
+      await deleteSecureItem(STORAGE_KEYS.accessToken);
+      await deleteSecureItem(STORAGE_KEYS.refreshToken);
+      await AsyncStorage.removeItem(STORAGE_KEYS.user);
     } catch (error) {
       console.error("Token silinirken hata:", error);
     } finally {
@@ -268,10 +265,10 @@ class APIClient {
   async setUser(user: Record<string, unknown> | null | undefined) {
     try {
       if (!user) {
-        await AsyncStorage.removeItem(USER_STORAGE_KEY);
+        await AsyncStorage.removeItem(STORAGE_KEYS.user);
         return;
       }
-      await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+      await AsyncStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
     } catch (error) {
       console.error("Kullanıcı bilgileri kaydedilemedi:", error);
       throw error;
@@ -282,7 +279,7 @@ class APIClient {
 
   async getUser() {
     try {
-      const userJson = await AsyncStorage.getItem(USER_STORAGE_KEY);
+      const userJson = await AsyncStorage.getItem(STORAGE_KEYS.user);
       return userJson ? JSON.parse(userJson) : null;
     } catch (error) {
       console.error("Kullanıcı bilgileri okunamadi:", error);
@@ -292,7 +289,7 @@ class APIClient {
 
   async getToken() {
     try {
-      return await getSecureItem(TOKEN_STORAGE_KEY);
+      return await getSecureItem(STORAGE_KEYS.accessToken);
     } catch (error) {
       console.error("Token okunamadi:", error);
       return null;
@@ -301,7 +298,7 @@ class APIClient {
 
   async getRefreshToken() {
     try {
-      return await getSecureItem(REFRESH_TOKEN_STORAGE_KEY);
+      return await getSecureItem(STORAGE_KEYS.refreshToken);
     } catch (error) {
       console.error("Refresh token okunamadi:", error);
       return null;

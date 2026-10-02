@@ -1,1 +1,1 @@
-export { AlbumsScreen as default } from "@/pages/albums/albums-screen";
+export { AlbumsScreen as default } from "@/features/albums/screens/albums-screen";

@@ -1,4 +1,8 @@
-import { DEFAULT_EVENT_LOCATION } from "@/constants/events";
+/** Konum bilinmediğinde haritanın açıldığı nokta. */
+export const DEFAULT_EVENT_LOCATION = {
+  latitude: 40.9909,
+  longitude: 29.0289,
+} as const;
 
 /**
  * Studio'da üretilen Sportner koyu teması (tools/mapbox-restyle.js çıktısı).

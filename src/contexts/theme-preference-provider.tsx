@@ -12,6 +12,7 @@ import { useWindowDimensions, View } from "react-native";
 
 import tokens from "@/constants/design-tokens";
 import { themeColors } from "@/constants/theme";
+import { STORAGE_KEYS } from "@/constants/storage-keys";
 import {
   DARK_THEME_COLORS,
   LIGHT_THEME_COLORS,
@@ -19,7 +20,6 @@ import {
   type ThemePreference,
 } from "@/constants/theme-palettes";
 
-const STORAGE_KEY = "sportner:theme-preference";
 const ThemePreferenceContext = createContext<{
   preference: ThemePreference;
   resolvedScheme: "light" | "dark";
@@ -74,11 +74,11 @@ export function ThemePreferenceProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     // Light theme is temporarily disabled; always stay on dark.
-    // void AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
+    // void AsyncStorage.getItem(STORAGE_KEYS.themePreference).then((stored) => {
     //   if (stored === "light" || stored === "dark") setPreferenceState(stored);
     // });
     setPreferenceState("dark");
-    void AsyncStorage.setItem(STORAGE_KEY, "dark");
+    void AsyncStorage.setItem(STORAGE_KEYS.themePreference, "dark");
   }, []);
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export function ThemePreferenceProvider({ children }: PropsWithChildren) {
 
   const setPreference = (value: ThemePreference) => {
     setPreferenceState(value);
-    void AsyncStorage.setItem(STORAGE_KEY, value);
+    void AsyncStorage.setItem(STORAGE_KEYS.themePreference, value);
   };
 
   const cssVariables = useMemo(

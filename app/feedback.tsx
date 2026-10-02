@@ -1,1 +1,1 @@
-export { FeedbackScreen as default } from "@/pages/feedback/feedback-screen";
+export { FeedbackScreen as default } from "@/features/support/screens/feedback-screen";

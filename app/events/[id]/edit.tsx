@@ -1,1 +1,1 @@
-export { EventEditScreen as default } from "@/pages/event-edit/event-edit-screen";
+export { EventEditScreen as default } from "@/features/events/screens/event-edit-screen";

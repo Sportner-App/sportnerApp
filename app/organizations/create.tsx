@@ -1,1 +1,1 @@
-export { OrganizationCreateScreen as default } from "@/pages/organizations/organization-create-screen";
+export { OrganizationCreateScreen as default } from "@/features/organizations/screens/organization-create-screen";

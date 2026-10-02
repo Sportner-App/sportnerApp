@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { BottomSheet } from "@/components/bottom-sheet";
-import { useDirectionsOptions } from "@/constants/components";
+import { useDirectionsOptions } from "./copy";
 import { openDirections, type DirectionsTarget } from "@/utils/open-directions";
 import { AppText as Text } from "@/components/app-text";
 

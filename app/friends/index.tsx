@@ -1,1 +1,1 @@
-export { FriendsScreen as default } from "@/pages/friends/friends-screen";
+export { FriendsScreen as default } from "@/features/social/screens/friends-screen";

@@ -1,0 +1,350 @@
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { Pressable, ScrollView, View } from "react-native";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useTranslation } from "react-i18next";
+
+import {
+  AppScreen,
+  AppText as Text,
+  AppTextInput,
+  Button,
+  ScreenHeader,
+} from "@/components";
+import { useSkillLevelOptions } from "@/features/onboarding/copy";
+import { useToast } from "@/contexts";
+import { useProfile } from "@/features/profile/hooks/use-profile";
+import { getCurrentLocale } from "@/i18n";
+import { getApiErrorMessage } from "@/lib/api/errors";
+import { addMySports } from "@/features/onboarding/services/onboarding-service";
+import { listSports } from "@/features/sports/services/sports-service";
+import type { Sport } from "@/features/sports/types";
+import {
+  groupSportsByCategory,
+  sportIconForSlug,
+} from "@/features/sports/sports";
+
+export function AddSportScreen() {
+  const { t } = useTranslation("profile");
+  const router = useRouter();
+  const { showToast } = useToast();
+  const { profile, refresh } = useProfile();
+  const ONBOARDING_SKILL_OPTIONS = useSkillLevelOptions();
+  const [query, setQuery] = useState("");
+  const [sports, setSports] = useState<Sport[]>([]);
+  const [selected, setSelected] = useState<
+    Record<string, { sport: Sport; level: number }>
+  >({});
+  const [activeSportId, setActiveSportId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const locale = getCurrentLocale();
+
+  useEffect(() => {
+    void listSports().then(setSports);
+  }, []);
+
+  const currentSportIds = new Set(
+    profile?.sports.map((sport) => sport.sportId) ?? [],
+  );
+  const normalizedQuery = query.trim().toLocaleLowerCase(locale);
+  const filtered = sports.filter(
+    (sport) =>
+      !currentSportIds.has(sport.id) &&
+      sport.name.toLocaleLowerCase(locale).includes(normalizedQuery),
+  );
+  const selectedSports = Object.values(selected);
+  const activeSelection = activeSportId ? selected[activeSportId] : undefined;
+  const groupedSports = groupSportsByCategory(filtered);
+
+  const toggleSport = (sport: Sport) => {
+    if (selected[sport.id]) {
+      const next = { ...selected };
+      delete next[sport.id];
+      setSelected(next);
+      if (activeSportId === sport.id) {
+        setActiveSportId(Object.keys(next)[0] ?? null);
+      }
+      return;
+    }
+
+    setSelected((current) => ({
+      ...current,
+      [sport.id]: { sport, level: 1 },
+    }));
+    setActiveSportId(sport.id);
+  };
+
+  const setSportLevel = (sportId: string, level: number) => {
+    setSelected((current) => ({
+      ...current,
+      [sportId]: { ...current[sportId], level },
+    }));
+  };
+
+  const save = async () => {
+    if (selectedSports.length === 0 || saving) {
+      return;
+    }
+    setSaving(true);
+    try {
+      await addMySports(
+        selectedSports.map(({ sport, level }) => ({
+          sportId: sport.id,
+          skillLevel: level,
+        })),
+      );
+      await refresh();
+      showToast({
+        type: "success",
+        title:
+          selectedSports.length === 1
+            ? t("addSport.addedOne")
+            : t("addSport.addedMany", { count: selectedSports.length }),
+      });
+      router.back();
+    } catch (error) {
+      showToast({
+        type: "error",
+        title: t("addSport.addFailed"),
+        description: getApiErrorMessage(error),
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <AppScreen
+      header={<ScreenHeader title={t("addSport.title")} showBack />}
+      contentClassName="gap-5 px-5 pt-3"
+    >
+      <View className="gap-1 px-1">
+        <Text className="font-display text-heading-lg text-text-primary">
+          {t("addSport.heading")}
+        </Text>
+        <Text className="font-body text-body-sm leading-5 text-text-secondary">
+          {t("addSport.subtitle")}
+        </Text>
+      </View>
+
+      <View className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4">
+        <FontAwesome6 name="magnifying-glass" size={13} color="#6f7d86" />
+        <AppTextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder={t("addSport.searchPlaceholder")}
+          placeholderTextColor="#64748b"
+          className="min-h-[52px] flex-1 font-body text-body text-text-primary"
+        />
+        {query ? (
+          <Pressable onPress={() => setQuery("")} hitSlop={8}>
+            <FontAwesome6 name="circle-xmark" size={15} color="#6f7d86" />
+          </Pressable>
+        ) : null}
+      </View>
+
+      {selectedSports.length > 0 ? (
+        <View className="gap-4 rounded-[22px] border border-brand-primary/30 bg-brand-primary/5 p-4">
+          <View className="flex-row items-center justify-between">
+            <View>
+              <Text className="font-display text-heading-sm text-text-primary">
+                {t("addSport.teamBuilding")}
+              </Text>
+              <Text className="mt-1 font-body text-caption text-text-tertiary">
+                {t("addSport.selectLevelHint")}
+              </Text>
+            </View>
+            <View className="rounded-full bg-brand-primary px-2.5 py-1">
+              <Text className="font-body-bold text-overline text-background-primary">
+                {t("addSport.selectedCount", { count: selectedSports.length })}
+              </Text>
+            </View>
+          </View>
+
+          <ScrollView
+            horizontal
+            contentContainerClassName="gap-2"
+            showsHorizontalScrollIndicator={false}
+          >
+            {selectedSports.map(({ sport }) => {
+              const active = activeSportId === sport.id;
+              return (
+                <View
+                  key={sport.id}
+                  className={`flex-row items-center rounded-full border pl-1.5 pr-2 ${
+                    active
+                      ? "border-brand-primary bg-brand-primary/10"
+                      : "border-border-default bg-background-secondary"
+                  }`}
+                >
+                  <Pressable
+                    onPress={() => setActiveSportId(sport.id)}
+                    className="flex-row items-center gap-2 py-1.5 pl-0.5 pr-2"
+                  >
+                    <View className="h-7 w-7 items-center justify-center rounded-full bg-brand-primary/15">
+                      <FontAwesome6
+                        name={sportIconForSlug(sport.slug)}
+                        size={10}
+                        color="#ccff00"
+                      />
+                    </View>
+                    <Text className="font-body-bold text-caption text-text-primary">
+                      {sport.name}
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => toggleSport(sport)}
+                    hitSlop={6}
+                    accessibilityLabel={t("addSport.removeSelection", {
+                      name: sport.name,
+                    })}
+                    className="h-6 w-6 items-center justify-center"
+                  >
+                    <FontAwesome6 name="xmark" size={11} color="#6f7d86" />
+                  </Pressable>
+                </View>
+              );
+            })}
+          </ScrollView>
+
+          {activeSelection ? (
+            <View className="gap-3 rounded-2xl bg-background-secondary px-3 py-3">
+              <View className="flex-row items-center gap-2">
+                <FontAwesome6
+                  name={sportIconForSlug(activeSelection.sport.slug)}
+                  size={12}
+                  color="#ccff00"
+                />
+                <Text className="font-body-bold text-body-sm text-text-primary">
+                  {t("addSport.levelForSport", {
+                    name: activeSelection.sport.name,
+                  })}
+                </Text>
+                <Text className="ml-auto font-body text-overline text-text-tertiary">
+                  {t("addSport.tapToChange")}
+                </Text>
+              </View>
+              <ScrollView
+                horizontal
+                contentContainerClassName="gap-2"
+                showsHorizontalScrollIndicator={false}
+              >
+                {ONBOARDING_SKILL_OPTIONS.map((option) => (
+                  <Pressable
+                    key={option.key}
+                    onPress={() =>
+                      setSportLevel(activeSelection.sport.id, option.level)
+                    }
+                    className={`rounded-full border px-3 py-2 ${
+                      activeSelection.level === option.level
+                        ? "border-brand-primary bg-brand-primary"
+                        : "border-border-default bg-surface-primary"
+                    }`}
+                  >
+                    <Text
+                      className={`font-body-bold text-caption ${
+                        activeSelection.level === option.level
+                          ? "text-background-primary"
+                          : "text-text-primary"
+                      }`}
+                    >
+                      {option.label}
+                    </Text>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </View>
+          ) : null}
+
+          <Button
+            label={
+              saving
+                ? t("addSport.adding")
+                : t("addSport.addToProfile", { count: selectedSports.length })
+            }
+            disabled={saving}
+            isLoading={saving}
+            onPress={() => void save()}
+          />
+        </View>
+      ) : (
+        <View className="flex-row items-center gap-3 rounded-[20px] border border-dashed border-border-strong px-4 py-4">
+          <View className="h-9 w-9 items-center justify-center rounded-full bg-brand-primary/10">
+            <FontAwesome6 name="plus" size={13} color="#ccff00" />
+          </View>
+          <View className="flex-1">
+            <Text className="font-display text-heading-sm text-text-primary">
+              {t("addSport.multiSelectTitle")}
+            </Text>
+            <Text className="mt-1 font-body text-caption text-text-tertiary">
+              {t("addSport.multiSelectHint")}
+            </Text>
+          </View>
+        </View>
+      )}
+
+      {groupedSports.map((group) => (
+        <View key={group.key} className="gap-3">
+          <View className="flex-row items-baseline gap-2 px-1">
+            <Text className="font-body-bold text-label text-text-secondary">
+              {group.label}
+            </Text>
+            <Text className="font-body-bold text-overline text-text-tertiary">
+              {group.sports.length}
+            </Text>
+          </View>
+
+          <View className="flex-row flex-wrap justify-between gap-y-3">
+            {group.sports.map((sport) => {
+              const active = Boolean(selected[sport.id]);
+              return (
+                <Pressable
+                  key={sport.id}
+                  onPress={() => toggleSport(sport)}
+                  className={`w-[48.5%] items-center gap-3 rounded-[22px] border px-3 py-5 active:opacity-75 ${
+                    active
+                      ? "border-brand-primary bg-brand-primary/10"
+                      : "border-border-default bg-surface-primary"
+                  }`}
+                >
+                  <View
+                    className={`h-12 w-12 items-center justify-center rounded-full ${
+                      active ? "bg-brand-primary" : "bg-background-secondary"
+                    }`}
+                  >
+                    <FontAwesome6
+                      name={sportIconForSlug(sport.slug)}
+                      size={18}
+                      color={active ? "#06111a" : "#ccff00"}
+                    />
+                  </View>
+                  <Text className="text-center font-body-bold text-body-sm text-text-primary">
+                    {sport.name}
+                  </Text>
+                  {active ? (
+                    <View className="absolute right-3 top-3">
+                      <FontAwesome6
+                        name="circle-check"
+                        size={15}
+                        color="#ccff00"
+                      />
+                    </View>
+                  ) : null}
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      ))}
+
+      {filtered.length === 0 ? (
+        <View className="items-center gap-2 rounded-[22px] border border-dashed border-border-strong px-5 py-8">
+          <FontAwesome6 name="person-running" size={22} color="#ccff00" />
+          <Text className="font-body text-body-sm text-text-secondary">
+            {t("addSport.emptyResults")}
+          </Text>
+        </View>
+      ) : null}
+    </AppScreen>
+  );
+}

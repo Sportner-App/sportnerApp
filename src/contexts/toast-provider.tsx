@@ -19,7 +19,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Line } from "react-native-svg";
 
-import { toastService } from "@/services/toast-service";
+import { toastService } from "@/lib/toast-bus";
 import type { IconName } from "@/types/components";
 import type { ToastContextValue, ToastPayload, ToastType } from "@/types/toast";
 import { AppText as Text } from "@/components/app-text";

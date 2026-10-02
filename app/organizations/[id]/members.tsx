@@ -1,1 +1,1 @@
-export { OrganizationMembersScreen as default } from "@/pages/organizations/organization-members-screen";
+export { OrganizationMembersScreen as default } from "@/features/organizations/screens/organization-members-screen";

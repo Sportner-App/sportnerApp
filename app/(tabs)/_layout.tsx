@@ -1,35 +1,23 @@
-import { Redirect, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 
-import { AppTourOverlay, GlassTabBar } from "@/components";
+import { AppTourOverlay } from "@/features/app-shell/components/app-tour-overlay";
+import { GlassTabBar } from "@/features/app-shell/components/glass-tab-bar";
 import { themeColors } from "@/constants/theme";
-import { AppTourProvider, useAuth, useFirstLaunch } from "@/contexts";
-import { getStartupDestination, STARTUP_HREF } from "@/utils/startup";
+import { AppTourProvider, useAuth } from "@/contexts";
+import { StartupGate } from "@/features/auth/components/startup-gate";
 
 export default function TabsLayout() {
+  return (
+    <StartupGate expect="tabs">
+      <TabsNavigator />
+    </StartupGate>
+  );
+}
+
+function TabsNavigator() {
   const { t } = useTranslation("tabs");
-  const { isReady, isAuthenticated, isEmailVerified, isOnboarded } = useAuth();
-  const {
-    isReady: isFirstLaunchReady,
-    hasSeenOnboarding,
-    isEnteringAuth,
-  } = useFirstLaunch();
-
-  if (!isReady || !isFirstLaunchReady) {
-    return null;
-  }
-
-  const destination = getStartupDestination({
-    isAuthenticated,
-    isEmailVerified,
-    isOnboarded,
-    hasSeenOnboarding,
-    isEnteringAuth,
-  });
-
-  if (destination !== "tabs") {
-    return <Redirect href={STARTUP_HREF[destination]} />;
-  }
+  const { isAuthenticated } = useAuth();
 
   return (
     <AppTourProvider autoStart={isAuthenticated}>

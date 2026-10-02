@@ -1,0 +1,538 @@
+import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+
+import {
+  CREATE_EVENT_LIMITS,
+  CREATE_SPORT_OPTIONS,
+  DEFAULT_EVENT_DURATION_MINUTES,
+  DEFAULT_EVENT_MAX_AGE,
+  DEFAULT_EVENT_MIN_AGE,
+} from "@/features/events/copy";
+import { useToast } from "@/contexts";
+import { getApiErrorMessage } from "@/lib/api/errors";
+import { useMyOrganizations } from "@/features/organizations/hooks/use-organizations";
+import {
+  assignEventParticipants,
+  createEvent,
+} from "@/features/events/services/events-service";
+import { listFriends } from "@/features/social/services/social-service";
+import { isValidEmail } from "@/constants/validation";
+import { listSports } from "@/features/sports/services/sports-service";
+import type { CreateEventFormValues } from "@/features/events/types";
+import type { SelectedLocation } from "@/features/location/types";
+import { ORGANIZATION_STATUS } from "@/features/organizations/types";
+import type { Sport, SportOption } from "@/features/sports/types";
+import type { ApiFriend } from "@/features/social/types";
+import { parseFeeAmount } from "@/features/events/utils";
+import { sportIconForSlug } from "@/features/sports/sports";
+
+function getDefaultEventDate() {
+  const date = new Date();
+  date.setHours(date.getHours() + 2, 0, 0, 0);
+  return date;
+}
+
+function toSportOptions(sports: Sport[]): SportOption[] {
+  if (sports.length === 0) {
+    return CREATE_SPORT_OPTIONS;
+  }
+
+  return [...sports]
+    .sort((a, b) => a.displayOrder - b.displayOrder)
+    .map((sport) => ({
+      key: sport.slug,
+      label: sport.name,
+      icon: sportIconForSlug(sport.slug),
+      description: sport.categoryName ?? undefined,
+      groupKey: sport.categoryId ?? undefined,
+    }));
+}
+
+export function useCreateEvent(initialOrganizationId?: string) {
+  const router = useRouter();
+  const { t } = useTranslation("eventCreate");
+  const { showToast } = useToast();
+  const isOrganizationLocked = Boolean(initialOrganizationId);
+  const [organizationId, setOrganizationId] = useState<string | undefined>(
+    initialOrganizationId,
+  );
+  const [wantsOrganizationEvent, setWantsOrganizationEvent] =
+    useState(isOrganizationLocked);
+  const isOrganizationEvent = Boolean(organizationId);
+
+  const setOrganizationIntent = (wants: boolean) => {
+    setWantsOrganizationEvent(wants);
+    if (!wants) {
+      setOrganizationId(undefined);
+    }
+  };
+
+  const { items: myOrganizations } = useMyOrganizations();
+  const organizations = useMemo(
+    () =>
+      myOrganizations.filter(
+        (organization) => organization.status === ORGANIZATION_STATUS.approved,
+      ),
+    [myOrganizations],
+  );
+  const hasOrganizations = organizations.length > 0;
+
+  const [sports, setSports] = useState<Sport[]>([]);
+  const [isSportsLoading, setIsSportsLoading] = useState(true);
+  const [values, setValues] = useState<CreateEventFormValues>({
+    title: "",
+    description: "",
+    sportSlug: CREATE_SPORT_OPTIONS[0]?.key ?? "futbol",
+    eventDate: getDefaultEventDate(),
+    durationMinutes: DEFAULT_EVENT_DURATION_MINUTES,
+    maxPlayers: "10",
+    minParticipantAge: String(DEFAULT_EVENT_MIN_AGE),
+    maxParticipantAge: String(DEFAULT_EVENT_MAX_AGE),
+    participantGender: null,
+    skillLevel: null,
+    isPaid: false,
+    feeAmountText: "",
+    addressText: "",
+    latitude: null,
+    longitude: null,
+    isRecurring: false,
+    recurrenceIntervalWeeks: 1,
+    recurrenceCount: 4,
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [friends, setFriends] = useState<ApiFriend[]>([]);
+  const [isFriendsLoading, setIsFriendsLoading] = useState(true);
+  const [guests, setGuests] = useState<
+    { localId: string; firstName: string; lastName: string; email: string }[]
+  >([]);
+  const [selectedFriendIds, setSelectedFriendIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      setIsSportsLoading(true);
+
+      try {
+        const catalog = await listSports();
+        if (cancelled) {
+          return;
+        }
+
+        setSports(catalog);
+
+        const options = toSportOptions(catalog);
+        setValues((prev) => {
+          if (options.some((option) => option.key === prev.sportSlug)) {
+            return prev;
+          }
+
+          return {
+            ...prev,
+            sportSlug: options[0]?.key ?? prev.sportSlug,
+          };
+        });
+      } catch {
+        if (!cancelled) {
+          setSports([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsSportsLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void listFriends(1, 20)
+      .then((page) => {
+        if (!cancelled) {
+          setFriends(page?.items ?? []);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setFriends([]);
+      })
+      .finally(() => {
+        if (!cancelled) setIsFriendsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const sportOptions = useMemo(() => toSportOptions(sports), [sports]);
+  const sportGroups = useMemo(
+    () => [
+      ...new Map(
+        sports
+          .filter((sport) => sport.categoryId && sport.categoryName)
+          .map((sport) => [
+            sport.categoryId as string,
+            {
+              key: sport.categoryId as string,
+              label: sport.categoryName as string,
+            },
+          ]),
+      ).values(),
+    ],
+    [sports],
+  );
+
+  const update = <K extends keyof CreateEventFormValues>(
+    key: K,
+    value: CreateEventFormValues[K],
+  ) => {
+    setValues((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const setLocation = (location: SelectedLocation) => {
+    setValues((prev) => ({
+      ...prev,
+      addressText: location.addressText,
+      latitude: location.latitude,
+      longitude: location.longitude,
+    }));
+  };
+
+  /**
+   * Konum secimini tamamen kaldirir. Arama kutusundaki "x" yalnizca metni
+   * siliyordu; koordinatlar durdugu icin haritadaki isaretci ekranda kaliyor
+   * ve kullanici yanlis sectigi konumu kaldiramiyordu.
+   */
+  const clearLocation = () => {
+    setValues((prev) => ({
+      ...prev,
+      addressText: "",
+      latitude: null,
+      longitude: null,
+    }));
+  };
+
+  const maxPlayersNumber = Number(values.maxPlayers);
+  const minParticipantAgeNumber = Number(values.minParticipantAge);
+  const maxParticipantAgeNumber = Number(values.maxParticipantAge);
+
+  const isStep1Valid = useMemo(() => {
+    const title = values.title.trim();
+
+    return (
+      Boolean(values.sportSlug) &&
+      title.length > 0 &&
+      title.length <= CREATE_EVENT_LIMITS.titleMax &&
+      !isSportsLoading &&
+      (!wantsOrganizationEvent || Boolean(organizationId))
+    );
+  }, [
+    isSportsLoading,
+    organizationId,
+    values.sportSlug,
+    values.title,
+    wantsOrganizationEvent,
+  ]);
+
+  const isStep2Valid = useMemo(() => {
+    return (
+      Boolean(values.addressText.trim()) &&
+      values.latitude != null &&
+      values.longitude != null &&
+      values.latitude >= -90 &&
+      values.latitude <= 90 &&
+      values.longitude >= -180 &&
+      values.longitude <= 180
+    );
+  }, [values.addressText, values.latitude, values.longitude]);
+
+  const isStep3Valid = useMemo(
+    () => values.durationMinutes > 0 && values.eventDate.getTime() > Date.now(),
+    [values.durationMinutes, values.eventDate],
+  );
+
+  const isStep4Valid = useMemo(() => {
+    const feeAmount = parseFeeAmount(values.feeAmountText);
+    const feeOk = values.isPaid
+      ? feeAmount != null &&
+        feeAmount > 0 &&
+        feeAmount <= CREATE_EVENT_LIMITS.feeAmountMax
+      : true;
+
+    return (
+      Number.isFinite(maxPlayersNumber) &&
+      maxPlayersNumber >= CREATE_EVENT_LIMITS.maxParticipantsMin &&
+      maxPlayersNumber <= CREATE_EVENT_LIMITS.maxParticipantsMax &&
+      Number.isInteger(minParticipantAgeNumber) &&
+      Number.isInteger(maxParticipantAgeNumber) &&
+      minParticipantAgeNumber >= CREATE_EVENT_LIMITS.participantAgeMin &&
+      maxParticipantAgeNumber <= CREATE_EVENT_LIMITS.participantAgeMax &&
+      minParticipantAgeNumber <= maxParticipantAgeNumber &&
+      feeOk
+    );
+  }, [
+    maxParticipantAgeNumber,
+    maxPlayersNumber,
+    minParticipantAgeNumber,
+    values.feeAmountText,
+    values.isPaid,
+  ]);
+
+  const areGuestsValid = guests.every(
+    (guest) =>
+      guest.firstName.trim().length > 0 &&
+      guest.lastName.trim().length > 0 &&
+      isValidEmail(guest.email),
+  );
+  const canSubmit =
+    isStep1Valid &&
+    isStep2Valid &&
+    isStep3Valid &&
+    isStep4Valid &&
+    areGuestsValid;
+  const reservedCount = guests.length + selectedFriendIds.length;
+  const remainingCompanionSlots = Math.max(
+    maxPlayersNumber - 1 - reservedCount,
+    0,
+  );
+
+  useEffect(() => {
+    if (!isStep4Valid) return;
+
+    const allowed = Math.max(Math.floor(maxPlayersNumber) - 1, 0);
+    if (reservedCount <= allowed) return;
+
+    setSelectedFriendIds((current) => {
+      const friendAllowance = Math.max(allowed - guests.length, 0);
+      return current.slice(0, friendAllowance);
+    });
+    setGuests((current) => current.slice(0, allowed));
+  }, [guests.length, isStep4Valid, maxPlayersNumber, reservedCount]);
+
+  const addGuest = () => {
+    if (remainingCompanionSlots <= 0) return;
+    setGuests((current) => [
+      ...current,
+      {
+        localId: `${Date.now()}-${current.length}`,
+        firstName: "",
+        lastName: "",
+        email: "",
+      },
+    ]);
+  };
+
+  const updateGuest = (
+    localId: string,
+    key: "firstName" | "lastName" | "email",
+    value: string,
+  ) => {
+    setGuests((current) =>
+      current.map((guest) =>
+        guest.localId === localId
+          ? { ...guest, [key]: value.slice(0, key === "email" ? 320 : 50) }
+          : guest,
+      ),
+    );
+  };
+
+  const removeGuest = (localId: string) => {
+    setGuests((current) =>
+      current.filter((guest) => guest.localId !== localId),
+    );
+  };
+
+  const toggleFriend = (userId: string) => {
+    setSelectedFriendIds((current) => {
+      if (current.includes(userId)) {
+        return current.filter((id) => id !== userId);
+      }
+      if (remainingCompanionSlots <= 0) return current;
+      return [...current, userId];
+    });
+  };
+
+  const submit = async () => {
+    if (
+      !canSubmit ||
+      isSubmitting ||
+      values.latitude == null ||
+      values.longitude == null
+    ) {
+      return;
+    }
+
+    const sportId = sports.find((sport) => sport.slug === values.sportSlug)?.id;
+
+    if (!sportId) {
+      showToast({
+        type: "error",
+        title: t("toast.sportNotFoundTitle"),
+        description: t("toast.sportNotFoundDescription"),
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { data, error } = await createEvent({
+        title: values.title.trim(),
+        description: values.description.trim(),
+        sportId,
+        eventDate: values.eventDate.toISOString(),
+        durationMinutes: values.durationMinutes,
+        maxParticipants: maxPlayersNumber,
+        minParticipantAge: minParticipantAgeNumber,
+        maxParticipantAge: maxParticipantAgeNumber,
+        participantGender: values.participantGender,
+        skillLevel: values.skillLevel,
+        isPaid: values.isPaid,
+        feeAmount: values.isPaid ? parseFeeAmount(values.feeAmountText) : null,
+        address: values.addressText.trim(),
+        latitude: values.latitude,
+        longitude: values.longitude,
+        recurrenceIntervalWeeks:
+          !isOrganizationEvent && values.isRecurring
+            ? values.recurrenceIntervalWeeks
+            : undefined,
+        recurrenceCount:
+          !isOrganizationEvent && values.isRecurring
+            ? values.recurrenceCount
+            : 1,
+        organizationId,
+      });
+
+      if (!data) {
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        showToast({
+          type: "error",
+          title: t("toast.publishFailedTitle"),
+          description: error?.message ?? t("toast.tryAgain"),
+        });
+        return;
+      }
+
+      if (!data.published) {
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        showToast({
+          type: "error",
+          title: t("toast.draftSavedTitle"),
+          description: error?.message ?? t("toast.draftSavedDescription"),
+        });
+        await assignIfNeeded(data.id);
+        router.replace(`/events/${data.id}`);
+        return;
+      }
+
+      const assignment = await assignIfNeeded(data.ids ?? [data.id]);
+
+      void Haptics.notificationAsync(
+        assignment.ok
+          ? Haptics.NotificationFeedbackType.Success
+          : Haptics.NotificationFeedbackType.Warning,
+      );
+      showToast({
+        type: assignment.ok ? "success" : "error",
+        title: assignment.ok
+          ? values.isRecurring
+            ? t("toast.seriesStartedTitle")
+            : t("toast.publishedTitle")
+          : t("toast.invitesFailedTitle"),
+        description: assignment.ok
+          ? values.isRecurring
+            ? t("toast.seriesDescription", {
+                count: values.recurrenceCount - 1,
+              })
+            : selectedFriendIds.length > 0
+              ? t("toast.friendInviteSent")
+              : t("toast.waitingForPlayers")
+          : t("toast.invitesFailedDescription", {
+              reason: assignment.reason,
+            }),
+      });
+
+      router.replace(`/events/${data.id}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  /**
+   * Davet/misafir atamasını yapar. Hata durumunda backend'in gerçek sebebini
+   * geri döner — yutulursa kullanıcı da biz de neden başarısız olduğunu
+   * göremiyoruz (ör. yaş aralığı, kapasite, arkadaşlık durumu).
+   */
+  const assignIfNeeded = async (
+    eventIds: string | string[],
+  ): Promise<{ ok: boolean; reason?: string }> => {
+    if (guests.length === 0 && selectedFriendIds.length === 0) {
+      return { ok: true };
+    }
+
+    const ids = Array.isArray(eventIds) ? eventIds : [eventIds];
+
+    try {
+      await Promise.all(
+        ids.map((eventId) =>
+          assignEventParticipants(eventId, {
+            guests: guests.map((guest) => ({
+              firstName: guest.firstName.trim(),
+              lastName: guest.lastName.trim(),
+              email: guest.email.trim().toLowerCase(),
+            })),
+            friendUserIds: selectedFriendIds,
+          }),
+        ),
+      );
+      return { ok: true };
+    } catch (assignError) {
+      return {
+        ok: false,
+        reason: getApiErrorMessage(
+          assignError,
+          t("toast.invitesGenericFailure"),
+        ),
+      };
+    }
+  };
+
+  return {
+    values,
+    update,
+    setLocation,
+    clearLocation,
+    organizationId,
+    setOrganizationId,
+    wantsOrganizationEvent,
+    setOrganizationIntent,
+    organizations,
+    hasOrganizations,
+    isOrganizationLocked,
+    isStep1Valid,
+    isStep2Valid,
+    isStep3Valid,
+    isStep4Valid,
+    areGuestsValid,
+    canSubmit,
+    isSubmitting,
+    isSportsLoading,
+    sportOptions,
+    sportGroups,
+    friends,
+    isFriendsLoading,
+    guests,
+    selectedFriendIds,
+    remainingCompanionSlots,
+    addGuest,
+    updateGuest,
+    removeGuest,
+    toggleFriend,
+    submit,
+  };
+}

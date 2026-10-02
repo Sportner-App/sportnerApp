@@ -2,7 +2,6 @@ import {
   edgeBackStackOptions,
   fullScreenBackStackOptions,
 } from "@/constants/navigation";
-import { AnimatedSplashScreen } from "@/components/animated-splash-screen";
 import { AppProviders } from "@/contexts";
 import { LanguagePreferenceProvider } from "@/contexts/language-preference-provider";
 import {
@@ -31,8 +30,9 @@ import {
 } from "react-native-keyboard-controller";
 import "react-native-reanimated";
 import "../global.css";
-import { configureForegroundNotifications } from "@/services/push-notifications-service";
-import { configureMapbox } from "@/services/mapbox";
+import { configureForegroundNotifications } from "@/features/notifications/services/push-notifications-service";
+import { configureMapbox } from "@/lib/mapbox";
+import { AnimatedSplashScreen } from "@/components";
 
 export { ErrorBoundary } from "expo-router";
 

@@ -1,7 +1,7 @@
 # API katmanı
 
 Backend iletişiminin altyapısı burada tutulur. Ekran ve hook'lar doğrudan
-`apiClient` çağırmamalı; her domain kendi `src/services/*-service.ts`
+`apiClient` çağırmamalı; her feature kendi `src/features/<ad>/services/*-service.ts`
 dosyasını kullanmalıdır.
 
 - `client.ts`: Base URL, timeout, token, GET/POST/PUT/PATCH/DELETE, 401 ve

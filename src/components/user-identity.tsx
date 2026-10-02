@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Pressable, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Avatar } from "./avatar";
 import { AppText as Text } from "@/components/app-text";
@@ -25,12 +26,14 @@ export function UserIdentity({
   trailing,
 }: UserIdentityProps) {
   const normalizedUsername = username?.trim();
-  const label = normalizedUsername ? `@${normalizedUsername}` : "Sporcu";
+  const { t } = useTranslation("events");
+  const athlete = t("fallback.athlete");
+  const label = normalizedUsername ? `@${normalizedUsername}` : athlete;
   const content = (
     <>
       <Avatar
         uri={avatarUrl}
-        name={fallbackName?.trim() || normalizedUsername || "Sporcu"}
+        name={fallbackName?.trim() || normalizedUsername || athlete}
         size={avatarSize}
         borderWidth={0}
       />

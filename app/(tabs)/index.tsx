@@ -1,1 +1,1 @@
-export { HomeScreen as default } from "@/pages/home";
+export { HomeScreen as default } from "@/features/events/screens/home-screen";

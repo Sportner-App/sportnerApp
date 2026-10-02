@@ -1,11 +1,11 @@
 import type { PropsWithChildren } from "react";
 
-import { AuthProvider } from "./auth-provider";
-import { FirstLaunchProvider } from "./first-launch-provider";
+import { AuthProvider } from "@/features/auth/session/auth-provider";
+import { FirstLaunchProvider } from "@/features/first-launch/first-launch-provider";
 import { LanguageSyncBridge } from "./language-sync-bridge";
-import { PendingAttendancePrompt } from "./pending-attendance-prompt";
-import { PushNotificationsProvider } from "./push-notifications-provider";
-import { SessionProvider } from "./session-provider";
+import { PendingAttendancePrompt } from "@/features/events/components/pending-attendance-prompt";
+import { PushNotificationsProvider } from "@/features/notifications/push-notifications-provider";
+import { SessionProvider } from "@/features/auth/session/session-provider";
 import { ToastProvider } from "./toast-provider";
 
 export function AppProviders({ children }: PropsWithChildren) {
@@ -26,9 +26,15 @@ export function AppProviders({ children }: PropsWithChildren) {
   );
 }
 
-export { AuthContext, useAuth } from "./auth-context";
-export { FirstLaunchContext, useFirstLaunch } from "./first-launch-context";
-export { SessionContext, useSession } from "./session-context";
+export { AuthContext, useAuth } from "@/features/auth/session/auth-context";
+export {
+  FirstLaunchContext,
+  useFirstLaunch,
+} from "@/features/first-launch/first-launch-context";
+export {
+  SessionContext,
+  useSession,
+} from "@/features/auth/session/session-context";
 export { useToast } from "./toast-provider";
 export { AppTourProvider, useAppTour } from "./app-tour-context";
 export {

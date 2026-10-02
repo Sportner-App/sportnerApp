@@ -1,1 +1,1 @@
-export { DiscoverScreen as default } from "@/pages/discover";
+export { DiscoverScreen as default } from "@/features/discover/screens/discover-screen";

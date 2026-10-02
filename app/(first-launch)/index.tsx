@@ -1,1 +1,1 @@
-export { WelcomeScreen as default } from "@/pages/first-launch";
+export { WelcomeScreen as default } from "@/features/first-launch/screens/welcome-screen";

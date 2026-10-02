@@ -9,8 +9,7 @@ import {
 } from "react";
 
 import i18n, { detectDeviceLanguage, type AppLanguage } from "@/i18n";
-
-const STORAGE_KEY = "sportner:language-preference";
+import { STORAGE_KEYS } from "@/constants/storage-keys";
 
 export type LanguagePreference = AppLanguage;
 
@@ -27,16 +26,21 @@ export function LanguagePreferenceProvider({ children }: PropsWithChildren) {
   const resolvedLanguage = preference;
 
   useEffect(() => {
-    void AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
-      if (stored === "tr" || stored === "en") {
-        setPreferenceState(stored);
-        return;
-      }
+    void AsyncStorage.getItem(STORAGE_KEYS.languagePreference).then(
+      (stored) => {
+        if (stored === "tr" || stored === "en") {
+          setPreferenceState(stored);
+          return;
+        }
 
-      const deviceLanguage = detectDeviceLanguage();
-      setPreferenceState(deviceLanguage);
-      void AsyncStorage.setItem(STORAGE_KEY, deviceLanguage);
-    });
+        const deviceLanguage = detectDeviceLanguage();
+        setPreferenceState(deviceLanguage);
+        void AsyncStorage.setItem(
+          STORAGE_KEYS.languagePreference,
+          deviceLanguage,
+        );
+      },
+    );
   }, []);
 
   useEffect(() => {
@@ -47,7 +51,7 @@ export function LanguagePreferenceProvider({ children }: PropsWithChildren) {
 
   const setPreference = (value: LanguagePreference) => {
     setPreferenceState(value);
-    void AsyncStorage.setItem(STORAGE_KEY, value);
+    void AsyncStorage.setItem(STORAGE_KEYS.languagePreference, value);
   };
 
   const value = useMemo(

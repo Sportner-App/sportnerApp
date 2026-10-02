@@ -1,24 +1,14 @@
 import { Redirect } from "expo-router";
 
-import { useAuth, useFirstLaunch } from "@/contexts";
-import { getStartupDestination, STARTUP_HREF } from "@/utils/startup";
+import { useStartupDestination } from "@/features/auth/hooks/use-startup-destination";
+import { STARTUP_HREF } from "@/features/auth/startup";
 
 export default function Index() {
-  const { isReady, isAuthenticated, isEmailVerified, isOnboarded } = useAuth();
-  const { isReady: isFirstLaunchReady, hasSeenOnboarding, isEnteringAuth } =
-    useFirstLaunch();
+  const destination = useStartupDestination();
 
-  if (!isReady || !isFirstLaunchReady) {
+  if (!destination) {
     return null;
   }
-
-  const destination = getStartupDestination({
-    isAuthenticated,
-    isEmailVerified,
-    isOnboarded,
-    hasSeenOnboarding,
-    isEnteringAuth,
-  });
 
   return <Redirect href={STARTUP_HREF[destination]} />;
 }

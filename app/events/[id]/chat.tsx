@@ -1,1 +1,1 @@
-export { EventChatScreen as default } from "@/pages/event-chat/event-chat-screen";
+export { EventChatScreen as default } from "@/features/messaging/screens/chat-screen";

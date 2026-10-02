@@ -1,1 +1,1 @@
-export { BadgesScreen as default } from "@/pages/badges/badges-screen";
+export { BadgesScreen as default } from "@/features/gamification/screens/badges-screen";

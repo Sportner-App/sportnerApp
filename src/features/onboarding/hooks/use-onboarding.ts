@@ -1,0 +1,468 @@
+import { useRouter } from "expo-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+
+import {
+  ONBOARDING_SEARCH_DEBOUNCE_MS,
+  ONBOARDING_SEARCH_MIN_CHARS,
+  useOnboardingCopy,
+} from "@/features/onboarding/copy";
+import { useSession, useToast } from "@/contexts";
+import i18n from "@/i18n";
+import { useCities } from "@/features/location/hooks/use-cities";
+import { apiClient } from "@/lib/api/client";
+import { getApiErrorMessage } from "@/lib/api/errors";
+import {
+  addMySportSafe,
+  completeOnboarding,
+  createMyProfile,
+  markLocalOnboardingComplete,
+  upsertOnboardingProfileDetails,
+} from "@/features/onboarding/services/onboarding-service";
+import {
+  updatePersonalDetails,
+  uploadAvatar,
+} from "@/features/profile/services/profile-service";
+import { listSports } from "@/features/sports/services/sports-service";
+import { useSportCategories } from "@/features/sports/hooks/use-sport-categories";
+import type {
+  OnboardingSportDraft,
+  OnboardingStep,
+} from "@/features/onboarding/types";
+import type { Sport } from "@/features/sports/types";
+import {
+  mediaDeniedMessage,
+  pickProfileImage,
+  type MediaSource,
+  type PickedMedia,
+} from "@/utils/media-picker";
+import {
+  formatBirthDateInput,
+  isAllowedBirthDate,
+  parseBirthDate,
+  toApiBirthDate,
+} from "@/utils/birth-date";
+import {
+  PERSON_NAME_MAX_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+  USERNAME_PATTERN,
+} from "@/constants/validation";
+
+type IdentityFieldErrors = {
+  username?: string;
+  firstName?: string;
+  birthDate?: string;
+};
+
+/** Gender isn't collected on the social-signup identity step; default to "prefer not to say". */
+const DEFAULT_IDENTITY_GENDER = 0;
+
+const TURKISH_CHAR_MAP: Record<string, string> = {
+  ç: "c",
+  ğ: "g",
+  ı: "i",
+  ö: "o",
+  ş: "s",
+  ü: "u",
+};
+
+function suggestUsername(firstName?: string, lastName?: string) {
+  const base = `${firstName ?? ""}${lastName ?? ""}`
+    .toLowerCase()
+    .replace(/[çğıöşü]/g, (char) => TURKISH_CHAR_MAP[char] ?? char)
+    .replace(/[^a-z0-9]/g, "")
+    .slice(0, 20);
+
+  const suffix = Math.floor(1000 + Math.random() * 9000);
+
+  return `${base || i18n.t("events:fallback.athleteHandle")}${suffix}`;
+}
+
+export function useOnboarding() {
+  const router = useRouter();
+  const { refreshSession, user } = useSession();
+  const { showToast } = useToast();
+  const { t } = useTranslation("onboarding");
+  const ONBOARDING_COPY = useOnboardingCopy();
+
+  // Username and birth date are completed before a social-auth session is created.
+  // Starting from the sports step also avoids briefly rendering a duplicate identity
+  // screen while the persisted session user is still hydrating.
+  const [step, setStep] = useState<OnboardingStep>("sports");
+  const [username, setUsername] = useState(() =>
+    suggestUsername(user?.firstName, user?.lastName),
+  );
+  const [firstName, setFirstName] = useState(user?.firstName ?? "");
+  const [lastName, setLastName] = useState(user?.lastName ?? "");
+  const [birthDateState, setBirthDateState] = useState("");
+  const [identityFieldErrors, setIdentityFieldErrors] =
+    useState<IdentityFieldErrors>({});
+  const [isIdentitySubmitting, setIsIdentitySubmitting] = useState(false);
+  const [sports, setSports] = useState<Sport[]>([]);
+  const [isSportsLoading, setIsSportsLoading] = useState(true);
+  const [selected, setSelected] = useState<OnboardingSportDraft[]>([]);
+  const [primarySportId, setPrimarySportId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [groupKey, setGroupKey] = useState("all");
+  const [editingSportId, setEditingSportId] = useState<string | null>(null);
+  const [city, setCity] = useState("");
+  const [bio, setBio] = useState("");
+  const [avatar, setAvatar] = useState<PickedMedia | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    options: cityOptions,
+    isLoading: isCitiesLoading,
+    error: citiesError,
+  } = useCities();
+  const { categories: sportCategories } = useSportCategories();
+
+  const requestIdRef = useRef(0);
+
+  useEffect(() => {
+    const trimmed = query.trim();
+
+    // 1 char: wait for 2nd (or clear) — do not hit the API.
+    if (trimmed.length > 0 && trimmed.length < ONBOARDING_SEARCH_MIN_CHARS) {
+      return;
+    }
+
+    const search =
+      trimmed.length >= ONBOARDING_SEARCH_MIN_CHARS ? trimmed : undefined;
+    const delayMs = search ? ONBOARDING_SEARCH_DEBOUNCE_MS : 0;
+
+    const timer = setTimeout(() => {
+      const requestId = ++requestIdRef.current;
+      setIsSportsLoading(true);
+
+      void (async () => {
+        try {
+          const catalog = await listSports({
+            search,
+            page: 1,
+            pageSize: 50,
+          });
+          if (requestId !== requestIdRef.current) {
+            return;
+          }
+          setSports(catalog);
+        } catch (error) {
+          if (requestId !== requestIdRef.current) {
+            return;
+          }
+          showToast({
+            type: "error",
+            title: t("sports.loadFailed"),
+            description: getApiErrorMessage(error),
+          });
+        } finally {
+          if (requestId === requestIdRef.current) {
+            setIsSportsLoading(false);
+          }
+        }
+      })();
+    }, delayMs);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [query, showToast, t]);
+
+  const canContinueSports = selected.length > 0 && Boolean(primarySportId);
+
+  const isSearchTooShort =
+    query.trim().length > 0 &&
+    query.trim().length < ONBOARDING_SEARCH_MIN_CHARS;
+
+  const filteredSports = useMemo(() => {
+    const sorted = [...sports].sort((a, b) => a.displayOrder - b.displayOrder);
+
+    if (groupKey === "all") {
+      return sorted;
+    }
+
+    return sorted.filter((sport) => sport.categoryId === groupKey);
+  }, [groupKey, sports]);
+
+  const editingDraft = useMemo(
+    () => selected.find((item) => item.sportId === editingSportId) ?? null,
+    [editingSportId, selected],
+  );
+
+  const toggleSport = (sport: Sport) => {
+    setSelected((prev) => {
+      const exists = prev.find((item) => item.sportId === sport.id);
+      if (exists) {
+        const next = prev.filter((item) => item.sportId !== sport.id);
+        setPrimarySportId((current) => {
+          if (current !== sport.id) {
+            return current;
+          }
+          return next[0]?.sportId ?? null;
+        });
+        setEditingSportId((current) =>
+          current === sport.id ? (next[0]?.sportId ?? null) : current,
+        );
+        return next;
+      }
+
+      const draft: OnboardingSportDraft = {
+        sportId: sport.id,
+        sportSlug: sport.slug,
+        sportName: sport.name,
+        skillLevel: 1,
+      };
+
+      setPrimarySportId((current) => current ?? sport.id);
+      setEditingSportId(sport.id);
+      return [...prev, draft];
+    });
+  };
+
+  const setSportSkill = (sportId: string, skillLevel: number) => {
+    setSelected((prev) =>
+      prev.map((item) =>
+        item.sportId === sportId ? { ...item, skillLevel } : item,
+      ),
+    );
+  };
+
+  const goToDetails = () => {
+    if (!canContinueSports) {
+      showToast({
+        type: "error",
+        title: ONBOARDING_COPY.toasts.sportRequiredTitle,
+        description: ONBOARDING_COPY.toasts.sportRequiredDescription,
+      });
+      return;
+    }
+
+    setEditingSportId(null);
+    setStep("details");
+  };
+
+  const chooseAvatar = async (source: MediaSource) => {
+    const picked = await pickProfileImage(source);
+    if (picked === "denied") {
+      showToast({
+        type: "error",
+        title: ONBOARDING_COPY.toasts.permissionRequired,
+        description: mediaDeniedMessage(source),
+      });
+      return;
+    }
+    if (picked === "cancelled") {
+      return;
+    }
+    setAvatar(picked);
+  };
+
+  const setBirthDate = (value: string) => {
+    setBirthDateState(formatBirthDateInput(value));
+  };
+
+  const submitIdentity = async () => {
+    if (isIdentitySubmitting) {
+      return;
+    }
+
+    const trimmedUsername = username.trim();
+    const trimmedFirstName = firstName.trim();
+    const trimmedLastName = lastName.trim();
+    const parsedBirthDate = parseBirthDate(birthDateState);
+
+    const errors: IdentityFieldErrors = {};
+
+    if (!trimmedUsername) {
+      errors.username = t("identity.validation.usernameRequired");
+    } else if (trimmedUsername.length < USERNAME_MIN_LENGTH) {
+      errors.username = t("identity.validation.usernameMinLength");
+    } else if (trimmedUsername.length > USERNAME_MAX_LENGTH) {
+      errors.username = t("identity.validation.usernameMaxLength");
+    } else if (!USERNAME_PATTERN.test(trimmedUsername)) {
+      errors.username = t("identity.validation.usernamePattern");
+    }
+
+    if (!trimmedFirstName) {
+      errors.firstName = t("identity.validation.firstNameRequired");
+    } else if (trimmedFirstName.length > PERSON_NAME_MAX_LENGTH) {
+      errors.firstName = t("identity.validation.firstNameMaxLength");
+    }
+
+    if (!birthDateState.trim()) {
+      errors.birthDate = t("identity.validation.birthDateRequired");
+    } else if (!parsedBirthDate) {
+      errors.birthDate = t("identity.validation.birthDateFormat");
+    } else if (!isAllowedBirthDate(parsedBirthDate)) {
+      errors.birthDate = t("identity.validation.birthDateRange");
+    }
+
+    setIdentityFieldErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
+
+    setIsIdentitySubmitting(true);
+
+    try {
+      const normalizedUsername = trimmedUsername.toLowerCase();
+
+      await createMyProfile({
+        username: normalizedUsername,
+        firstName: trimmedFirstName,
+        lastName: trimmedLastName || null,
+      });
+      await updatePersonalDetails(
+        DEFAULT_IDENTITY_GENDER,
+        toApiBirthDate(birthDateState),
+      );
+
+      const currentUser = await apiClient.getUser();
+      await apiClient.setUser({
+        ...currentUser,
+        username: normalizedUsername,
+        firstName: trimmedFirstName,
+        lastName: trimmedLastName || undefined,
+      });
+      await refreshSession?.();
+
+      setStep("sports");
+    } catch (error) {
+      showToast({
+        type: "error",
+        title: t("identity.saveFailed"),
+        description: getApiErrorMessage(
+          error,
+          t("identity.saveFailedDescription"),
+        ),
+      });
+    } finally {
+      setIsIdentitySubmitting(false);
+    }
+  };
+
+  const finish = async () => {
+    if (!canContinueSports || isSubmitting) {
+      return;
+    }
+
+    if (!avatar && !user?.avatarUrl) {
+      showToast({
+        type: "error",
+        title: ONBOARDING_COPY.toasts.photoRequiredTitle,
+        description: ONBOARDING_COPY.toasts.photoRequiredDescription,
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // One POST per selected sport (API has no batch endpoint).
+      await Promise.all(
+        selected.map((sport) =>
+          addMySportSafe({
+            sportId: sport.sportId,
+            skillLevel: sport.skillLevel,
+            isPrimary: sport.sportId === primarySportId,
+          }),
+        ),
+      );
+
+      await upsertOnboardingProfileDetails({
+        city: city.trim() || undefined,
+        bio: bio.trim() || undefined,
+        username: user?.username,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+      });
+
+      if (avatar) {
+        await uploadAvatar(avatar);
+      }
+
+      const { error } = await completeOnboarding();
+
+      if (error) {
+        showToast({
+          type: "error",
+          title: ONBOARDING_COPY.toasts.completeFailedTitle,
+          description: error.message,
+        });
+        return;
+      }
+
+      await markLocalOnboardingComplete();
+      await refreshSession?.();
+
+      showToast({
+        type: "success",
+        title: ONBOARDING_COPY.toasts.successTitle,
+        description: ONBOARDING_COPY.toasts.successDescription,
+      });
+
+      router.replace("/(tabs)");
+    } catch (error) {
+      showToast({
+        type: "error",
+        title: ONBOARDING_COPY.toasts.completeFailedTitle,
+        description: getApiErrorMessage(
+          error,
+          ONBOARDING_COPY.toasts.saveFailed,
+        ),
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return {
+    step,
+    setStep,
+    username,
+    setUsername,
+    firstName,
+    setFirstName,
+    lastName,
+    setLastName,
+    identityBirthDate: birthDateState,
+    setIdentityBirthDate: setBirthDate,
+    identityFieldErrors,
+    isIdentitySubmitting,
+    submitIdentity,
+    sports,
+    filteredSports,
+    sportCategories,
+    isSportsLoading,
+    isSearchTooShort,
+    selected,
+    primarySportId,
+    setPrimarySportId,
+    query,
+    setQuery,
+    groupKey,
+    setGroupKey,
+    editingSportId,
+    setEditingSportId,
+    editingDraft,
+    city,
+    setCity,
+    cityOptions,
+    isCitiesLoading,
+    citiesError,
+    bio,
+    setBio,
+    avatar,
+    existingAvatarUrl: user?.avatarUrl ?? null,
+    chooseAvatar,
+    clearAvatar: () => setAvatar(null),
+    isSubmitting,
+    canContinueSports,
+    canFinish: canContinueSports && Boolean(avatar || user?.avatarUrl),
+    toggleSport,
+    setSportSkill,
+    goToDetails,
+    finish,
+  };
+}

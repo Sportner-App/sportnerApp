@@ -12,6 +12,8 @@ import {
 } from "react";
 import type { View } from "react-native";
 
+import { STORAGE_KEYS } from "@/constants/storage-keys";
+
 export type AppTourTarget = "create" | "conversations" | "discover";
 
 type AppTourContextValue = {
@@ -25,7 +27,6 @@ type AppTourContextValue = {
   dismiss: () => void;
 };
 
-const STORAGE_KEY = "sportner:app-tour:v1";
 const TARGETS: AppTourTarget[] = ["create", "conversations", "discover"];
 const AppTourContext = createContext<AppTourContextValue | null>(null);
 
@@ -41,7 +42,7 @@ export function AppTourProvider({
     if (!autoStart) return;
     let active = true;
     const timer = setTimeout(() => {
-      void AsyncStorage.getItem(STORAGE_KEY).then((seen) => {
+      void AsyncStorage.getItem(STORAGE_KEYS.appTourSeen).then((seen) => {
         if (active && seen !== "true") setIsVisible(true);
       });
     }, 750);
@@ -62,7 +63,7 @@ export function AppTourProvider({
   const dismiss = useCallback(() => {
     setIsVisible(false);
     setStep(0);
-    void AsyncStorage.setItem(STORAGE_KEY, "true");
+    void AsyncStorage.setItem(STORAGE_KEYS.appTourSeen, "true");
   }, []);
 
   const value = useMemo<AppTourContextValue>(
