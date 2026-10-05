@@ -124,14 +124,6 @@ function ThemedRootLayoutNav() {
               <Stack.Screen name="(onboarding)" />
               <Stack.Screen name="events" options={edgeBackStackOptions} />
               <Stack.Screen name="users/[id]" />
-              <Stack.Screen name="notifications" />
-              <Stack.Screen name="profile" />
-              <Stack.Screen name="friends" />
-              <Stack.Screen name="conversations" />
-              <Stack.Screen name="people" />
-              <Stack.Screen name="feed" />
-              <Stack.Screen name="posts" />
-              <Stack.Screen name="badges" />
               <Stack.Screen name="albums" />
               <Stack.Screen name="report" />
               <Stack.Screen name="help" />
