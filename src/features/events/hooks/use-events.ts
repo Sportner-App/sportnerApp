@@ -44,6 +44,15 @@ export type EventFeedOrigin = {
   longitude: number;
 } | null;
 
+type FetchMode = "initial" | "refresh" | "silent" | "more";
+
+type EventQuery = {
+  /** Chip satırındaki kategori (null = Tümü). */
+  categoryId: string | null;
+  filters: EventListFilters;
+  scope: EventFeedScope;
+};
+
 export function useEvents(
   initialScope: EventFeedScope = "all",
   initialOrganizationId: string | null = null,
@@ -71,31 +80,50 @@ export function useEvents(
   const originRef = useRef(origin);
   originRef.current = origin;
 
+  // Odak ve konum tazelemeleri en güncel sorguyu buradan okur; böylece
+  // useFocusEffect yalnızca gerçek focus/blur geçişlerinde tetiklenir, her
+  // filtre değişiminde değil (o değişimler zaten kendi fetchPage çağrısını yapar).
+  const queryRef = useRef<EventQuery>({
+    categoryId: categoryFilter,
+    filters,
+    scope,
+  });
+  queryRef.current = { categoryId: categoryFilter, filters, scope };
+
+  // Filtre hızla değiştiğinde eski isteğin geç gelen yanıtı yeni listeyi
+  // ezmesin, eski filtrenin "daha fazla" sayfası yeni listeye eklenmesin.
+  const requestIdRef = useRef(0);
+  const latestModeRef = useRef<FetchMode>("initial");
+
   const fetchPage = useCallback(
-    async (
-      mode: "initial" | "refresh" | "silent" | "more",
-      activeCategoryId: string | null,
-      nextPage: number,
-      activeFilters: EventListFilters,
-      activeScope: EventFeedScope,
-    ) => {
-      if (mode === "initial") {
-        setIsLoading(true);
-      } else if (mode === "refresh") {
-        setIsRefreshing(true);
-      } else if (mode === "more") {
-        setIsLoadingMore(true);
-      }
+    async (mode: FetchMode, query: EventQuery, nextPage: number) => {
+      const requestId = ++requestIdRef.current;
+      latestModeRef.current = mode;
+      const isLatest = () => requestId === requestIdRef.current;
+      const setFlag =
+        mode === "initial"
+          ? setIsLoading
+          : mode === "refresh"
+            ? setIsRefreshing
+            : mode === "more"
+              ? setIsLoadingMore
+              : null;
+      setFlag?.(true);
 
       try {
         setError(null);
+        const {
+          categoryId,
+          filters: activeFilters,
+          scope: activeScope,
+        } = query;
         const activeOrigin = originRef.current;
         // Konum verilirse backend listeyi yakından uzağa sıralar; "time" seçiliyken
         // konumu hiç göndermiyoruz ki backend tarihe göre sıralamaya düşsün.
         const useLocationSort = activeFilters.sortBy !== "time";
         const result = await getEvents({
           sportId: activeFilters.sportId ?? undefined,
-          sportCategoryId: activeCategoryId ?? undefined,
+          sportCategoryId: categoryId ?? undefined,
           city: activeFilters.city ?? undefined,
           lat: useLocationSort ? activeOrigin?.latitude : undefined,
           lng: useLocationSort ? activeOrigin?.longitude : undefined,
@@ -119,6 +147,7 @@ export function useEvents(
               ? (activeFilters.organizationId ?? undefined)
               : undefined,
         });
+        if (!isLatest()) return;
 
         setEvents((prev) =>
           mode === "more" ? [...prev, ...result.items] : result.items,
@@ -127,6 +156,7 @@ export function useEvents(
         setPage(result.page);
         setHasNext(result.hasNext);
       } catch (err) {
+        if (!isLatest()) return;
         setError(getApiErrorMessage(err, t("loadFailed")));
         if (mode === "initial") {
           setEvents([]);
@@ -134,46 +164,19 @@ export function useEvents(
           setHasNext(false);
         }
       } finally {
-        if (mode === "initial") {
-          setIsLoading(false);
-        } else if (mode === "refresh") {
-          setIsRefreshing(false);
-        } else if (mode === "more") {
-          setIsLoadingMore(false);
+        // Aynı türden daha yeni bir istek sürüyorsa göstergeyi o kapatır.
+        if (isLatest() || latestModeRef.current !== mode) {
+          setFlag?.(false);
         }
       }
     },
     [t],
   );
 
-  // Ekran her odaklandığında (ör. etkinlik oluşturma/düzenlemeden geri
-  // dönüldüğünde) listeyi arka planda sessizce tazelemek için en güncel
-  // filtre/scope/kategori değerlerini ref'lerde tutuyoruz — böylece
-  // useFocusEffect yalnızca gerçek focus/blur geçişlerinde tetiklenir,
-  // her filtre değişiminde değil (o değişimler zaten kendi fetchPage
-  // çağrısını yapıyor).
-  const categoryFilterRef = useRef(categoryFilter);
-  const scopeRef = useRef(scope);
-  const filtersRef = useRef(filters);
-
-  useEffect(() => {
-    categoryFilterRef.current = categoryFilter;
-  }, [categoryFilter]);
-
-  useEffect(() => {
-    scopeRef.current = scope;
-  }, [scope]);
-
-  useEffect(() => {
-    filtersRef.current = filters;
-  }, [filters]);
-
   const hasLoadedRef = useRef(false);
 
   useFocusEffect(
     useCallback(() => {
-      let cancelled = false;
-
       // Odak, ekranlar arası native geçiş animasyonuyla aynı anda tetiklenir
       // (ör. etkinlik detayından geri dönüş). Ağır liste yeniden render'ını
       // hemen başlatmak o animasyonla JS thread'i paylaşıyor ve bazı
@@ -181,33 +184,12 @@ export function useEvents(
       // ekranın alt kısmı yeni listenin üstünde kalıyor. Etkileşimler
       // (geçiş dahil) bitene kadar erteleyerek bu yarışı ortadan kaldırıyoruz.
       const task = InteractionManager.runAfterInteractions(() => {
-        void (async () => {
-          const isFirstLoad = !hasLoadedRef.current;
-          hasLoadedRef.current = true;
-
-          try {
-            await fetchPage(
-              isFirstLoad ? "initial" : "silent",
-              categoryFilterRef.current,
-              1,
-              filtersRef.current,
-              scopeRef.current,
-            );
-          } catch (err) {
-            if (cancelled) {
-              return;
-            }
-
-            setError(getApiErrorMessage(err, t("loadFailed")));
-            setIsLoading(false);
-          }
-        })();
+        const isFirstLoad = !hasLoadedRef.current;
+        hasLoadedRef.current = true;
+        void fetchPage(isFirstLoad ? "initial" : "silent", queryRef.current, 1);
       });
 
-      return () => {
-        cancelled = true;
-        task.cancel();
-      };
+      return () => task.cancel();
     }, [fetchPage]),
   );
 
@@ -226,54 +208,60 @@ export function useEvents(
     }
     lastOriginKeyRef.current = originKey;
 
-    if (!hasLoadedRef.current || filtersRef.current.sortBy === "time") {
+    if (!hasLoadedRef.current || queryRef.current.filters.sortBy === "time") {
       return;
     }
 
-    void fetchPage(
-      "refresh",
-      categoryFilterRef.current,
-      1,
-      filtersRef.current,
-      scopeRef.current,
-    );
+    void fetchPage("refresh", queryRef.current, 1);
   }, [fetchPage, originKey]);
 
   const refresh = useCallback(() => {
-    void fetchPage("refresh", categoryFilter, 1, filters, scope);
-  }, [categoryFilter, fetchPage, filters, scope]);
+    void fetchPage("refresh", queryRef.current, 1);
+  }, [fetchPage]);
 
   const loadMore = useCallback(() => {
     if (!hasNext || isLoadingMore) {
       return;
     }
-    void fetchPage("more", categoryFilter, page + 1, filters, scope);
-  }, [categoryFilter, fetchPage, filters, hasNext, isLoadingMore, page, scope]);
+    void fetchPage("more", queryRef.current, page + 1);
+  }, [fetchPage, hasNext, isLoadingMore, page]);
 
   const changeCategoryFilter = useCallback(
     (nextCategoryId: string | null) => {
       setCategoryFilter(nextCategoryId);
-      void fetchPage("initial", nextCategoryId, 1, filters, scope);
+      void fetchPage(
+        "initial",
+        { ...queryRef.current, categoryId: nextCategoryId },
+        1,
+      );
     },
-    [fetchPage, filters, scope],
+    [fetchPage],
   );
 
   const applyFilters = useCallback(
     (nextFilters: EventListFilters) => {
       setFilters(nextFilters);
-      void fetchPage("initial", categoryFilter, 1, nextFilters, scope);
+      void fetchPage(
+        "initial",
+        { ...queryRef.current, filters: nextFilters },
+        1,
+      );
     },
-    [categoryFilter, fetchPage, scope],
+    [fetchPage],
   );
 
   const changeScope = useCallback(
     (nextScope: EventFeedScope) => {
-      const nextFilters = { ...filters, organizationId: null };
+      const nextFilters = { ...queryRef.current.filters, organizationId: null };
       setScope(nextScope);
       setFilters(nextFilters);
-      void fetchPage("initial", categoryFilter, 1, nextFilters, nextScope);
+      void fetchPage(
+        "initial",
+        { ...queryRef.current, filters: nextFilters, scope: nextScope },
+        1,
+      );
     },
-    [categoryFilter, fetchPage, filters],
+    [fetchPage],
   );
 
   return {
