@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api/client";
+import { isApiError } from "@/lib/api/errors";
 import type {
   ListSportsParams,
   Sport,
@@ -73,7 +74,11 @@ export async function getSportBySlug(slug: string): Promise<Sport | null> {
       `/api/sports/${encodeURIComponent(slug)}`,
     );
     return response.data ?? null;
-  } catch {
-    return null;
+  } catch (error) {
+    // Yalnızca "böyle bir spor yok" null'dır; ağ/sunucu hatası çağırana gider.
+    if (isApiError(error) && error.status === 404) {
+      return null;
+    }
+    throw error;
   }
 }

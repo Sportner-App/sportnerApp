@@ -105,7 +105,6 @@ export function OrganizationDetailScreen() {
 
   const { isLoading, isRefreshing, refresh } = useRefreshableLoad(load, {
     trigger: "focus",
-    refocusMode: "initial",
   });
 
   const copyCode = async () => {

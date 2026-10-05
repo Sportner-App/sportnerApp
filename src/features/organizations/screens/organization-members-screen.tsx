@@ -104,7 +104,6 @@ export function OrganizationMembersScreen() {
 
   const { isLoading, isRefreshing, refresh } = useRefreshableLoad(load, {
     trigger: "focus",
-    refocusMode: "initial",
   });
 
   const runMemberAction = async (
