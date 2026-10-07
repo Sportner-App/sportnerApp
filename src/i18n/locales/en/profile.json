@@ -128,9 +128,9 @@
     "addedMany": "{{count}} sports added"
   },
   "privacy": {
-    "title": "PRIVACY",
-    "heading": "Privacy",
-    "subtitle": "Privacy and security settings for your account.",
+    "title": "ACCOUNT",
+    "heading": "Account",
+    "subtitle": "Email verification, blocked people and account deletion.",
     "blockedTitle": "Blocked",
     "blockedDescription": "View blocked users and remove blocks.",
     "emailVerification": {
@@ -152,7 +152,7 @@
       "verifyFailed": "Could not verify email"
     },
     "deleteAccount": {
-      "sectionTitle": "Danger zone",
+      "sectionTitle": "Account deletion",
       "title": "Delete account",
       "description": "Deleting your account hides your profile, friendships, and event history, and you won't be able to sign in with it again.",
       "sheetTitle": "Are you sure you want to delete your account?",

@@ -128,9 +128,9 @@
     "addedMany": "{{count}} spor eklendi"
   },
   "privacy": {
-    "title": "GİZLİLİK",
-    "heading": "Gizlilik",
-    "subtitle": "Hesabınla ilgili gizlilik ve güvenlik ayarları.",
+    "title": "HESAP",
+    "heading": "Hesap",
+    "subtitle": "E-posta doğrulama, engellenenler ve hesap silme.",
     "blockedTitle": "Engellenenler",
     "blockedDescription": "Engellediğin kişileri gör ve engeli kaldır.",
     "emailVerification": {
@@ -152,7 +152,7 @@
       "verifyFailed": "Email doğrulanamadı"
     },
     "deleteAccount": {
-      "sectionTitle": "Tehlikeli bölge",
+      "sectionTitle": "Hesap silme",
       "title": "Hesabı sil",
       "description": "Hesabını silersen profilin, arkadaşlıkların ve etkinlik geçmişin artık görünmez ve bu hesapla tekrar giriş yapamazsın.",
       "sheetTitle": "Hesabını silmek istediğine emin misin?",

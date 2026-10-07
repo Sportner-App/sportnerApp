@@ -89,7 +89,7 @@ export function useProfileMenuGroups(): ProfileMenuGroup[] {
         //   icon: "moon",
         // },
         { key: "language", label: t("language.tr"), icon: "globe" },
-        { key: "privacy", label: t("menu.privacy"), icon: "shield-halved" },
+        { key: "privacy", label: t("menu.privacy"), icon: "user-gear" },
         { key: "feedback", label: t("menu.feedback"), icon: "lightbulb" },
         { key: "help", label: t("menu.help"), icon: "circle-question" },
         {

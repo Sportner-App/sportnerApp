@@ -4,7 +4,10 @@
     "slug": "sportner",
     "version": "1.0.0",
     "orientation": "portrait",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "icon": "./assets/images/icon.png",
     "scheme": "sportner",
     "userInterfaceStyle": "dark",
@@ -20,8 +23,8 @@
         "LSApplicationQueriesSchemes": [
           "whatsapp"
         ],
-        "NSCameraUsageDescription": "Yeni fotoğraf çekmek için kamera erişimi gerekir.",
-        "NSPhotoLibraryUsageDescription": "Profil fotoğrafı ve gönderi eklemek için galeri erişimi gerekir."
+        "NSCameraUsageDescription": "Profil fotoğrafı çekmek ve gönderilerine, etkinlik albümlerine fotoğraf eklemek için kameranı kullanıyoruz. Örneğin katıldığın maçtan çektiğin kareyi o etkinliğin albümüne ekleyebilirsin. / Sportner uses your camera to take a profile photo and add photos to your posts and event albums — for example, a shot from a match you joined.",
+        "NSPhotoLibraryUsageDescription": "Profil fotoğrafını seçmek ve gönderilerine, etkinlik albümlerine, sohbetlerine fotoğraf eklemek için galerine erişiyoruz. Yalnızca senin seçtiğin fotoğraflar yüklenir. / Sportner accesses your photo library so you can set a profile photo and attach photos to posts, event albums and chats. Only the photos you select are uploaded."
       }
     },
     "android": {
