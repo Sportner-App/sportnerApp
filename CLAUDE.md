@@ -1,27 +1,25 @@
-## iOS: native proje elle yönetiliyor (bare workflow)
+## Native klasörler (`ios/`, `android/`)
 
-`ios/` klasörü repoda duruyor ve `expo prebuild` rutin olarak çalıştırılmıyor.
-Sonuç: **`app.json` > `expo.ios` altındaki ayarların çoğu build'e yansımaz** —
-native projeyi de elle güncellemek gerekir.
+`/ios` ve `/android` `.gitignore`'da, "generated native folders" başlığı
+altında. EAS'e yüklenmezler; **her build'de `expo prebuild` ile yeniden
+üretilirler.**
 
-İstisna: `version` ve `buildNumber`. `eas.json`'da `appVersionSource: "local"`
-olduğu için EAS bunları build sırasında `app.json`'dan native'e senkronlar.
+Sonuç: native ayarlar için **`app.json` tek doğru kaynak**. `expo.ios` /
+`expo.android` altındaki her şey (`supportsTablet`, `infoPlist` izin metinleri,
+`permissions`, plugin ayarları) build'e doğrudan yansır. `version` ve
+`buildNumber` de oradan okunur (`eas.json` > `appVersionSource: "local"`).
+
+Yereldeki `ios/` klasörü yalnızca `npx expo run:ios` içindir. Prebuild onu
+istediği zaman üzerine yazabilir, yani **oraya elle yapılan değişiklikler
+kalıcı değildir ve EAS build'ine hiç gitmez.** Değişikliği yerel dev build'de
+hemen görmek istiyorsan `ios/Sportner/Info.plist` gibi dosyaları elle
+eşitleyebilirsin, ama kaynak her zaman `app.json` olmalı.
 
 ### iPad desteğini açma/kapatma
 
-`supportsTablet` tek başına YETMEZ. Her ikisini birden değiştir:
-
-1. `app.json` > `expo.ios.supportsTablet`
-2. `ios/Sportner.xcodeproj/project.pbxproj` > `TARGETED_DEVICE_FAMILY`
-   (4 yerde: Sportner Debug/Release + notification-service Debug/Release)
-   - iPhone-only → `1`
-   - iPhone + iPad → `"1,2"`
-3. `ios/Sportner/Info.plist` > `UISupportedInterfaceOrientations~ipad`
-   iPad kapalıysa bu anahtar olmamalı
-
-Yalnızca `app.json` değiştirilirse build iPad destekli çıkmaya devam eder ve
-App Store Connect 13" iPad ekran görüntüsü istemeye devam eder.
-(29 Eyl 2026'da bu yüzden 42 numaralı build boşa gitti; 43 ile düzeldi.)
+`app.json` > `expo.ios.supportsTablet` yeterli. `false` iken prebuild
+`TARGETED_DEVICE_FAMILY = 1` üretir ve iPad'e özel yönelim anahtarlarını
+yazmaz; App Store Connect da 13" iPad ekran görüntüsü istemez.
 
 ## Ortam değişkenleri
 
