@@ -16,15 +16,13 @@
       "appleTeamId": "MN3MXLT7QL",
       "supportsTablet": false,
       "bundleIdentifier": "com.yagizerdenler.sportner",
-      "buildNumber": "44",
+      "buildNumber": "45",
       "infoPlist": {
         "CFBundleDisplayName": "Sportner",
         "ITSAppUsesNonExemptEncryption": false,
         "LSApplicationQueriesSchemes": [
           "whatsapp"
-        ],
-        "NSCameraUsageDescription": "Profil fotoğrafı çekmek ve gönderilerine, etkinlik albümlerine fotoğraf eklemek için kameranı kullanıyoruz. Örneğin katıldığın maçtan çektiğin kareyi o etkinliğin albümüne ekleyebilirsin. / Sportner uses your camera to take a profile photo and add photos to your posts and event albums — for example, a shot from a match you joined.",
-        "NSPhotoLibraryUsageDescription": "Profil fotoğrafını seçmek ve gönderilerine, etkinlik albümlerine, sohbetlerine fotoğraf eklemek için galerine erişiyoruz. Yalnızca senin seçtiğin fotoğraflar yüklenir. / Sportner accesses your photo library so you can set a profile photo and attach photos to posts, event albums and chats. Only the photos you select are uploaded."
+        ]
       }
     },
     "android": {
@@ -52,8 +50,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Profil fotoğrafı ve gönderi eklemek için galeri erişimi gerekir.",
-          "cameraPermission": "Yeni fotoğraf çekmek için kamera erişimi gerekir.",
+          "photosPermission": "Profil fotoğrafını seçmek ve gönderilerine, etkinlik albümlerine, sohbetlerine fotoğraf eklemek için galerine erişiyoruz. Yalnızca senin seçtiğin fotoğraflar yüklenir. / Sportner accesses your photo library so you can set a profile photo and attach photos to posts, event albums and chats. Only the photos you select are uploaded.",
+          "cameraPermission": "Profil fotoğrafı çekmek ve gönderilerine, etkinlik albümlerine fotoğraf eklemek için kameranı kullanıyoruz. Örneğin katıldığın maçtan çektiğin kareyi o etkinliğin albümüne ekleyebilirsin. / Sportner uses your camera to take a profile photo and add photos to your posts and event albums — for example, a shot from a match you joined.",
           "microphonePermission": false
         }
       ],

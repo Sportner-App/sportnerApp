@@ -15,6 +15,21 @@ kalıcı değildir ve EAS build'ine hiç gitmez.** Değişikliği yerel dev buil
 hemen görmek istiyorsan `ios/Sportner/Info.plist` gibi dosyaları elle
 eşitleyebilirsin, ama kaynak her zaman `app.json` olmalı.
 
+### İzin metinleri plugin ayarlarında tutulur
+
+`expo-image-picker` ve `expo-location` gibi config plugin'leri prebuild
+sırasında `ios.infoPlist`'ten **sonra** çalışır ve kendi izin metinlerini
+üzerine yazar. Yani bir izin metnini `infoPlist` altında güncellemek
+etkisizdir — plugin'in ayarı kazanır.
+
+Kamera ve galeri metinleri `plugins > expo-image-picker > cameraPermission /
+photosPermission`, konum metni `plugins > expo-location >
+locationWhenInUsePermission` altında. `infoPlist` yalnızca hiçbir plugin'in
+yazmadığı anahtarlar için kullanılır.
+
+(7 Eki 2026'da 44 numaralı build bu yüzden eski kamera metniyle çıktı ve
+Apple'ın 5.1.1-ii reddini kapatmadı.)
+
 ### iPad desteğini açma/kapatma
 
 `app.json` > `expo.ios.supportsTablet` yeterli. `false` iken prebuild
