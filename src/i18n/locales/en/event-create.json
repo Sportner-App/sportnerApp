@@ -106,6 +106,9 @@
   },
   "ageRange": {
     "label": "Participant age range",
+    "restrictionLabel": "Age limit",
+    "disclaimer": "Optional. If you set a limit, applicants are asked for their birth date.",
+    "restrict": "Set an age limit",
     "hint": "Drag the handles to adjust",
     "unit": "yrs",
     "minAccessibility": "Minimum participant age",
@@ -126,8 +129,7 @@
   },
   "summary": {
     "heading": "Event Summary",
-    "playersLabel": "{{count}} people",
-    "ageRange": "{{min}}–{{max}} yrs"
+    "playersLabel": "{{count}} people"
   },
   "companions": {
     "slotsAvailable": "{{count}} spots open",

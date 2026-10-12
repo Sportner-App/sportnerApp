@@ -1,4 +1,4 @@
-import { getApiErrorMessage } from "@/lib/api/errors";
+import { getApiErrorMessage, normalizeApiError } from "@/lib/api/errors";
 import type { EventActionResult } from "@/features/events/types";
 
 export async function eventAction(
@@ -10,7 +10,10 @@ export async function eventAction(
     return { error: null, data: null };
   } catch (error) {
     return {
-      error: { message: getApiErrorMessage(error, fallback) },
+      error: {
+        message: getApiErrorMessage(error, fallback),
+        code: normalizeApiError(error).code,
+      },
       data: null,
     };
   }

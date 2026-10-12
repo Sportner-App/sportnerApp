@@ -154,13 +154,13 @@ export function ProfileEditScreen() {
     }
 
     const usernameError = validateUsername(username);
-    const birthDateError = validateBirthDate(birthDate);
-    if (usernameError || birthDateError || !gender) {
+    // Gender and birth date are optional (App Store 5.1.1(v)).
+    const birthDateError = birthDate.trim() ? validateBirthDate(birthDate) : null;
+    if (usernameError || birthDateError) {
       showToast({
         type: "error",
         title: t("profile:edit.checkInfo"),
-        description:
-          usernameError || birthDateError || t("profile:edit.genderRequired"),
+        description: usernameError || birthDateError || undefined,
       });
       return;
     }
@@ -171,7 +171,10 @@ export function ProfileEditScreen() {
         await updateUsername(username.trim().toLowerCase());
       }
       await updateDisplayName(firstName.trim(), lastName.trim() || null);
-      await updatePersonalDetails(Number(gender), toApiBirthDate(birthDate));
+      await updatePersonalDetails(
+        gender ? Number(gender) : null,
+        birthDate.trim() ? toApiBirthDate(birthDate) : null,
+      );
       await updateBio(bio.trim() || null);
       await updateCity(city.trim() || null);
       await refresh();
@@ -257,7 +260,9 @@ export function ProfileEditScreen() {
             maxLength={10}
             disabled={isBirthDateLocked}
             helperText={
-              isBirthDateLocked ? t("profile:edit.birthDateLocked") : undefined
+              isBirthDateLocked
+                ? t("profile:edit.birthDateLocked")
+                : t("profile:edit.birthDateHelper")
             }
           />
           <SelectField

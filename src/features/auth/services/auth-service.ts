@@ -137,14 +137,14 @@ export async function register({
     };
   }
 
-  if (!Number.isInteger(gender) || gender < 0 || gender > 2) {
+  if (gender != null && (!Number.isInteger(gender) || gender < 0 || gender > 2)) {
     return {
       data: null,
       error: { message: i18n.t("auth:service.genderInvalid") },
     };
   }
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
+  if (birthDate != null && !/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
     return {
       data: null,
       error: { message: i18n.t("auth:service.birthDateInvalid") },

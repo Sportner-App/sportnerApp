@@ -106,6 +106,9 @@
   },
   "ageRange": {
     "label": "Katılım yaş aralığı",
+    "restrictionLabel": "Yaş sınırı",
+    "disclaimer": "İsteğe bağlı. Sınır koyarsan katılımcılardan başvururken doğum tarihi istenir.",
+    "restrict": "Yaş sınırı belirle",
     "hint": "Tutamaçları sürükleyerek ayarla",
     "unit": "yaş",
     "minAccessibility": "Minimum katılım yaşı",
@@ -126,8 +129,7 @@
   },
   "summary": {
     "heading": "Etkinlik Özeti",
-    "playersLabel": "{{count}} kişi",
-    "ageRange": "{{min}}–{{max}} yaş"
+    "playersLabel": "{{count}} kişi"
   },
   "companions": {
     "slotsAvailable": "{{count}} kişilik yer açık",

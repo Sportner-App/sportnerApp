@@ -55,9 +55,6 @@ type IdentityFieldErrors = {
   birthDate?: string;
 };
 
-/** Gender isn't collected on the social-signup identity step; default to "prefer not to say". */
-const DEFAULT_IDENTITY_GENDER = 0;
-
 export function useOnboarding() {
   const router = useRouter();
   const { refreshSession, user } = useSession();
@@ -268,8 +265,9 @@ export function useOnboarding() {
       errors.firstName = t("identity.validation.firstNameMaxLength");
     }
 
+    // Birth date is optional (App Store 5.1.1(v)); validated only when entered.
     if (!birthDateState.trim()) {
-      errors.birthDate = t("identity.validation.birthDateRequired");
+      // optional
     } else if (!parsedBirthDate) {
       errors.birthDate = t("identity.validation.birthDateFormat");
     } else if (!isAllowedBirthDate(parsedBirthDate)) {
@@ -292,10 +290,9 @@ export function useOnboarding() {
         firstName: trimmedFirstName,
         lastName: trimmedLastName || null,
       });
-      await updatePersonalDetails(
-        DEFAULT_IDENTITY_GENDER,
-        toApiBirthDate(birthDateState),
-      );
+      if (birthDateState.trim()) {
+        await updatePersonalDetails(null, toApiBirthDate(birthDateState));
+      }
 
       await updateLocalUser({
         username: normalizedUsername,

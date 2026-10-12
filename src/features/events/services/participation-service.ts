@@ -1,6 +1,6 @@
 import i18n from "@/i18n";
 import { apiClient } from "@/lib/api/client";
-import { getApiErrorMessage } from "@/lib/api/errors";
+import { getApiErrorMessage, normalizeApiError } from "@/lib/api/errors";
 import type {
   ApiApplyToEventResponse,
   EventActionResult,
@@ -18,6 +18,7 @@ export async function joinEvent(id: string): Promise<EventActionResult> {
     return {
       error: {
         message: getApiErrorMessage(error, i18n.t("events:service.joinFailed")),
+        code: normalizeApiError(error).code,
       },
       data: null,
     };

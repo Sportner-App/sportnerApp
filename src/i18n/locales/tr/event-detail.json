@@ -32,7 +32,6 @@
     "chatAccessibility": "Sohbete git"
   },
   "primaryInfo": {
-    "ageRange": "{{min}}–{{max}} yaş",
     "unlimited": "Sınırsız",
     "full": "Etkinlik dolu",
     "spotsLeft": "{{count}} yer kaldı",
@@ -248,5 +247,25 @@
     "eventCompletedTitle": "Etkinlik tamamlandı",
     "eventCompletedDescription": "Önce yoklama al, sonra gelenleri puanla. Yorumlar profillerinde görünür.",
     "detailLoadFailed": "Etkinlik detayı yüklenemedi."
+  },
+  "birthDatePrompt": {
+    "title": "Bu etkinlik için yaş bilgisi gerekiyor",
+    "subtitle": "Organizatör bu etkinliğe yaş sınırı koymuş. Doğum tarihini ekle, başvurunu hemen tamamlayalım.",
+    "label": "Doğum tarihi",
+    "placeholder": "GG.AA.YYYY",
+    "helper": "Profiline kaydedilir ve bir kez girilir; sonradan değiştirilemez.",
+    "submit": "Kaydet ve devam et",
+    "invalidFormat": "Tarihi GG.AA.YYYY formatında gir.",
+    "outOfRange": "Yaş {{min}} ile {{max}} arasında olmalı."
+  },
+  "genderPrompt": {
+    "title": "Bu etkinlik için cinsiyet bilgisi gerekiyor",
+    "subtitle": "Organizatör bu etkinliği belirli bir cinsiyete açmış. Cinsiyetini seç, başvurunu hemen tamamlayalım.",
+    "helper": "Profiline kaydedilir; istediğin zaman profil ayarlarından değiştirebilirsin.",
+    "submit": "Kaydet ve devam et"
+  },
+  "detailPrompt": {
+    "saveFailedTitle": "Bilgi kaydedilemedi",
+    "saveFailedDescription": "Lütfen tekrar dene."
   }
 }

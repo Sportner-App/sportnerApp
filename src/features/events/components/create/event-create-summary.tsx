@@ -7,7 +7,11 @@ import {
   skillKeyFromCode,
   useSkillLevelLabels,
 } from "@/features/sports/skill-levels";
-import { formatEventFee, parseFeeAmount } from "@/features/events/format";
+import {
+  formatAgeRange,
+  formatEventFee,
+  parseFeeAmount,
+} from "@/features/events/format";
 import { sportAccentToken, themeColors } from "@/constants/theme";
 import type { IconName } from "@/types/components";
 import type { CreateEventFormValues } from "@/features/events/types";
@@ -142,10 +146,12 @@ export function EventCreateSummary({
               </SummaryRow>
             ) : null}
             <SummaryRow icon="id-card" accent={accent}>
-              {t("summary.ageRange", {
-                min: values.minParticipantAge,
-                max: values.maxParticipantAge,
-              })}
+              {values.hasAgeRestriction
+                ? formatAgeRange(
+                    Number(values.minParticipantAge),
+                    Number(values.maxParticipantAge),
+                  )
+                : formatAgeRange(null, null)}
             </SummaryRow>
             <SummaryRow icon="venus-mars" accent={accent}>
               {values.participantGender === 1

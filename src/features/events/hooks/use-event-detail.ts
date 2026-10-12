@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useSession, useToast } from "@/contexts";
+import { getApiErrorMessage } from "@/lib/api/errors";
 import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
 import { getEventById } from "@/features/events/services/events-service";
 import {
@@ -25,7 +26,35 @@ import {
   hasEventEnded,
   hasPendingParticipation,
 } from "@/features/events/status";
+import {
+  setMyBirthDate,
+  setMyGender,
+} from "@/features/profile/services/profile-service";
 import { errorNotification, successNotification } from "@/utils/haptics";
+
+/**
+ * Backend codes for a restricted event that needs a profile detail the user
+ * left empty at sign-up; each one opens an inline prompt instead of a toast.
+ */
+const MISSING_DETAIL_CODES = {
+  "Event.ParticipantBirthDateMissing": "birthDate",
+  "Event.ParticipantGenderMissing": "gender",
+} as const;
+
+export type PersonalDetailField =
+  (typeof MISSING_DETAIL_CODES)[keyof typeof MISSING_DETAIL_CODES];
+
+/** What to retry once the user fills in the missing detail. */
+type PersonalDetailPrompt = {
+  field: PersonalDetailField;
+  action: "join" | "acceptInvitation";
+};
+
+function missingDetailField(code: string | undefined) {
+  return code && code in MISSING_DETAIL_CODES
+    ? MISSING_DETAIL_CODES[code as keyof typeof MISSING_DETAIL_CODES]
+    : null;
+}
 
 export function useEventDetail(id: string | undefined) {
   const { t } = useTranslation("eventDetail");
@@ -39,6 +68,8 @@ export function useEventDetail(id: string | undefined) {
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
   const [isMutating, setIsMutating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [detailPrompt, setDetailPrompt] =
+    useState<PersonalDetailPrompt | null>(null);
 
   const load = useCallback(async () => {
     if (!id) {
@@ -98,11 +129,17 @@ export function useEventDetail(id: string | undefined) {
     event.status !== EVENT_STATUS.completed;
 
   const runAction = async (
-    action: () => Promise<{ error: { message: string } | null }>,
+    action: () => Promise<{ error: { message: string; code?: string } | null }>,
     successTitle: string,
     successDescription?: string,
+    onDetailMissing?: (field: PersonalDetailField) => void,
   ) => {
     const { error: actionError } = await action();
+    const missingField = missingDetailField(actionError?.code);
+    if (missingField && onDetailMissing) {
+      onDetailMissing(missingField);
+      return false;
+    }
     if (actionError) {
       showToast({
         type: "error",
@@ -129,6 +166,12 @@ export function useEventDetail(id: string | undefined) {
     setIsJoining(true);
     try {
       const { error: joinError, data } = await joinEvent(event.id);
+
+      const missingField = missingDetailField(joinError?.code);
+      if (missingField) {
+        setDetailPrompt({ field: missingField, action: "join" });
+        return;
+      }
 
       if (joinError) {
         errorNotification();
@@ -220,12 +263,51 @@ export function useEventDetail(id: string | undefined) {
           ? t("toast.invitationAcceptedTitle")
           : t("toast.invitationDeclinedTitle"),
         accept ? t("toast.invitationAcceptedDescription") : undefined,
+        accept
+          ? (field) => setDetailPrompt({ field, action: "acceptInvitation" })
+          : undefined,
       );
       ok ? successNotification() : errorNotification();
     } finally {
       setIsRespondingInvitation(false);
     }
   };
+
+  /**
+   * Saves the detail from the inline prompt, then retries the action that
+   * asked for it so the user never has to leave the event screen.
+   */
+  const savePromptedDetail = async (save: () => Promise<void>) => {
+    const pending = detailPrompt;
+    try {
+      await save();
+    } catch (err) {
+      errorNotification();
+      showToast({
+        type: "error",
+        title: t("detailPrompt.saveFailedTitle"),
+        description: getApiErrorMessage(
+          err,
+          t("detailPrompt.saveFailedDescription"),
+        ),
+      });
+      return false;
+    }
+
+    setDetailPrompt(null);
+    if (pending?.action === "join") {
+      await join();
+    } else if (pending?.action === "acceptInvitation") {
+      await respondToInvitation(true);
+    }
+    return true;
+  };
+
+  const submitBirthDate = (apiBirthDate: string) =>
+    savePromptedDetail(() => setMyBirthDate(apiBirthDate));
+
+  const submitGender = (gender: number) =>
+    savePromptedDetail(() => setMyGender(gender));
 
   const withUser = async (
     userId: string,
@@ -336,6 +418,10 @@ export function useEventDetail(id: string | undefined) {
     join,
     leave,
     acceptInvitation: () => respondToInvitation(true),
+    promptedDetail: detailPrompt?.field ?? null,
+    closeDetailPrompt: () => setDetailPrompt(null),
+    submitBirthDate,
+    submitGender,
     declineInvitation: () => respondToInvitation(false),
     approve,
     reject,

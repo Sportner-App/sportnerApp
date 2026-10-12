@@ -71,6 +71,7 @@ export function SocialRegistrationOverlay({ social }: Props) {
               onChangeText={social.setBirthDate}
               keyboardType="number-pad"
               maxLength={10}
+              helperText={t("fields.birthDateHelper")}
             />
           </View>
           <View className="mt-6 gap-3">

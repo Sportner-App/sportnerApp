@@ -103,7 +103,8 @@ export function useSocialAuth() {
       });
       return;
     }
-    if (!apiBirthDate) {
+    // Birth date is optional; only a typed-but-invalid value blocks sign-up.
+    if (birthDate.trim() && !apiBirthDate) {
       showToast({
         type: "error",
         title: t("socialToast.birthDateCheckTitle"),

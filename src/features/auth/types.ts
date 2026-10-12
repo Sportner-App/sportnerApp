@@ -63,8 +63,8 @@ export type RegisterPayload = AuthCredentials & {
   email: string;
   firstName: string;
   lastName?: string;
-  gender: number;
-  birthDate: string;
+  gender: number | null;
+  birthDate: string | null;
 };
 
 export type AuthSession = {
@@ -90,8 +90,8 @@ export type CompleteExternalRegistrationPayload = {
   username: string;
   firstName: string;
   lastName?: string;
-  birthDate: string;
-  gender?: number;
+  birthDate: string | null;
+  gender?: number | null;
   profileImageUrl?: string;
 };
 

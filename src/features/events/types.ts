@@ -25,8 +25,8 @@ export type ApiEventListItem = {
   longitude: number;
   address: string;
   maxParticipants: number | null;
-  minParticipantAge: number;
-  maxParticipantAge: number;
+  minParticipantAge: number | null;
+  maxParticipantAge: number | null;
   participantGender: number | null;
   skillLevel: number | null;
   isPaid: boolean;
@@ -62,8 +62,8 @@ export type ApiEventDetail = {
   longitude: number;
   address: string;
   maxParticipants: number | null;
-  minParticipantAge: number;
-  maxParticipantAge: number;
+  minParticipantAge: number | null;
+  maxParticipantAge: number | null;
   participantGender: number | null;
   skillLevel: number | null;
   isPaid: boolean;
@@ -154,8 +154,8 @@ export type EventSummary = {
   participantCount: number;
   participantAvatars: ParticipantAvatarPreview[];
   maxParticipants: number | null;
-  minParticipantAge: number;
-  maxParticipantAge: number;
+  minParticipantAge: number | null;
+  maxParticipantAge: number | null;
   participantGender: number | null;
   skillLevel: number | null;
   isPaid: boolean;
@@ -214,7 +214,8 @@ export type EventDetail = EventSummary & {
 };
 
 export type EventActionResult<T = ApiApplyToEventResponse | null> = {
-  error: { message: string } | null;
+  /** `code` is the backend error code (e.g. `Event.ParticipantBirthDateMissing`). */
+  error: { message: string; code?: string } | null;
   data?: T;
 };
 
@@ -258,8 +259,8 @@ export type CreateEventPayload = {
   eventDate: string;
   durationMinutes: number;
   maxParticipants: number;
-  minParticipantAge: number;
-  maxParticipantAge: number;
+  minParticipantAge: number | null;
+  maxParticipantAge: number | null;
   participantGender: number | null;
   skillLevel: number | null;
   isPaid: boolean;
@@ -284,6 +285,8 @@ export type CreateEventFormValues = {
   eventDate: Date;
   durationMinutes: number;
   maxPlayers: string;
+  /** Off by default: events are open to all ages unless the organizer opts in. */
+  hasAgeRestriction: boolean;
   minParticipantAge: string;
   maxParticipantAge: string;
   participantGender: number | null;

@@ -17,6 +17,12 @@
   "fee": {
     "free": "Free"
   },
+  "ageRange": {
+    "all": "All ages",
+    "between": "{{min}}–{{max}} yrs",
+    "min": "{{min}}+ yrs",
+    "max": "Up to {{max}} yrs"
+  },
   "fallback": {
     "athlete": "Athlete",
     "athleteHandle": "athlete",

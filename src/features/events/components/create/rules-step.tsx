@@ -39,16 +39,38 @@ export function RulesStep({ form }: { form: CreateEventForm }) {
         onChange={(maxPlayers) => update("maxPlayers", maxPlayers)}
       />
 
-      <View className="mt-6">
-        <AgeRangeSlider
-          minValue={Number(values.minParticipantAge)}
-          maxValue={Number(values.maxParticipantAge)}
-          disabled={isSubmitting}
-          onChange={(minAge, maxAge) => {
-            update("minParticipantAge", String(minAge));
-            update("maxParticipantAge", String(maxAge));
-          }}
-        />
+      <View className="mt-6 gap-2">
+        <Text className="font-body-bold text-label text-text-secondary">
+          {t("ageRange.restrictionLabel")}
+        </Text>
+        <Text className="font-body text-caption text-text-tertiary">
+          {t("ageRange.disclaimer")}
+        </Text>
+        <View className="flex-row flex-wrap gap-2">
+          <ChoicePill
+            label={t("events:ageRange.all")}
+            active={!values.hasAgeRestriction}
+            onPress={() => update("hasAgeRestriction", false)}
+          />
+          <ChoicePill
+            label={t("ageRange.restrict")}
+            active={values.hasAgeRestriction}
+            onPress={() => update("hasAgeRestriction", true)}
+          />
+        </View>
+        {values.hasAgeRestriction ? (
+          <View className="mt-2">
+            <AgeRangeSlider
+              minValue={Number(values.minParticipantAge)}
+              maxValue={Number(values.maxParticipantAge)}
+              disabled={isSubmitting}
+              onChange={(minAge, maxAge) => {
+                update("minParticipantAge", String(minAge));
+                update("maxParticipantAge", String(maxAge));
+              }}
+            />
+          </View>
+        ) : null}
       </View>
 
       <View className="mt-6">

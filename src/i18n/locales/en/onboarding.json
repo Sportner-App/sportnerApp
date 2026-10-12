@@ -41,8 +41,9 @@
     "usernameHelper": "We suggested this — change it if you like",
     "firstNamePlaceholder": "First name",
     "lastNamePlaceholder": "Last name (optional)",
-    "birthDateLabel": "Date of birth",
+    "birthDateLabel": "Date of birth (optional)",
     "birthDatePlaceholder": "DD.MM.YYYY",
+    "birthDateHelper": "Only used when joining age-restricted events.",
     "submit": "Continue",
     "validation": {
       "usernameRequired": "Username is required.",
@@ -51,7 +52,6 @@
       "usernamePattern": "Username can only contain letters, numbers, . and _.",
       "firstNameRequired": "First name is required.",
       "firstNameMaxLength": "First name can be at most 50 characters.",
-      "birthDateRequired": "Date of birth is required.",
       "birthDateFormat": "Enter the date in DD.MM.YYYY format.",
       "birthDateRange": "Age must be between 13 and 120."
     },

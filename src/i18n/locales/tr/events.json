@@ -17,6 +17,12 @@
   "fee": {
     "free": "Ücretsiz"
   },
+  "ageRange": {
+    "all": "Tüm yaşlar",
+    "between": "{{min}}–{{max}} yaş",
+    "min": "{{min}}+ yaş",
+    "max": "{{max}} yaş ve altı"
+  },
   "fallback": {
     "athlete": "Sporcu",
     "athleteHandle": "sporcu",

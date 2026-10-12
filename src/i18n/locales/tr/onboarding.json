@@ -41,8 +41,9 @@
     "usernameHelper": "Senin için önerdik, istersen değiştirebilirsin",
     "firstNamePlaceholder": "Ad",
     "lastNamePlaceholder": "Soyad (opsiyonel)",
-    "birthDateLabel": "Doğum tarihi",
+    "birthDateLabel": "Doğum tarihi (isteğe bağlı)",
     "birthDatePlaceholder": "GG.AA.YYYY",
+    "birthDateHelper": "Yalnızca yaş sınırı olan etkinliklere katılırken kullanılır.",
     "submit": "Devam et",
     "validation": {
       "usernameRequired": "Kullanıcı adı gerekli.",
@@ -51,7 +52,6 @@
       "usernamePattern": "Kullanıcı adı yalnızca harf, rakam, . ve _ içerebilir.",
       "firstNameRequired": "Ad gerekli.",
       "firstNameMaxLength": "Ad en fazla 50 karakter olabilir.",
-      "birthDateRequired": "Doğum tarihi gerekli.",
       "birthDateFormat": "Tarihi GG.AA.YYYY formatında gir.",
       "birthDateRange": "Yaş 13 ile 120 arasında olmalı."
     },

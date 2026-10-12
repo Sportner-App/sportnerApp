@@ -27,6 +27,8 @@ import {
 } from "@/features/events/status";
 
 import { AboutSection } from "@/features/events/components/detail/about-section";
+import { BirthDateRequiredSheet } from "@/features/events/components/detail/birth-date-required-sheet";
+import { GenderRequiredSheet } from "@/features/events/components/detail/gender-required-sheet";
 import { EventQnASection } from "@/features/events/components/detail/event-qna-section";
 import { EventDetailBackdrop } from "@/features/events/components/detail/event-detail-backdrop";
 import {
@@ -371,6 +373,16 @@ export function EventDetailScreen() {
           onClose={() => setShareSheetOpen(false)}
         />
       ) : null}
+      <BirthDateRequiredSheet
+        visible={detail.promptedDetail === "birthDate"}
+        onClose={detail.closeDetailPrompt}
+        onSubmit={detail.submitBirthDate}
+      />
+      <GenderRequiredSheet
+        visible={detail.promptedDetail === "gender"}
+        onClose={detail.closeDetailPrompt}
+        onSubmit={detail.submitGender}
+      />
     </AppScreen>
   );
 }

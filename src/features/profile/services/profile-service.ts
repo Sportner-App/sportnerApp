@@ -72,6 +72,21 @@ export async function updatePersonalDetails(
   });
 }
 
+/**
+ * Sets only the birth date (e.g. from the inline prompt on an age-restricted
+ * event) while keeping whatever gender the profile already has.
+ */
+export async function setMyBirthDate(birthDate: string) {
+  const profile = await getMyProfile();
+  await updatePersonalDetails(profile.gender ?? null, birthDate);
+}
+
+/** Sets only the gender (inline prompt on a gender-restricted event), keeping the birth date. */
+export async function setMyGender(gender: number) {
+  const profile = await getMyProfile();
+  await updatePersonalDetails(gender, profile.birthDate ?? null);
+}
+
 export async function updateBio(bio: string | null) {
   await apiClient.put("/api/user-profiles/me/bio", { bio });
 }

@@ -107,13 +107,11 @@ function getAuthFieldErrors(
       });
     }
 
-    if (!gender) {
-      errors.gender = t("validation.genderRequired");
-    }
-
+    // Gender and birth date are optional (App Store 5.1.1(v)); a birth date
+    // is only validated when the user chose to enter one.
     const parsedBirthDate = parseBirthDate(birthDate);
     if (!birthDate.trim()) {
-      errors.birthDate = t("validation.birthDateRequired");
+      // optional
     } else if (!parsedBirthDate) {
       errors.birthDate = t("validation.birthDateInvalidFormat");
     } else if (!isAllowedBirthDate(parsedBirthDate)) {
@@ -198,11 +196,11 @@ export function useAuthForm() {
       firstName.trim().length <= PERSON_NAME_MAX_LENGTH &&
       Boolean(lastName.trim()) &&
       lastName.trim().length <= PERSON_NAME_MAX_LENGTH &&
-      Boolean(gender) &&
-      Boolean(
-        parseBirthDate(birthDate) &&
-        isAllowedBirthDate(parseBirthDate(birthDate)!),
-      ) &&
+      (!birthDate.trim() ||
+        Boolean(
+          parseBirthDate(birthDate) &&
+          isAllowedBirthDate(parseBirthDate(birthDate)!),
+        )) &&
       hasAcceptedLegalTerms
     );
   }, [
@@ -284,8 +282,8 @@ export function useAuthForm() {
             email: email.trim(),
             firstName: firstName.trim(),
             lastName: lastName.trim(),
-            gender: Number(gender),
-            birthDate: toApiBirthDate(birthDate),
+            gender: gender ? Number(gender) : null,
+            birthDate: birthDate.trim() ? toApiBirthDate(birthDate) : null,
           });
 
       if (response.error) {

@@ -97,10 +97,22 @@ function ensureGoogleSignInConfigured(
  */
 export async function signInWithGoogle(): Promise<ExternalAuthResult | null> {
   try {
-    const { GoogleSignin, isSuccessResponse } = loadGoogleSignInModule();
+    const {
+      GoogleSignin,
+      isSuccessResponse,
+      isNoSavedCredentialFoundResponse,
+    } = loadGoogleSignInModule();
     ensureGoogleSignInConfigured(GoogleSignin);
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    const response = await GoogleSignin.signIn();
+
+    // Önce sessiz giriş: cihazda kayıtlı bir Google oturumu varsa kullanıcıya
+    // hiçbir ekran göstermeden token alınır. Doğrudan signIn() çağırmak, daha
+    // önce giriş yapıp izin vermiş kullanıcıya bile her seferinde hesap seçici
+    // açıyordu.
+    const silent = await GoogleSignin.signInSilently();
+    const response = isNoSavedCredentialFoundResponse(silent)
+      ? await GoogleSignin.signIn()
+      : silent;
 
     if (!isSuccessResponse(response)) {
       return null;
@@ -192,7 +204,7 @@ export async function completeExternalRegistration(
         firstName: payload.firstName.trim(),
         lastName: payload.lastName?.trim() || null,
         birthDate: payload.birthDate,
-        gender: payload.gender ?? 0,
+        gender: payload.gender ?? null,
       },
     );
 

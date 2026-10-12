@@ -246,6 +246,7 @@ export function AuthScreen() {
                     onChangeText={form.setBirthDate}
                     keyboardType="number-pad"
                     maxLength={10}
+                    helperText={t("fields.birthDateHelper")}
                     error={form.fieldErrors.birthDate}
                   />
                   <View>

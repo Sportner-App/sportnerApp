@@ -31,12 +31,17 @@ function validateCreateEventPayload(
     return "coordinatesInvalid";
   }
   if (payload.maxParticipants <= 0) return "capacityPositive";
+  const { minParticipantAge: minAge, maxParticipantAge: maxAge } = payload;
   if (
-    !Number.isInteger(payload.minParticipantAge) ||
-    !Number.isInteger(payload.maxParticipantAge) ||
-    payload.minParticipantAge < BIRTH_DATE_MIN_AGE ||
-    payload.maxParticipantAge > BIRTH_DATE_MAX_AGE ||
-    payload.minParticipantAge > payload.maxParticipantAge
+    (minAge != null &&
+      (!Number.isInteger(minAge) ||
+        minAge < BIRTH_DATE_MIN_AGE ||
+        minAge > BIRTH_DATE_MAX_AGE)) ||
+    (maxAge != null &&
+      (!Number.isInteger(maxAge) ||
+        maxAge < BIRTH_DATE_MIN_AGE ||
+        maxAge > BIRTH_DATE_MAX_AGE)) ||
+    (minAge != null && maxAge != null && minAge > maxAge)
   ) {
     return "ageRangeInvalid";
   }

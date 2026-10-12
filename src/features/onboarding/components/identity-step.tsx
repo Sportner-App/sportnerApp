@@ -72,6 +72,7 @@ export function IdentityStep({ form }: IdentityStepProps) {
           onChangeText={form.setIdentityBirthDate}
           keyboardType="number-pad"
           maxLength={10}
+          helperText={t("identity.birthDateHelper")}
           error={form.identityFieldErrors.birthDate}
         />
       </Animated.View>

@@ -81,6 +81,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
     eventDate: getDefaultEventDate(),
     durationMinutes: DEFAULT_EVENT_DURATION_MINUTES,
     maxPlayers: "10",
+    hasAgeRestriction: false,
     minParticipantAge: String(DEFAULT_EVENT_MIN_AGE),
     maxParticipantAge: String(DEFAULT_EVENT_MAX_AGE),
     participantGender: null,
@@ -205,11 +206,12 @@ export function useCreateEvent(initialOrganizationId?: string) {
       Number.isFinite(maxPlayersNumber) &&
       maxPlayersNumber >= CREATE_EVENT_LIMITS.maxParticipantsMin &&
       maxPlayersNumber <= CREATE_EVENT_LIMITS.maxParticipantsMax &&
-      Number.isInteger(minParticipantAgeNumber) &&
-      Number.isInteger(maxParticipantAgeNumber) &&
-      minParticipantAgeNumber >= CREATE_EVENT_LIMITS.participantAgeMin &&
-      maxParticipantAgeNumber <= CREATE_EVENT_LIMITS.participantAgeMax &&
-      minParticipantAgeNumber <= maxParticipantAgeNumber &&
+      (!values.hasAgeRestriction ||
+        (Number.isInteger(minParticipantAgeNumber) &&
+          Number.isInteger(maxParticipantAgeNumber) &&
+          minParticipantAgeNumber >= CREATE_EVENT_LIMITS.participantAgeMin &&
+          maxParticipantAgeNumber <= CREATE_EVENT_LIMITS.participantAgeMax &&
+          minParticipantAgeNumber <= maxParticipantAgeNumber)) &&
       feeOk
     );
   }, [
@@ -217,6 +219,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
     maxPlayersNumber,
     minParticipantAgeNumber,
     values.feeAmountText,
+    values.hasAgeRestriction,
     values.isPaid,
   ]);
 
@@ -263,8 +266,18 @@ export function useCreateEvent(initialOrganizationId?: string) {
         eventDate: values.eventDate.toISOString(),
         durationMinutes: values.durationMinutes,
         maxParticipants: maxPlayersNumber,
-        minParticipantAge: minParticipantAgeNumber,
-        maxParticipantAge: maxParticipantAgeNumber,
+        // Slider ends (13 / 120) mean "no limit on that side", so they go out as null
+        // and never force a birth date on applicants.
+        minParticipantAge:
+          values.hasAgeRestriction &&
+          minParticipantAgeNumber > CREATE_EVENT_LIMITS.participantAgeMin
+            ? minParticipantAgeNumber
+            : null,
+        maxParticipantAge:
+          values.hasAgeRestriction &&
+          maxParticipantAgeNumber < CREATE_EVENT_LIMITS.participantAgeMax
+            ? maxParticipantAgeNumber
+            : null,
         participantGender: values.participantGender,
         skillLevel: values.skillLevel,
         isPaid: values.isPaid,

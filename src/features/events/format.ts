@@ -167,3 +167,20 @@ export function participantStatusLabel(status: number): string {
       return "";
   }
 }
+
+/** Null bound = no limit on that side; both null = open to all ages. */
+export function formatAgeRange(
+  min: number | null | undefined,
+  max: number | null | undefined,
+): string {
+  if (min != null && max != null) {
+    return i18n.t("events:ageRange.between", { min, max });
+  }
+  if (min != null) {
+    return i18n.t("events:ageRange.min", { min });
+  }
+  if (max != null) {
+    return i18n.t("events:ageRange.max", { max });
+  }
+  return i18n.t("events:ageRange.all");
+}

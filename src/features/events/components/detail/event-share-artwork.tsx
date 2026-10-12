@@ -12,6 +12,7 @@ import {
   palette,
   sportAccentToken,
 } from "@/constants/theme";
+import { formatAgeRange } from "@/features/events/format";
 import type { EventDetail } from "@/features/events/types";
 import { getCurrentLocale } from "@/i18n";
 
@@ -167,10 +168,10 @@ export function EventShareArtwork({
           />
           <ArtworkInfo
             icon="id-card"
-            text={t("primaryInfo.ageRange", {
-              min: event.minParticipantAge,
-              max: event.maxParticipantAge,
-            })}
+            text={formatAgeRange(
+              event.minParticipantAge,
+              event.maxParticipantAge,
+            )}
             accent={detailAccent}
             textColor={foregroundColor}
           />

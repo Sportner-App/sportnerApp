@@ -32,7 +32,6 @@
     "chatAccessibility": "Go to chat"
   },
   "primaryInfo": {
-    "ageRange": "{{min}}–{{max}} yrs",
     "unlimited": "Unlimited",
     "full": "Event full",
     "spotsLeft": "{{count}} spots left",
@@ -248,5 +247,25 @@
     "eventCompletedTitle": "Event completed",
     "eventCompletedDescription": "Take attendance first, then rate attendees. Reviews appear on their profiles.",
     "detailLoadFailed": "Event details couldn't load."
+  },
+  "birthDatePrompt": {
+    "title": "This event needs your age",
+    "subtitle": "The organizer set an age limit for this event. Add your birth date and we will finish your request right away.",
+    "label": "Date of birth",
+    "placeholder": "DD.MM.YYYY",
+    "helper": "Saved to your profile. It can be set once and cannot be changed later.",
+    "submit": "Save and continue",
+    "invalidFormat": "Enter the date as DD.MM.YYYY.",
+    "outOfRange": "Age must be between {{min}} and {{max}}."
+  },
+  "genderPrompt": {
+    "title": "This event needs your gender",
+    "subtitle": "The organizer opened this event to a specific gender. Choose yours and we will finish your request right away.",
+    "helper": "Saved to your profile. You can change it anytime in profile settings.",
+    "submit": "Save and continue"
+  },
+  "detailPrompt": {
+    "saveFailedTitle": "Could not save",
+    "saveFailedDescription": "Please try again."
   }
 }

@@ -13,6 +13,7 @@ import type { IconName } from "@/types/components";
 import type { EventDetail, EventParticipant } from "@/features/events/types";
 import { PARTICIPANT_STATUS } from "@/features/events/types";
 import {
+  formatAgeRange,
   formatDurationLabel,
   formatEventFee,
   noLocationLabel,
@@ -91,10 +92,10 @@ export function EventPrimaryInfo({
         <MetaPiece
           icon="id-card"
           onMedia={onMedia}
-          label={t("primaryInfo.ageRange", {
-            min: event.minParticipantAge,
-            max: event.maxParticipantAge,
-          })}
+          label={formatAgeRange(
+            event.minParticipantAge,
+            event.maxParticipantAge,
+          )}
         />
         {event.participantGender != null ? (
           <>
