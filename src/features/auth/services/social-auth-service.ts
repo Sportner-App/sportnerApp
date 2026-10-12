@@ -109,10 +109,22 @@ export async function signInWithGoogle(): Promise<ExternalAuthResult | null> {
     // hiçbir ekran göstermeden token alınır. Doğrudan signIn() çağırmak, daha
     // önce giriş yapıp izin vermiş kullanıcıya bile her seferinde hesap seçici
     // açıyordu.
-    const silent = await GoogleSignin.signInSilently();
-    const response = isNoSavedCredentialFoundResponse(silent)
-      ? await GoogleSignin.signIn()
-      : silent;
+    //
+    // Kendi try/catch'i var: signInSilently kayıtlı kimlik bulamadığında her
+    // zaman NoSavedCredentialFound yanıtı dönmüyor, istisna da atabiliyor.
+    // Dıştaki catch'e düşerse kullanıcı hesap seçiciyi hiç görmeden "giriş
+    // yapılamıyor" hatası alıyor — sessiz giriş başarısızsa sessizce
+    // interaktif akışa düşmeli.
+    let response: Awaited<ReturnType<typeof GoogleSignin.signIn>>;
+
+    try {
+      const silent = await GoogleSignin.signInSilently();
+      response = isNoSavedCredentialFoundResponse(silent)
+        ? await GoogleSignin.signIn()
+        : silent;
+    } catch {
+      response = await GoogleSignin.signIn();
+    }
 
     if (!isSuccessResponse(response)) {
       return null;
