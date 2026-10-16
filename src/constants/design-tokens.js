@@ -318,6 +318,15 @@ const fluidType = {
   baseWidth: 390,
   minScale: 0.9,
   maxScale: 1.12,
+  /**
+   * Cihazın sistem yazı boyutu ayarı için izin verilen aralık. iOS bu ayarı
+   * sınırsız uygular; buton yükseklikleri ve dolgular sabit olduğu için uçlarda
+   * düzen bozuluyor: küçük uçta metin kutularda kayboluyor, büyük uçta taşıp
+   * kırpılıyor. Ölçeği burada kıstırıp tek yerden uyguluyoruz — bu yüzden
+   * AppText `allowFontScaling={false}` veriyor, aksi halde ölçek iki kez binerdi.
+   */
+  minFontScale: 0.95,
+  maxFontScale: 1.3,
 };
 
 /** Tailwind sınıf adı → `typography` anahtarı. */
@@ -345,14 +354,26 @@ function typeScaleForWidth(width) {
   );
 }
 
+/** Sistem yazı boyutu ayarını desteklenen aralığa kıstırır. */
+function clampFontScale(fontScale) {
+  if (!fontScale || fontScale <= 0) {
+    return 1;
+  }
+
+  return Math.min(
+    fluidType.maxFontScale,
+    Math.max(fluidType.minFontScale, fontScale),
+  );
+}
+
 /** Yarım piksele yuvarlar; metin taban çizgisi bulanıklaşmasın. */
 function roundHalf(value) {
   return Math.round(value * 2) / 2;
 }
 
 /** Verilen ekran genişliği için `--text-*` / `--leading-*` değişkenleri. */
-function textSizeVariables(width) {
-  const scale = typeScaleForWidth(width);
+function textSizeVariables(width, fontScale) {
+  const scale = typeScaleForWidth(width) * clampFontScale(fontScale);
   const variables = {};
 
   for (const [name, key] of Object.entries(textClassTokens)) {

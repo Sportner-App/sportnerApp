@@ -155,8 +155,6 @@ export function Button({
           {loadingLabel ? (
             <Text
               numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.8}
               className={`shrink ${labelSizes[size]} ${labelVariants[variant]}`}
             >
               {loadingLabel}
@@ -172,11 +170,16 @@ export function Button({
               color={disabledIconColor}
             />
           )}
-          {/* Dar butonlarda (ör. SubmitBar ikili düzeni) etiket iki satıra düşmesin. */}
+          {/* Tek satır, sığmazsa kısaltılır.
+
+              adjustsFontSizeToFit kullanılmıyor: `shrink` ile birlikteyken
+              React Native metnin doğal genişliğini en küçük font boyutuyla
+              ölçüyor, kutu daralıyor, font da o daralan kutuya göre tekrar
+              küçülüyor. Bu döngüde minimumFontScale devreye girmiyor ve etiket
+              okunamayacak hale geliyordu (16 Eki 2026, organizasyonlar ekranı,
+              iPhone 15). İki satıra düşmeyi zaten numberOfLines engelliyor. */}
           <Text
             numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.8}
             className={`shrink ${labelSizes[size]} ${disabledLabelClass}`}
           >
             {label}

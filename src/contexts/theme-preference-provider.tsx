@@ -32,12 +32,18 @@ function hexRgb(hex: string) {
 }
 
 /**
- * Tema CSS değişkenleri. `width` verilirse ekran genişliğine göre ölçeklenen
- * `--text-*` / `--leading-*` font boyutları da eklenir.
+ * Tema CSS değişkenleri. `width` verilirse ekran genişliğine ve cihazın
+ * sistem yazı boyutu ayarına göre ölçeklenen `--text-*` / `--leading-*` font
+ * boyutları da eklenir. Yazı ölçeği burada kıstırılıp tek yerden uygulandığı
+ * için `AppText` sistemin kendi ölçeklemesini kapatır.
  */
-export function createThemeVariables(colors: ThemeColors, width?: number) {
+export function createThemeVariables(
+  colors: ThemeColors,
+  width?: number,
+  fontScale?: number,
+) {
   return vars({
-    ...(width ? tokens.textSizeVariables(width) : {}),
+    ...(width ? tokens.textSizeVariables(width, fontScale) : {}),
     "--color-brand-primary": hexRgb(colors.brand.primary),
     "--color-action-primary": hexRgb(colors.action.primary),
     "--color-action-on-primary": hexRgb(colors.action.onPrimary),
@@ -55,7 +61,7 @@ export function createThemeVariables(colors: ThemeColors, width?: number) {
 }
 
 export function ThemePreferenceProvider({ children }: PropsWithChildren) {
-  const { width } = useWindowDimensions();
+  const { width, fontScale } = useWindowDimensions();
   const [preference, setPreferenceState] = useState<ThemePreference>("dark");
   const resolvedScheme = preference;
   const colors =
@@ -95,8 +101,8 @@ export function ThemePreferenceProvider({ children }: PropsWithChildren) {
   };
 
   const cssVariables = useMemo(
-    () => createThemeVariables(colors, width),
-    [colors, width],
+    () => createThemeVariables(colors, width, fontScale),
+    [colors, fontScale, width],
   );
 
   const value = useMemo(

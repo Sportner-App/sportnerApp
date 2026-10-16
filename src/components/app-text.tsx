@@ -30,7 +30,13 @@ type AppTextProps = TextProps & {
   className?: string;
 };
 
-/** Project-wide text primitive. Callers choose semantic variants, not raw sizes. */
+/**
+ * Project-wide text primitive. Callers choose semantic variants, not raw sizes.
+ *
+ * `allowFontScaling` kapalı: cihazın yazı boyutu ayarı yok sayılmıyor, tam
+ * tersine `textSizeVariables` içinde kıstırılarak font boyutlarına zaten
+ * işleniyor. Açık bırakılsa ölçek iki kez binerdi.
+ */
 export function AppText({
   variant = "body",
   className,
@@ -38,6 +44,7 @@ export function AppText({
 }: AppTextProps) {
   return (
     <NativeText
+      allowFontScaling={false}
       className={`${VARIANT_CLASSES[variant]} ${className ?? ""}`}
       {...props}
     />

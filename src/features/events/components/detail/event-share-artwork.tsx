@@ -66,7 +66,20 @@ export function EventShareArtwork({
         height,
         overflow: "hidden",
         backgroundColor,
-        padding: 28,
+        /**
+         * Üst ve alt dolgu bilerek geniş. Önceden içerik tuvalin uçlarına
+         * yapışıyordu; Instagram hikâyede üstteki araç çubuğu ile alttaki
+         * "Açıklama ekle" ve paylaşım çubuğu tam o şeritlerin üzerine bindiği
+         * için QR kod görünmez oluyordu. Bu dolgu o şeritleri boş bırakıp
+         * içeriği ortaya topluyor.
+         *
+         * Dağıtım `space-between` kalıyor: ortalamak uzun başlıklı
+         * etkinliklerde içeriği taşırıp kırpabiliyor (overflow: hidden), bu
+         * dağıtım ise fazlalığı aradaki boşluktan yiyor.
+         */
+        paddingHorizontal: 32,
+        paddingTop: 68,
+        paddingBottom: 84,
         justifyContent: "space-between",
       }}
     >
@@ -208,12 +221,12 @@ export function EventShareArtwork({
         </View>
         <View
           style={{
-            borderRadius: 14,
+            borderRadius: 16,
             backgroundColor: palette.white,
-            padding: 7,
+            padding: 8,
           }}
         >
-          <QRCode value={eventUrl} size={58} color={palette.canvas} />
+          <QRCode value={eventUrl} size={72} color={palette.canvas} />
         </View>
       </View>
     </View>
