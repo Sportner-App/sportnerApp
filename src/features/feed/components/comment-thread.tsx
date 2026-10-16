@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
+import { MentionText } from "@/features/feed/components/mention-text";
+
 import { useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { listReplies } from "@/features/feed/services/posts-service";
@@ -211,7 +213,11 @@ function CommentRow({
                 @{mention}{" "}
               </Text>
             ) : null}
-            {comment.content}
+            {/* Stil üstteki Text'ten miras alınır; etiketler kendi rengini alır. */}
+            <MentionText
+              content={comment.content}
+              mentions={comment.mentions}
+            />
           </Text>
           <Text
             className={`shrink-0 font-body-bold text-overline ${actionColor}`}

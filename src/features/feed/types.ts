@@ -51,6 +51,7 @@ export type ApiComment = {
   profileImageUrl: string | null;
   parentCommentId: string | null;
   content: string;
+  mentions: ApiPostMention[];
   likeCount: number;
   replyCount: number;
   createdAt: string;

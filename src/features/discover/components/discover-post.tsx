@@ -6,6 +6,7 @@ import { Image, Pressable, useWindowDimensions, View } from "react-native";
 import { ScrollView as GestureScrollView } from "react-native-gesture-handler";
 
 import { AppText as Text, AppTextInput, Avatar } from "@/components";
+import { useMentionComposer } from "@/features/feed/hooks/use-mention-composer";
 import { CommentThread } from "@/features/feed/components/comment-thread";
 import { useSession, useToast } from "@/contexts";
 import { HIT_SLOP, themeColors } from "@/constants/theme";
@@ -22,8 +23,15 @@ import { displayHandle } from "@/utils/person";
 type DiscoverPostProps = {
   post: ApiPost;
   onLike: () => Promise<void>;
-  onComment: (content: string) => Promise<ApiComment>;
-  onReply: (parent: ApiComment, content: string) => Promise<ApiComment>;
+  onComment: (
+    content: string,
+    mentionedUserIds: string[],
+  ) => Promise<ApiComment>;
+  onReply: (
+    parent: ApiComment,
+    content: string,
+    mentionedUserIds: string[],
+  ) => Promise<ApiComment>;
   onAuthorPress: () => void;
   isFriend: boolean;
 };
@@ -45,6 +53,7 @@ export function DiscoverPost({
   const lastTap = useRef(0);
   const [page, setPage] = useState(0);
   const [draft, setDraft] = useState("");
+  const mention = useMentionComposer(draft);
   const [comments, setComments] = useState<ApiComment[]>([]);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [replyingTo, setReplyingTo] = useState<ApiComment | null>(null);
@@ -177,7 +186,7 @@ export function DiscoverPost({
     setIsCommenting(true);
     try {
       if (replyingTo) {
-        const reply = await onReply(replyingTo, text);
+        const reply = await onReply(replyingTo, text, mention.mentionedUserIds);
         setDraft("");
         setCommentsOpen(true);
         setReplyingTo(null);
@@ -190,7 +199,7 @@ export function DiscoverPost({
           ),
         );
       } else {
-        const comment = await onComment(text);
+        const comment = await onComment(text, mention.mentionedUserIds);
         setDraft("");
         setCommentsOpen(true);
         setComments((current) => [...current, comment]);
@@ -409,10 +418,37 @@ export function DiscoverPost({
           </View>
         ) : null}
 
+        {mention.isPicking && mention.suggestions.length > 0 ? (
+          <View className="mb-2 gap-1 rounded-3xl border border-border-default bg-surface-primary p-2">
+            {mention.suggestions.map((friend) => (
+              <Pressable
+                key={friend.userId}
+                onPress={() => {
+                  const next = mention.apply(friend);
+                  if (next !== null) setDraft(next);
+                }}
+                className="flex-row items-center gap-3 rounded-2xl px-3 py-2 active:opacity-70"
+              >
+                <Avatar
+                  uri={friend.profileImageUrl}
+                  name={friend.firstName}
+                  size={28}
+                />
+                <Text className="flex-1 font-body-bold text-body-sm text-text-primary">
+                  @{friend.username}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        ) : null}
+
         <View className="flex-row items-center gap-2 rounded-full border border-border-default bg-background-secondary px-4">
           <AppTextInput
             value={draft}
             onChangeText={setDraft}
+            onSelectionChange={(event) =>
+              mention.onSelectionChange(event.nativeEvent.selection.start)
+            }
             onFocus={() => setCommentsOpen(true)}
             placeholder={
               replyingTo

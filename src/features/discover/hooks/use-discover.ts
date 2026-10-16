@@ -122,8 +122,12 @@ export function useDiscover() {
   );
 
   const addComment = useCallback(
-    async (post: ApiPost, content: string): Promise<ApiComment> => {
-      const comment = await createComment(post.id, content);
+    async (
+      post: ApiPost,
+      content: string,
+      mentionedUserIds: string[] = [],
+    ): Promise<ApiComment> => {
+      const comment = await createComment(post.id, content, mentionedUserIds);
       if (!comment) {
         throw new Error(i18n.t("social:toasts.commentFailed"));
       }
@@ -138,8 +142,14 @@ export function useDiscover() {
       post: ApiPost,
       parentCommentId: string,
       content: string,
+      mentionedUserIds: string[] = [],
     ): Promise<ApiComment> => {
-      const reply = await createReply(post.id, parentCommentId, content);
+      const reply = await createReply(
+        post.id,
+        parentCommentId,
+        content,
+        mentionedUserIds,
+      );
       if (!reply) {
         throw new Error(i18n.t("social:toasts.replyFailed"));
       }

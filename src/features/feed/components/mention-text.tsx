@@ -5,7 +5,7 @@ import { AppText as Text } from "@/components/app-text";
 import type { ApiPostMention } from "@/features/feed/types";
 
 /**
- * Gönderi metnini, içindeki etiketleri tıklanabilir yaparak basar.
+ * Gönderi ve yorum metnini, içindeki etiketleri tıklanabilir yaparak basar.
  *
  * Etiketler sunucuda kimlikle saklanıyor; buradaki eşleştirme metindeki
  * "@jeton" ile saklanan kullanıcı adını karşılaştırıyor. Yazıldığı andaki ad
@@ -21,19 +21,20 @@ type Segment =
 
 const MENTION_PATTERN = /@([A-Za-z0-9._]{1,30})/g;
 
-export function PostContent({
+export function MentionText({
   content,
   mentions,
   className,
 }: {
   content: string;
-  mentions: ApiPostMention[];
+  /** Eski önbellekten ya da etiket döndürmeyen bir uçtan boş gelebilir. */
+  mentions?: ApiPostMention[] | null;
   className?: string;
 }) {
   const router = useRouter();
 
   const segments = useMemo<Segment[]>(() => {
-    if (mentions.length === 0) {
+    if (!mentions || mentions.length === 0) {
       return [{ kind: "text", value: content }];
     }
 
@@ -52,7 +53,10 @@ export function PostContent({
       if (!userId || match.index === undefined) continue;
 
       if (match.index > lastIndex) {
-        parts.push({ kind: "text", value: content.slice(lastIndex, match.index) });
+        parts.push({
+          kind: "text",
+          value: content.slice(lastIndex, match.index),
+        });
       }
 
       parts.push({ kind: "mention", value: match[0], userId });

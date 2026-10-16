@@ -23,7 +23,7 @@ import {
   likePost,
   unlikePost,
 } from "@/features/feed/services/posts-service";
-import { PostContent } from "@/features/feed/components/post-content";
+import { MentionText } from "@/features/feed/components/mention-text";
 import type { ApiPost } from "@/features/feed/types";
 
 type Tab = "home" | "explore";
@@ -113,7 +113,7 @@ export function FeedScreen() {
               onPress={() => router.push(`/users/${post.userId}`)}
             />
             {post.content?.trim() ? (
-              <PostContent
+              <MentionText
                 content={post.content}
                 mentions={post.mentions}
                 className="font-body text-body-sm text-text-primary"

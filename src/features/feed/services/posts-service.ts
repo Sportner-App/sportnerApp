@@ -93,10 +93,14 @@ export async function listComments(postId: string, before?: string) {
   return toCursorPage(response.data);
 }
 
-export async function createComment(postId: string, content: string) {
+export async function createComment(
+  postId: string,
+  content: string,
+  mentionedUserIds: string[] = [],
+) {
   const response = await apiClient.post<ApiComment>(
     `/api/posts/${postId}/comments`,
-    { content },
+    { content, mentionedUserIds },
   );
   return response.data;
 }
@@ -117,10 +121,11 @@ export async function createReply(
   postId: string,
   parentCommentId: string,
   content: string,
+  mentionedUserIds: string[] = [],
 ) {
   const response = await apiClient.post<ApiComment>(
     `/api/posts/${postId}/comments/${parentCommentId}/replies`,
-    { content },
+    { content, mentionedUserIds },
   );
   return response.data;
 }

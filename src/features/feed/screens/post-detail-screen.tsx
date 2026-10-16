@@ -23,7 +23,8 @@ import {
   ScreenHeader,
   SportLoader,
 } from "@/components";
-import { PostContent } from "@/features/feed/components/post-content";
+import { MentionText } from "@/features/feed/components/mention-text";
+import { useMentionComposer } from "@/features/feed/hooks/use-mention-composer";
 import { CommentThread } from "@/features/feed/components/comment-thread";
 import { useToast } from "@/contexts";
 import { useScrollToSection } from "@/hooks/use-scroll-to-section";
@@ -71,6 +72,7 @@ export function PostDetailScreen() {
   const [post, setPost] = useState<ApiPost | null>(null);
   const [comments, setComments] = useState<ApiComment[]>([]);
   const [draft, setDraft] = useState("");
+  const mention = useMentionComposer(draft);
   const [isLoading, setIsLoading] = useState(true);
   const [isLiking, setIsLiking] = useState(false);
   const [isCommenting, setIsCommenting] = useState(false);
@@ -240,7 +242,7 @@ export function PostDetailScreen() {
 
           <View className="gap-4 px-6">
             {post.content?.trim() ? (
-              <PostContent
+              <MentionText
                 content={post.content}
                 mentions={post.mentions}
                 className="font-body text-body text-text-primary"
@@ -315,6 +317,9 @@ export function PostDetailScreen() {
 
             <AppTextInput
               value={draft}
+              onSelectionChange={(event) =>
+                mention.onSelectionChange(event.nativeEvent.selection.start)
+              }
               onChangeText={setDraft}
               placeholder={
                 replyingTo
@@ -343,6 +348,7 @@ export function PostDetailScreen() {
                       id,
                       replyingTo.id,
                       draft.trim(),
+                      mention.mentionedUserIds,
                     );
                     if (!reply) {
                       throw new Error(t("social:toasts.replyFailed"));
@@ -366,7 +372,11 @@ export function PostDetailScreen() {
                         : current,
                     );
                   } else {
-                    const comment = await createComment(id, draft.trim());
+                    const comment = await createComment(
+                      id,
+                      draft.trim(),
+                      mention.mentionedUserIds,
+                    );
                     if (comment) {
                       setComments((current) => [...current, comment]);
                       setPost((current) =>
