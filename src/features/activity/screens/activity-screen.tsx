@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 
@@ -11,11 +11,21 @@ import {
 } from "@/components";
 import { TabPage } from "@/features/app-shell/components/tab-page";
 import { useActivityCopy } from "@/features/activity/copy";
-import { useActivity } from "@/features/activity/hooks/use-activity";
+import {
+  useActivity,
+  type ActivityTab,
+} from "@/features/activity/hooks/use-activity";
 import { EventCard } from "@/features/events/components/event-card";
+
+const TABS: ActivityTab[] = ["upcoming", "past", "pending", "organized"];
 
 export function ActivityScreen() {
   const router = useRouter();
+  // Profildeki istatistiklerden gelen bağlantılar doğrudan ilgili sekmeyi açar.
+  const { tab: tabParam } = useLocalSearchParams<{ tab?: string }>();
+  const initialTab = TABS.includes(tabParam as ActivityTab)
+    ? (tabParam as ActivityTab)
+    : "upcoming";
   const { t } = useTranslation("common");
   const {
     tab,
@@ -29,7 +39,7 @@ export function ActivityScreen() {
     error,
     refresh,
     loadMore,
-  } = useActivity();
+  } = useActivity(initialTab);
   const copy = useActivityCopy(tabCounts);
 
   const empty = copy.emptyCopy[tab];

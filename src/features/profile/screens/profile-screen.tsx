@@ -127,7 +127,7 @@ export function ProfileScreen() {
           />
 
           {activeTab === "activity" ? (
-            <StatsSection statistics={profile.statistics} />
+            <StatsSection statistics={profile.statistics} interactive />
           ) : null}
 
           {activeTab === "reviews" ? (

@@ -58,14 +58,36 @@ export function useStatItems(): {
   key: string;
   label: string;
   field: keyof ProfileStatistics;
+  /** Sayıya dokunulduğunda gidilecek yer; yoksa satır tıklanmaz. */
+  href?: string;
 }[] {
   const { t } = useTranslation("profile");
 
   return [
-    { key: "joined", label: t("stats.joined"), field: "eventsJoined" },
-    { key: "organized", label: t("stats.organized"), field: "eventsOrganized" },
-    { key: "completed", label: t("stats.completed"), field: "eventsCompleted" },
-    { key: "friends", label: t("stats.friends"), field: "friendsCount" },
+    {
+      key: "joined",
+      label: t("stats.joined"),
+      field: "eventsJoined",
+      href: "/(tabs)/activity?tab=upcoming",
+    },
+    {
+      key: "organized",
+      label: t("stats.organized"),
+      field: "eventsOrganized",
+      href: "/(tabs)/activity?tab=organized",
+    },
+    {
+      key: "completed",
+      label: t("stats.completed"),
+      field: "eventsCompleted",
+      href: "/(tabs)/activity?tab=past",
+    },
+    {
+      key: "friends",
+      label: t("stats.friends"),
+      field: "friendsCount",
+      href: "/friends",
+    },
   ];
 }
 

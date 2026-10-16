@@ -72,8 +72,8 @@ function isConfirmedActive(event: EventSummary): boolean {
   );
 }
 
-export function useActivity() {
-  const [tab, setTab] = useState<ActivityTab>("upcoming");
+export function useActivity(initialTab: ActivityTab = "upcoming") {
+  const [tab, setTab] = useState<ActivityTab>(initialTab);
   const [upcoming, setUpcoming] = useState<ListState>(EMPTY);
   const [past, setPast] = useState<ListState>(EMPTY);
   const [pending, setPending] = useState<ListState>(EMPTY);
