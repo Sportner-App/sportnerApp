@@ -97,34 +97,18 @@ function ensureGoogleSignInConfigured(
  */
 export async function signInWithGoogle(): Promise<ExternalAuthResult | null> {
   try {
-    const {
-      GoogleSignin,
-      isSuccessResponse,
-      isNoSavedCredentialFoundResponse,
-    } = loadGoogleSignInModule();
+    const { GoogleSignin, isSuccessResponse } = loadGoogleSignInModule();
     ensureGoogleSignInConfigured(GoogleSignin);
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
-    // Önce sessiz giriş: cihazda kayıtlı bir Google oturumu varsa kullanıcıya
-    // hiçbir ekran göstermeden token alınır. Doğrudan signIn() çağırmak, daha
-    // önce giriş yapıp izin vermiş kullanıcıya bile her seferinde hesap seçici
-    // açıyordu.
+    // Her zaman interaktif akış: hesap seçici açılır.
     //
-    // Kendi try/catch'i var: signInSilently kayıtlı kimlik bulamadığında her
-    // zaman NoSavedCredentialFound yanıtı dönmüyor, istisna da atabiliyor.
-    // Dıştaki catch'e düşerse kullanıcı hesap seçiciyi hiç görmeden "giriş
-    // yapılamıyor" hatası alıyor — sessiz giriş başarısızsa sessizce
-    // interaktif akışa düşmeli.
-    let response: Awaited<ReturnType<typeof GoogleSignin.signIn>>;
-
-    try {
-      const silent = await GoogleSignin.signInSilently();
-      response = isNoSavedCredentialFoundResponse(silent)
-        ? await GoogleSignin.signIn()
-        : silent;
-    } catch {
-      response = await GoogleSignin.signIn();
-    }
+    // signInSilently() ile sessiz giriş denenmiyor: cihazda kayıtlı ilk
+    // Google oturumunu kullanıcıya sormadan seçtiği için birden fazla Google
+    // hesabı olan kişi istediği hesapla giremiyordu. signIn() hesap seçiciyi
+    // gösterir ama daha önce izin vermiş bir hesap için Google'ın onay
+    // ekranını tekrar açmaz; izin sunucu tarafında hatırlanır.
+    const response = await GoogleSignin.signIn();
 
     if (!isSuccessResponse(response)) {
       return null;
