@@ -77,6 +77,7 @@ export function ProfileScreen() {
       feed: "/feed",
       badges: "/badges",
       notifications: "/notifications",
+      "notification-settings": "/notifications/settings",
       privacy: "/profile/privacy",
       feedback: "/feedback",
       help: "/help",

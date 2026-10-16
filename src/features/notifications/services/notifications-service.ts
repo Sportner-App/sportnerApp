@@ -64,3 +64,19 @@ export async function updateNotificationSetting(
 ) {
   await apiClient.put(`/api/notification-settings/${type}`, payload);
 }
+
+/**
+ * Birden çok türü tek istekte günceller. Ayarlar ekranındaki bir anahtar
+ * onlarca türü birden değiştiriyor; tür başına istek atılsa yarısı başarısız
+ * olduğunda ekran grubu kapalı gösterirken bir kısmı açık kalırdı.
+ */
+export async function updateNotificationSettings(
+  settings: {
+    notificationType: number;
+    inAppEnabled: boolean;
+    pushEnabled: boolean;
+    emailEnabled: boolean;
+  }[],
+) {
+  await apiClient.put("/api/notification-settings", { settings });
+}

@@ -82,6 +82,11 @@ export function useProfileMenuGroups(): ProfileMenuGroup[] {
       items: [
         { key: "edit", label: t("menu.editProfile"), icon: "user-pen" },
         { key: "notifications", label: t("menu.notifications"), icon: "bell" },
+        {
+          key: "notification-settings",
+          label: t("menu.notificationSettings"),
+          icon: "sliders",
+        },
         // Light/dark toggle is temporarily disabled; app stays on dark.
         // {
         //   key: "appearance",

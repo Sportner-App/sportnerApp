@@ -6,16 +6,37 @@
   "loadFailed": "Could not load",
   "settings": {
     "title": "NOTIFICATION SETTINGS",
-    "inApp": "In-app",
-    "push": "Push notification",
+    "heading": "What do you want to hear about?",
+    "subtitle": "This controls the alerts that reach your phone. Anything you turn off still shows up in your in-app notification inbox.",
     "saveFailed": "Could not save",
+    "loadFailed": "Could not load settings",
+    "footnote": "Essential notices about your account are not affected by these settings.",
     "groups": {
-      "messages": "MESSAGES",
-      "events": "EVENTS",
-      "social": "SOCIAL",
-      "progress": "PROGRESS & SYSTEM"
-    },
-    "typeFallback": "Type {{type}}"
+      "events": {
+        "title": "Events",
+        "description": "Invitations, approvals, reminders, time and place changes, attendance and reviews."
+      },
+      "social": {
+        "title": "Friends",
+        "description": "Friend requests, acceptances and reviews people leave you."
+      },
+      "posts": {
+        "title": "Posts",
+        "description": "Likes, comments and replies on what you share."
+      },
+      "messages": {
+        "title": "Messages",
+        "description": "New messages and being added to a conversation."
+      },
+      "organizations": {
+        "title": "Organizations",
+        "description": "Join requests, approvals, role changes and your membership status."
+      },
+      "achievements": {
+        "title": "Badges and quests",
+        "description": "Badges you earn and quests you finish."
+      }
+    }
   },
   "copy": {
     "namedUser": "{{username}} {{action}}",

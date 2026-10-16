@@ -6,16 +6,37 @@
   "loadFailed": "Yüklenemedi",
   "settings": {
     "title": "BİLDİRİM AYARLARI",
-    "inApp": "Uygulama içi",
-    "push": "Cihaz bildirimi",
+    "heading": "Neyi duymak istersin?",
+    "subtitle": "Telefonuna düşen anlık bildirimleri buradan yönetirsin. Kapattığın bildirimler uygulama içindeki bildirim kutuna düşmeye devam eder.",
     "saveFailed": "Kaydedilemedi",
+    "loadFailed": "Ayarlar yüklenemedi",
+    "footnote": "Hesabınla ilgili zorunlu duyurular bu ayarlardan etkilenmez.",
     "groups": {
-      "messages": "MESAJLAR",
-      "events": "ETKİNLİKLER",
-      "social": "SOSYAL",
-      "progress": "İLERLEME VE SİSTEM"
-    },
-    "typeFallback": "Tür {{type}}"
+      "events": {
+        "title": "Etkinlikler",
+        "description": "Davetler, katılım onayları, hatırlatmalar, saat ve yer değişiklikleri, yoklama ve değerlendirme."
+      },
+      "social": {
+        "title": "Arkadaşlar",
+        "description": "Arkadaşlık istekleri, kabuller ve sana gelen değerlendirmeler."
+      },
+      "posts": {
+        "title": "Paylaşımlar",
+        "description": "Gönderilerine gelen beğeni, yorum ve yanıtlar."
+      },
+      "messages": {
+        "title": "Mesajlar",
+        "description": "Yeni mesajlar ve bir sohbete eklenmen."
+      },
+      "organizations": {
+        "title": "Organizasyonlar",
+        "description": "Üyelik istekleri, onaylar, rol değişiklikleri ve üyelik durumun."
+      },
+      "achievements": {
+        "title": "Rozet ve görevler",
+        "description": "Kazandığın rozetler ve tamamladığın görevler."
+      }
+    }
   },
   "copy": {
     "namedUser": "{{username}} kullanıcısı {{action}}",
