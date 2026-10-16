@@ -30,6 +30,17 @@ type AppTourContextValue = {
 const TARGETS: AppTourTarget[] = ["create", "conversations", "discover"];
 const AppTourContext = createContext<AppTourContextValue | null>(null);
 
+/**
+ * Turun gösterildiğini kalıcı olarak işaretler. Hata yutulmuyor: yazma
+ * başarısız olursa tur bir daha açılır, bunu sessizce kaybetmek yerine
+ * günlüğe düşürüyoruz.
+ */
+function markSeen() {
+  AsyncStorage.setItem(STORAGE_KEYS.appTourSeen, "true").catch((error) => {
+    console.warn("App tour state could not be saved:", error);
+  });
+}
+
 export function AppTourProvider({
   children,
   autoStart = true,
@@ -43,7 +54,21 @@ export function AppTourProvider({
     let active = true;
     const timer = setTimeout(() => {
       void AsyncStorage.getItem(STORAGE_KEYS.appTourSeen).then((seen) => {
-        if (active && seen !== "true") setIsVisible(true);
+        if (!active || seen === "true") return;
+
+        setIsVisible(true);
+        // Bayrak turu kapatırken değil, açarken yazılıyor.
+        //
+        // Kapanışta yazıldığında kullanıcı turu bitirip hemen uygulamayı arka
+        // plana attığında yazma diske inmeden süreç askıya alınıp
+        // öldürülebiliyordu; dönüşte bayrak bulunamadığı için tur bir kez daha
+        // açılıyordu. İkinci kapanışta uygulamada daha uzun kalındığı için
+        // yazma tamamlanıyor ve sorun kendiliğinden "düzelmiş" gibi görünüyordu.
+        //
+        // Burada yazmak yarışı tamamen kaldırıyor: tur göründüğü anda zaten
+        // gösterilmiş sayılır. Yarıda bırakan kullanıcı için Ayarlar'da
+        // "Uygulama turunu yeniden göster" duruyor.
+        markSeen();
       });
     }, 750);
     return () => {
@@ -63,7 +88,9 @@ export function AppTourProvider({
   const dismiss = useCallback(() => {
     setIsVisible(false);
     setStep(0);
-    void AsyncStorage.setItem(STORAGE_KEYS.appTourSeen, "true");
+    // Tur gösterilirken zaten işaretlendi; burası elle başlatılan tekrar
+    // gösterimler için ve bayrağın bir sebeple yazılamadığı durumda ikinci şans.
+    markSeen();
   }, []);
 
   const value = useMemo<AppTourContextValue>(
