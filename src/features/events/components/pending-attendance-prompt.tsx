@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { InteractionManager } from "react-native";
+import { AppState, InteractionManager } from "react-native";
 import {
   type PropsWithChildren,
   useCallback,
@@ -49,9 +49,9 @@ export function PendingAttendancePrompt({ children }: PropsWithChildren) {
 
   const current = queue[0] ?? null;
 
-  useEffect(() => {
+  const refreshQueue = useCallback(() => {
     if (!isAuthenticated || dismissedRef.current) {
-      return;
+      return undefined;
     }
 
     const task = InteractionManager.runAfterInteractions(() => {
@@ -62,6 +62,23 @@ export function PendingAttendancePrompt({ children }: PropsWithChildren) {
 
     return () => task.cancel();
   }, [isAuthenticated]);
+
+  useEffect(() => refreshQueue(), [refreshQueue]);
+
+  // Uygulama öne geldiğinde tekrar sorulur. Yalnızca oturum değiştiğinde
+  // sorulduğunda, uygulaması zaten açık olan organizatör etkinliği bittikten
+  // sonra bu sheet'i hiç görmüyordu: liste etkinlik henüz sürerken çekilmiş ve
+  // boş dönmüş oluyordu, bir daha da sorulmuyordu. Etkinlik tam da uygulama
+  // kullanılırken bittiği için bu istisna değil, olağan durum.
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        refreshQueue();
+      }
+    });
+
+    return () => subscription.remove();
+  }, [refreshQueue]);
 
   const resetForNext = useCallback(() => {
     setMode("prompt");
