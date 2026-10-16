@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "68466647840",
+    "project_id": "sportner-c244a",
+    "storage_bucket": "sportner-c244a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:68466647840:android:46a7ff05d4c30ec8aaed45",
+        "android_client_info": {
+          "package_name": "com.yagizerdenler.sportner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8xtpn0cpqsTRu0dQbRUKpvsD8AEra-oI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
