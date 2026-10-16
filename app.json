@@ -2,9 +2,12 @@
   "expo": {
     "name": "Sportner",
     "slug": "sportner",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "icon": "./assets/images/icon.png",
     "scheme": "sportner",
     "userInterfaceStyle": "dark",
@@ -13,11 +16,13 @@
       "appleTeamId": "MN3MXLT7QL",
       "supportsTablet": false,
       "bundleIdentifier": "com.yagizerdenler.sportner",
-      "buildNumber": "46",
+      "buildNumber": "48",
       "infoPlist": {
         "CFBundleDisplayName": "Sportner",
         "ITSAppUsesNonExemptEncryption": false,
-        "LSApplicationQueriesSchemes": ["whatsapp"]
+        "LSApplicationQueriesSchemes": [
+          "whatsapp"
+        ]
       }
     },
     "android": {
@@ -30,7 +35,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "versionCode": 1
+      "versionCode": 1,
+      "googleServicesFile": "./google-services.json"
     },
     "plugins": [
       "expo-router",
