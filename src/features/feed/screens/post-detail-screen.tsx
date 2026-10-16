@@ -23,6 +23,7 @@ import {
   ScreenHeader,
   SportLoader,
 } from "@/components";
+import { PostContent } from "@/features/feed/components/post-content";
 import { CommentThread } from "@/features/feed/components/comment-thread";
 import { useToast } from "@/contexts";
 import { useScrollToSection } from "@/hooks/use-scroll-to-section";
@@ -239,9 +240,11 @@ export function PostDetailScreen() {
 
           <View className="gap-4 px-6">
             {post.content?.trim() ? (
-              <Text className="font-body text-body text-text-primary">
-                {post.content}
-              </Text>
+              <PostContent
+                content={post.content}
+                mentions={post.mentions}
+                className="font-body text-body text-text-primary"
+              />
             ) : null}
 
             <View className="flex-row items-center gap-5">

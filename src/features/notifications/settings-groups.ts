@@ -61,7 +61,7 @@ export const NOTIFICATION_GROUPS = [
   {
     key: "posts",
     icon: "heart",
-    types: [T.postLiked, T.postCommented, T.commentReplied],
+    types: [T.postLiked, T.postCommented, T.commentReplied, T.postMentioned],
   },
   {
     key: "messages",

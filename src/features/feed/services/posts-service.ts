@@ -38,6 +38,7 @@ function normalizePost(post: ApiPost): ApiPost {
     ...post,
     media,
     mediaCount: post.mediaCount ?? media.length,
+    mentions: post.mentions ?? [],
   };
 }
 
@@ -46,11 +47,20 @@ export async function getPost(postId: string) {
   return response.data ? normalizePost(response.data) : response.data;
 }
 
-export async function createPost(content: string, files: PickedMedia[] = []) {
+export async function createPost(
+  content: string,
+  files: PickedMedia[] = [],
+  mentionedUserIds: string[] = [],
+) {
   const form = new FormData();
   const caption = content.trim();
   if (caption) {
     form.append("content", caption);
+  }
+
+  // Multipart istek: her etiket ayrı bir alan olarak gidiyor.
+  for (const userId of mentionedUserIds) {
+    form.append("mentionedUserIds", userId);
   }
 
   for (const file of files) {

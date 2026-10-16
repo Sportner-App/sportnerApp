@@ -29,6 +29,17 @@ export type ApiPost = {
   likedByMe: boolean;
   createdAt: string;
   media: ApiPostMedia[];
+  mentions: ApiPostMention[];
+};
+
+/**
+ * Gönderide etiketlenen kullanıcı. İçerikteki "@kullanıcıadı" yazısı
+ * `username` ile eşleştirilip `userId`'ye bağlanıyor: etiket metne değil
+ * kimliğe bağlı olduğu için kişi adını değiştirse de bağlantı doğru kalır.
+ */
+export type ApiPostMention = {
+  userId: string;
+  username: string;
 };
 
 export type ApiComment = {

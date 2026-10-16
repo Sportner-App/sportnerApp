@@ -23,6 +23,7 @@ import {
   likePost,
   unlikePost,
 } from "@/features/feed/services/posts-service";
+import { PostContent } from "@/features/feed/components/post-content";
 import type { ApiPost } from "@/features/feed/types";
 
 type Tab = "home" | "explore";
@@ -111,9 +112,17 @@ export function FeedScreen() {
               avatarSize={38}
               onPress={() => router.push(`/users/${post.userId}`)}
             />
-            <Text className="font-body text-body-sm text-text-primary">
-              {post.content || t("social:fallback.post")}
-            </Text>
+            {post.content?.trim() ? (
+              <PostContent
+                content={post.content}
+                mentions={post.mentions}
+                className="font-body text-body-sm text-text-primary"
+              />
+            ) : (
+              <Text className="font-body text-body-sm text-text-primary">
+                {t("social:fallback.post")}
+              </Text>
+            )}
             <View className="flex-row gap-4">
               <Pressable
                 onPress={async () => {

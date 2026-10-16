@@ -152,3 +152,12 @@ export async function explorePeople(params: {
   );
   return (response.data ?? []).map(mapExplorePerson);
 }
+
+/** Etiketleme seçicisi için arkadaş araması. */
+export async function searchFriends(query: string, take = 8) {
+  const response = await apiClient.get<ApiFriend[]>(
+    "/api/friendships/search",
+    { params: { q: query, take } },
+  );
+  return response.data ?? [];
+}
