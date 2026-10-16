@@ -16,6 +16,12 @@ export type ApiConversationMember = {
   joinedAt: string;
 };
 
+/** Mesajda etiketlenen kullanıcı; metindeki "@ad" bununla kimliğe bağlanır. */
+export type ApiMessageMention = {
+  userId: string;
+  username: string;
+};
+
 export type ApiMessage = {
   id: string;
   conversationId: string;
@@ -31,6 +37,7 @@ export type ApiMessage = {
   mediaMimeType: string | null;
   replyToMessageId: string | null;
   editedAt: string | null;
+  mentions: ApiMessageMention[];
   isRedacted: boolean;
   createdAt: string;
 };

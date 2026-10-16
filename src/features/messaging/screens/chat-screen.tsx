@@ -1,9 +1,12 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, View } from "react-native";
 import { useKeyboardHandler } from "react-native-keyboard-controller";
+
+import { useMentionComposer } from "@/features/feed/hooks/use-mention-composer";
+import { normalizeSearch } from "@/utils/search";
 import {
   scrollTo,
   useAnimatedRef,
@@ -14,6 +17,7 @@ import {
   AppScreen,
   AppText as Text,
   AppTextInput,
+  Avatar,
   EmptyState,
   ScreenHeader,
 } from "@/components";
@@ -83,6 +87,28 @@ export function EventChatScreen({
   );
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
+
+  // Sohbette adaylar üyelerden geliyor, arkadaş listesinden değil: etkinlik
+  // grubundakiler arkadaş olmak zorunda değil ve etiketlenmek istenen tam
+  // olarak onlar. Üyeler zaten istemcide olduğu için sorgu da gerekmiyor.
+  const searchMembers = useCallback(
+    async (query: string) => {
+      const needle = normalizeSearch(query);
+      return (conversation?.members ?? [])
+        .filter(
+          (member) =>
+            member.userId !== user?.id &&
+            member.username &&
+            (!needle ||
+              normalizeSearch(member.username).includes(needle) ||
+              normalizeSearch(member.firstName ?? "").includes(needle)),
+        )
+        .slice(0, 8);
+    },
+    [conversation?.members, user?.id],
+  );
+
+  const mention = useMentionComposer(draft, searchMembers);
   const [isDeleting, setIsDeleting] = useState(false);
 
   /** Taslağın senkron aynası: aynı karedeki ikinci dokunuş boş görsün. */
@@ -266,6 +292,7 @@ export function EventChatScreen({
     const optimistic: ChatMessage = {
       id: pendingId,
       pendingId,
+      mentions: [],
       status: "sending",
       conversationId: targetConversationId,
       senderUserId: user?.id ?? "",
@@ -288,7 +315,11 @@ export function EventChatScreen({
     setMessages((prev) => [...prev, optimistic]);
 
     try {
-      const created = await sendTextMessage(targetConversationId, text);
+      const created = await sendTextMessage(
+        targetConversationId,
+        text,
+        mention.mentionedUserIds,
+      );
       setMessages((prev) => settlePending(prev, pendingId, created));
     } catch (error) {
       const closed =
@@ -421,41 +452,73 @@ export function EventChatScreen({
             </Text>
           </View>
         ) : (
-          <View className="flex-row items-center gap-2 border-t border-border-default px-6 py-3">
-            <AppTextInput
-              value={draft}
-              onChangeText={(value) => {
-                draftRef.current = value;
-                setDraft(value);
-              }}
-              placeholder={t("chat.placeholder")}
-              placeholderTextColor={themeColors.placeholder}
-              textAlignVertical="center"
-              hitSlop={HIT_SLOP}
-              returnKeyType="send"
-              blurOnSubmit={false}
-              onSubmitEditing={send}
-              style={{
-                height: 48,
-                lineHeight: 20,
-                paddingTop: 0,
-                paddingBottom: 0,
-              }}
-              className="flex-1 rounded-2xl border border-border-default bg-surface-primary px-4 font-body text-body text-text-primary"
-            />
-            <Pressable
-              accessibilityRole="button"
-              accessibilityState={{ disabled: !canSend }}
-              onPress={send}
-              disabled={!canSend}
-              className={`h-12 items-center justify-center rounded-2xl px-5 active:opacity-75 ${
-                canSend ? "bg-brand-primary" : "bg-brand-primary/35"
-              }`}
-            >
-              <Text className="font-body-bold text-background-primary">
-                {t("chat.send")}
-              </Text>
-            </Pressable>
+          <View className="border-t border-border-default">
+            {mention.isPicking && mention.suggestions.length > 0 ? (
+              <View className="gap-1 border-b border-border-default px-4 py-2">
+                {mention.suggestions.map((member) => (
+                  <Pressable
+                    key={member.userId}
+                    onPress={() => {
+                      const next = mention.apply(member);
+                      if (next !== null) {
+                        draftRef.current = next;
+                        setDraft(next);
+                      }
+                    }}
+                    className="flex-row items-center gap-3 rounded-2xl px-2 py-2 active:opacity-70"
+                  >
+                    <Avatar
+                      uri={member.profileImageUrl}
+                      name={member.firstName}
+                      size={28}
+                    />
+                    <Text className="flex-1 font-body-bold text-body-sm text-text-primary">
+                      @{member.username}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            ) : null}
+
+            <View className="flex-row items-center gap-2 px-6 py-3">
+              <AppTextInput
+                value={draft}
+                onChangeText={(value) => {
+                  draftRef.current = value;
+                  setDraft(value);
+                }}
+                onSelectionChange={(event) =>
+                  mention.onSelectionChange(event.nativeEvent.selection.start)
+                }
+                placeholder={t("chat.placeholder")}
+                placeholderTextColor={themeColors.placeholder}
+                textAlignVertical="center"
+                hitSlop={HIT_SLOP}
+                returnKeyType="send"
+                blurOnSubmit={false}
+                onSubmitEditing={send}
+                style={{
+                  height: 48,
+                  lineHeight: 20,
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                }}
+                className="flex-1 rounded-2xl border border-border-default bg-surface-primary px-4 font-body text-body text-text-primary"
+              />
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ disabled: !canSend }}
+                onPress={send}
+                disabled={!canSend}
+                className={`h-12 items-center justify-center rounded-2xl px-5 active:opacity-75 ${
+                  canSend ? "bg-brand-primary" : "bg-brand-primary/35"
+                }`}
+              >
+                <Text className="font-body-bold text-background-primary">
+                  {t("chat.send")}
+                </Text>
+              </Pressable>
+            </View>
           </View>
         )
       }

@@ -2,7 +2,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { ApiPostMention } from "@/features/feed/types";
 import { searchFriends } from "@/features/social/services/social-service";
-import type { ApiFriend } from "@/features/social/types";
+
+/**
+ * Seçicide gösterilecek kişi. Hem arkadaş listesi hem sohbet üyesi bu şekli
+ * karşılıyor, böylece aynı hook iki bağlamda da kullanılabiliyor.
+ */
+export type MentionCandidate = {
+  userId: string;
+  username: string | null;
+  firstName: string | null;
+  profileImageUrl: string | null;
+};
 
 /** İmlecin solunda yazılmakta olan "@jeton" varsa onu döndürür. */
 function activeToken(text: string, cursor: number) {
@@ -28,10 +38,18 @@ const SEARCH_DEBOUNCE_MS = 220;
  * etiketler yollanıyor — biri yazdığı etiketi sildiğinde o kişi gönderide adı
  * geçmediği hâlde etiketlenmiş kalmasın.
  */
-export function useMentionComposer(content: string) {
+export function useMentionComposer(
+  content: string,
+  /**
+   * Adayları getiren işlev. Varsayılan arkadaş araması; sohbette bunun yerine
+   * sohbet üyeleri veriliyor, çünkü etkinlik grubundakiler arkadaş olmak
+   * zorunda değil ve asıl etiketlenmek istenenler tam olarak onlar.
+   */
+  search: (query: string) => Promise<MentionCandidate[]> = searchFriends,
+) {
   const [cursor, setCursor] = useState(0);
   const [selected, setSelected] = useState<ApiPostMention[]>([]);
-  const [suggestions, setSuggestions] = useState<ApiFriend[]>([]);
+  const [suggestions, setSuggestions] = useState<MentionCandidate[]>([]);
   const requestRef = useRef(0);
 
   const token = useMemo(() => activeToken(content, cursor), [content, cursor]);
@@ -44,7 +62,7 @@ export function useMentionComposer(content: string) {
 
     const requestId = ++requestRef.current;
     const timer = setTimeout(() => {
-      void searchFriends(token.query)
+      void search(token.query)
         .then((friends) => {
           // Arada gelen eski yanıt yenisini ezmesin.
           if (requestRef.current === requestId) setSuggestions(friends);
@@ -53,10 +71,10 @@ export function useMentionComposer(content: string) {
     }, SEARCH_DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
-  }, [token]);
+  }, [search, token]);
 
   const apply = useCallback(
-    (friend: ApiFriend) => {
+    (friend: MentionCandidate) => {
       const username = friend.username;
       if (!token || !username) return null;
 

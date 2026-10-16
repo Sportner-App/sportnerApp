@@ -65,10 +65,11 @@ export async function listMessages(
 export async function sendTextMessage(
   conversationId: string,
   content: string,
+  mentionedUserIds: string[] = [],
 ): Promise<ApiMessage> {
   const response = await apiClient.post<ApiMessage>(
     `/api/conversations/${conversationId}/messages`,
-    { content },
+    { content, mentionedUserIds },
   );
   return response.data;
 }

@@ -1,6 +1,8 @@
 import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
+import { MentionText } from "@/features/feed/components/mention-text";
+
 import { AppText as Text, Avatar } from "@/components";
 import type { ChatMessage } from "@/features/messaging/types";
 import { formatFullName, formatHandle } from "@/utils/person";
@@ -80,7 +82,17 @@ export function MessageRow({
           }`}
           style={isPending ? { opacity: 0.55 } : undefined}
         >
-          <Text className="font-body text-body-sm text-white">{body}</Text>
+          {/* Silinmiş ya da medya mesajında etiket çözümlemeye gerek yok:
+              body o durumda sabit bir metin. */}
+          {message.isRedacted || !message.content ? (
+            <Text className="font-body text-body-sm text-white">{body}</Text>
+          ) : (
+            <MentionText
+              content={body}
+              mentions={message.mentions}
+              className="font-body text-body-sm text-white"
+            />
+          )}
         </View>
         {isFailed ? (
           <Pressable
