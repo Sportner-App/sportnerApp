@@ -153,11 +153,24 @@ export async function explorePeople(params: {
   return (response.data ?? []).map(mapExplorePerson);
 }
 
-/** Etiketleme seçicisi için arkadaş araması. */
+/**
+ * Etiketleme seçicisi için arkadaş araması.
+ *
+ * Boş sorguda arama ucu kullanılmıyor: sunucu tarafı boş metni reddediyor
+ * (SearchFriendsQueryValidator), oysa kullanıcı "@" yazar yazmaz listeyi
+ * görmeli. O durumda arkadaş listesinin ilk sayfası dönüyor.
+ */
 export async function searchFriends(query: string, take = 8) {
+  const trimmed = query.trim();
+
+  if (!trimmed) {
+    const page = await listFriends(1, take);
+    return page?.items ?? [];
+  }
+
   const response = await apiClient.get<ApiFriend[]>(
     "/api/friendships/search",
-    { params: { q: query, take } },
+    { params: { q: trimmed, take } },
   );
   return response.data ?? [];
 }

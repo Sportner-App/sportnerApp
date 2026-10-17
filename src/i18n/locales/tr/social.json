@@ -42,5 +42,8 @@
     "add": "Arkadaş ekle",
     "requestSent": "İstek gönderildi",
     "requestFailed": "İstek gönderilemedi"
+  },
+  "mentions": {
+    "empty": "Eşleşen kimse yok."
   }
 }

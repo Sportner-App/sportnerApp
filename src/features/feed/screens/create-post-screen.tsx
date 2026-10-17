@@ -19,7 +19,7 @@ import { useToast } from "@/contexts";
 import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { createPost } from "@/features/feed/services/posts-service";
-import { MentionField } from "@/features/feed/components/mention-field";
+import { MentionSuggestionList } from "@/features/feed/components/mention-suggestion-list";
 import { useMentionComposer } from "@/features/feed/hooks/use-mention-composer";
 import { Avatar } from "@/components/avatar";
 import {
@@ -157,7 +157,23 @@ export function CreatePostScreen() {
       footer={sourceSheet}
       contentClassName="gap-4 px-6 pt-3"
     >
-      {photos.length > 0 ? (
+      {/* Etiketlerken medya alanı yerini kişi listesine bırakır; giriş alanı
+          yerinde kalır. Yüzen kutu ekranın altında kırpılıyordu. */}
+      {mention.isPicking ? (
+        <View
+          style={{ height: previewSize }}
+          className="overflow-hidden rounded-2xl border border-border-default bg-surface-primary"
+        >
+          <MentionSuggestionList
+            suggestions={mention.suggestions}
+            emptyLabel={t("social:mentions.empty")}
+            onSelect={(candidate) => {
+              const next = mention.apply(candidate);
+              if (next !== null) setContent(next);
+            }}
+          />
+        </View>
+      ) : photos.length > 0 ? (
         <View
           className="overflow-hidden rounded-2xl border border-border-default bg-surface-primary"
           style={{ width: previewSize, height: previewSize }}
@@ -270,27 +286,18 @@ export function CreatePostScreen() {
         </ScrollView>
       ) : null}
 
-      <MentionField
-        suggestions={mention.suggestions}
-        visible={mention.isPicking}
-        onSelect={(candidate) => {
-          const next = mention.apply(candidate);
-          if (next !== null) setContent(next);
-        }}
-      >
-        <Input
-          value={content}
-          onChangeText={setContent}
-          onSelectionChange={(event) =>
-            mention.onSelectionChange(event.nativeEvent.selection.start)
-          }
-          multiline
-          numberOfLines={3}
-          textAlignVertical="top"
-          style={{ minHeight: 72, paddingTop: 14 }}
-          placeholder={t("feed:create.placeholder")}
-        />
-      </MentionField>
+      <Input
+        value={content}
+        onChangeText={setContent}
+        onSelectionChange={(event) =>
+          mention.onSelectionChange(event.nativeEvent.selection.start)
+        }
+        multiline
+        numberOfLines={3}
+        textAlignVertical="top"
+        style={{ minHeight: 72, paddingTop: 14 }}
+        placeholder={t("feed:create.placeholder")}
+      />
     </AppScreen>
   );
 }

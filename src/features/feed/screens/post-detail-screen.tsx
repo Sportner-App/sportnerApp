@@ -23,7 +23,7 @@ import {
   ScreenHeader,
   SportLoader,
 } from "@/components";
-import { MentionField } from "@/features/feed/components/mention-field";
+import { MentionSuggestionList } from "@/features/feed/components/mention-suggestion-list";
 import { MentionText } from "@/features/feed/components/mention-text";
 import { useMentionComposer } from "@/features/feed/hooks/use-mention-composer";
 import { CommentThread } from "@/features/feed/components/comment-thread";
@@ -284,7 +284,22 @@ export function PostDetailScreen() {
               <Text className="font-display text-body text-text-primary">
                 {t("social:comments.title")}
               </Text>
-              {comments.length === 0 ? (
+              {/* Etiketlerken yorumlar yerini kişi listesine bırakır. */}
+              {mention.isPicking ? (
+                <View
+                  style={{ height: 300 }}
+                  className="overflow-hidden rounded-2xl border border-border-default bg-surface-primary"
+                >
+                  <MentionSuggestionList
+                    suggestions={mention.suggestions}
+                    emptyLabel={t("social:mentions.empty")}
+                    onSelect={(candidate) => {
+                      const next = mention.apply(candidate);
+                      if (next !== null) setDraft(next);
+                    }}
+                  />
+                </View>
+              ) : comments.length === 0 ? (
                 <Text className="font-body text-body-sm text-text-tertiary">
                   {t("social:comments.firstComment")}
                 </Text>
@@ -316,31 +331,22 @@ export function PostDetailScreen() {
               </View>
             ) : null}
 
-            <MentionField
-              suggestions={mention.suggestions}
-              visible={mention.isPicking}
-              onSelect={(candidate) => {
-                const next = mention.apply(candidate);
-                if (next !== null) setDraft(next);
-              }}
-            >
-              <AppTextInput
-                value={draft}
-                onSelectionChange={(event) =>
-                  mention.onSelectionChange(event.nativeEvent.selection.start)
-                }
-                onChangeText={setDraft}
-                placeholder={
-                  replyingTo
-                    ? t("social:comments.replyPlaceholder", {
-                        username: replyUsername,
-                      })
-                    : t("social:comments.placeholder")
-                }
-                placeholderTextColor={themeColors.placeholder}
-                className="rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
-              />
-            </MentionField>
+            <AppTextInput
+              value={draft}
+              onSelectionChange={(event) =>
+                mention.onSelectionChange(event.nativeEvent.selection.start)
+              }
+              onChangeText={setDraft}
+              placeholder={
+                replyingTo
+                  ? t("social:comments.replyPlaceholder", {
+                      username: replyUsername,
+                    })
+                  : t("social:comments.placeholder")
+              }
+              placeholderTextColor={themeColors.placeholder}
+              className="rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
+            />
             <Button
               label={
                 replyingTo

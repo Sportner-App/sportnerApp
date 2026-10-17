@@ -42,5 +42,8 @@
     "add": "Add friend",
     "requestSent": "Request sent",
     "requestFailed": "Could not send request"
+  },
+  "mentions": {
+    "empty": "Nobody matches that."
   }
 }
