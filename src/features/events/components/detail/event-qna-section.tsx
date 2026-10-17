@@ -15,6 +15,12 @@ import {
 import { EVENT_QNA_ROLE, type ApiEventQuestion } from "@/features/events/types";
 import type { EventDetail } from "@/features/events/types";
 import { hasEventEnded } from "@/features/events/status";
+import { MentionText } from "@/features/feed/components/mention-text";
+import {
+  useMentionComposer,
+  type MentionCandidate,
+} from "@/features/feed/hooks/use-mention-composer";
+import { normalizeSearch } from "@/utils/search";
 import { successNotification } from "@/utils/haptics";
 
 const MIN_LENGTH = 5;
@@ -36,6 +42,38 @@ export function EventQnASection({
   const [items, setItems] = useState<ApiEventQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [draft, setDraft] = useState("");
+
+  /**
+   * Adaylar etkinliğe dahil olanlardan: soru-cevapta etiketlenmek istenen
+   * kişiler organizatör ve diğer katılımcılar, arkadaş olmaları gerekmiyor.
+   * Liste zaten istemcide olduğu için sorgu da gerekmiyor.
+   */
+  const searchAttendees = useCallback(
+    async (query: string) => {
+      const needle = normalizeSearch(query);
+      const people: MentionCandidate[] = event.participants
+        .filter((participant) => !participant.isGuest && participant.userId)
+        .map((participant) => ({
+          userId: participant.userId!,
+          username: participant.username,
+          firstName: participant.name,
+          profileImageUrl: participant.avatarUrl,
+        }));
+
+      return people
+        .filter(
+          (person) =>
+            person.username &&
+            (!needle ||
+              normalizeSearch(person.username).includes(needle) ||
+              normalizeSearch(person.firstName ?? "").includes(needle)),
+        )
+        .slice(0, 8);
+    },
+    [event.participants],
+  );
+
+  const mention = useMentionComposer(draft, searchAttendees);
   const [replyDraft, setReplyDraft] = useState("");
   const [replyingTo, setReplyingTo] = useState<ApiEventQuestion | null>(null);
   const [saving, setSaving] = useState(false);
@@ -72,7 +110,11 @@ export function EventQnASection({
 
     setSaving(true);
     try {
-      const created = await askEventQuestion(event.id, content);
+      const created = await askEventQuestion(
+        event.id,
+        content,
+        mention.mentionedUserIds,
+      );
       setItems((current) => [created, ...current]);
       setDraft("");
       successNotification();
@@ -179,6 +221,9 @@ export function EventQnASection({
             label={t("qna.askLabel")}
             value={draft}
             onChangeText={setDraft}
+            onSelectionChange={(event_) =>
+              mention.onSelectionChange(event_.nativeEvent.selection.start)
+            }
             multiline
             maxLength={MAX_LENGTH}
             placeholder={t("qna.askPlaceholder")}
@@ -186,6 +231,30 @@ export function EventQnASection({
             style={{ minHeight: 88, paddingTop: 10, paddingBottom: 10 }}
             textAlignVertical="top"
           />
+          {mention.isPicking && mention.suggestions.length > 0 ? (
+            <View className="gap-1 rounded-2xl border border-border-default bg-surface-primary p-2">
+              {mention.suggestions.map((person) => (
+                <Pressable
+                  key={person.userId}
+                  onPress={() => {
+                    const next = mention.apply(person);
+                    if (next !== null) setDraft(next);
+                  }}
+                  className="flex-row items-center gap-3 rounded-xl px-2 py-2 active:opacity-70"
+                >
+                  <Avatar
+                    uri={person.profileImageUrl}
+                    name={person.firstName}
+                    size={26}
+                  />
+                  <Text className="flex-1 font-body-bold text-body-sm text-text-primary">
+                    @{person.username}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+
           <Button
             label={t("qna.ask")}
             size="sm"
@@ -346,7 +415,7 @@ function QnARow({
               @{mention}{" "}
             </Text>
           ) : null}
-          {item.content}
+          <MentionText content={item.content} mentions={item.mentions} />
         </Text>
         {canReply ? (
           <Pressable

@@ -14,10 +14,14 @@ export async function listEventQuestions(eventId: string, page = 1) {
   };
 }
 
-export async function askEventQuestion(eventId: string, content: string) {
+export async function askEventQuestion(
+  eventId: string,
+  content: string,
+  mentionedUserIds: string[] = [],
+) {
   const response = await apiClient.post<ApiEventQuestion>(
     `/api/events/${eventId}/questions`,
-    { content },
+    { content, mentionedUserIds },
   );
   return response.data;
 }
@@ -26,10 +30,11 @@ export async function replyToEventQuestion(
   eventId: string,
   questionId: string,
   content: string,
+  mentionedUserIds: string[] = [],
 ) {
   const response = await apiClient.post<ApiEventQuestion>(
     `/api/events/${eventId}/questions/${questionId}/replies`,
-    { content },
+    { content, mentionedUserIds },
   );
   return response.data;
 }

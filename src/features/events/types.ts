@@ -339,6 +339,12 @@ export const EVENT_QNA_ROLE = {
   organizer: 2,
 } as const;
 
+/** Soruda etiketlenen kullanıcı; metindeki "@ad" bununla kimliğe bağlanır. */
+export type EventQuestionMention = {
+  userId: string;
+  username: string;
+};
+
 export type ApiEventQuestion = {
   id: string;
   eventId: string;
@@ -354,6 +360,7 @@ export type ApiEventQuestion = {
   authorRole: number;
   createdAt: string;
   replies: ApiEventQuestion[];
+  mentions: EventQuestionMention[];
 };
 
 export type ApiReview = {
