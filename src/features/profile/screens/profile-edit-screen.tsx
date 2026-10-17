@@ -155,7 +155,9 @@ export function ProfileEditScreen() {
 
     const usernameError = validateUsername(username);
     // Gender and birth date are optional (App Store 5.1.1(v)).
-    const birthDateError = birthDate.trim() ? validateBirthDate(birthDate) : null;
+    const birthDateError = birthDate.trim()
+      ? validateBirthDate(birthDate)
+      : null;
     if (usernameError || birthDateError) {
       showToast({
         type: "error",

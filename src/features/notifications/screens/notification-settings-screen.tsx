@@ -129,7 +129,9 @@ export function NotificationSettingsScreen() {
                 >
                   <View
                     className={`h-10 w-10 items-center justify-center rounded-full ${
-                      enabled ? "bg-brand-primary/10" : "bg-background-secondary"
+                      enabled
+                        ? "bg-brand-primary/10"
+                        : "bg-background-secondary"
                     }`}
                   >
                     <FontAwesome6

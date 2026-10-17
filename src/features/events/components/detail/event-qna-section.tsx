@@ -15,6 +15,7 @@ import {
 import { EVENT_QNA_ROLE, type ApiEventQuestion } from "@/features/events/types";
 import type { EventDetail } from "@/features/events/types";
 import { hasEventEnded } from "@/features/events/status";
+import { MentionField } from "@/features/feed/components/mention-field";
 import { MentionText } from "@/features/feed/components/mention-text";
 import {
   useMentionComposer,
@@ -217,43 +218,29 @@ export function EventQnASection({
 
       {canAsk ? (
         <View className="gap-2">
-          <Input
-            label={t("qna.askLabel")}
-            value={draft}
-            onChangeText={setDraft}
-            onSelectionChange={(event_) =>
-              mention.onSelectionChange(event_.nativeEvent.selection.start)
-            }
-            multiline
-            maxLength={MAX_LENGTH}
-            placeholder={t("qna.askPlaceholder")}
-            helperText={`${draft.trim().length}/${MAX_LENGTH}`}
-            style={{ minHeight: 88, paddingTop: 10, paddingBottom: 10 }}
-            textAlignVertical="top"
-          />
-          {mention.isPicking && mention.suggestions.length > 0 ? (
-            <View className="gap-1 rounded-2xl border border-border-default bg-surface-primary p-2">
-              {mention.suggestions.map((person) => (
-                <Pressable
-                  key={person.userId}
-                  onPress={() => {
-                    const next = mention.apply(person);
-                    if (next !== null) setDraft(next);
-                  }}
-                  className="flex-row items-center gap-3 rounded-xl px-2 py-2 active:opacity-70"
-                >
-                  <Avatar
-                    uri={person.profileImageUrl}
-                    name={person.firstName}
-                    size={26}
-                  />
-                  <Text className="flex-1 font-body-bold text-body-sm text-text-primary">
-                    @{person.username}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          ) : null}
+          <MentionField
+            suggestions={mention.suggestions}
+            visible={mention.isPicking}
+            onSelect={(candidate) => {
+              const next = mention.apply(candidate);
+              if (next !== null) setDraft(next);
+            }}
+          >
+            <Input
+              label={t("qna.askLabel")}
+              value={draft}
+              onChangeText={setDraft}
+              onSelectionChange={(event_) =>
+                mention.onSelectionChange(event_.nativeEvent.selection.start)
+              }
+              multiline
+              maxLength={MAX_LENGTH}
+              placeholder={t("qna.askPlaceholder")}
+              helperText={`${draft.trim().length}/${MAX_LENGTH}`}
+              style={{ minHeight: 88, paddingTop: 10, paddingBottom: 10 }}
+              textAlignVertical="top"
+            />
+          </MentionField>
 
           <Button
             label={t("qna.ask")}

@@ -23,6 +23,7 @@ import {
   ScreenHeader,
   SportLoader,
 } from "@/components";
+import { MentionField } from "@/features/feed/components/mention-field";
 import { MentionText } from "@/features/feed/components/mention-text";
 import { useMentionComposer } from "@/features/feed/hooks/use-mention-composer";
 import { CommentThread } from "@/features/feed/components/comment-thread";
@@ -315,22 +316,31 @@ export function PostDetailScreen() {
               </View>
             ) : null}
 
-            <AppTextInput
-              value={draft}
-              onSelectionChange={(event) =>
-                mention.onSelectionChange(event.nativeEvent.selection.start)
-              }
-              onChangeText={setDraft}
-              placeholder={
-                replyingTo
-                  ? t("social:comments.replyPlaceholder", {
-                      username: replyUsername,
-                    })
-                  : t("social:comments.placeholder")
-              }
-              placeholderTextColor={themeColors.placeholder}
-              className="rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
-            />
+            <MentionField
+              suggestions={mention.suggestions}
+              visible={mention.isPicking}
+              onSelect={(candidate) => {
+                const next = mention.apply(candidate);
+                if (next !== null) setDraft(next);
+              }}
+            >
+              <AppTextInput
+                value={draft}
+                onSelectionChange={(event) =>
+                  mention.onSelectionChange(event.nativeEvent.selection.start)
+                }
+                onChangeText={setDraft}
+                placeholder={
+                  replyingTo
+                    ? t("social:comments.replyPlaceholder", {
+                        username: replyUsername,
+                      })
+                    : t("social:comments.placeholder")
+                }
+                placeholderTextColor={themeColors.placeholder}
+                className="rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
+              />
+            </MentionField>
             <Button
               label={
                 replyingTo

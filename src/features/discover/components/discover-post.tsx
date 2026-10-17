@@ -6,6 +6,7 @@ import { Image, Pressable, useWindowDimensions, View } from "react-native";
 import { ScrollView as GestureScrollView } from "react-native-gesture-handler";
 
 import { AppText as Text, AppTextInput, Avatar } from "@/components";
+import { MentionField } from "@/features/feed/components/mention-field";
 import { useMentionComposer } from "@/features/feed/hooks/use-mention-composer";
 import { CommentThread } from "@/features/feed/components/comment-thread";
 import { useSession, useToast } from "@/contexts";
@@ -418,62 +419,47 @@ export function DiscoverPost({
           </View>
         ) : null}
 
-        {mention.isPicking && mention.suggestions.length > 0 ? (
-          <View className="mb-2 gap-1 rounded-3xl border border-border-default bg-surface-primary p-2">
-            {mention.suggestions.map((friend) => (
-              <Pressable
-                key={friend.userId}
-                onPress={() => {
-                  const next = mention.apply(friend);
-                  if (next !== null) setDraft(next);
-                }}
-                className="flex-row items-center gap-3 rounded-2xl px-3 py-2 active:opacity-70"
-              >
-                <Avatar
-                  uri={friend.profileImageUrl}
-                  name={friend.firstName}
-                  size={28}
-                />
-                <Text className="flex-1 font-body-bold text-body-sm text-text-primary">
-                  @{friend.username}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-        ) : null}
-
-        <View className="flex-row items-center gap-2 rounded-full border border-border-default bg-background-secondary px-4">
-          <AppTextInput
-            value={draft}
-            onChangeText={setDraft}
-            onSelectionChange={(event) =>
-              mention.onSelectionChange(event.nativeEvent.selection.start)
-            }
-            onFocus={() => setCommentsOpen(true)}
-            placeholder={
-              replyingTo
-                ? t("social:comments.replyPlaceholder", {
-                    username: replyUsername,
-                  })
-                : t("social:comments.placeholder")
-            }
-            placeholderTextColor={themeColors.text.tertiary}
-            className="min-h-[44px] flex-1 font-body text-body-sm text-text-primary"
-          />
-          <Pressable
-            hitSlop={HIT_SLOP}
-            disabled={!draft.trim() || isCommenting}
-            onPress={() => void submitComment()}
-          >
-            <Text
-              className={`font-body-bold text-body-sm ${
-                draft.trim() ? "text-brand-primary" : "text-text-tertiary"
-              }`}
+        <MentionField
+          suggestions={mention.suggestions}
+          visible={mention.isPicking}
+          onSelect={(candidate) => {
+            const next = mention.apply(candidate);
+            if (next !== null) setDraft(next);
+          }}
+        >
+          <View className="flex-row items-center gap-2 rounded-full border border-border-default bg-background-secondary px-4">
+            <AppTextInput
+              value={draft}
+              onChangeText={setDraft}
+              onSelectionChange={(event) =>
+                mention.onSelectionChange(event.nativeEvent.selection.start)
+              }
+              onFocus={() => setCommentsOpen(true)}
+              placeholder={
+                replyingTo
+                  ? t("social:comments.replyPlaceholder", {
+                      username: replyUsername,
+                    })
+                  : t("social:comments.placeholder")
+              }
+              placeholderTextColor={themeColors.text.tertiary}
+              className="min-h-[44px] flex-1 font-body text-body-sm text-text-primary"
+            />
+            <Pressable
+              hitSlop={HIT_SLOP}
+              disabled={!draft.trim() || isCommenting}
+              onPress={() => void submitComment()}
             >
-              {t("social:comments.share")}
-            </Text>
-          </Pressable>
-        </View>
+              <Text
+                className={`font-body-bold text-body-sm ${
+                  draft.trim() ? "text-brand-primary" : "text-text-tertiary"
+                }`}
+              >
+                {t("social:comments.share")}
+              </Text>
+            </Pressable>
+          </View>
+        </MentionField>
       </View>
     </View>
   );

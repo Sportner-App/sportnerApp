@@ -19,6 +19,7 @@ import { useToast } from "@/contexts";
 import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { createPost } from "@/features/feed/services/posts-service";
+import { MentionField } from "@/features/feed/components/mention-field";
 import { useMentionComposer } from "@/features/feed/hooks/use-mention-composer";
 import { Avatar } from "@/components/avatar";
 import {
@@ -269,51 +270,27 @@ export function CreatePostScreen() {
         </ScrollView>
       ) : null}
 
-      <Input
-        value={content}
-        onChangeText={setContent}
-        onSelectionChange={(event) =>
-          mention.onSelectionChange(event.nativeEvent.selection.start)
-        }
-        multiline
-        numberOfLines={3}
-        textAlignVertical="top"
-        style={{ minHeight: 72, paddingTop: 14 }}
-        placeholder={t("feed:create.placeholder")}
-      />
-
-      {/* "@" yazılırken arkadaş önerileri. Giriş alanının hemen altında
-          duruyor ki seçim yaparken yazılan metin görünür kalsın. */}
-      {mention.isPicking && mention.suggestions.length > 0 ? (
-        <View className="gap-1 rounded-3xl border border-border-default bg-surface-primary p-2">
-          {mention.suggestions.map((friend) => (
-            <Pressable
-              key={friend.userId}
-              onPress={() => {
-                const next = mention.apply(friend);
-                if (next !== null) setContent(next);
-              }}
-              className="flex-row items-center gap-3 rounded-2xl px-3 py-2 active:opacity-70"
-            >
-              <Avatar
-                uri={friend.profileImageUrl}
-                name={friend.firstName}
-                size={32}
-              />
-              <View className="flex-1">
-                <Text className="font-body-bold text-body-sm text-text-primary">
-                  @{friend.username}
-                </Text>
-                {friend.firstName ? (
-                  <Text className="font-body text-caption text-text-tertiary">
-                    {friend.firstName}
-                  </Text>
-                ) : null}
-              </View>
-            </Pressable>
-          ))}
-        </View>
-      ) : null}
+      <MentionField
+        suggestions={mention.suggestions}
+        visible={mention.isPicking}
+        onSelect={(candidate) => {
+          const next = mention.apply(candidate);
+          if (next !== null) setContent(next);
+        }}
+      >
+        <Input
+          value={content}
+          onChangeText={setContent}
+          onSelectionChange={(event) =>
+            mention.onSelectionChange(event.nativeEvent.selection.start)
+          }
+          multiline
+          numberOfLines={3}
+          textAlignVertical="top"
+          style={{ minHeight: 72, paddingTop: 14 }}
+          placeholder={t("feed:create.placeholder")}
+        />
+      </MentionField>
     </AppScreen>
   );
 }
