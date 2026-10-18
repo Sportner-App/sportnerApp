@@ -14,7 +14,6 @@ import {
 import { useSkillLevelOptions } from "@/features/onboarding/copy";
 import { useToast } from "@/contexts";
 import { useProfile } from "@/features/profile/hooks/use-profile";
-import { getCurrentLocale } from "@/i18n";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { addMySports } from "@/features/onboarding/services/onboarding-service";
 import { listSports } from "@/features/sports/services/sports-service";
@@ -24,6 +23,7 @@ import {
   sportIconForSlug,
 } from "@/features/sports/sports";
 import { HIT_SLOP, themeColors } from "@/constants/theme";
+import { matchesSearch } from "@/utils/search";
 
 export function AddSportScreen() {
   const { t } = useTranslation("profile");
@@ -38,7 +38,6 @@ export function AddSportScreen() {
   >({});
   const [activeSportId, setActiveSportId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const locale = getCurrentLocale();
 
   useEffect(() => {
     void listSports().then(setSports);
@@ -47,11 +46,11 @@ export function AddSportScreen() {
   const currentSportIds = new Set(
     profile?.sports.map((sport) => sport.sportId) ?? [],
   );
-  const normalizedQuery = query.trim().toLocaleLowerCase(locale);
+  // Dile duyarlı küçük harf çevirimi burada "Yüzme"yi "yuzme" yazana
+  // bulduramıyordu; aramanın geri kalanıyla aynı katlamayı kullanıyor.
   const filtered = sports.filter(
     (sport) =>
-      !currentSportIds.has(sport.id) &&
-      sport.name.toLocaleLowerCase(locale).includes(normalizedQuery),
+      !currentSportIds.has(sport.id) && matchesSearch(query, [sport.name]),
   );
   const selectedSports = Object.values(selected);
   const activeSelection = activeSportId ? selected[activeSportId] : undefined;

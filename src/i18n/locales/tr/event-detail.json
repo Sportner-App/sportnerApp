@@ -51,6 +51,8 @@
     "heading": "Sorular",
     "ownerHeading": "Katılımcı Soruları",
     "countLabel": "{{count}} soru",
+    "seeAll": "{{count}} sorunun tümünü gör",
+    "open": "Aç",
     "intro": "Katılmadan önce etkinlik sahibine sor. Cevaplar herkese açık.",
     "ownerIntro": "Etkinlikle ilgilenenlerin sorularını buradan yanıtla. Yanıtların herkese açık.",
     "loading": "Sorular yükleniyor…",

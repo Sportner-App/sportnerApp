@@ -160,10 +160,7 @@ export function CreatePostScreen() {
       {/* Etiketlerken medya alanı yerini kişi listesine bırakır; giriş alanı
           yerinde kalır. Yüzen kutu ekranın altında kırpılıyordu. */}
       {mention.isPicking ? (
-        <View
-          style={{ height: previewSize }}
-          className="overflow-hidden rounded-2xl border border-border-default bg-surface-primary"
-        >
+        <View className="overflow-hidden rounded-2xl border border-border-default bg-surface-primary">
           <MentionSuggestionList
             suggestions={mention.suggestions}
             emptyLabel={t("social:mentions.empty")}

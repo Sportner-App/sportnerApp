@@ -286,10 +286,7 @@ export function PostDetailScreen() {
               </Text>
               {/* Etiketlerken yorumlar yerini kişi listesine bırakır. */}
               {mention.isPicking ? (
-                <View
-                  style={{ height: 300 }}
-                  className="overflow-hidden rounded-2xl border border-border-default bg-surface-primary"
-                >
+                <View className="overflow-hidden rounded-2xl border border-border-default bg-surface-primary">
                   <MentionSuggestionList
                     suggestions={mention.suggestions}
                     emptyLabel={t("social:mentions.empty")}
@@ -345,6 +342,9 @@ export function PostDetailScreen() {
                   : t("social:comments.placeholder")
               }
               placeholderTextColor={themeColors.placeholder}
+              multiline
+              textAlignVertical="top"
+              style={{ minHeight: 48, maxHeight: 120 }}
               className="rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
             />
             <Button

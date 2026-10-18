@@ -51,6 +51,8 @@
     "heading": "Questions",
     "ownerHeading": "Participant Questions",
     "countLabel": "{{count}} questions",
+    "seeAll": "See all {{count}} questions",
+    "open": "Open",
     "intro": "Ask the host before joining. Answers are public.",
     "ownerIntro": "Answer questions from people interested in your event. Your answers are public.",
     "loading": "Loading questions…",

@@ -480,7 +480,7 @@ export function EventChatScreen({
               </View>
             ) : null}
 
-            <View className="flex-row items-center gap-2 px-6 py-3">
+            <View className="flex-row items-end gap-2 px-6 py-3">
               <AppTextInput
                 value={draft}
                 onChangeText={(value) => {
@@ -492,16 +492,18 @@ export function EventChatScreen({
                 }
                 placeholder={t("chat.placeholder")}
                 placeholderTextColor={themeColors.placeholder}
-                textAlignVertical="center"
+                textAlignVertical="top"
                 hitSlop={HIT_SLOP}
-                returnKeyType="send"
-                blurOnSubmit={false}
-                onSubmitEditing={send}
+                // Uzun mesaj yazarken metin yana doğru kaymak yerine alta
+                // sarıyor ve alan birkaç satır büyüyor. Üst sınır olmazsa
+                // tek bir mesaj ekranın tamamını kaplardı.
+                multiline
                 style={{
-                  height: 48,
+                  minHeight: 48,
+                  maxHeight: 120,
                   lineHeight: 20,
-                  paddingTop: 0,
-                  paddingBottom: 0,
+                  paddingTop: 14,
+                  paddingBottom: 14,
                 }}
                 className="flex-1 rounded-2xl border border-border-default bg-surface-primary px-4 font-body text-body text-text-primary"
               />

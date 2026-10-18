@@ -1,19 +1,15 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Pressable, useWindowDimensions, View } from "react-native";
 import { ScrollView as GestureScrollView } from "react-native-gesture-handler";
 
-import { AppText as Text, AppTextInput, Avatar } from "@/components";
-import { MentionSuggestionList } from "@/features/feed/components/mention-suggestion-list";
-import { useMentionComposer } from "@/features/feed/hooks/use-mention-composer";
-import { CommentThread } from "@/features/feed/components/comment-thread";
+import { AppText as Text, Avatar } from "@/components";
+import { CommentsSheet } from "@/features/feed/components/comments-sheet";
 import { useSession, useToast } from "@/contexts";
 import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { sendFriendRequest } from "@/features/social/services/social-service";
-import { listComments } from "@/features/feed/services/posts-service";
 import type { ApiComment, ApiPost } from "@/features/feed/types";
 import { POST_MEDIA_TYPE } from "@/features/feed/types";
 import { lightImpact } from "@/utils/haptics";
@@ -48,20 +44,12 @@ export function DiscoverPost({
   const { width } = useWindowDimensions();
   /** Tam bleed akış: medya ekran genişliğini kullanır. */
   const mediaWidth = width;
-  const router = useRouter();
   const { showToast } = useToast();
   const { t } = useTranslation(["social", "events", "common"]);
   const lastTap = useRef(0);
   const [page, setPage] = useState(0);
-  const [draft, setDraft] = useState("");
-  const mention = useMentionComposer(draft);
-  const [comments, setComments] = useState<ApiComment[]>([]);
   const [commentsOpen, setCommentsOpen] = useState(false);
-  const [replyingTo, setReplyingTo] = useState<ApiComment | null>(null);
-  const [incomingReply, setIncomingReply] = useState<ApiComment | null>(null);
   const [isLiking, setIsLiking] = useState(false);
-  const [isCommenting, setIsCommenting] = useState(false);
-  const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [heartBurst, setHeartBurst] = useState(false);
   const [friendRequestSent, setFriendRequestSent] = useState(false);
   const [isAddingFriend, setIsAddingFriend] = useState(false);
@@ -97,7 +85,6 @@ export function DiscoverPost({
   const author =
     post.firstName || post.username || t("events:fallback.athlete");
   const athleteHandle = displayHandle(post.username);
-  const replyUsername = replyingTo?.username || t("social:fallback.user");
   const images = post.media.filter(
     (item) => item.mediaType === POST_MEDIA_TYPE.image,
   );
@@ -105,44 +92,6 @@ export function DiscoverPost({
     (item) => item.mediaType === POST_MEDIA_TYPE.video,
   );
   const caption = post.content?.trim() ?? "";
-
-  useEffect(() => {
-    if (!commentsOpen) {
-      return;
-    }
-
-    let cancelled = false;
-    setIsLoadingComments(true);
-    void listComments(post.id)
-      .then((page) => {
-        if (!cancelled) {
-          setComments((current) => {
-            const extras = current.filter(
-              (comment) => !page.items.some((item) => item.id === comment.id),
-            );
-            return [...page.items, ...extras];
-          });
-        }
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          showToast({
-            type: "error",
-            title: t("social:toasts.commentsLoadFailed"),
-            description: getApiErrorMessage(error),
-          });
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setIsLoadingComments(false);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [commentsOpen, post.id, showToast, t]);
 
   const like = async () => {
     if (isLiking) {
@@ -176,46 +125,6 @@ export function DiscoverPost({
       return;
     }
     lastTap.current = now;
-  };
-
-  const submitComment = async () => {
-    const text = draft.trim();
-    if (!text || isCommenting) {
-      return;
-    }
-
-    setIsCommenting(true);
-    try {
-      if (replyingTo) {
-        const reply = await onReply(replyingTo, text, mention.mentionedUserIds);
-        setDraft("");
-        setCommentsOpen(true);
-        setReplyingTo(null);
-        setIncomingReply(reply);
-        setComments((current) =>
-          current.map((item) =>
-            item.id === (reply.parentCommentId ?? replyingTo.id)
-              ? { ...item, replyCount: item.replyCount + 1 }
-              : item,
-          ),
-        );
-      } else {
-        const comment = await onComment(text, mention.mentionedUserIds);
-        setDraft("");
-        setCommentsOpen(true);
-        setComments((current) => [...current, comment]);
-      }
-    } catch (error) {
-      showToast({
-        type: "error",
-        title: replyingTo
-          ? t("social:toasts.replyFailed")
-          : t("social:toasts.commentFailed"),
-        description: getApiErrorMessage(error),
-      });
-    } finally {
-      setIsCommenting(false);
-    }
   };
 
   return (
@@ -352,7 +261,7 @@ export function DiscoverPost({
           </Pressable>
           <Pressable
             hitSlop={HIT_SLOP}
-            onPress={() => setCommentsOpen((open) => !open)}
+            onPress={() => setCommentsOpen(true)}
             className="min-h-9 flex-row items-center gap-2 rounded-full border border-border-default bg-background-secondary px-3"
           >
             <FontAwesome6
@@ -373,101 +282,24 @@ export function DiscoverPost({
           </Text>
         ) : null}
 
-        {post.commentCount > 0 && !commentsOpen ? (
-          <Pressable onPress={() => setCommentsOpen(true)}>
-            <Text className="font-body text-body-sm text-text-secondary">
-              {t("social:viewComments", { count: post.commentCount })}
-            </Text>
-          </Pressable>
-        ) : null}
-
-        {/* Etiketlerken yorumlar yerini kişi listesine bırakır; giriş alanı
-            yerinde kalır. Yüzen kutu kart sınırlarında kırpılıyordu. */}
-        {mention.isPicking ? (
-          <View
-            style={{ height: 260 }}
-            className="overflow-hidden rounded-2xl border border-border-default bg-surface-primary"
-          >
-            <MentionSuggestionList
-              suggestions={mention.suggestions}
-              emptyLabel={t("social:mentions.empty")}
-              onSelect={(candidate) => {
-                const next = mention.apply(candidate);
-                if (next !== null) setDraft(next);
-              }}
-            />
-          </View>
-        ) : commentsOpen ? (
-          <View className="gap-2">
-            {isLoadingComments ? (
-              <Text className="font-body text-caption text-text-secondary">
-                {t("social:comments.loading")}
-              </Text>
-            ) : comments.length === 0 ? (
-              <Text className="font-body text-caption text-text-secondary">
-                {t("social:comments.firstComment")}
-              </Text>
-            ) : (
-              <CommentThread
-                postId={post.id}
-                comments={comments}
-                incomingReply={incomingReply}
-                onReply={(comment) => {
-                  setReplyingTo(comment);
-                  setCommentsOpen(true);
-                }}
-                onAuthorPress={(userId) => router.push(`/users/${userId}`)}
-              />
-            )}
-          </View>
-        ) : null}
-
-        {replyingTo ? (
-          <View className="flex-row items-center justify-between px-1">
-            <Text className="flex-1 font-body text-caption text-text-secondary">
-              {t("social:comments.replyTo", { username: replyUsername })}
-            </Text>
-            <Pressable hitSlop={HIT_SLOP} onPress={() => setReplyingTo(null)}>
-              <Text className="font-body-bold text-caption text-brand-primary">
-                {t("common:cancel")}
-              </Text>
-            </Pressable>
-          </View>
-        ) : null}
-
-        <View className="flex-row items-center gap-2 rounded-full border border-border-default bg-background-secondary px-4">
-          <AppTextInput
-            value={draft}
-            onChangeText={setDraft}
-            onSelectionChange={(event) =>
-              mention.onSelectionChange(event.nativeEvent.selection.start)
-            }
-            onFocus={() => setCommentsOpen(true)}
-            placeholder={
-              replyingTo
-                ? t("social:comments.replyPlaceholder", {
-                    username: replyUsername,
-                  })
-                : t("social:comments.placeholder")
-            }
-            placeholderTextColor={themeColors.text.tertiary}
-            className="min-h-[44px] flex-1 font-body text-body-sm text-text-primary"
-          />
-          <Pressable
-            hitSlop={HIT_SLOP}
-            disabled={!draft.trim() || isCommenting}
-            onPress={() => void submitComment()}
-          >
-            <Text
-              className={`font-body-bold text-body-sm ${
-                draft.trim() ? "text-brand-primary" : "text-text-tertiary"
-              }`}
-            >
-              {t("social:comments.share")}
-            </Text>
-          </Pressable>
-        </View>
+        <Pressable onPress={() => setCommentsOpen(true)}>
+          <Text className="font-body text-body-sm text-text-secondary">
+            {post.commentCount > 0
+              ? t("social:viewComments", { count: post.commentCount })
+              : t("social:comments.placeholder")}
+          </Text>
+        </Pressable>
       </View>
+
+      {/* Yorumlar kartın içinde değil: yazarken ve okurken ekranın tamamı
+          kullanılıyor, klavye açıldığında yorumlar kaybolmuyor. */}
+      <CommentsSheet
+        visible={commentsOpen}
+        onClose={() => setCommentsOpen(false)}
+        post={post}
+        onComment={onComment}
+        onReply={onReply}
+      />
     </View>
   );
 }

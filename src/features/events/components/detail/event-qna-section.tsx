@@ -3,29 +3,21 @@ import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
-import { AppText as Text, Avatar, Button, Input } from "@/components";
+import { AppText as Text, Avatar } from "@/components";
 import { useToast } from "@/contexts";
 import { HIT_SLOP, themeColors, typeStyles } from "@/constants/theme";
-import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
-import {
-  askEventQuestion,
-  listEventQuestions,
-  replyToEventQuestion,
-} from "@/features/events/services/event-qna-service";
+import { getApiErrorMessage } from "@/lib/api/errors";
+import { listEventQuestions } from "@/features/events/services/event-qna-service";
+import { EventQnASheet } from "@/features/events/components/detail/event-qna-sheet";
 import { EVENT_QNA_ROLE, type ApiEventQuestion } from "@/features/events/types";
 import type { EventDetail } from "@/features/events/types";
 import { hasEventEnded } from "@/features/events/status";
-import { MentionSuggestionList } from "@/features/feed/components/mention-suggestion-list";
 import { MentionText } from "@/features/feed/components/mention-text";
-import {
-  useMentionComposer,
-  type MentionCandidate,
-} from "@/features/feed/hooks/use-mention-composer";
+import { type MentionCandidate } from "@/features/feed/hooks/use-mention-composer";
 import { normalizeSearch } from "@/utils/search";
-import { successNotification } from "@/utils/haptics";
 
-const MIN_LENGTH = 5;
-const MAX_LENGTH = 1000;
+/** Sayfada yalnızca ilk sorular görünür; gerisi sheet'te. */
+const PREVIEW_COUNT = 2;
 
 type EventQnASectionProps = {
   event: EventDetail;
@@ -42,7 +34,7 @@ export function EventQnASection({
   const { showToast } = useToast();
   const [items, setItems] = useState<ApiEventQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [draft, setDraft] = useState("");
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   /**
    * Adaylar etkinliğe dahil olanlardan: soru-cevapta etiketlenmek istenen
@@ -74,10 +66,6 @@ export function EventQnASection({
     [event.participants],
   );
 
-  const mention = useMentionComposer(draft, searchAttendees);
-  const [replyDraft, setReplyDraft] = useState("");
-  const [replyingTo, setReplyingTo] = useState<ApiEventQuestion | null>(null);
-  const [saving, setSaving] = useState(false);
   const ended = hasEventEnded(event);
 
   const load = useCallback(async () => {
@@ -103,72 +91,6 @@ export function EventQnASection({
   const canAsk = !ended && !isOrganizer;
   const canReply = !ended;
 
-  const submitQuestion = async () => {
-    const content = draft.trim();
-    if (content.length < MIN_LENGTH || saving) {
-      return;
-    }
-
-    setSaving(true);
-    try {
-      const created = await askEventQuestion(
-        event.id,
-        content,
-        mention.mentionedUserIds,
-      );
-      setItems((current) => [created, ...current]);
-      setDraft("");
-      successNotification();
-    } catch (error) {
-      showToast({
-        type: "error",
-        title: t("qna.askFailedTitle"),
-        description:
-          isApiError(error) && error.status === 429
-            ? t("qna.askRateLimited")
-            : getApiErrorMessage(error),
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const submitReply = async () => {
-    const target = replyingTo;
-    const content = replyDraft.trim();
-    if (!target || content.length < MIN_LENGTH || saving) {
-      return;
-    }
-
-    const rootId = target.parentId ?? target.id;
-    setSaving(true);
-    try {
-      const created = await replyToEventQuestion(event.id, target.id, content);
-      setItems((current) =>
-        current.map((question) =>
-          question.id === rootId
-            ? {
-                ...question,
-                replyCount: question.replyCount + 1,
-                replies: [...(question.replies ?? []), created],
-              }
-            : question,
-        ),
-      );
-      setReplyDraft("");
-      setReplyingTo(null);
-      successNotification();
-    } catch (error) {
-      showToast({
-        type: "error",
-        title: t("qna.replyFailedTitle"),
-        description: getApiErrorMessage(error),
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
-
   return (
     <Animated.View
       entering={FadeInDown.duration(400).delay(180)}
@@ -189,24 +111,7 @@ export function EventQnASection({
         {isOrganizer ? t("qna.ownerIntro") : t("qna.intro")}
       </Text>
 
-      {/* Etiketlerken sorular yerini kişi listesine bırakır: liste yüzen bir
-          kutu olduğunda ekranın dışına taşıp kırpılıyor, alttaki kişilere
-          dokunulamıyordu. */}
-      {mention.isPicking ? (
-        <View
-          style={{ height: 300 }}
-          className="overflow-hidden rounded-2xl border border-border-default bg-surface-primary"
-        >
-          <MentionSuggestionList
-            suggestions={mention.suggestions}
-            emptyLabel={t("social:mentions.empty")}
-            onSelect={(candidate) => {
-              const next = mention.apply(candidate);
-              if (next !== null) setDraft(next);
-            }}
-          />
-        </View>
-      ) : isLoading ? (
+      {isLoading ? (
         <Text className="font-body text-label text-text-tertiary">
           {t("qna.loading")}
         </Text>
@@ -218,46 +123,36 @@ export function EventQnASection({
         </Text>
       ) : (
         <View className="gap-4">
-          {items.map((question) => (
+          {items.slice(0, PREVIEW_COUNT).map((question) => (
             <QuestionCard
               key={question.id}
               question={question}
-              canReply={canReply}
+              canReply={false}
               onOpenUser={onOpenUser}
-              onReply={(item) => {
-                setReplyingTo(item);
-                setReplyDraft("");
-              }}
+              onReply={() => setSheetOpen(true)}
             />
           ))}
         </View>
       )}
 
-      {canAsk ? (
-        <View className="gap-2">
-          <Input
-            label={t("qna.askLabel")}
-            value={draft}
-            onChangeText={setDraft}
-            onSelectionChange={(event_) =>
-              mention.onSelectionChange(event_.nativeEvent.selection.start)
-            }
-            multiline
-            maxLength={MAX_LENGTH}
-            placeholder={t("qna.askPlaceholder")}
-            helperText={`${draft.trim().length}/${MAX_LENGTH}`}
-            style={{ minHeight: 88, paddingTop: 10, paddingBottom: 10 }}
-            textAlignVertical="top"
-          />
-
-          <Button
-            label={t("qna.ask")}
-            size="sm"
-            disabled={draft.trim().length < MIN_LENGTH}
-            isLoading={saving && !replyingTo}
-            onPress={() => void submitQuestion()}
-          />
-        </View>
+      {/* Soru yazmak ve okumak sheet'te: satır içi alan sayfanın ortasında
+          kalıyordu, klavye açılınca sayfa kayıyordu. */}
+      {items.length > PREVIEW_COUNT || canAsk || canReply ? (
+        <Pressable
+          onPress={() => setSheetOpen(true)}
+          className="flex-row items-center justify-between rounded-2xl border border-border-default bg-background-secondary px-4 py-3 active:opacity-70"
+        >
+          <Text className="font-body text-body-sm text-text-secondary">
+            {items.length > PREVIEW_COUNT
+              ? t("qna.seeAll", { count: items.length })
+              : canAsk
+                ? t("qna.askPlaceholder")
+                : t("qna.heading")}
+          </Text>
+          <Text className="font-body-bold text-caption text-brand-primary">
+            {canAsk ? t("qna.ask") : t("qna.open")}
+          </Text>
+        </Pressable>
       ) : null}
 
       {ended ? (
@@ -266,43 +161,29 @@ export function EventQnASection({
         </Text>
       ) : null}
 
-      {canReply && replyingTo ? (
-        <View className="gap-2 rounded-2xl border border-white/10 bg-background-secondary/55 px-3 py-3">
-          <View className="flex-row items-center justify-between">
-            <Text className="flex-1 font-body text-caption text-text-secondary">
-              {t("qna.replyingTo", {
-                name:
-                  replyingTo.username ||
-                  replyingTo.firstName ||
-                  t("events:fallback.athlete"),
-              })}
-            </Text>
-            <Pressable hitSlop={HIT_SLOP} onPress={() => setReplyingTo(null)}>
-              <Text className="font-body-bold text-caption text-text-secondary">
-                {t("qna.cancelReply")}
-              </Text>
-            </Pressable>
-          </View>
-          <Input
-            value={replyDraft}
-            onChangeText={setReplyDraft}
-            multiline
-            maxLength={MAX_LENGTH}
-            placeholder={t("qna.replyPlaceholder")}
-            style={{ minHeight: 72, paddingTop: 10, paddingBottom: 10 }}
-            textAlignVertical="top"
+      <EventQnASheet
+        visible={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        event={event}
+        isOrganizer={isOrganizer}
+        items={items}
+        isLoading={isLoading}
+        canAsk={canAsk}
+        canReply={canReply}
+        onItemsChange={setItems}
+        searchAttendees={searchAttendees}
+        renderQuestion={(question, onReply) => (
+          <QuestionCard
+            question={question}
+            canReply={canReply}
+            onOpenUser={(userId) => {
+              setSheetOpen(false);
+              onOpenUser(userId);
+            }}
+            onReply={onReply}
           />
-          <Button
-            label={
-              isOrganizer ? t("qna.replyOrganizer") : t("qna.replyParticipant")
-            }
-            size="sm"
-            disabled={replyDraft.trim().length < MIN_LENGTH}
-            isLoading={saving && Boolean(replyingTo)}
-            onPress={() => void submitReply()}
-          />
-        </View>
-      ) : null}
+        )}
+      />
     </Animated.View>
   );
 }

@@ -4,10 +4,7 @@
     "slug": "sportner",
     "version": "1.0.1",
     "orientation": "portrait",
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "platforms": ["ios", "android"],
     "icon": "./assets/images/icon.png",
     "scheme": "sportner",
     "userInterfaceStyle": "dark",
@@ -20,9 +17,7 @@
       "infoPlist": {
         "CFBundleDisplayName": "Sportner",
         "ITSAppUsesNonExemptEncryption": false,
-        "LSApplicationQueriesSchemes": [
-          "whatsapp"
-        ]
+        "LSApplicationQueriesSchemes": ["whatsapp"]
       }
     },
     "android": {

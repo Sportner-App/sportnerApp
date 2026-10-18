@@ -78,10 +78,15 @@ export function useMentionComposer(
       const username = friend.username;
       if (!token || !username) return null;
 
+      const inserted = `@${username} `;
       const next =
-        content.slice(0, token.start) +
-        `@${username} ` +
-        content.slice(token.end);
+        content.slice(0, token.start) + inserted + content.slice(token.end);
+
+      // İmleci kendimiz ilerletiyoruz. TextInput seçim değişimini bildirene
+      // kadar (odak kaybolduysa hiç bildirmiyor) imleç hâlâ yazılmakta olan
+      // "@" jetonunun içinde sayılıyor ve seçim yapıldıktan sonra da öneri
+      // listesi açık kalıyordu.
+      setCursor(token.start + inserted.length);
 
       setSelected((prev) =>
         prev.some((mention) => mention.userId === friend.userId)
