@@ -177,13 +177,24 @@ export function CommentsSheet({
               // alan büyümeyi bırakıp kendi içinde kaydırılır.
               multiline
               textAlignVertical="top"
-              style={{ minHeight: 44, maxHeight: 112, paddingTop: 12 }}
+              // Alt boşluk üstle eşit: yalnızca üstten verildiğinde metin
+              // kutunun tepesine yapışıyor, "Paylaş" ise alta hizalandığı için
+              // ikisi farklı yükseklikte duruyordu.
+              style={{
+                minHeight: 44,
+                maxHeight: 112,
+                paddingTop: 12,
+                paddingBottom: 12,
+              }}
               className="flex-1 font-body text-body-sm text-text-primary"
             />
             <Pressable
               hitSlop={HIT_SLOP}
               disabled={!draft.trim() || isSending}
               onPress={() => void submit()}
+              // Girişin alt boşluğu kadar: böylece metnin son satırıyla aynı
+              // çizgide durur, alan büyüdükçe de birlikte iner.
+              className="pb-3"
             >
               <Text
                 className={`font-body-bold text-body-sm ${

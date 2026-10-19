@@ -1,21 +1,21 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
 import { useKeyboardState } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { TFunction } from "i18next";
-import { useTranslation } from "react-i18next";
 
-import { AppText as Text, Button } from "@/components";
+import { Button, AppText as Text } from "@/components";
 import { shadows, spacing, themeColors } from "@/constants/theme";
-import type { ButtonVariant } from "@/types/components";
-import type { EventDetail } from "@/features/events/types";
 import {
   canAccessEventChat,
   hasApprovedParticipation,
   hasEventEnded,
-  hasPendingParticipation,
   hasEventInvitation,
+  hasPendingParticipation,
 } from "@/features/events/status";
+import type { EventDetail } from "@/features/events/types";
+import type { ButtonVariant } from "@/types/components";
 
 type JoinBarProps = {
   event: EventDetail;
@@ -88,7 +88,8 @@ function resolveBar({
 
   if (isOrganizer) {
     return {
-      statusTitle: occupancyLabel(t, event),
+      // Doluluk sayısı bar'da değil: aynı bilgi sayfanın üstünde, katılımcı
+      // listesinin yanında zaten duruyor ve butona yer bırakmıyordu.
       actionLabel: ended ? t("join.chatDone") : t("join.chatGo"),
       action: canChat ? onChat : undefined,
       variant: ended ? "secondary" : "primary",
@@ -240,7 +241,7 @@ export function JoinBar({
             <View className="flex-1">
               <Button
                 label={bar.secondaryActionLabel}
-                size="lg"
+
                 variant="outline"
                 disabled={bar.loading}
                 onPress={bar.secondaryAction}
@@ -250,7 +251,6 @@ export function JoinBar({
           <View className="flex-1">
             <Button
               label={bar.actionLabel}
-              size="lg"
               variant={bar.variant}
               glow="subtle"
               isLoading={bar.loading}

@@ -2,6 +2,7 @@ import {
   NOTIFICATION_ENTITY,
   NOTIFICATION_TYPE,
 } from "@/features/notifications/types";
+import { setPendingProfileTab } from "@/features/profile/pending-tab";
 
 type NotificationRouteData = {
   notificationType?: number | string;
@@ -17,6 +18,17 @@ export function resolveNotificationRoute(data: NotificationRouteData): string {
 
   if (!entityId) {
     return "/notifications";
+  }
+
+  // Değerlendirme bildirimi, değerlendiren kişinin kimliğini taşıyor; ama
+  // kullanıcının görmek istediği o kişinin profili değil, kendi profilindeki
+  // değerlendirme. Bu yüzden kullanıcı kuralından önce geliyor.
+  //
+  // Sekmeyi rota yerine burada bırakıyoruz: profil bir sekme rotası ve sorgu
+  // parametresi ekrana güvenilir biçimde ulaşmıyor.
+  if (notificationType === NOTIFICATION_TYPE.reviewReceived) {
+    setPendingProfileTab("reviews");
+    return "/profile";
   }
 
   if (

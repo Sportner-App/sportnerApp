@@ -140,16 +140,22 @@ export function EventQnASection({
       {items.length > PREVIEW_COUNT || canAsk || canReply ? (
         <Pressable
           onPress={() => setSheetOpen(true)}
-          className="flex-row items-center justify-between rounded-2xl border border-border-default bg-background-secondary px-4 py-3 active:opacity-70"
+          className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-background-secondary px-4 py-3 active:opacity-70"
         >
-          <Text className="font-body text-body-sm text-text-secondary">
+          {/* Soldaki metin esner ve tek satırda kırpılır; "Soru sor" kısalmaz.
+              İkisi de serbest bırakıldığında dar ekranlarda uzun yer tutucu
+              butonu ekranın dışına itiyordu. */}
+          <Text
+            numberOfLines={1}
+            className="flex-1 font-body text-body-sm text-text-secondary"
+          >
             {items.length > PREVIEW_COUNT
               ? t("qna.seeAll", { count: items.length })
               : canAsk
                 ? t("qna.askPlaceholder")
                 : t("qna.heading")}
           </Text>
-          <Text className="font-body-bold text-caption text-brand-primary">
+          <Text className="shrink-0 font-body-bold text-caption text-brand-primary">
             {canAsk ? t("qna.ask") : t("qna.open")}
           </Text>
         </Pressable>

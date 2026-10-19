@@ -8,8 +8,8 @@ import {
   SegmentedTabs,
 } from "@/components";
 import { TabPage } from "@/features/app-shell/components/tab-page";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 
 import { useProfileCopy, useProfileTabs } from "@/features/profile/copy";
 import { useAppTour } from "@/contexts";
@@ -25,9 +25,15 @@ import { ReviewsSection } from "@/features/profile/components/reviews-section";
 import { SportsSection } from "@/features/profile/components/sports-section";
 import { StatsSection } from "@/features/profile/components/stats-section";
 
-type ProfileTab = "activity" | "reviews" | "settings";
+import {
+  consumePendingProfileTab,
+  type ProfileTab,
+} from "@/features/profile/pending-tab";
 
 export function ProfileScreen() {
+  // Bildirimden gelen sekme. "x seni değerlendirdi" bildirimi doğrudan
+  // değerlendirmelerin listesine açılıyor; kullanıcının sekmeyi kendisi
+  // bulması gerekmiyor.
   const { t } = useTranslation(["profile", "common", "settings"]);
   const PROFILE_COPY = useProfileCopy();
   const PROFILE_TABS = useProfileTabs();
@@ -46,6 +52,17 @@ export function ProfileScreen() {
   const [reviews, setReviews] = useState<ApiReview[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>("activity");
+
+  // Bildirimden gelen sekme isteği. Ekran zaten açıkken gelen bildirim de
+  // çalışsın diye her odaklanmada okunuyor; istek tek seferlik tüketiliyor.
+  useFocusEffect(
+    useCallback(() => {
+      const requested = consumePendingProfileTab();
+      if (requested) {
+        setActiveTab(requested);
+      }
+    }, []),
+  );
 
   useEffect(() => {
     if (!profile?.userId) {
