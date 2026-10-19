@@ -15,7 +15,7 @@ export { EmptyState, ErrorState } from "./empty-state";
 export { Input } from "./input";
 export { LinearRefreshBar } from "./linear-refresh-bar";
 export { MapAttribution } from "./map-attribution";
-export { MapPin } from "./map-pin";
+export { MapPin, UserDot } from "./map-pin";
 export { MapUnavailable } from "./map-unavailable";
 export { MediaSourceSheet } from "./media-source-sheet";
 export { brandRefreshControl } from "./refresh-control";

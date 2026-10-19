@@ -14,8 +14,10 @@ import {
   AppText as Text,
   AppTextInput,
   MapPin,
+  UserDot,
   MapUnavailable,
 } from "@/components";
+import { useInitialMapCenter } from "@/features/location/hooks/use-initial-map-center";
 import {
   MAP_INITIAL_CAMERA,
   MAPBOX_STYLE_URL,
@@ -64,6 +66,9 @@ export function LocationPicker({
   } = useLocationSearch(addressText);
 
   const mapAvailable = hasMapboxToken();
+  // Seçim yokken harita kullanıcının bulunduğu yerde açılır; yoksa profildeki
+  // şehir, o da yoksa varsayılan nokta.
+  const { center: initialCenter, userCoordinates } = useInitialMapCenter();
   const hasSelection = latitude != null && longitude != null;
 
   // Eski MapView'ın latitudeDelta 0.02'si; yakınlık birebir korunsun diye
@@ -92,7 +97,7 @@ export function LocationPicker({
         zoomLevel: selectionZoom,
       }
     : {
-        centerCoordinate: [...MAP_INITIAL_CAMERA.centerCoordinate],
+        centerCoordinate: toMapboxCoord(initialCenter),
         zoomLevel: MAP_INITIAL_CAMERA.zoomLevel,
       };
 
@@ -109,6 +114,21 @@ export function LocationPicker({
     // oluşuyor ve effect'i gereksiz tetiklerdi.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasSelection, latitude, longitude]);
+
+  // defaultSettings yalnızca mount anında okunuyor; konum izni sonradan
+  // verildiğinde ya da şehir geç çözüldüğünde harita kendi kendine o noktaya
+  // kayar. Kullanıcı bir yer seçtiyse dokunulmuyor.
+  useEffect(() => {
+    if (hasSelection) {
+      return;
+    }
+
+    cameraRef.current?.setCamera({
+      centerCoordinate: toMapboxCoord(initialCenter),
+      zoomLevel: MAP_INITIAL_CAMERA.zoomLevel,
+      animationDuration: 380,
+    });
+  }, [hasSelection, initialCenter]);
 
   const handleSuggestionPress = async (suggestion: LocationSuggestion) => {
     const resolved = await resolveSuggestion(suggestion);
@@ -256,6 +276,17 @@ export function LocationPicker({
               onPress={handleMapPress}
             >
               <Mapbox.Camera ref={cameraRef} defaultSettings={initialCamera} />
+
+              {userCoordinates && (
+                <Mapbox.MarkerView
+                  id="user-location"
+                  coordinate={toMapboxCoord(userCoordinates)}
+                  anchor={{ x: 0.5, y: 0.5 }}
+                  allowOverlap
+                >
+                  <UserDot />
+                </Mapbox.MarkerView>
+              )}
 
               {hasSelection && (
                 <Mapbox.MarkerView

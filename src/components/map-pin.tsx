@@ -17,3 +17,15 @@ export function MapPin() {
     </View>
   );
 }
+
+/**
+ * "Buradasın" noktası. Seçim iğnesiyle karışmasın diye farklı bir biçim:
+ * iğne değil, halkalı bir nokta — haritalarda alışılmış gösterim bu.
+ */
+export function UserDot() {
+  return (
+    <View className="h-6 w-6 items-center justify-center rounded-full bg-sport-running/25">
+      <View className="h-3.5 w-3.5 rounded-full border-2 border-white bg-sport-running" />
+    </View>
+  );
+}
