@@ -183,6 +183,10 @@ export type BrandMarkProps = {
 export type ScreenHeaderProps = {
   /** Ortalanmış mono başlık (örn. ETKİNLİK) */
   title?: string;
+  /** Verilirse başlık dokunulabilir olur (ör. etkinlik sohbetinden detaya). */
+  onTitlePress?: () => void;
+  /** Düz metin yerine çizilecek başlık (ör. avatar + kullanıcı adı). */
+  titleContent?: ReactNode;
   /** true ise SPORTNER brand satırı */
   brand?: boolean;
   showBack?: boolean;

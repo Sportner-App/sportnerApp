@@ -76,9 +76,14 @@ export function MessageRow({
             {name}
           </Text>
         ) : null}
+        {/* Baloncuklar opak: zemin artık bir fotoğraf olabiliyor ve yarı
+            saydam bir baloncuk, altındaki açık renkli bölgede metni
+            yutuyordu. Kendi mesajını ayırt eden şey marka kenarlığı. */}
         <View
-          className={`rounded-2xl px-3 py-2 ${
-            mine ? "bg-brand-primary/20" : "bg-surface-primary"
+          className={`rounded-2xl border px-3 py-2 ${
+            mine
+              ? "border-brand-primary/50 bg-surface-secondary"
+              : "border-border-default bg-surface-primary"
           }`}
           style={isPending ? { opacity: 0.55 } : undefined}
         >
@@ -107,7 +112,7 @@ export function MessageRow({
             </Text>
           </Pressable>
         ) : (
-          <Text className="mt-1 font-body-bold text-overline text-text-tertiary">
+          <Text className="mt-1 font-body-bold text-overline text-text-secondary">
             {isPending
               ? t("messaging:message.sending")
               : formatClockTime(message.createdAt)}

@@ -74,5 +74,22 @@
     "deleting": "Siliniyor",
     "success": "Sohbet silindi",
     "failed": "Sohbet silinemedi"
+  },
+  "background": {
+    "title": "Sohbet zemini",
+    "subtitle": "Bu sohbetin arka planını seç. Yalnızca senin ekranında görünür.",
+    "a11y": "Sohbet zeminini değiştir",
+    "options": {
+      "etkinlik": "Etkinlik fotoğrafı",
+      "duz": "Düz",
+      "saha": "Futbol sahası",
+      "parke": "Basketbol",
+      "kort": "Tenis kortu",
+      "pist": "Koşu pisti"
+    }
+  },
+  "menu": {
+    "a11y": "Sohbet menüsü",
+    "title": "Sohbet"
   }
 }

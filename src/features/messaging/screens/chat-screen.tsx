@@ -4,6 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, View } from "react-native";
 import { useKeyboardHandler } from "react-native-keyboard-controller";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { useKeyboardHeight } from "@/hooks/use-keyboard-height";
 
 import { useMentionComposer } from "@/features/feed/hooks/use-mention-composer";
 import { normalizeSearch } from "@/utils/search";
@@ -15,16 +18,15 @@ import {
 
 import {
   AppScreen,
-  AppText as Text,
   AppTextInput,
   Avatar,
+  BottomSheet,
   EmptyState,
   ScreenHeader,
+  AppText as Text,
 } from "@/components";
 import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { useSession, useToast } from "@/contexts";
-import { getCurrentLocale } from "@/i18n";
-import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { connectEventChat } from "@/features/messaging/services/chat-realtime";
 import {
   deleteConversation,
@@ -40,9 +42,17 @@ import {
   type ApiMessage,
   type ChatMessage,
 } from "@/features/messaging/types";
+import { getCurrentLocale } from "@/i18n";
+import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 
+import { getEventById } from "@/features/events/services/events-service";
+import { ChatBackground } from "@/features/messaging/chat-backgrounds";
+import { ChatBackgroundSheet } from "@/features/messaging/components/chat-background-sheet";
 import { MessageRow } from "@/features/messaging/components/message-row";
+import { useChatBackground } from "@/features/messaging/hooks/use-chat-background";
 import { confirmDestructive } from "@/utils/confirm";
+import { resolveMediaUrl } from "@/utils/media-url";
+import { displayHandle } from "@/utils/person";
 
 /**
  * Sunucu yanıtı gelince iyimser baloncuğu gerçeğiyle değiştirir. SignalR
@@ -80,6 +90,8 @@ export function EventChatScreen({
   const router = useRouter();
   const { user } = useSession();
   const { showToast } = useToast();
+  const insets = useSafeAreaInsets();
+  const keyboardHeight = useKeyboardHeight();
   const { t } = useTranslation("messaging");
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversation, setConversation] = useState<ApiConversation | null>(
@@ -274,9 +286,49 @@ export function EventChatScreen({
     return conversation?.title || t("header.defaultTitle");
   }, [conversation, t, user?.id]);
 
+  /** Birebir sohbetin karşı tarafı; başlıkta avatarıyla birlikte duruyor. */
+  const peer = useMemo(() => {
+    if (conversation?.type !== CONVERSATION_TYPE.direct) {
+      return null;
+    }
+    return (
+      conversation.members?.find((member) => member.userId !== user?.id) ?? null
+    );
+  }, [conversation, user?.id]);
+
   const isClosed =
     conversation?.isClosed === true &&
     conversation.type === CONVERSATION_TYPE.event;
+
+  const { background, chooseBackground } = useChatBackground(
+    conversationId,
+    conversation?.type === CONVERSATION_TYPE.event,
+  );
+  const [backgroundSheetOpen, setBackgroundSheetOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [eventImageUrl, setEventImageUrl] = useState<string | null>(null);
+
+  // Sohbet yanıtı etkinliğin görselini taşımıyor, yalnızca kimliğini. Zemin
+  // için ayrıca çekiliyor; gelmezse desene düşülür, ekran beklemez.
+  useEffect(() => {
+    const eventId = conversation?.eventId;
+    if (!eventId) {
+      return;
+    }
+
+    let cancelled = false;
+    void getEventById(eventId)
+      .then((event) => {
+        if (!cancelled && event?.sportCoverImageUrl) {
+          setEventImageUrl(resolveMediaUrl(event.sportCoverImageUrl));
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [conversation?.eventId]);
 
   const markClosed = () => {
     setConversation((current) =>
@@ -420,39 +472,84 @@ export function EventChatScreen({
       keyboardVerticalOffset={54}
       scrollRef={scrollRef}
       onContentSizeChange={handleContentSizeChange}
+      background={
+        <ChatBackground variant={background} imageUrl={eventImageUrl} />
+      }
       header={
-        <ScreenHeader
-          title={headerTitle}
-          showBack
-          right={
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={t("delete.a11y", { title: headerTitle })}
-              accessibilityState={{ disabled: !conversationId || isDeleting }}
-              disabled={!conversationId || isDeleting}
-              hitSlop={HIT_SLOP}
-              onPress={confirmDelete}
-              className="h-10 w-10 items-center justify-center rounded-full border border-destructive/25 bg-destructive/10 active:opacity-70"
-            >
-              <FontAwesome6
-                name="trash-can"
-                size={14}
-                color={themeColors.destructive}
-              />
-            </Pressable>
-          }
-        />
+        // Başlık da alt çubuk gibi kendi zeminini taşıyor. Zemin durum
+        // çubuğunun altına kadar uzatılıyor: AppScreen üst güvenli alanı
+        // kendisi boşluk olarak veriyor, orası boyanmayınca fotoğraf şeridi
+        // başlıkla ekranın tepesi arasında kalıyordu.
+        <View
+          style={{ marginTop: -insets.top, paddingTop: insets.top }}
+          className="bg-background-primary/85"
+        >
+          <ScreenHeader
+            title={headerTitle}
+            // Etkinlik sohbetinde başlık etkinliğin kendisine götürür: kullanıcı
+            // sohbetteyken "bu hangi etkinlikti" diye geri gidip aramak zorunda
+            // kalmasın.
+            onTitlePress={
+              conversation?.eventId
+                ? () => router.push(`/events/${conversation.eventId}`)
+                : peer
+                  ? () => router.push(`/users/${peer.userId}`)
+                  : undefined
+            }
+            // Birebir sohbette ad yerine kullanıcı adı ve solunda fotoğrafı:
+            // kullanıcılar birbirini uygulamada kullanıcı adıyla tanıyor,
+            // ayrıca iki farklı "Ceren" ayırt edilemiyordu.
+            titleContent={
+              peer ? (
+                <View className="flex-row items-center gap-4 px-6">
+                  <Avatar
+                    uri={peer.profileImageUrl}
+                    name={peer.firstName ?? peer.username}
+                    size={28}
+                    borderWidth={0}
+                  />
+                  <Text
+                    numberOfLines={1}
+                    className="shrink font-body-bold text-body-sm text-text-primary"
+                  >
+                    {displayHandle(peer.username)}
+                  </Text>
+                </View>
+              ) : undefined
+            }
+            showBack
+            right={
+              // Tek düğme: başlık satırında iki ikon hem yer kaplıyor hem
+              // uzun etkinlik adlarını sıkıştırıyordu.
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t("menu.a11y")}
+                hitSlop={HIT_SLOP}
+                onPress={() => setMenuOpen(true)}
+                className="h-10 w-10 items-center justify-center rounded-full border border-border-default bg-surface-primary active:opacity-70"
+              >
+                <FontAwesome6
+                  name="ellipsis"
+                  size={15}
+                  color={themeColors.text.secondary}
+                />
+              </Pressable>
+            }
+          />
+        </View>
       }
       contentClassName="gap-3 px-6 pt-2"
       footer={
         isClosed ? (
-          <View className="border-t border-border-default px-6 py-4">
+          <View className="border-t border-border-default bg-background-primary/95 px-6 py-4">
             <Text className="text-center font-body text-body-sm leading-5 text-text-tertiary">
               {t("chat.closedFooter")}
             </Text>
           </View>
         ) : (
-          <View className="border-t border-border-default">
+          // Yazma alanı kendi zeminini taşıyor: fotoğraflı sohbette şeffaf bir
+          // çubuk, altındaki açık bölgede kayboluyordu.
+          <View className="border-t border-border-default bg-background-primary/95">
             {mention.isPicking && mention.suggestions.length > 0 ? (
               <View className="gap-1 border-b border-border-default px-4 py-2">
                 {mention.suggestions.map((member) => (
@@ -480,7 +577,13 @@ export function EventChatScreen({
               </View>
             ) : null}
 
-            <View className="flex-row items-end gap-2 px-6 py-3">
+            <View
+              style={{
+                paddingBottom:
+                  keyboardHeight > 0 ? 8 : Math.max(insets.bottom, 10),
+              }}
+              className="flex-row items-end gap-2 px-5 pt-4"
+            >
               <AppTextInput
                 value={draft}
                 onChangeText={(value) => {
@@ -494,31 +597,38 @@ export function EventChatScreen({
                 placeholderTextColor={themeColors.placeholder}
                 textAlignVertical="top"
                 hitSlop={HIT_SLOP}
-                // Uzun mesaj yazarken metin yana doğru kaymak yerine alta
-                // sarıyor ve alan birkaç satır büyüyor. Üst sınır olmazsa
-                // tek bir mesaj ekranın tamamını kaplardı.
                 multiline
                 style={{
-                  minHeight: 48,
-                  maxHeight: 120,
-                  lineHeight: 20,
-                  paddingTop: 14,
-                  paddingBottom: 14,
+                  minHeight: 40,
+                  maxHeight: 110,
+                  lineHeight: 19,
+                  paddingTop: 10,
+                  paddingBottom: 10,
                 }}
-                className="flex-1 rounded-2xl border border-border-default bg-surface-primary px-4 font-body text-body text-text-primary"
+                className="min-w-0 flex-1 rounded-full border border-border-strong bg-surface-primary px-4 font-body text-body-sm text-text-primary"
               />
+              {/* Yalnızca ikon: alt çubuk sohbetin değil mesajın önünde
+                  durmasın. Etiket erişilebilirlik adında kalıyor. */}
               <Pressable
                 accessibilityRole="button"
+                accessibilityLabel={t("chat.send")}
                 accessibilityState={{ disabled: !canSend }}
                 onPress={send}
                 disabled={!canSend}
-                className={`h-12 items-center justify-center rounded-2xl px-5 active:opacity-75 ${
-                  canSend ? "bg-brand-primary" : "bg-brand-primary/35"
+                hitSlop={HIT_SLOP}
+                className={`h-10 w-10 shrink-0 items-center justify-center rounded-full active:opacity-75 ${
+                  canSend ? "bg-brand-primary" : "bg-surface-secondary"
                 }`}
               >
-                <Text className="font-body-bold text-background-primary">
-                  {t("chat.send")}
-                </Text>
+                <FontAwesome6
+                  name="paper-plane"
+                  size={15}
+                  color={
+                    canSend
+                      ? themeColors.background.primary
+                      : themeColors.text.tertiary
+                  }
+                />
               </Pressable>
             </View>
           </View>
@@ -550,6 +660,60 @@ export function EventChatScreen({
           );
         })
       )}
+      <BottomSheet
+        visible={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        title={t("menu.title")}
+        subtitle={headerTitle}
+      >
+        <View className="gap-2">
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              setMenuOpen(false);
+              setBackgroundSheetOpen(true);
+            }}
+            className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-4 active:bg-surface-secondary"
+          >
+            <FontAwesome6
+              name="palette"
+              size={16}
+              color={themeColors.text.secondary}
+            />
+            <Text className="flex-1 font-body text-body text-text-primary">
+              {t("background.title")}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ disabled: !conversationId || isDeleting }}
+            disabled={!conversationId || isDeleting}
+            onPress={() => {
+              setMenuOpen(false);
+              confirmDelete();
+            }}
+            className="flex-row items-center gap-3 rounded-2xl border border-destructive/25 bg-destructive/10 px-4 py-4 active:opacity-70"
+          >
+            <FontAwesome6
+              name="trash-can"
+              size={16}
+              color={themeColors.destructive}
+            />
+            <Text className="flex-1 font-body text-body text-destructive">
+              {t("delete.confirm")}
+            </Text>
+          </Pressable>
+        </View>
+      </BottomSheet>
+
+      <ChatBackgroundSheet
+        visible={backgroundSheetOpen}
+        onClose={() => setBackgroundSheetOpen(false)}
+        selected={background}
+        onSelect={chooseBackground}
+        eventImageUrl={eventImageUrl}
+      />
     </AppScreen>
   );
 }

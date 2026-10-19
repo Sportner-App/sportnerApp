@@ -14,6 +14,8 @@ function HeaderSpacer() {
 
 export function ScreenHeader({
   title,
+  onTitlePress,
+  titleContent,
   brand = false,
   showBack = false,
   onBack,
@@ -68,16 +70,25 @@ export function ScreenHeader({
       >
         <View className="flex-shrink-0">{leftSlot}</View>
 
-        {!brand && title ? (
-          <Text
-            numberOfLines={2}
-            ellipsizeMode="tail"
-            className={`min-w-0 flex-1 px-3 text-center font-body-bold text-caption leading-4 tracking-[4px] ${
-              isLight ? "text-text-secondary" : "text-text-tertiary"
-            }`}
+        {!brand && (titleContent ?? title) ? (
+          <Pressable
+            disabled={!onTitlePress}
+            onPress={onTitlePress}
+            accessibilityRole={onTitlePress ? "button" : undefined}
+            className="min-w-0 flex-1 active:opacity-70"
           >
-            {title}
-          </Text>
+            {titleContent ?? (
+              <Text
+                numberOfLines={2}
+                ellipsizeMode="tail"
+                className={`px-3 text-center font-body-bold text-caption leading-4 tracking-[4px] ${
+                  isLight ? "text-text-secondary" : "text-text-tertiary"
+                }`}
+              >
+                {title}
+              </Text>
+            )}
+          </Pressable>
         ) : null}
 
         <View className="flex-shrink-0">{right ?? <HeaderSpacer />}</View>

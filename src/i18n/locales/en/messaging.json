@@ -74,5 +74,22 @@
     "deleting": "Deleting",
     "success": "Chat deleted",
     "failed": "Could not delete chat"
+  },
+  "background": {
+    "title": "Chat background",
+    "subtitle": "Pick a background for this chat. Only you see it.",
+    "a11y": "Change chat background",
+    "options": {
+      "etkinlik": "Event photo",
+      "duz": "Plain",
+      "saha": "Football pitch",
+      "parke": "Basketball",
+      "kort": "Tennis court",
+      "pist": "Running track"
+    }
+  },
+  "menu": {
+    "a11y": "Chat menu",
+    "title": "Chat"
   }
 }

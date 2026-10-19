@@ -340,7 +340,10 @@ function ConversationRow({
             accessibilityRole="button"
             accessibilityLabel={t("messaging:row.openA11y", { title })}
             onPress={onPress}
-            className="flex-row items-center gap-3 rounded-[24px] border border-border-default bg-surface-primary px-4 py-4 active:opacity-75"
+            // Dokunma geri bildirimi saydamlıkla değil renkle: satırın
+            // arkasında kırmızı sil katmanı duruyor ve opaklık düşünce o
+            // katman satırın içinden görünüyordu.
+            className="flex-row items-center gap-3 rounded-[24px] border border-border-default bg-surface-primary px-4 py-4 active:bg-surface-secondary"
           >
             {isEvent ? (
               <View className="h-12 w-12 items-center justify-center rounded-full border border-brand-primary/30 bg-brand-primary/10">
