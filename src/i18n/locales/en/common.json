@@ -20,5 +20,10 @@
   "media": {
     "cameraPermissionDenied": "You need to grant camera access to take a photo.",
     "galleryPermissionDenied": "You need to grant gallery access to pick a photo."
+  },
+  "updateRequired": {
+    "title": "Update required",
+    "description": "This version is no longer supported. Update the app to continue.",
+    "action": "Update"
   }
 }

@@ -3,8 +3,14 @@
     "name": "Sportner",
     "slug": "sportner",
     "version": "1.0.1",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "orientation": "portrait",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "icon": "./assets/images/icon.png",
     "scheme": "sportner",
     "userInterfaceStyle": "dark",
@@ -17,7 +23,9 @@
       "infoPlist": {
         "CFBundleDisplayName": "Sportner",
         "ITSAppUsesNonExemptEncryption": false,
-        "LSApplicationQueriesSchemes": ["whatsapp"]
+        "LSApplicationQueriesSchemes": [
+          "whatsapp"
+        ]
       }
     },
     "android": {
@@ -82,6 +90,10 @@
         "projectId": "331d00e3-0b27-4c04-9543-a901f9e9fe29"
       }
     },
-    "owner": "erdenler.yagiz"
+    "owner": "erdenler.yagiz",
+    "updates": {
+      "url": "https://u.expo.dev/331d00e3-0b27-4c04-9543-a901f9e9fe29",
+      "fallbackToCacheTimeout": 0
+    }
   }
 }

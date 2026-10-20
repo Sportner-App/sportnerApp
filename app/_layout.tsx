@@ -33,6 +33,7 @@ import "../global.css";
 import { configureForegroundNotifications } from "@/features/notifications/services/push-notifications-service";
 import { configureMapbox } from "@/lib/mapbox";
 import { AnimatedSplashScreen } from "@/components";
+import { UpdateRequiredGate } from "@/features/app-release/components/update-required-gate";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -101,38 +102,42 @@ function ThemedRootLayoutNav() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <KeyboardProvider>
         <AppProviders>
-          <ThemeProvider
-            value={{
-              ...navigationTheme,
-              colors: {
-                ...navigationTheme.colors,
-                background: appColors.background.primary,
-                card: appColors.surface.primary,
-                border: appColors.border.default,
-                notification: appColors.brand.primary,
-                primary: appColors.brand.primary,
-                text: appColors.text.primary,
-              },
-            }}
-          >
-            <Stack screenOptions={fullScreenBackStackOptions}>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(first-launch)" />
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(verify-email)" />
-              <Stack.Screen name="(onboarding)" />
-              <Stack.Screen name="events" options={edgeBackStackOptions} />
-              <Stack.Screen name="users/[id]" />
-              <Stack.Screen name="albums" />
-              <Stack.Screen name="report" />
-              <Stack.Screen name="help" />
-            </Stack>
-            <KeyboardToolbar
-              doneText={t("close")}
-              theme={keyboardToolbarTheme}
-            />
-          </ThemeProvider>
+          {/* Sürüm kapısı en dışta: eşiğin altındaki istemci hiçbir ekrana
+              girmeden "Güncelle"yi görür. */}
+          <UpdateRequiredGate>
+            <ThemeProvider
+              value={{
+                ...navigationTheme,
+                colors: {
+                  ...navigationTheme.colors,
+                  background: appColors.background.primary,
+                  card: appColors.surface.primary,
+                  border: appColors.border.default,
+                  notification: appColors.brand.primary,
+                  primary: appColors.brand.primary,
+                  text: appColors.text.primary,
+                },
+              }}
+            >
+              <Stack screenOptions={fullScreenBackStackOptions}>
+                <Stack.Screen name="index" />
+                <Stack.Screen name="(first-launch)" />
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="(auth)" />
+                <Stack.Screen name="(verify-email)" />
+                <Stack.Screen name="(onboarding)" />
+                <Stack.Screen name="events" options={edgeBackStackOptions} />
+                <Stack.Screen name="users/[id]" />
+                <Stack.Screen name="albums" />
+                <Stack.Screen name="report" />
+                <Stack.Screen name="help" />
+              </Stack>
+              <KeyboardToolbar
+                doneText={t("close")}
+                theme={keyboardToolbarTheme}
+              />
+            </ThemeProvider>
+          </UpdateRequiredGate>
         </AppProviders>
       </KeyboardProvider>
     </GestureHandlerRootView>

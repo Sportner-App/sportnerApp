@@ -20,5 +20,10 @@
   "media": {
     "cameraPermissionDenied": "Fotoğraf çekmek için kamera izni vermelisin.",
     "galleryPermissionDenied": "Fotoğraf seçmek için galeri izni vermelisin."
+  },
+  "updateRequired": {
+    "title": "Güncelleme gerekli",
+    "description": "Bu sürüm artık desteklenmiyor. Devam etmek için uygulamayı güncelle.",
+    "action": "Güncelle"
   }
 }
