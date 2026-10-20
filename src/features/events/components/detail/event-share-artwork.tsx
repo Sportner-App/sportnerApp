@@ -1,7 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as Haptics from "expo-haptics";
 import * as Sharing from "expo-sharing";
-import { View } from "react-native";
+import { Image, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { useTranslation } from "react-i18next";
 
@@ -13,6 +13,8 @@ import {
   sportAccentToken,
 } from "@/constants/theme";
 import { formatAgeRange } from "@/features/events/format";
+
+const LOGO = require("../../../../../assets/images/icon.png");
 import type { EventDetail } from "@/features/events/types";
 import { getCurrentLocale } from "@/i18n";
 
@@ -103,13 +105,14 @@ export function EventShareArtwork({
 
       <View style={{ gap: 14 }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <View
-            style={{
-              width: 9,
-              height: 9,
-              borderRadius: 9,
-              backgroundColor: accent,
-            }}
+          {/* Nokta yerine uygulama ikonu: paylaşılan görselde yalnızca
+              "Sportner" yazısı vardı, logo hiç görünmüyordu. Kendi zemini
+              olan ikon kullanılıyor — şeffaf logonun lacivert figürleri koyu
+              şablonlarda kayboluyor. */}
+          <Image
+            source={LOGO}
+            style={{ width: 26, height: 26, borderRadius: 8 }}
+            resizeMode="cover"
           />
           <Text
             style={{
