@@ -2,13 +2,14 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
   AppText as Text,
+  BottomSheet,
   brandRefreshControl,
   Button,
   LinearRefreshBar,
@@ -20,6 +21,7 @@ import { spacing, themeColors } from "@/constants/theme";
 import { useEventDetail } from "@/features/events/hooks/use-event-detail";
 import { useRequireAuth } from "@/features/auth/hooks/use-require-auth";
 import { useScrollToSection } from "@/hooks/use-scroll-to-section";
+import { confirmDestructive } from "@/utils/confirm";
 import { EVENT_STATUS, PARTICIPANT_STATUS } from "@/features/events/types";
 import {
   hasApprovedParticipation,
@@ -77,6 +79,28 @@ export function EventDetailScreen() {
   }, [detail.event, detail.isLoading, focus, scrollToSection]);
 
   const [pendingSheetOpen, setPendingSheetOpen] = useState(false);
+  const [organizerMenuOpen, setOrganizerMenuOpen] = useState(false);
+
+  /**
+   * İptal geri alınamıyor ve katılımcıların hepsine bildirim gidiyor; tek
+   * dokunuşla tetiklenmesi doğru değil.
+   */
+  const confirmCancelEvent = () => {
+    const others = (detail.event?.participants ?? []).filter(
+      (participant) => participant.userId !== detail.event?.organizerUserId,
+    ).length;
+
+    confirmDestructive({
+      title: t("organizerPanel.cancelConfirmTitle"),
+      message:
+        others > 0
+          ? t("organizerPanel.cancelConfirmWithParticipants", { count: others })
+          : t("organizerPanel.cancelConfirmAlone"),
+      confirmLabel: t("organizerPanel.cancelConfirmAction"),
+      cancelLabel: t("common:cancel"),
+      onConfirm: detail.cancel,
+    });
+  };
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
 
   const pendingCount = detail.isOrganizer
@@ -130,10 +154,8 @@ export function EventDetailScreen() {
             onPendingPress={
               showPendingEntry ? handleOpenPendingRequests : undefined
             }
-            onEdit={
-              detail.canManage
-                ? () => router.push(`/events/${detail.event?.id}/edit`)
-                : undefined
+            onMenu={
+              detail.canManage ? () => setOrganizerMenuOpen(true) : undefined
             }
           />
         )
@@ -322,7 +344,7 @@ export function EventDetailScreen() {
                   onPromote={detail.promote}
                   onAttended={detail.markAttended}
                   onAbsent={detail.markAbsent}
-                  onCancel={detail.cancel}
+                  onCancel={confirmCancelEvent}
                   onEdit={() => router.push(`/events/${detail.event?.id}/edit`)}
                   onOpenUser={(userId) => router.push(`/users/${userId}`)}
                   onOpenReviews={() =>
@@ -352,6 +374,56 @@ export function EventDetailScreen() {
           </View>
         </View>
       )}
+      {detail.event && detail.canManage ? (
+        <BottomSheet
+          visible={organizerMenuOpen}
+          onClose={() => setOrganizerMenuOpen(false)}
+          title={t("organizerPanel.menuTitle")}
+          subtitle={detail.event.title}
+        >
+          <View className="gap-2">
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => {
+                setOrganizerMenuOpen(false);
+                router.push(`/events/${detail.event?.id}/edit`);
+              }}
+              className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-4 active:bg-surface-secondary"
+            >
+              <FontAwesome6
+                name="pen"
+                size={15}
+                color={themeColors.text.secondary}
+              />
+              <Text className="flex-1 font-body text-body text-text-primary">
+                {t("organizerPanel.edit")}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: detail.isMutating }}
+              disabled={detail.isMutating}
+              onPress={() => {
+                setOrganizerMenuOpen(false);
+                confirmCancelEvent();
+              }}
+              className="flex-row items-center gap-3 rounded-2xl border border-destructive/25 bg-destructive/10 px-4 py-4 active:opacity-70"
+            >
+              <FontAwesome6
+                name="calendar-xmark"
+                size={15}
+                color={themeColors.destructive}
+              />
+              <Text className="flex-1 font-body text-body text-destructive">
+                {detail.isMutating
+                  ? t("organizerPanel.cancelling")
+                  : t("organizerPanel.cancelEvent")}
+              </Text>
+            </Pressable>
+          </View>
+        </BottomSheet>
+      ) : null}
       {detail.event && detail.isOrganizer ? (
         <PendingRequestsSheet
           visible={pendingSheetOpen}

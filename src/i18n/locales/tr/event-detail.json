@@ -131,7 +131,13 @@
     "attendanceSubtitle": "Önce yoklamayı kapat; ardından değerlendirme açılır.",
     "attendanceCompleteTitle": "Yoklama tamamlandı",
     "attendanceCompleteSubtitle": "Katılan kişiler artık geri bildirim verebilir. İstersen sen de takım arkadaşlarını değerlendirebilirsin.",
-    "rateParticipants": "Takım arkadaşlarını değerlendir"
+    "rateParticipants": "Takım arkadaşlarını değerlendir",
+    "menuTitle": "Etkinlik",
+    "menuA11y": "Etkinlik menüsü",
+    "cancelConfirmTitle": "Etkinlik iptal edilsin mi?",
+    "cancelConfirmWithParticipants": "{{count}} katılımcıya iptal bildirimi gider ve sohbet kapanır. Bu işlem geri alınamaz.",
+    "cancelConfirmAlone": "Etkinlik iptal edilecek ve listelerden kalkacak. Bu işlem geri alınamaz.",
+    "cancelConfirmAction": "Etkinliği iptal et"
   },
   "manageSheet": {
     "requestsTitle": "Katılım istekleri",

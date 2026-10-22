@@ -131,7 +131,13 @@
     "attendanceSubtitle": "Close attendance first; feedback opens next.",
     "attendanceCompleteTitle": "Attendance completed",
     "attendanceCompleteSubtitle": "Attendees can now leave feedback. You can also rate teammates if you want.",
-    "rateParticipants": "Rate teammates"
+    "rateParticipants": "Rate teammates",
+    "menuTitle": "Event",
+    "menuA11y": "Event menu",
+    "cancelConfirmTitle": "Cancel this event?",
+    "cancelConfirmWithParticipants": "{{count}} participants will be notified and the chat will close. This cannot be undone.",
+    "cancelConfirmAlone": "The event will be cancelled and removed from listings. This cannot be undone.",
+    "cancelConfirmAction": "Cancel event"
   },
   "manageSheet": {
     "requestsTitle": "Join requests",

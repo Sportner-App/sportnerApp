@@ -21,6 +21,8 @@ type EventDetailTopBarProps = {
   pendingCount?: number;
   onPendingPress?: () => void;
   onEdit?: () => void;
+  /** Organizatör eylemleri; verilirse kalem yerine menü düğmesi çıkar. */
+  onMenu?: () => void;
 };
 
 /**
@@ -33,6 +35,7 @@ export function EventDetailTopBar({
   pendingCount = 0,
   onPendingPress,
   onEdit,
+  onMenu,
 }: EventDetailTopBarProps) {
   const { t } = useTranslation("eventDetail");
   const insets = useSafeAreaInsets();
@@ -54,7 +57,15 @@ export function EventDetailTopBar({
       />
       <View className="flex-row items-center gap-2">
         {joinedLabel ? <JoinedBadge label={joinedLabel} /> : null}
-        {onEdit ? (
+        {onMenu ? (
+          // Düzenleme ve iptal aynı menüde: iptal daha önce yalnızca
+          // katılımcılar sekmesinin dibinde duruyordu, kimse bulamıyordu.
+          <GlassControl
+            accessibilityLabel={t("organizerPanel.menuA11y")}
+            icon="ellipsis"
+            onPress={onMenu}
+          />
+        ) : onEdit ? (
           <GlassControl
             accessibilityLabel={t("organizerPanel.editAccessibility")}
             icon="pen"
