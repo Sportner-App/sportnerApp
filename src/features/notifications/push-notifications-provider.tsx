@@ -1,5 +1,5 @@
 import * as Notifications from "expo-notifications";
-import { useRootNavigationState, useRouter } from "expo-router";
+import { useRootNavigationState, useRouter, useSegments } from "expo-router";
 import type { PropsWithChildren } from "react";
 import { useCallback, useEffect, useRef } from "react";
 import { InteractionManager } from "react-native";
@@ -14,7 +14,8 @@ import { InAppNotificationBanner } from "@/features/notifications/components/in-
 export function PushNotificationsProvider({ children }: PropsWithChildren) {
   const router = useRouter();
   const navigationState = useRootNavigationState();
-  const { isReady, isAuthenticated, isOnboarded, userId } = useAuth();
+  const { isReady, isAuthenticated, isEmailVerified, isOnboarded, userId } =
+    useAuth();
   const handledResponseId = useRef<string | null>(null);
 
   /**
@@ -30,8 +31,29 @@ export function PushNotificationsProvider({ children }: PropsWithChildren) {
   const pendingResponse = useRef<Notifications.NotificationResponse | null>(
     null,
   );
+
+  /**
+   * Navigasyon ağacının kurulmuş olması yetmiyordu. Soğuk açılışta kök rota
+   * app/index.tsx; o ekran başlangıç hedefini (oturum + ilk açılış durumu)
+   * çözdüğünde kendini `router.replace` ile onunla değiştiriyor. Oturum durumu
+   * genelde daha önce hazır olduğu için bildirim rotasını araya sıkıştırıyorduk
+   * ve hemen ardından gelen replace yığının tepesindeki o rotayı siliyordu —
+   * kullanıcı uygulamayı açıyor ama ana sayfada kalıyordu.
+   *
+   * index rotasının segmenti yok; başlangıç yönlendirmesi uygulanır uygulanmaz
+   * ("(tabs)", "(auth)" ...) segment doluyor. Yani boş segment "henüz
+   * yönlendirilmedi" demek: o ana kadar bekliyoruz.
+   */
+  const segments = useSegments();
+  const startupRedirectApplied = segments.length > 0;
+
   const canNavigate =
-    Boolean(navigationState?.key) && isReady && isAuthenticated && isOnboarded;
+    Boolean(navigationState?.key) &&
+    isReady &&
+    isAuthenticated &&
+    isEmailVerified &&
+    isOnboarded &&
+    startupRedirectApplied;
 
   useEffect(() => {
     if (!isReady || !isAuthenticated || !isOnboarded || !userId) return;

@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
@@ -31,6 +31,12 @@ type OrganizerPanelProps = {
   onOpenUser: (userId: string) => void;
   onOpenReviews: () => void;
   onRateUser: (userId: string) => void;
+  /**
+   * Bildirimden gelen istek (ör. "yoklama bekliyor"). Panel hazır olduğunda
+   * yönetim sheet'ini bu sekmede bir kez açar; kullanıcı kapattıktan sonra
+   * kendiliğinden geri açılmaz.
+   */
+  autoOpenTab?: OrganizerManageTab | null;
 };
 
 export function OrganizerPanel({
@@ -49,6 +55,7 @@ export function OrganizerPanel({
   onOpenUser,
   onOpenReviews,
   onRateUser,
+  autoOpenTab = null,
 }: OrganizerPanelProps) {
   const { t } = useTranslation("eventDetail");
   const [sheetTab, setSheetTab] = useState<OrganizerManageTab | null>(null);
@@ -64,6 +71,13 @@ export function OrganizerPanel({
     lightImpact();
     setSheetTab(tab);
   };
+
+  const hasAutoOpenedRef = useRef(false);
+  useEffect(() => {
+    if (!autoOpenTab || hasAutoOpenedRef.current) return;
+    hasAutoOpenedRef.current = true;
+    setSheetTab(autoOpenTab);
+  }, [autoOpenTab]);
 
   return (
     <Animated.View

@@ -11,7 +11,14 @@
   },
   "people": {
     "title": "Yeni sporcular",
-    "seeAll": "Tümünü gör"
+    "seeAll": "Tümünü gör",
+    "reasonMutual": "{{count}} ortak arkadaş",
+    "reasonSports": "{{count}} ortak spor",
+    "reasonCity": "{{city}}'de",
+    "reasonNew": "Yeni katıldı",
+    "add": "Ekle",
+    "sent": "İstek gönderildi",
+    "addA11y": "{{name}} kullanıcısını arkadaş olarak ekle"
   },
   "empty": {
     "message": "Henüz paylaşım yok. İlk fotoğrafı sen ekle.",

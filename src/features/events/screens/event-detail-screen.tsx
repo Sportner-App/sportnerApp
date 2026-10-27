@@ -65,7 +65,7 @@ export function EventDetailScreen() {
 
   useEffect(() => {
     if (
-      focus !== "questions" ||
+      (focus !== "questions" && focus !== "attendance") ||
       hasAppliedFocusRef.current ||
       detail.isLoading ||
       !detail.event
@@ -73,10 +73,26 @@ export function EventDetailScreen() {
       return;
     }
     hasAppliedFocusRef.current = true;
-    setActiveTab("questions");
+    // Yoklama, organizatör panelinin içinde; panel de katılımcılar sekmesinde
+    // duruyor. Sekme gizliyken (display: none) sheet de görünmüyor, bu yüzden
+    // önce sekmeyi açıyoruz.
+    setActiveTab(focus === "attendance" ? "participants" : "questions");
     const timeout = setTimeout(() => scrollToSection("tabs"), 250);
     return () => clearTimeout(timeout);
   }, [detail.event, detail.isLoading, focus, scrollToSection]);
+
+  /**
+   * "Yoklama bekliyor" bildirimi etkinliğe değil, organizatörün yoklama
+   * sheet'ine işaret ediyor; sheet organizatör panelinin içinde olduğu için
+   * istek oraya aktarılıyor. Yoklama alınamıyorsa (ör. etkinlik henüz
+   * bitmemiş) sekme de yok, o yüzden sessizce yok sayılıyor.
+   */
+  const organizerAutoOpenTab =
+    focus === "attendance" &&
+    detail.canTakeAttendance &&
+    activeTab === "participants"
+      ? "attendance"
+      : null;
 
   const [pendingSheetOpen, setPendingSheetOpen] = useState(false);
   const [organizerMenuOpen, setOrganizerMenuOpen] = useState(false);
@@ -350,6 +366,7 @@ export function EventDetailScreen() {
                   onOpenReviews={() =>
                     router.push(`/events/${detail.event?.id}/reviews`)
                   }
+                  autoOpenTab={organizerAutoOpenTab}
                   onRateUser={(userId) => {
                     if (!detail.event) return;
                     router.push({

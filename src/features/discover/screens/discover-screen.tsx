@@ -17,6 +17,7 @@ import { useDiscover } from "@/features/discover/hooks/use-discover";
 import { useRequireAuth } from "@/features/auth/hooks/use-require-auth";
 
 import { DiscoverPost } from "@/features/discover/components/discover-post";
+import { PeopleRail } from "@/features/discover/components/people-rail";
 import { HIT_SLOP } from "@/constants/theme";
 
 export function DiscoverScreen() {
@@ -91,46 +92,13 @@ export function DiscoverScreen() {
       </View>
 
       {people.length > 0 ? (
-        <View className="gap-2.5 border-t border-b border-border-default py-1.5">
-          <View className="flex-row items-center justify-between px-5">
-            <Text className="font-body-bold text-overline text-text-tertiary">
-              {t("discover:people.title")}
-            </Text>
-            <Pressable
-              hitSlop={HIT_SLOP}
-              onPress={() => router.push("/people")}
-            >
-              <Text className="font-body-bold text-overline text-brand-primary">
-                {t("discover:people.seeAll")}
-              </Text>
-            </Pressable>
-          </View>
-          {/* Kullanıcı adları yok: dar alanda "@test…" diye kırpılıyordu. */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}
-          >
-            {people.map((person) => (
-              <Pressable
-                key={person.userId}
-                accessibilityRole="button"
-                accessibilityLabel={`@${person.username ?? ""}`}
-                onPress={() => router.push(`/users/${person.userId}`)}
-                className="active:opacity-75"
-              >
-                <Avatar
-                  uri={person.avatarUrl}
-                  name={person.name}
-                  size={42}
-                  borderWidth={1.5}
-                />
-              </Pressable>
-            ))}
-          </ScrollView>
-
-          {/* <View className="mt-1 h-px bg-border-default " /> */}
-        </View>
+        <PeopleRail
+          // Arkadaş olunanlar öneride durmasın: zaten eklenmiş birine
+          // "Ekle" göstermek listeyi gürültüye çeviriyordu.
+          people={people.filter((person) => !friendIds.has(person.userId))}
+          onOpenProfile={(userId: string) => router.push(`/users/${userId}`)}
+          onSeeAll={() => router.push("/people")}
+        />
       ) : null}
 
       {isLoading ? (

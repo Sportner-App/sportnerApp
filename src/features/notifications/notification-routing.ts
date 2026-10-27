@@ -49,11 +49,19 @@ export function resolveNotificationRoute(data: NotificationRouteData): string {
   if (entityType === NOTIFICATION_ENTITY.event) {
     // These land on the event detail screen's Q&A section instead of its top, so the user
     // doesn't have to scroll down themselves to find the question the notification was about.
+    // postMentioned de buraya düşüyor: etkinlik varlığıyla gelen tek anma
+    // kaynağı soru-cevap bölümü (soru ya da yanıt içinde @etiketlenmek).
     if (
       notificationType === NOTIFICATION_TYPE.eventQuestionAsked ||
-      notificationType === NOTIFICATION_TYPE.eventQuestionReplied
+      notificationType === NOTIFICATION_TYPE.eventQuestionReplied ||
+      notificationType === NOTIFICATION_TYPE.postMentioned
     ) {
       return `/events/${entityId}?focus=questions`;
+    }
+    // Organizatöre "yoklamayı al" diyen bildirim: etkinliğin tepesi değil,
+    // yönetim sheet'indeki yoklama sekmesi aranan yer.
+    if (notificationType === NOTIFICATION_TYPE.eventAttendancePending) {
+      return `/events/${entityId}?focus=attendance`;
     }
     return `/events/${entityId}`;
   }

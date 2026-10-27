@@ -11,7 +11,14 @@
   },
   "people": {
     "title": "New athletes",
-    "seeAll": "See all"
+    "seeAll": "See all",
+    "reasonMutual": "{{count}} mutual friends",
+    "reasonSports": "{{count}} shared sports",
+    "reasonCity": "In {{city}}",
+    "reasonNew": "Just joined",
+    "add": "Add",
+    "sent": "Request sent",
+    "addA11y": "Send a friend request to {{name}}"
   },
   "empty": {
     "message": "No shares yet. Be the first to add a photo.",

@@ -91,6 +91,10 @@ export function PeopleScreen() {
   return (
     <AppScreen
       tone="light"
+      // Klavyeye göre yeniden boyutlanma kapalı: tek giriş alanı başlıkta,
+      // zaten klavyenin üstünde. Açıkken gövdeye eklenen dolgu, kaydırma
+      // sırasında klavye kapanınca listeyi yerinden oynatıyordu.
+      keyboardAvoiding={false}
       header={
         <PeopleSearchHeader
           value={query}
@@ -227,7 +231,8 @@ function PeopleSearchHeader({
           color={themeColors.text.secondary}
         />
         <AppTextInput
-          autoFocus
+          // Otomatik odak yok: kullanıcı bu ekrana listeye bakmaya geliyor,
+          // açılışta klavyenin yarım ekranı kaplaması aramayı kolaylaştırmıyor.
           value={value}
           onChangeText={onChangeText}
           placeholder={t("searchPlaceholder")}
