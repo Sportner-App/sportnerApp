@@ -34,10 +34,34 @@ export function RulesStep({ form }: { form: CreateEventForm }) {
 
   return (
     <View className="mt-7">
-      <PlayersStepper
-        value={values.maxPlayers}
-        onChange={(maxPlayers) => update("maxPlayers", maxPlayers)}
-      />
+      <View className="mb-4 gap-2">
+        <Text className="font-body-bold text-label text-text-secondary">
+          {t("players.limitLabel")}
+        </Text>
+        <View className="flex-row flex-wrap gap-2">
+          <ChoicePill
+            label={t("players.limited")}
+            active={!values.isUnlimitedPlayers}
+            onPress={() => update("isUnlimitedPlayers", false)}
+          />
+          <ChoicePill
+            label={t("players.unlimited")}
+            active={values.isUnlimitedPlayers}
+            onPress={() => update("isUnlimitedPlayers", true)}
+          />
+        </View>
+      </View>
+
+      {values.isUnlimitedPlayers ? (
+        <Text className="font-body text-caption text-text-tertiary">
+          {t("players.unlimitedHint")}
+        </Text>
+      ) : (
+        <PlayersStepper
+          value={values.maxPlayers}
+          onChange={(maxPlayers) => update("maxPlayers", maxPlayers)}
+        />
+      )}
 
       <View className="mt-6 gap-2">
         <Text className="font-body-bold text-label text-text-secondary">

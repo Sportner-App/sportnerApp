@@ -40,7 +40,11 @@ export function useCreateEventCopy() {
   } as const;
 }
 
-export const DEFAULT_EVENT_DURATION_MINUTES = 90;
+/**
+ * Süre girilmemiş etkinliğin bitiş hesabında kullanılan yedek süre. Backend'deki
+ * Event.DefaultDurationMinutes ile aynı tutulmalı.
+ */
+export const FALLBACK_EVENT_DURATION_MINUTES = 60;
 export const DEFAULT_EVENT_MIN_AGE = 18;
 export const DEFAULT_EVENT_MAX_AGE = 60;
 

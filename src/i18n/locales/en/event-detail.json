@@ -223,7 +223,11 @@
     "priceRequiredDescription": "Enter a price greater than 0 for a paid event.",
     "saveFailedTitle": "Couldn't save",
     "savedTitle": "Updated",
-    "savedDescription": "Event details were saved."
+    "savedDescription": "Event details were saved.",
+    "playersLimited": "Limited",
+    "playersUnlimited": "Unlimited",
+    "playerCountInvalidTitle": "Check the player count",
+    "playerCountInvalidDescription": "Enter a number between {{min}} and {{max}}, or choose Unlimited."
   },
   "toast": {
     "actionFailedTitle": "Action failed",

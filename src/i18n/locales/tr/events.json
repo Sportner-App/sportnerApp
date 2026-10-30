@@ -8,7 +8,15 @@
     "today": "Bugün",
     "tomorrow": "Yarın"
   },
-  "weekdaysShort": ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"],
+  "weekdaysShort": [
+    "Paz",
+    "Pzt",
+    "Sal",
+    "Çar",
+    "Per",
+    "Cum",
+    "Cmt"
+  ],
   "duration": {
     "minutes": "{{count}} dk",
     "hours": "{{count}} sa",
@@ -91,5 +99,15 @@
       "ageRangeInvalid": "Katılım yaş aralığı 13–120 arasında ve sıralı olmalı.",
       "paidFeeRequired": "Ücretli etkinlik için 0'dan büyük bir fiyat gir."
     }
+  },
+  "pendingRequestsCard": {
+    "title_one": "{{count}} kişi onayını bekliyor",
+    "title_other": "{{count}} kişi onayını bekliyor",
+    "singleEvent": "\"{{title}}\" etkinliğine katılmak istiyorlar",
+    "multiEvent": "{{count}} etkinliğinde bekleyen başvuru var",
+    "review": "İncele",
+    "pickerTitle": "Hangi etkinliğe bakalım?",
+    "pickerSubtitle": "Başvuruları onaylamak istediğin etkinliği seç.",
+    "pendingBadge": "{{count}} istek"
   }
 }

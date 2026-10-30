@@ -51,6 +51,7 @@ export const NOTIFICATION_GROUPS = [
       T.eventCapacityUpdated,
       T.eventUpdated,
       T.eventAttendancePending,
+      T.eventJoinRequested,
     ],
   },
   {

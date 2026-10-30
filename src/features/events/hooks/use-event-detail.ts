@@ -5,6 +5,7 @@ import { useSession, useToast } from "@/contexts";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
 import { getEventById } from "@/features/events/services/events-service";
+import { FALLBACK_EVENT_DURATION_MINUTES } from "@/features/events/copy";
 import {
   approveParticipant,
   cancelEvent,
@@ -68,8 +69,9 @@ export function useEventDetail(id: string | undefined) {
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
   const [isMutating, setIsMutating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [detailPrompt, setDetailPrompt] =
-    useState<PersonalDetailPrompt | null>(null);
+  const [detailPrompt, setDetailPrompt] = useState<PersonalDetailPrompt | null>(
+    null,
+  );
 
   const load = useCallback(async () => {
     if (!id) {
@@ -117,7 +119,8 @@ export function useEventDetail(id: string | undefined) {
     event != null &&
     (event.status === EVENT_STATUS.published ||
       event.status === EVENT_STATUS.full) &&
-    new Date(event.eventDate).getTime() + event.durationMinutes * 60_000 <=
+    new Date(event.eventDate).getTime() +
+      (event.durationMinutes ?? FALLBACK_EVENT_DURATION_MINUTES) * 60_000 <=
       Date.now();
 
   const canTakeAttendance =

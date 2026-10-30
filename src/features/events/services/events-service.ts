@@ -6,6 +6,7 @@ import type {
   ApiExploreEventItem,
   ApiParticipant,
   ApiPendingAttendanceEvent,
+  ApiPendingJoinRequestEvent,
   ApiWaitlistEntry,
   DiscoverEventsParams,
   EventDetail,
@@ -14,6 +15,7 @@ import type {
   EventWaitlistEntry,
   ExploreEventItem,
   PendingAttendanceEvent,
+  PendingJoinRequestEvent,
 } from "@/features/events/types";
 import {
   mapDetailToEvent,
@@ -21,6 +23,7 @@ import {
   mapListItemToSummary,
   mapParticipant,
   mapPendingAttendanceEvent,
+  mapPendingJoinRequestEvent,
   mapWaitlistEntry,
 } from "@/features/events/mappers";
 
@@ -136,6 +139,15 @@ export async function listPendingAttendanceEvents(): Promise<
     "/api/events/mine/pending-attendance",
   );
   return (response.data ?? []).map(mapPendingAttendanceEvent);
+}
+
+export async function listPendingJoinRequestEvents(): Promise<
+  PendingJoinRequestEvent[]
+> {
+  const response = await apiClient.get<ApiPendingJoinRequestEvent[]>(
+    "/api/events/mine/pending-requests",
+  );
+  return (response.data ?? []).map(mapPendingJoinRequestEvent);
 }
 
 export async function listWaitlist(

@@ -62,7 +62,7 @@
     "label": "Tarih & Saat"
   },
   "duration": {
-    "label": "Süre",
+    "label": "Süre (opsiyonel)",
     "sheetTitle": "Etkinlik süresi",
     "sheetSubtitle": "Saat ve dakikayı kaydırarak seç",
     "hourSuffix": "saat",
@@ -71,7 +71,9 @@
     "confirm": "Süreyi Ayarla",
     "minutesShort": "{{count}} dakika",
     "hoursShort": "{{count}} saat",
-    "hoursAndMinutesShort": "{{hours}} saat {{minutes}} dakika"
+    "hoursAndMinutesShort": "{{hours}} saat {{minutes}} dakika",
+    "placeholder": "Süre belirtilmedi",
+    "clear": "Süre belirtme"
   },
   "recurring": {
     "toggleTitle": "Tekrarlayan etkinlik",
@@ -102,7 +104,11 @@
     "capacityLabel": "Katılımcı Kapasitesi",
     "unit": "kişi",
     "hint": "Butonları kullanabilir veya sayıya dokunup kapasiteyi yazabilirsin.\nSen de katılımcı olarak sayılırsın.",
-    "accessibilityLabel": "Katılımcı kapasitesi"
+    "accessibilityLabel": "Katılımcı kapasitesi",
+    "limitLabel": "Kontenjan",
+    "limited": "Sınırlı",
+    "unlimited": "Sınırsız",
+    "unlimitedHint": "Katılımcı sayısına sınır yok. Başvuranları yine sen onaylarsın."
   },
   "ageRange": {
     "label": "Katılım yaş aralığı",
@@ -129,7 +135,8 @@
   },
   "summary": {
     "heading": "Etkinlik Özeti",
-    "playersLabel": "{{count}} kişi"
+    "playersLabel": "{{count}} kişi",
+    "playersUnlimited": "Sınırsız kontenjan"
   },
   "companions": {
     "slotsAvailable": "{{count}} kişilik yer açık",
@@ -144,7 +151,8 @@
     "friendsTitle": "Arkadaşlarına davet gönder",
     "friendsSubtitle": "Seçtiğin kişiler kabul ettikten sonra katılımcı olur.",
     "friendsLoading": "Arkadaşlar yükleniyor…",
-    "friendsEmpty": "Ekleyebileceğin kabul edilmiş arkadaş bulunamadı."
+    "friendsEmpty": "Ekleyebileceğin kabul edilmiş arkadaş bulunamadı.",
+    "slotsUnlimited": "Kontenjan sınırsız"
   },
   "toast": {
     "sportNotFoundTitle": "Spor bulunamadı",

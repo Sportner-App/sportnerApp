@@ -119,7 +119,7 @@ export async function updateEvent(
     title: string;
     description: string | null;
     eventDate: string;
-    durationMinutes: number;
+    durationMinutes: number | null;
     latitude: number;
     longitude: number;
     address: string;
@@ -136,7 +136,7 @@ export async function updateEvent(
 
 export async function updateEventSchedule(
   eventId: string,
-  payload: { eventDate: string; durationMinutes: number },
+  payload: { eventDate: string; durationMinutes: number | null },
 ) {
   return eventAction(
     () => apiClient.put(`/api/events/${eventId}/schedule`, payload),

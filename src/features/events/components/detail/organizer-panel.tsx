@@ -60,10 +60,18 @@ export function OrganizerPanel({
   const { t } = useTranslation("eventDetail");
   const [sheetTab, setSheetTab] = useState<OrganizerManageTab | null>(null);
   const hasWaitlist = event.waitlist.length > 0;
-  const hasPendingAttendance = event.participants.some(
+  // Organizatör kadroda katılımcı olarak duruyor ama yoklaması alınmaz.
+  const attendees = event.participants.filter(
     (participant) =>
       !participant.isGuest &&
-      participant.status === PARTICIPANT_STATUS.approved,
+      participant.userId != null &&
+      participant.userId !== event.organizerUserId &&
+      (participant.status === PARTICIPANT_STATUS.approved ||
+        participant.status === PARTICIPANT_STATUS.attended ||
+        participant.status === PARTICIPANT_STATUS.noShow),
+  );
+  const hasPendingAttendance = attendees.some(
+    (participant) => participant.status === PARTICIPANT_STATUS.approved,
   );
   const isReadyForFeedback = canTakeAttendance && !hasPendingAttendance;
 
@@ -76,8 +84,10 @@ export function OrganizerPanel({
   useEffect(() => {
     if (!autoOpenTab || hasAutoOpenedRef.current) return;
     hasAutoOpenedRef.current = true;
+    // Bildirimden gelinse bile yoklama alınacak kimse yoksa boş sheet açmıyoruz.
+    if (autoOpenTab === "attendance" && attendees.length === 0) return;
     setSheetTab(autoOpenTab);
-  }, [autoOpenTab]);
+  }, [autoOpenTab, attendees.length]);
 
   return (
     <Animated.View

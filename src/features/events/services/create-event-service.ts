@@ -20,7 +20,9 @@ function validateCreateEventPayload(
   if (!title) return "titleRequired";
   if (title.length > EVENT_TITLE_MAX_LENGTH) return "titleTooLong";
   if (!payload.sportId) return "sportRequired";
-  if (payload.durationMinutes <= 0) return "durationPositive";
+  if (payload.durationMinutes != null && payload.durationMinutes <= 0) {
+    return "durationPositive";
+  }
   if (!address) return "addressRequired";
   if (
     payload.latitude < -90 ||
@@ -30,7 +32,9 @@ function validateCreateEventPayload(
   ) {
     return "coordinatesInvalid";
   }
-  if (payload.maxParticipants <= 0) return "capacityPositive";
+  if (payload.maxParticipants != null && payload.maxParticipants <= 0) {
+    return "capacityPositive";
+  }
   const { minParticipantAge: minAge, maxParticipantAge: maxAge } = payload;
   if (
     (minAge != null &&

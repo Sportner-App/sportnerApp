@@ -41,6 +41,11 @@ export function groupSportsByCategory(sports: Sport[]): SportGroup[] {
   });
 }
 
+/**
+ * Katalogdaki her spor burada olmalı; olmayan "shapes" yedek ikonuna düşer.
+ * FontAwesome 6 ücretsiz sette raket ikonu yok: tenis, padel, pickleball ve
+ * squash için en yakın ikonlar kullanılıyor.
+ */
 const SPORT_ICON_BY_SLUG: Record<string, IconName> = {
   futbol: "futbol",
   football: "futbol",
@@ -48,8 +53,8 @@ const SPORT_ICON_BY_SLUG: Record<string, IconName> = {
   basketball: "basketball",
   voleybol: "volleyball",
   volleyball: "volleyball",
-  tenis: "table-tennis-paddle-ball",
-  tennis: "table-tennis-paddle-ball",
+  tenis: "baseball",
+  tennis: "baseball",
   "masa-tenisi": "table-tennis-paddle-ball",
   kosu: "person-running",
   running: "person-running",
@@ -62,11 +67,31 @@ const SPORT_ICON_BY_SLUG: Record<string, IconName> = {
   hiking: "person-hiking",
   boks: "hand-fist",
   boxing: "hand-fist",
-  pilates: "spa",
+  pilates: "child-reaching",
   yoga: "spa",
-  crossfit: "dumbbell",
-  badminton: "table-tennis-paddle-ball",
-  kurek: "sailboat",
+  crossfit: "weight-hanging",
+  badminton: "feather",
+  padel: "table-tennis-paddle-ball",
+  pickleball: "table-tennis-paddle-ball",
+  squash: "circle",
+  hentbol: "hand",
+  "plaj-voleybolu": "umbrella-beach",
+  kickboks: "hand-back-fist",
+  judo: "person-falling",
+  "jiu-jitsu": "people-arrows",
+  karate: "user-ninja",
+  tirmanis: "mountain",
+  kayak: "person-skiing",
+  snowboard: "person-snowboarding",
+  bowling: "bowling-ball",
+  dans: "music",
+  golf: "golf-ball-tee",
+  okculuk: "bullseye",
+  dalis: "fish",
+  yelken: "sailboat",
+  rugby: "football",
+  kurek: "water",
+  diger: "shapes",
 };
 
 export function sportIconForSlug(slug: string): IconName {

@@ -28,6 +28,7 @@ const WHEEL_HEIGHT = ITEM_HEIGHT * VISIBLE_ITEMS;
 const WHEEL_PADDING = ITEM_HEIGHT * Math.floor(VISIBLE_ITEMS / 2);
 const HOURS = Array.from({ length: 13 }, (_, index) => index);
 const MINUTES = Array.from({ length: 60 }, (_, index) => index);
+const DEFAULT_WHEEL_MINUTES = 60;
 
 /**
  * Carki dongusel gostermek icin liste bu kadar kez tekrarlaniyor; kullanici
@@ -44,8 +45,9 @@ type WheelHandle = {
 };
 
 type DurationPickerFieldProps = {
-  value: number;
-  onChange: (minutes: number) => void;
+  /** null: süre belirtilmedi (opsiyonel). */
+  value: number | null;
+  onChange: (minutes: number | null) => void;
   disabled?: boolean;
 };
 
@@ -74,8 +76,12 @@ export function DurationPickerField({
             color={themeColors.brand.primary}
           />
         </View>
-        <Text className="flex-1 font-body text-body text-text-primary">
-          {formatDuration(t, value)}
+        <Text
+          className={`flex-1 font-body text-body ${
+            value == null ? "text-text-tertiary" : "text-text-primary"
+          }`}
+        >
+          {value == null ? t("duration.placeholder") : formatDuration(t, value)}
         </Text>
         <FontAwesome6
           name="chevron-down"
@@ -101,23 +107,25 @@ function DurationPickerSheet({
   onChange,
 }: {
   visible: boolean;
-  value: number;
+  value: number | null;
   onClose: () => void;
-  onChange: (minutes: number) => void;
+  onChange: (minutes: number | null) => void;
 }) {
   const { t } = useTranslation("eventCreate");
+  // Süre seçilmemişse çark 1 saatten açılır; bu yalnızca başlangıç konumu.
+  const wheelValue = value ?? DEFAULT_WHEEL_MINUTES;
   const hourRef = useRef<WheelHandle>(null);
   const minuteRef = useRef<WheelHandle>(null);
-  const initialHour = Math.min(Math.floor(value / 60), HOURS.length - 1);
-  const initialMinute = Math.min(value % 60, MINUTES.length - 1);
+  const initialHour = Math.min(Math.floor(wheelValue / 60), HOURS.length - 1);
+  const initialMinute = Math.min(wheelValue % 60, MINUTES.length - 1);
   const [hour, setHour] = useState(initialHour);
   const [minute, setMinute] = useState(initialMinute);
 
   useEffect(() => {
     if (!visible) return;
 
-    const nextHour = Math.min(Math.floor(value / 60), HOURS.length - 1);
-    const nextMinute = Math.min(value % 60, MINUTES.length - 1);
+    const nextHour = Math.min(Math.floor(wheelValue / 60), HOURS.length - 1);
+    const nextMinute = Math.min(wheelValue % 60, MINUTES.length - 1);
     setHour(nextHour);
     setMinute(nextMinute);
 
@@ -127,7 +135,7 @@ function DurationPickerSheet({
     }, 80);
 
     return () => clearTimeout(timer);
-  }, [value, visible]);
+  }, [wheelValue, visible]);
 
   const totalMinutes = hour * 60 + minute;
 
@@ -202,6 +210,15 @@ function DurationPickerSheet({
         disabled={totalMinutes <= 0}
         haptic="light"
         onPress={confirm}
+      />
+      <Button
+        label={t("duration.clear")}
+        variant="ghost"
+        haptic="light"
+        onPress={() => {
+          onChange(null);
+          onClose();
+        }}
       />
     </BottomSheet>
   );

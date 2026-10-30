@@ -98,7 +98,8 @@
     "31": "Event fee changed",
     "32": "Event capacity changed",
     "33": "Added to group",
-    "34": "Event updated"
+    "34": "Event updated",
+    "37": "Event join request"
   },
   "push": {
     "channelName": "Sportner Notifications",

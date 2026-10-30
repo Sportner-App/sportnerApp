@@ -223,7 +223,11 @@
     "priceRequiredDescription": "Ücretli etkinlik için 0'dan büyük bir fiyat gir.",
     "saveFailedTitle": "Kaydedilemedi",
     "savedTitle": "Güncellendi",
-    "savedDescription": "Etkinlik bilgileri kaydedildi."
+    "savedDescription": "Etkinlik bilgileri kaydedildi.",
+    "playersLimited": "Sınırlı",
+    "playersUnlimited": "Sınırsız",
+    "playerCountInvalidTitle": "Oyuncu sayısını kontrol et",
+    "playerCountInvalidDescription": "{{min}} ile {{max}} arasında bir sayı gir ya da Sınırsız'ı seç."
   },
   "toast": {
     "actionFailedTitle": "İşlem başarısız",

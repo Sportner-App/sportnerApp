@@ -13,6 +13,7 @@ import {
 import { CREATE_EVENT_LIMITS } from "@/features/events/copy";
 import { useToast } from "@/contexts";
 import { useEventDetail } from "@/features/events/hooks/use-event-detail";
+import { ChoicePill } from "@/features/events/components/create/choice-pill";
 import { DurationPickerField } from "@/features/events/components/create/duration-picker-field";
 import { LocationPicker } from "@/features/events/components/create/location-picker";
 import { SubmitBar } from "@/features/events/components/create/submit-bar";
@@ -29,8 +30,9 @@ export function EventEditScreen() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [eventDate, setEventDate] = useState(new Date());
-  const [durationMinutes, setDurationMinutes] = useState(90);
+  const [durationMinutes, setDurationMinutes] = useState<number | null>(null);
   const [maxPlayers, setMaxPlayers] = useState("10");
+  const [isUnlimitedPlayers, setIsUnlimitedPlayers] = useState(false);
   const [addressText, setAddressText] = useState("");
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
@@ -49,6 +51,7 @@ export function EventEditScreen() {
     setEventDate(new Date(event.eventDate));
     setDurationMinutes(event.durationMinutes);
     setMaxPlayers(String(event.maxParticipants ?? 10));
+    setIsUnlimitedPlayers(event.maxParticipants == null);
     setAddressText(event.address);
     setLatitude(event.latitude);
     setLongitude(event.longitude);
@@ -60,6 +63,24 @@ export function EventEditScreen() {
 
   const save = async () => {
     if (!event || isSaving || latitude == null || longitude == null) {
+      return;
+    }
+
+    const playerCount = Number(maxPlayers);
+    if (
+      !isUnlimitedPlayers &&
+      (!Number.isInteger(playerCount) ||
+        playerCount < CREATE_EVENT_LIMITS.maxParticipantsMin ||
+        playerCount > CREATE_EVENT_LIMITS.maxParticipantsMax)
+    ) {
+      showToast({
+        type: "error",
+        title: t("edit.playerCountInvalidTitle"),
+        description: t("edit.playerCountInvalidDescription", {
+          min: CREATE_EVENT_LIMITS.maxParticipantsMin,
+          max: CREATE_EVENT_LIMITS.maxParticipantsMax,
+        }),
+      });
       return;
     }
 
@@ -85,7 +106,7 @@ export function EventEditScreen() {
         latitude,
         longitude,
         address: addressText.trim(),
-        maxParticipants: Number(maxPlayers) || null,
+        maxParticipants: isUnlimitedPlayers ? null : playerCount,
         isPaid,
         feeAmount: isPaid ? parseFeeAmount(feeAmountText) : null,
       });
@@ -158,12 +179,31 @@ export function EventEditScreen() {
         onChange={setDurationMinutes}
         disabled={isSaving}
       />
-      <Input
-        label={t("edit.playerCountLabel")}
-        value={maxPlayers}
-        onChangeText={setMaxPlayers}
-        keyboardType="number-pad"
-      />
+      <View className="gap-2">
+        <Text className="font-body-bold text-label text-text-secondary">
+          {t("edit.playerCountLabel")}
+        </Text>
+        <View className="flex-row flex-wrap gap-2">
+          <ChoicePill
+            label={t("edit.playersLimited")}
+            active={!isUnlimitedPlayers}
+            onPress={() => setIsUnlimitedPlayers(false)}
+          />
+          <ChoicePill
+            label={t("edit.playersUnlimited")}
+            active={isUnlimitedPlayers}
+            onPress={() => setIsUnlimitedPlayers(true)}
+          />
+        </View>
+        {isUnlimitedPlayers ? null : (
+          <Input
+            value={maxPlayers}
+            onChangeText={setMaxPlayers}
+            keyboardType="number-pad"
+            accessibilityLabel={t("edit.playerCountLabel")}
+          />
+        )}
+      </View>
       <View className="gap-2">
         <Text className="font-body-bold text-label text-text-secondary">
           {t("edit.feeLabel")}

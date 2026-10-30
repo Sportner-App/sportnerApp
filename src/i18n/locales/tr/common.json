@@ -25,5 +25,11 @@
     "title": "Güncelleme gerekli",
     "description": "Bu sürüm artık desteklenmiyor. Devam etmek için uygulamayı güncelle.",
     "action": "Güncelle"
+  },
+  "updateAvailable": {
+    "title": "Yeni sürüm hazır",
+    "description": "Sportner'ın {{version}} sürümü yayında. Güncelleyerek yeni özelliklere ve düzeltmelere ulaşabilirsin.",
+    "action": "Güncelle",
+    "later": "Daha sonra"
   }
 }

@@ -62,7 +62,7 @@
     "label": "Date & Time"
   },
   "duration": {
-    "label": "Duration",
+    "label": "Duration (optional)",
     "sheetTitle": "Event duration",
     "sheetSubtitle": "Scroll to pick the hour and minute",
     "hourSuffix": "h",
@@ -71,7 +71,9 @@
     "confirm": "Set Duration",
     "minutesShort": "{{count}} min",
     "hoursShort": "{{count}} h",
-    "hoursAndMinutesShort": "{{hours}} h {{minutes}} min"
+    "hoursAndMinutesShort": "{{hours}} h {{minutes}} min",
+    "placeholder": "No duration set",
+    "clear": "Don't set a duration"
   },
   "recurring": {
     "toggleTitle": "Recurring event",
@@ -102,7 +104,11 @@
     "capacityLabel": "Participant Capacity",
     "unit": "people",
     "hint": "You can use the buttons or tap the number to type the capacity directly.\nYou count as a participant too.",
-    "accessibilityLabel": "Participant capacity"
+    "accessibilityLabel": "Participant capacity",
+    "limitLabel": "Capacity",
+    "limited": "Limited",
+    "unlimited": "Unlimited",
+    "unlimitedHint": "No cap on participants. You still approve who joins."
   },
   "ageRange": {
     "label": "Participant age range",
@@ -129,7 +135,8 @@
   },
   "summary": {
     "heading": "Event Summary",
-    "playersLabel": "{{count}} people"
+    "playersLabel": "{{count}} people",
+    "playersUnlimited": "Unlimited capacity"
   },
   "companions": {
     "slotsAvailable": "{{count}} spots open",
@@ -144,7 +151,8 @@
     "friendsTitle": "Invite friends",
     "friendsSubtitle": "Selected people become participants once they accept.",
     "friendsLoading": "Loading friends…",
-    "friendsEmpty": "No accepted friends found that you can add."
+    "friendsEmpty": "No accepted friends found that you can add.",
+    "slotsUnlimited": "Unlimited spots"
   },
   "toast": {
     "sportNotFoundTitle": "Sport not found",

@@ -185,7 +185,9 @@ export function EventCreateScreen() {
         {currentStep === 5 ? (
           <>
             <EventCompanionsStep
-              maxParticipants={Number(values.maxPlayers)}
+              maxParticipants={
+                values.isUnlimitedPlayers ? null : Number(values.maxPlayers)
+              }
               remainingSlots={remainingCompanionSlots}
               guests={guests}
               friends={friends}

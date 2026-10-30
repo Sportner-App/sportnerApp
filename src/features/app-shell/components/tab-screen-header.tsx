@@ -9,12 +9,12 @@ import {
   type View as ViewType,
 } from "react-native";
 
+import { BrandMark } from "@/components/brand-mark";
 import { themeColors } from "@/constants/theme";
 import { useAppTour } from "@/contexts";
 import { useRequireAuth } from "@/features/auth/hooks/use-require-auth";
 import { hasUnreadConversations } from "@/features/messaging/services/messaging-service";
 import { hasUnreadNotifications } from "@/features/notifications/services/notifications-service";
-import { BrandMark } from "@/components/brand-mark";
 
 const HEADER_MIN_WIDTH = 390;
 const HEADER_MAX_WIDTH = 430;
@@ -46,7 +46,7 @@ export function TabScreenHeader({ action }: { action?: TabHeaderAction }) {
   const actionGap = responsiveSize(width, 5, 6);
   const indicatorSize = responsiveSize(width, 8, 10);
   const brandIconSize = responsiveSize(width, 34, 40);
-  const brandTextSize = responsiveSize(width, 14, 16);
+  const brandTextSize = responsiveSize(width, 10, 12);
   const brandLetterSpacing = responsiveSize(width, 5, 7);
   const brandGap = responsiveSize(width, 6, 8);
   const router = useRouter();

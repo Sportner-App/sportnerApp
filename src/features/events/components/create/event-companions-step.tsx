@@ -16,7 +16,8 @@ type GuestDraft = {
 };
 
 type Props = {
-  maxParticipants: number;
+  /** null: sınırsız kontenjan. */
+  maxParticipants: number | null;
   remainingSlots: number;
   guests: GuestDraft[];
   friends: ApiFriend[];
@@ -53,14 +54,18 @@ export function EventCompanionsStep({
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="font-body-bold text-body-sm text-text-primary">
-              {t("companions.slotsAvailable", { count: remainingSlots })}
+              {maxParticipants == null
+                ? t("companions.slotsUnlimited")
+                : t("companions.slotsAvailable", { count: remainingSlots })}
             </Text>
             <Text className="mt-1 font-body text-caption text-text-secondary">
               {t("companions.reservedBreakdown", { count: reserved })}
             </Text>
           </View>
           <Text className="font-body-bold text-heading-sm text-brand-primary">
-            {1 + reserved}/{maxParticipants}
+            {maxParticipants == null
+              ? 1 + reserved
+              : `${1 + reserved}/${maxParticipants}`}
           </Text>
         </View>
       </View>

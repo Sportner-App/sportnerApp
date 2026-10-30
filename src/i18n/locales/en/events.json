@@ -8,7 +8,15 @@
     "today": "Today",
     "tomorrow": "Tomorrow"
   },
-  "weekdaysShort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  "weekdaysShort": [
+    "Sun",
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat"
+  ],
   "duration": {
     "minutes": "{{count}} min",
     "hours": "{{count}} h",
@@ -91,5 +99,16 @@
       "ageRangeInvalid": "Participant age range must be between 13–120 and in order.",
       "paidFeeRequired": "Enter a price greater than 0 for a paid event."
     }
+  },
+  "pendingRequestsCard": {
+    "title_one": "{{count}} person is waiting for your approval",
+    "title_other": "{{count}} people are waiting for your approval",
+    "singleEvent": "They want to join \"{{title}}\"",
+    "multiEvent": "Pending requests in {{count}} of your events",
+    "review": "Review",
+    "pickerTitle": "Which event?",
+    "pickerSubtitle": "Pick the event whose requests you want to review.",
+    "pendingBadge_one": "{{count}} request",
+    "pendingBadge_other": "{{count}} requests"
   }
 }

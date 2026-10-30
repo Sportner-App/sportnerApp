@@ -73,6 +73,7 @@ export const NOTIFICATION_TYPE = {
   eventUpdated: 34,
   eventAttendancePending: 35,
   postMentioned: 36,
+  eventJoinRequested: 37,
 } as const;
 
 const NAMED_ACTION_TYPES = new Set<number>([

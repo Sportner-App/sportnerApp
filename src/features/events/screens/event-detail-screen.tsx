@@ -137,6 +137,25 @@ export function EventDetailScreen() {
     !hasEventEnded(detail.event),
   );
 
+  // Katılım isteği bildirimi/ana sayfa kartından gelindiyse bekleyen
+  // başvurular sheet'i bir kez açılıyor. Başvuru kalmadıysa (ör. başka
+  // cihazdan onaylandı) sessizce etkinlik gösteriliyor.
+  const hasAppliedRequestsFocusRef = useRef(false);
+  useEffect(() => {
+    if (
+      focus !== "requests" ||
+      hasAppliedRequestsFocusRef.current ||
+      detail.isLoading ||
+      !detail.event
+    ) {
+      return;
+    }
+    hasAppliedRequestsFocusRef.current = true;
+    if (pendingCount > 0) {
+      setPendingSheetOpen(true);
+    }
+  }, [detail.event, detail.isLoading, focus, pendingCount]);
+
   const handleOpenPendingRequests = () => {
     if (!detail.isOrganizer) {
       return;

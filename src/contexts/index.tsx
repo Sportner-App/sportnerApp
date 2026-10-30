@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from "react";
 
+import { UpdateAvailablePrompt } from "@/features/app-release/components/update-available-prompt";
 import { AuthProvider } from "@/features/auth/session/auth-provider";
 import { FirstLaunchProvider } from "@/features/first-launch/first-launch-provider";
 import { LanguageSyncBridge } from "@/features/auth/session/language-sync-bridge";
@@ -16,7 +17,9 @@ export function AppProviders({ children }: PropsWithChildren) {
           <AuthProvider>
             <LanguageSyncBridge>
               <PushNotificationsProvider>
-                <PendingAttendancePrompt>{children}</PendingAttendancePrompt>
+                <PendingAttendancePrompt>
+                  <UpdateAvailablePrompt>{children}</UpdateAvailablePrompt>
+                </PendingAttendancePrompt>
               </PushNotificationsProvider>
             </LanguageSyncBridge>
           </AuthProvider>

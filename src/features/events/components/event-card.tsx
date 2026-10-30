@@ -67,7 +67,9 @@ export function EventCard({ event, onPress }: EventCardProps) {
 
   const time = formatClockTime(event.eventDate);
   const duration =
-    event.durationMinutes > 0 ? formatDurationLabel(event.durationMinutes) : "";
+    event.durationMinutes != null && event.durationMinutes > 0
+      ? formatDurationLabel(event.durationMinutes)
+      : "";
   const isEnded = hasEventEnded(event);
   const badge = isEnded
     ? t("eventCard.ended")

@@ -54,7 +54,7 @@ export function EventPrimaryInfo({
   const title = event.title.trim() || t("events:fallback.event");
   const time = formatClockTime(event.eventDate);
   const duration =
-    event.durationMinutes > 0
+    event.durationMinutes != null && event.durationMinutes > 0
       ? event.durationLabel || formatDurationLabel(event.durationMinutes)
       : "";
   const place = event.location.trim();

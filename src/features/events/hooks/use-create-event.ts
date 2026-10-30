@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import {
   CREATE_EVENT_LIMITS,
   CREATE_SPORT_OPTIONS,
-  DEFAULT_EVENT_DURATION_MINUTES,
   DEFAULT_EVENT_MAX_AGE,
   DEFAULT_EVENT_MIN_AGE,
 } from "@/features/events/copy";
@@ -79,8 +78,9 @@ export function useCreateEvent(initialOrganizationId?: string) {
     description: "",
     sportSlug: CREATE_SPORT_OPTIONS[0]?.key ?? "futbol",
     eventDate: getDefaultEventDate(),
-    durationMinutes: DEFAULT_EVENT_DURATION_MINUTES,
+    durationMinutes: null,
     maxPlayers: "10",
+    isUnlimitedPlayers: false,
     hasAgeRestriction: false,
     minParticipantAge: String(DEFAULT_EVENT_MIN_AGE),
     maxParticipantAge: String(DEFAULT_EVENT_MAX_AGE),
@@ -190,8 +190,8 @@ export function useCreateEvent(initialOrganizationId?: string) {
   }, [values.addressText, values.latitude, values.longitude]);
 
   const isStep3Valid = useMemo(
-    () => values.durationMinutes > 0 && values.eventDate.getTime() > Date.now(),
-    [values.durationMinutes, values.eventDate],
+    () => values.eventDate.getTime() > Date.now(),
+    [values.eventDate],
   );
 
   const isStep4Valid = useMemo(() => {
@@ -202,10 +202,14 @@ export function useCreateEvent(initialOrganizationId?: string) {
         feeAmount <= CREATE_EVENT_LIMITS.feeAmountMax
       : true;
 
+    const capacityOk =
+      values.isUnlimitedPlayers ||
+      (Number.isFinite(maxPlayersNumber) &&
+        maxPlayersNumber >= CREATE_EVENT_LIMITS.maxParticipantsMin &&
+        maxPlayersNumber <= CREATE_EVENT_LIMITS.maxParticipantsMax);
+
     return (
-      Number.isFinite(maxPlayersNumber) &&
-      maxPlayersNumber >= CREATE_EVENT_LIMITS.maxParticipantsMin &&
-      maxPlayersNumber <= CREATE_EVENT_LIMITS.maxParticipantsMax &&
+      capacityOk &&
       (!values.hasAgeRestriction ||
         (Number.isInteger(minParticipantAgeNumber) &&
           Number.isInteger(maxParticipantAgeNumber) &&
@@ -221,10 +225,11 @@ export function useCreateEvent(initialOrganizationId?: string) {
     values.feeAmountText,
     values.hasAgeRestriction,
     values.isPaid,
+    values.isUnlimitedPlayers,
   ]);
 
   const companions = useEventCompanions({
-    maxPlayers: maxPlayersNumber,
+    maxPlayers: values.isUnlimitedPlayers ? Infinity : maxPlayersNumber,
     isCapacityValid: isStep4Valid,
   });
 
@@ -265,7 +270,7 @@ export function useCreateEvent(initialOrganizationId?: string) {
         sportId,
         eventDate: values.eventDate.toISOString(),
         durationMinutes: values.durationMinutes,
-        maxParticipants: maxPlayersNumber,
+        maxParticipants: values.isUnlimitedPlayers ? null : maxPlayersNumber,
         // Slider ends (13 / 120) mean "no limit on that side", so they go out as null
         // and never force a birth date on applicants.
         minParticipantAge:

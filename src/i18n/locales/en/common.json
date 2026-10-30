@@ -25,5 +25,11 @@
     "title": "Update required",
     "description": "This version is no longer supported. Update the app to continue.",
     "action": "Update"
+  },
+  "updateAvailable": {
+    "title": "A new version is out",
+    "description": "Sportner {{version}} is available. Update to get the latest features and fixes.",
+    "action": "Update",
+    "later": "Later"
   }
 }

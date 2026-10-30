@@ -1,3 +1,4 @@
+import { FALLBACK_EVENT_DURATION_MINUTES } from "@/features/events/copy";
 import { EVENT_STATUS, PARTICIPANT_STATUS } from "@/features/events/types";
 
 /** Confirmed roster: approved, attended, no-show. Pending applicants are not members yet. */
@@ -49,7 +50,7 @@ export function hasEventEnded(
   event: {
     status: number;
     eventDate: string;
-    durationMinutes: number;
+    durationMinutes: number | null;
   },
   now = Date.now(),
 ): boolean {
@@ -65,7 +66,8 @@ export function hasEventEnded(
     return false;
   }
 
-  return start + event.durationMinutes * 60_000 <= now;
+  const duration = event.durationMinutes ?? FALLBACK_EVENT_DURATION_MINUTES;
+  return start + duration * 60_000 <= now;
 }
 
 /** Activity "geçmiş": start time has passed, or the event was closed. */

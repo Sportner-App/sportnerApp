@@ -17,4 +17,5 @@ export const STORAGE_KEYS = {
   languagePreference: "sportner:language-preference",
   themePreference: "sportner:theme-preference",
   appTourSeen: "sportner:app-tour:v1",
+  dismissedUpdateVersion: "sportner:dismissed-update-version",
 } as const;

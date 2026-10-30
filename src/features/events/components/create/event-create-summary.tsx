@@ -85,14 +85,16 @@ export function EventCreateSummary({
   const duration =
     DURATION_OPTIONS.find((option) => option.minutes === values.durationMinutes)
       ?.label ??
-    (values.durationMinutes > 0
+    (values.durationMinutes != null && values.durationMinutes > 0
       ? t("duration.minutesShort", { count: values.durationMinutes })
       : null);
   const dateLabel = formatSummaryDate(values.eventDate);
   const playerCount = Number(values.maxPlayers);
-  const playersLabel = Number.isFinite(playerCount)
-    ? t("summary.playersLabel", { count: playerCount })
-    : null;
+  const playersLabel = values.isUnlimitedPlayers
+    ? t("summary.playersUnlimited")
+    : Number.isFinite(playerCount)
+      ? t("summary.playersLabel", { count: playerCount })
+      : null;
   const schedule = [dateLabel, duration].filter(Boolean).join("   •   ");
 
   return (

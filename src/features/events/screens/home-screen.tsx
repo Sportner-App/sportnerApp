@@ -26,6 +26,7 @@ import { subscribeToHomeListView } from "@/features/app-shell/components/glass-t
 
 import { EventCard } from "@/features/events/components/event-card";
 import { EventFilterSheet } from "@/features/events/components/home/event-filter-sheet";
+import { PendingRequestsCard } from "@/features/events/components/home/pending-requests-card";
 import { EventsMap } from "@/features/events/components/home/events-map";
 
 type ViewMode = "list" | "map";
@@ -242,6 +243,8 @@ export function HomeScreen() {
         entering={FadeInDown.duration(500).delay(60)}
         className="gap-md"
       >
+        <PendingRequestsCard />
+
         <View className="flex-row items-center">
           <Pressable
             accessibilityRole="button"

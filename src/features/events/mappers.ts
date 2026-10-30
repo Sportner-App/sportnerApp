@@ -15,6 +15,8 @@ import {
   type ParticipantAvatarPreview,
   type ApiPendingAttendanceEvent,
   type PendingAttendanceEvent,
+  type ApiPendingJoinRequestEvent,
+  type PendingJoinRequestEvent,
 } from "@/features/events/types";
 import { formatFullName, formatPersonName } from "@/utils/person";
 import { sportIconForSlug } from "@/features/sports/sports";
@@ -106,7 +108,10 @@ export function mapDetailToEvent(
     durationMinutes: detail.durationMinutes,
     description: detail.description?.trim() || noDescriptionLabel(),
     address: detail.address,
-    durationLabel: formatDurationLabel(detail.durationMinutes),
+    durationLabel:
+      detail.durationMinutes != null
+        ? formatDurationLabel(detail.durationMinutes)
+        : "",
     participants: participants.map(mapParticipant),
     waitlist: [],
     myParticipationStatus: detail.myParticipationStatus,
@@ -131,6 +136,22 @@ export function mapPendingAttendanceEvent(
       userId: participant.userId,
       name: formatPersonName(participant),
       avatarUrl: participant.profileImageUrl,
+    })),
+  };
+}
+
+export function mapPendingJoinRequestEvent(
+  event: ApiPendingJoinRequestEvent,
+): PendingJoinRequestEvent {
+  return {
+    eventId: event.eventId,
+    title: event.title,
+    eventDate: event.eventDate,
+    pendingCount: event.pendingCount,
+    applicants: event.applicants.map((applicant) => ({
+      userId: applicant.userId,
+      name: formatPersonName(applicant),
+      avatarUrl: applicant.profileImageUrl,
     })),
   };
 }

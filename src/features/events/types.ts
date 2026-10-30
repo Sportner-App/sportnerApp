@@ -20,7 +20,8 @@ export type ApiEventListItem = {
   organizerUsername: string | null;
   title: string;
   eventDate: string;
-  durationMinutes: number;
+  /** null: süre belirtilmemiş. */
+  durationMinutes: number | null;
   latitude: number;
   longitude: number;
   address: string;
@@ -57,7 +58,8 @@ export type ApiEventDetail = {
   title: string;
   description: string | null;
   eventDate: string;
-  durationMinutes: number;
+  /** null: süre belirtilmemiş. */
+  durationMinutes: number | null;
   latitude: number;
   longitude: number;
   address: string;
@@ -162,7 +164,8 @@ export type EventSummary = {
   feeAmount: number | null;
   hostName: string;
   status: number;
-  durationMinutes: number;
+  /** null: süre belirtilmemiş. */
+  durationMinutes: number | null;
   myParticipationStatus: number | null;
 };
 
@@ -248,6 +251,23 @@ export type PendingAttendanceEvent = {
   participants: PendingAttendanceParticipant[];
 };
 
+/** API: PendingJoinRequestEventResponse — GET /api/events/mine/pending-requests */
+export type ApiPendingJoinRequestEvent = {
+  eventId: string;
+  title: string;
+  eventDate: string;
+  pendingCount: number;
+  applicants: ApiPendingAttendanceParticipant[];
+};
+
+export type PendingJoinRequestEvent = {
+  eventId: string;
+  title: string;
+  eventDate: string;
+  pendingCount: number;
+  applicants: PendingAttendanceParticipant[];
+};
+
 export type EventListPage = PageSummary<EventSummary>;
 
 /** POST /api/events */
@@ -257,8 +277,10 @@ export type CreateEventPayload = {
   sportId: string;
   /** ISO 8601 */
   eventDate: string;
-  durationMinutes: number;
-  maxParticipants: number;
+  /** null: süre belirtilmemiş. */
+  durationMinutes: number | null;
+  /** null: sınırsız kontenjan. */
+  maxParticipants: number | null;
   minParticipantAge: number | null;
   maxParticipantAge: number | null;
   participantGender: number | null;
@@ -283,8 +305,11 @@ export type CreateEventFormValues = {
   description: string;
   sportSlug: string;
   eventDate: Date;
-  durationMinutes: number;
+  /** null: süre belirtilmemiş. */
+  durationMinutes: number | null;
   maxPlayers: string;
+  /** Sınırsız kontenjan: maxPlayers yok sayılır, API'ye null gider. */
+  isUnlimitedPlayers: boolean;
   /** Off by default: events are open to all ages unless the organizer opts in. */
   hasAgeRestriction: boolean;
   minParticipantAge: string;

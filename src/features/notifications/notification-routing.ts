@@ -63,6 +63,11 @@ export function resolveNotificationRoute(data: NotificationRouteData): string {
     if (notificationType === NOTIFICATION_TYPE.eventAttendancePending) {
       return `/events/${entityId}?focus=attendance`;
     }
+    // Katılım isteği: organizatörün işi onay/ret, bu yüzden bekleyen
+    // başvurular sheet'i doğrudan açılıyor.
+    if (notificationType === NOTIFICATION_TYPE.eventJoinRequested) {
+      return `/events/${entityId}?focus=requests`;
+    }
     return `/events/${entityId}`;
   }
   if (entityType === NOTIFICATION_ENTITY.post) {

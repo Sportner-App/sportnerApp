@@ -68,6 +68,10 @@ export function PushNotificationsProvider({ children }: PropsWithChildren) {
       const responseId = response.notification.request.identifier;
       if (handledResponseId.current === responseId) return;
       handledResponseId.current = responseId;
+      // getLastNotificationResponseAsync her açılışta (JS reload dahil) aynı
+      // yanıtı döndürüyor; ref ise reload'da sıfırlanıyor. Temizlemezsek
+      // kullanıcı her açılışta son dokunduğu bildirimin ekranına atılıyor.
+      Notifications.clearLastNotificationResponse();
 
       const notificationId =
         response.notification.request.content.data.notificationId;

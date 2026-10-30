@@ -18,7 +18,7 @@ export type EventGuestDraft = {
 };
 
 type Options = {
-  /** Organizatör dahil toplam kontenjan. */
+  /** Organizatör dahil toplam kontenjan; sınırsızsa Infinity. */
   maxPlayers: number;
   /** Kontenjan alanı geçerli mi; değilse fazla seçimler kırpılmaz. */
   isCapacityValid: boolean;

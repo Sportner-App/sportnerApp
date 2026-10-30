@@ -91,10 +91,13 @@ export function OrganizerManageSheet({
       item.userId != null &&
       item.status === PARTICIPANT_STATUS.pending,
   );
+  // Organizatör de kadroda bir katılımcı olarak duruyor; kendi yoklamasını
+  // almak ya da kendini puanlamak anlamsız, listeden çıkarıyoruz.
   const approved = event.participants.filter(
     (item) =>
       !item.isGuest &&
       item.userId != null &&
+      item.userId !== event.organizerUserId &&
       (item.status === PARTICIPANT_STATUS.approved ||
         item.status === PARTICIPANT_STATUS.attended ||
         item.status === PARTICIPANT_STATUS.noShow),
