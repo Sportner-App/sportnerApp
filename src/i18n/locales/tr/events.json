@@ -109,5 +109,10 @@
     "pickerTitle": "Hangi etkinliğe bakalım?",
     "pickerSubtitle": "Başvuruları onaylamak istediğin etkinliği seç.",
     "pendingBadge": "{{count}} istek"
+  },
+  "shareMomentsCard": {
+    "title": "{{title}} nasıldı?",
+    "subtitle": "Etkinlikten bir kare paylaş 📸",
+    "dismiss": "Kapat"
   }
 }

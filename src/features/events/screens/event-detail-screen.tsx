@@ -32,6 +32,7 @@ import { AboutSection } from "@/features/events/components/detail/about-section"
 import { BirthDateRequiredSheet } from "@/features/events/components/detail/birth-date-required-sheet";
 import { GenderRequiredSheet } from "@/features/events/components/detail/gender-required-sheet";
 import { EventQnASection } from "@/features/events/components/detail/event-qna-section";
+import { EventMomentsSection } from "@/features/events/components/detail/event-moments-section";
 import { EventDetailBackdrop } from "@/features/events/components/detail/event-detail-backdrop";
 import {
   EVENT_DETAIL_TOP_BAR_HEIGHT,
@@ -65,7 +66,9 @@ export function EventDetailScreen() {
 
   useEffect(() => {
     if (
-      (focus !== "questions" && focus !== "attendance") ||
+      (focus !== "questions" &&
+        focus !== "attendance" &&
+        focus !== "moments") ||
       hasAppliedFocusRef.current ||
       detail.isLoading ||
       !detail.event
@@ -76,6 +79,12 @@ export function EventDetailScreen() {
     // Yoklama, organizatör panelinin içinde; panel de katılımcılar sekmesinde
     // duruyor. Sekme gizliyken (display: none) sheet de görünmüyor, bu yüzden
     // önce sekmeyi açıyoruz.
+    if (focus === "moments") {
+      // Paylaşım daveti: bölüm genel bakış sekmesinde, oraya kaydırıyoruz.
+      setActiveTab("overview");
+      const timeout = setTimeout(() => scrollToSection("moments"), 400);
+      return () => clearTimeout(timeout);
+    }
     setActiveTab(focus === "attendance" ? "participants" : "questions");
     const timeout = setTimeout(() => scrollToSection("tabs"), 250);
     return () => clearTimeout(timeout);
@@ -162,6 +171,31 @@ export function EventDetailScreen() {
     }
     setPendingSheetOpen(true);
   };
+
+  const momentsEnded = detail.event ? hasEventEnded(detail.event) : false;
+  const canShareMoments = Boolean(
+    detail.event &&
+    momentsEnded &&
+    detail.event.status !== EVENT_STATUS.cancelled &&
+    (detail.isOrganizer ||
+      hasApprovedParticipation(detail.event.myParticipationStatus)),
+  );
+  const shareMoments = () => {
+    if (!detail.event) return;
+    router.push({
+      pathname: "/posts/create",
+      params: { eventId: detail.event.id, eventTitle: detail.event.title },
+    });
+  };
+  const momentsSection = detail.event ? (
+    <View ref={registerSection("moments")}>
+      <EventMomentsSection
+        eventId={detail.event.id}
+        eventTitle={detail.event.title}
+        canShare={canShareMoments}
+      />
+    </View>
+  ) : null;
 
   const openChat = () => {
     if (detail.event?.conversationId) {
@@ -302,6 +336,9 @@ export function EventDetailScreen() {
               className="mt-lg gap-lg"
               style={{ display: activeTab === "overview" ? "flex" : "none" }}
             >
+              {/* Bitmiş etkinlikte asıl iş paylaşmak: bölüm en üste çıkıyor. */}
+              {momentsEnded ? momentsSection : null}
+
               <View className="rounded-3xl border border-white/10 bg-background-secondary/55 p-4">
                 <EventOrganizerSection
                   event={detail.event}
@@ -316,6 +353,30 @@ export function EventDetailScreen() {
               </View>
 
               <LocationMap event={detail.event} />
+
+              {detail.event.district && detail.event.city ? (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() =>
+                    router.push({
+                      pathname: "/leaderboards",
+                      params: {
+                        city: detail.event!.city!,
+                        district: detail.event!.district!,
+                      },
+                    })
+                  }
+                  className="flex-row items-center gap-3 rounded-3xl border border-white/10 bg-background-secondary/55 p-4 active:opacity-80"
+                >
+                  <FontAwesome6 name="crown" size={14} color={themeColors.brand.primary} />
+                  <Text className="flex-1 font-body-bold text-body-sm text-text-primary">
+                    {t("leaderboards:eventRow", { district: detail.event.district })}
+                  </Text>
+                  <FontAwesome6 name="chevron-right" size={11} color={themeColors.text.tertiary} />
+                </Pressable>
+              ) : null}
+
+              {momentsEnded ? null : momentsSection}
 
               {!detail.isOrganizer &&
               hasApprovedParticipation(detail.event.myParticipationStatus) &&
@@ -386,6 +447,7 @@ export function EventDetailScreen() {
                     router.push(`/events/${detail.event?.id}/reviews`)
                   }
                   autoOpenTab={organizerAutoOpenTab}
+                  onShareMoments={canShareMoments ? shareMoments : undefined}
                   onRateUser={(userId) => {
                     if (!detail.event) return;
                     router.push({

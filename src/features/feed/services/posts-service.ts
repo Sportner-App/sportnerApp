@@ -4,24 +4,6 @@ import type { CursorPagedResult } from "@/types/api";
 import type { ApiComment, ApiPost } from "@/features/feed/types";
 import type { PickedMedia } from "@/utils/media-picker";
 
-export async function getHomeFeed(before?: string) {
-  const response = await apiClient.get<CursorPagedResult<ApiPost>>(
-    "/api/feed",
-    {
-      params: { before, limit: 20 },
-    },
-  );
-  return toCursorPage(response.data, normalizePost);
-}
-
-export async function getExploreFeed(before?: string) {
-  const response = await apiClient.get<CursorPagedResult<ApiPost>>(
-    "/api/feed/explore",
-    { params: { before, limit: 20 } },
-  );
-  return toCursorPage(response.data, normalizePost);
-}
-
 export async function explorePosts(limit = 36, friendsOnly = false) {
   const response = await apiClient.get<ApiPost[]>("/api/explore/posts", {
     params: { limit, friendsOnly: friendsOnly || undefined },
@@ -39,7 +21,16 @@ function normalizePost(post: ApiPost): ApiPost {
     media,
     mediaCount: post.mediaCount ?? media.length,
     mentions: post.mentions ?? [],
+    event: post.event ?? null,
   };
+}
+
+export async function listEventPosts(eventId: string, before?: string) {
+  const response = await apiClient.get<CursorPagedResult<ApiPost>>(
+    `/api/events/${eventId}/posts`,
+    { params: { before, limit: 20 } },
+  );
+  return toCursorPage(response.data, normalizePost);
 }
 
 export async function getPost(postId: string) {
@@ -51,6 +42,7 @@ export async function createPost(
   content: string,
   files: PickedMedia[] = [],
   mentionedUserIds: string[] = [],
+  eventId?: string,
 ) {
   const form = new FormData();
   const caption = content.trim();
@@ -61,6 +53,10 @@ export async function createPost(
   // Multipart istek: her etiket ayrı bir alan olarak gidiyor.
   for (const userId of mentionedUserIds) {
     form.append("mentionedUserIds", userId);
+  }
+
+  if (eventId) {
+    form.append("eventId", eventId);
   }
 
   for (const file of files) {

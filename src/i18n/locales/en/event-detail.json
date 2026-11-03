@@ -279,5 +279,12 @@
   "detailPrompt": {
     "saveFailedTitle": "Could not save",
     "saveFailedDescription": "Please try again."
+  },
+  "moments": {
+    "title": "Event moments",
+    "empty": "No one has shared yet. Be the first!",
+    "count_one": "{{count}} post",
+    "count_other": "{{count}} posts",
+    "share": "Share the event 📸"
   }
 }

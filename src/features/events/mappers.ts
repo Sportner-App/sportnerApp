@@ -122,6 +122,8 @@ export function mapDetailToEvent(
     organizationId: detail.organizationId ?? null,
     organizationName: detail.organizationName ?? null,
     canCancel: detail.canCancel === true,
+    district: detail.district ?? null,
+    city: detail.city ?? null,
   };
 }
 

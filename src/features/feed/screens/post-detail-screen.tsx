@@ -25,6 +25,7 @@ import {
 } from "@/components";
 import { MentionSuggestionList } from "@/features/feed/components/mention-suggestion-list";
 import { MentionText } from "@/features/feed/components/mention-text";
+import { PostEventTag } from "@/features/feed/components/post-event-tag";
 import { useMentionComposer } from "@/features/feed/hooks/use-mention-composer";
 import { CommentThread } from "@/features/feed/components/comment-thread";
 import { useToast } from "@/contexts";
@@ -242,6 +243,7 @@ export function PostDetailScreen() {
           </Pressable>
 
           <View className="gap-4 px-6">
+            {post.event ? <PostEventTag event={post.event} /> : null}
             {post.content?.trim() ? (
               <MentionText
                 content={post.content}

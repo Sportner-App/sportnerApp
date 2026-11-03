@@ -279,5 +279,12 @@
   "detailPrompt": {
     "saveFailedTitle": "Bilgi kaydedilemedi",
     "saveFailedDescription": "Lütfen tekrar dene."
+  },
+  "moments": {
+    "title": "Etkinlikten kareler",
+    "empty": "Henüz kimse paylaşmadı. İlk kareyi sen paylaş!",
+    "count_one": "{{count}} paylaşım",
+    "count_other": "{{count}} paylaşım",
+    "share": "Etkinliği paylaş 📸"
   }
 }

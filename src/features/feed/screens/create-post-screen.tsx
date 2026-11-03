@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -33,6 +33,11 @@ const MAX_PHOTOS = 10;
 
 export function CreatePostScreen() {
   const router = useRouter();
+  // Etkinlikten ("Maçı paylaş") gelindiyse gönderi o etkinliğe bağlanıyor.
+  const { eventId, eventTitle } = useLocalSearchParams<{
+    eventId?: string;
+    eventTitle?: string;
+  }>();
   const { showToast } = useToast();
   const { t } = useTranslation(["feed", "social"]);
   const { chooseSource, sourceSheet } = useMediaSourceChoice();
@@ -101,7 +106,12 @@ export function CreatePostScreen() {
 
     setSaving(true);
     try {
-      const post = await createPost(content, photos, mention.mentionedUserIds);
+      const post = await createPost(
+        content,
+        photos,
+        mention.mentionedUserIds,
+        eventId,
+      );
       if (!post?.id) {
         throw new Error(t("feed:create.toasts.createFailedDescription"));
       }
@@ -157,6 +167,22 @@ export function CreatePostScreen() {
       footer={sourceSheet}
       contentClassName="gap-4 px-6 pt-3"
     >
+      {eventId && eventTitle ? (
+        <View className="flex-row items-center gap-2 self-start rounded-pill bg-brand-primary/15 px-3 py-1.5">
+          <FontAwesome6
+            name="location-dot"
+            size={11}
+            color={themeColors.brand.primary}
+          />
+          <Text
+            numberOfLines={1}
+            className="shrink font-body-bold text-caption text-brand-primary"
+          >
+            {t("feed:create.forEvent", { title: eventTitle })}
+          </Text>
+        </View>
+      ) : null}
+
       {/* Etiketlerken medya alanı yerini kişi listesine bırakır; giriş alanı
           yerinde kalır. Yüzen kutu ekranın altında kırpılıyordu. */}
       {mention.isPicking ? (

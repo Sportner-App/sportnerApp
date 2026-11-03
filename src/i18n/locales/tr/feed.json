@@ -1,25 +1,13 @@
 {
-  "header": {
-    "title": "AKIŞ",
-    "write": "Yaz"
-  },
-  "tabs": {
-    "home": "Takip",
-    "explore": "Keşfet"
-  },
-  "loading": "Akış yükleniyor",
-  "empty": "Henüz gönderi yok.",
-  "toasts": {
-    "loadFailed": "Akış yüklenemedi"
-  },
   "create": {
     "header": "YENİ GÖNDERİ",
     "title": "Fotoğrafını paylaş",
-    "placeholder": "Antrenman, maç, anı…",
+    "placeholder": "Antrenman, etkinlik, anı…",
     "addPhoto": "Fotoğraf ekle",
     "photosSelected": "{{count}} fotoğraf seçildi",
     "photoHint": "Kameradan çek veya galeriden seç · en fazla 10",
     "share": "Paylaş",
+    "forEvent": "{{title}} için paylaşılıyor",
     "toasts": {
       "created": "Paylaşıldı",
       "createFailed": "Paylaşılamadı",

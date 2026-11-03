@@ -31,6 +31,8 @@ type OrganizerPanelProps = {
   onOpenUser: (userId: string) => void;
   onOpenReviews: () => void;
   onRateUser: (userId: string) => void;
+  /** Yoklama bitince "Maçı paylaş"; değerlendirme bildirimi bu sekmeyi açıyor. */
+  onShareMoments?: () => void;
   /**
    * Bildirimden gelen istek (ör. "yoklama bekliyor"). Panel hazır olduğunda
    * yönetim sheet'ini bu sekmede bir kez açar; kullanıcı kapattıktan sonra
@@ -55,6 +57,7 @@ export function OrganizerPanel({
   onOpenUser,
   onOpenReviews,
   onRateUser,
+  onShareMoments,
   autoOpenTab = null,
 }: OrganizerPanelProps) {
   const { t } = useTranslation("eventDetail");
@@ -186,6 +189,13 @@ export function OrganizerPanel({
             size="sm"
             onPress={onOpenReviews}
           />
+          {onShareMoments ? (
+            <Button
+              label={t("moments.share")}
+              size="sm"
+              onPress={onShareMoments}
+            />
+          ) : null}
         </View>
       ) : null}
 

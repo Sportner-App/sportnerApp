@@ -40,7 +40,6 @@ export type TabHeaderAction = {
 export function TabScreenHeader({ action }: { action?: TabHeaderAction }) {
   const { t } = useTranslation("components");
   const { width } = useWindowDimensions();
-  // 4 ikon sığsın diye küçültüldü; 390pt ekranda markaya ~26pt pay kalıyor.
   const actionSize = responsiveSize(width, 36, 40);
   const actionIconSize = responsiveSize(width, 15, 16);
   const actionGap = responsiveSize(width, 5, 6);

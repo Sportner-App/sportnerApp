@@ -223,3 +223,23 @@ imzalıyor (Play App Signing). Bu imzanın **SHA-1**'ini
 **Google Cloud projesi 1000243667995** içindeki Android OAuth istemcisine
 eklemek gerekiyor. Aksi halde mağazadan inen sürümde Google ile giriş
 çalışmaz — geliştirme imzasıyla çalışması yanıltmasın.
+
+### SHA-1'ler eklendi (1 Kas 2026)
+
+Yapıldı. Sayfa taşındı: artık `Google Play ile korunanlar > Uygulama
+imzalama` altında. Bulamazsan Play Console'un üst aramasına "imzalama" yaz —
+Google bu sayfayı sık taşıyor.
+
+Google Cloud'daki Android OAuth istemcisinde SHA-1 alanı **tek**; ikinci bir
+parmak izi aynı istemciye eklenemiyor, aynı paket adıyla yeni istemci açmak
+gerekiyor. Projede şu an üç Android istemcisi var:
+
+| İstemci | Hangi imza | Ne zaman devreye girer |
+|---|---|---|
+| Sportner Android | EAS yükleme anahtarı | EAS'ten indirilen APK doğrudan kurulursa |
+| Sportner Android (Play) | Play uygulama imzalama anahtarı | Mağazadan inen her sürüm (dahili/kapalı test dahil) |
+| Sportner Android Debug | Yerel hata ayıklama anahtarı | `expo run:android` |
+
+Play'deki "önceki uygulama imzalama anahtarları" listesinde 16 Eki 2026
+tarihli bir kayıt duruyor ama yükleme tabanı %0 — kimse o anahtarla
+imzalanmış sürümü kullanmıyor, dikkate alınmadı.

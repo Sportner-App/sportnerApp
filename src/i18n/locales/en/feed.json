@@ -1,25 +1,13 @@
 {
-  "header": {
-    "title": "FEED",
-    "write": "Write"
-  },
-  "tabs": {
-    "home": "Following",
-    "explore": "Explore"
-  },
-  "loading": "Loading feed",
-  "empty": "No posts yet.",
-  "toasts": {
-    "loadFailed": "Could not load feed"
-  },
   "create": {
     "header": "NEW POST",
     "title": "Share your photo",
-    "placeholder": "Training, match, moment…",
+    "placeholder": "Training, event, moment…",
     "addPhoto": "Add photo",
     "photosSelected": "{{count}} photos selected",
     "photoHint": "Take a photo or choose from gallery · up to 10",
     "share": "Share",
+    "forEvent": "Sharing for {{title}}",
     "toasts": {
       "created": "Shared",
       "createFailed": "Could not share",

@@ -1,4 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Pressable, useWindowDimensions, View } from "react-native";
@@ -15,6 +16,7 @@ import { POST_MEDIA_TYPE } from "@/features/feed/types";
 import { lightImpact } from "@/utils/haptics";
 import { resolveMediaUrl } from "@/utils/media-url";
 import { formatRelativeTime } from "@/utils/relative-time";
+import { sportIconForSlug } from "@/features/sports/sports";
 import { displayHandle } from "@/utils/person";
 
 type DiscoverPostProps = {
@@ -41,6 +43,7 @@ export function DiscoverPost({
   onAuthorPress,
   isFriend,
 }: DiscoverPostProps) {
+  const router = useRouter();
   const { width } = useWindowDimensions();
   /** Tam bleed akış: medya ekran genişliğini kullanır. */
   const mediaWidth = width;
@@ -210,6 +213,28 @@ export function DiscoverPost({
             )}
           </View>
         )}
+
+        {/* Etkinlikten paylaşılan kare: hangi maçtan olduğu ve oraya geçiş. */}
+        {post.event ? (
+          <Pressable
+            accessibilityRole="link"
+            hitSlop={HIT_SLOP}
+            onPress={() => router.push(`/events/${post.event?.id}`)}
+            className="absolute left-3 top-3 max-w-[75%] flex-row items-center gap-1.5 rounded-pill bg-background-primary/75 px-2.5 py-1.5 active:opacity-80"
+          >
+            <FontAwesome6
+              name={sportIconForSlug(post.event.sportSlug)}
+              size={11}
+              color={themeColors.brand.primary}
+            />
+            <Text
+              numberOfLines={1}
+              className="shrink font-body-bold text-caption text-text-primary"
+            >
+              {post.event.title}
+            </Text>
+          </Pressable>
+        ) : null}
 
         {heartBurst ? (
           <View className="absolute inset-0 items-center justify-center">

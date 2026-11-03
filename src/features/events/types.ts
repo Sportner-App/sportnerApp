@@ -79,6 +79,8 @@ export type ApiEventDetail = {
   organizationId?: string | null;
   organizationName?: string | null;
   canCancel?: boolean;
+  district?: string | null;
+  city?: string | null;
 };
 
 /** API: ParticipantResponse */
@@ -214,6 +216,9 @@ export type EventDetail = EventSummary & {
   organizationId?: string | null;
   organizationName?: string | null;
   canCancel?: boolean;
+  /** Adresten çıkarılan semt/şehir; semt sıralamasına bağlantı için. */
+  district?: string | null;
+  city?: string | null;
 };
 
 export type EventActionResult<T = ApiApplyToEventResponse | null> = {

@@ -110,5 +110,10 @@
     "pickerSubtitle": "Pick the event whose requests you want to review.",
     "pendingBadge_one": "{{count}} request",
     "pendingBadge_other": "{{count}} requests"
+  },
+  "shareMomentsCard": {
+    "title": "How was {{title}}?",
+    "subtitle": "Share a moment from the event 📸",
+    "dismiss": "Dismiss"
   }
 }

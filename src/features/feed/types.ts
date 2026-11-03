@@ -30,6 +30,18 @@ export type ApiPost = {
   createdAt: string;
   media: ApiPostMedia[];
   mentions: ApiPostMention[];
+  /** Gönderinin paylaşıldığı etkinlik; bağımsız gönderilerde null. */
+  event?: ApiPostEvent | null;
+};
+
+/** API: PostEventResponse — gönderi kartındaki etkinlik etiketi. */
+export type ApiPostEvent = {
+  id: string;
+  title: string;
+  sportName: string;
+  sportSlug: string;
+  eventDate: string;
+  address: string;
 };
 
 /**
