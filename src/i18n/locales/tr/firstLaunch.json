@@ -8,7 +8,7 @@
   },
   "intro1": {
     "title": "KEŞFET,\nHAREKETE GEÇ.",
-    "subtitle": "Yakınındaki açık maçları, sporcuları ve sana uygun etkinlikleri tek ekranda bul.",
+    "subtitle": "Yakınındaki açık etkinlikleri, sporcuları ve sana uygun buluşmaları tek ekranda bul.",
     "next": "Devam Et"
   },
   "intro2": {
@@ -18,7 +18,7 @@
   },
   "intro3": {
     "title": "ARKADAŞLARINLA\nSOHBET ET.",
-    "subtitle": "Maçtan önce plan yap, sonrasında konuşmaya devam et. Arkadaşların hep bir mesaj uzağında.",
+    "subtitle": "Etkinlikten önce plan yap, sonrasında konuşmaya devam et. Arkadaşların hep bir mesaj uzağında.",
     "next": "Devam Et"
   },
   "intro4": {
@@ -34,18 +34,18 @@
     "welcome": {
       "live": "LIVE",
       "athletesNearby": "120+ sporcu",
-      "openMatches": "8 açık maç"
+      "openMatches": "8 açık etkinlik"
     },
     "events": {
       "today": "BUGÜN",
-      "openMatchesCount": "4 açık maç",
+      "openMatchesCount": "4 açık etkinlik",
       "venueTurf": "Halı saha",
       "openBadge": "AÇIK",
       "spotsRemaining": "2 yer kaldı · bu akşam",
       "neighborhoodOpen": "Mahallede şimdi açık"
     },
     "people": {
-      "eveningMatch": "Akşam maçı",
+      "eveningMatch": "Akşam koşusu",
       "createdBadge": "OLUŞTU",
       "invitesSent": "3 davet gönderildi",
       "teamReady": "Takımın hazır"

@@ -57,6 +57,7 @@ export type ApiMyProfile = {
   statistics: ProfileStatistics | null;
   email: string | null;
   isEmailVerified: boolean;
+  showOnLeaderboards?: boolean;
 };
 
 /** API: PublicProfileResponse — GET /api/user-profiles/{userId} */
@@ -115,4 +116,30 @@ export type ProfileMenuGroup = {
   key: string;
   title: string;
   items: ProfileMenuItem[];
+};
+
+/** API: SportReportCardResponse — GET /api/user-profiles/{userId}/report-card */
+export type SportReportCard = {
+  year: number;
+  eventsPlayed: number;
+  eventsOrganized: number;
+  minutesPlayed: number;
+  sportsCount: number;
+  teammatesCount: number;
+  /** 0–100 */
+  attendanceRate: number;
+  averageRating: number;
+  totalReviews: number;
+  topSports: { name: string; slug: string; eventsPlayed: number }[];
+};
+
+export type Streak = {
+  /** Arka arkaya en az bir etkinliğe katılınan hafta sayısı. */
+  currentStreak: number;
+  longestStreak: number;
+  /** 1–5 */
+  weeklyGoal: number;
+  thisWeekCount: number;
+  /** Eskiden yeniye 8 hafta; weekStart pazartesi (YYYY-MM-DD). */
+  recentWeeks: { weekStart: string; count: number }[];
 };

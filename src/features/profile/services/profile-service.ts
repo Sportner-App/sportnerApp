@@ -4,6 +4,8 @@ import { ApiError, getApiErrorMessage } from "@/lib/api/errors";
 import type {
   ApiMyProfile,
   ApiPublicProfile,
+  SportReportCard,
+  Streak,
   UserProfile,
 } from "@/features/profile/types";
 import { mapMyProfile, mapPublicProfile } from "@/features/profile/mappers";
@@ -46,6 +48,32 @@ export async function getPublicProfile(userId: string): Promise<UserProfile> {
     throw new ProfileNotFoundError();
   }
   return mapPublicProfile(response.data);
+}
+
+export async function getSportReportCard(
+  userId: string,
+): Promise<SportReportCard | null> {
+  const response = await apiClient.get<SportReportCard>(
+    `/api/user-profiles/${userId}/report-card`,
+  );
+  return response.data ?? null;
+}
+
+export async function getStreak(userId: string): Promise<Streak | null> {
+  const response = await apiClient.get<Streak>(
+    `/api/user-profiles/${userId}/streak`,
+  );
+  return response.data ?? null;
+}
+
+export async function updateWeeklyGoal(
+  weeklyGoal: number,
+): Promise<Streak | null> {
+  const response = await apiClient.put<Streak>(
+    "/api/user-profiles/me/weekly-goal",
+    { weeklyGoal },
+  );
+  return response.data ?? null;
 }
 
 export async function updateDisplayName(
@@ -93,6 +121,18 @@ export async function updateBio(bio: string | null) {
 
 export async function updateCity(city: string | null) {
   await apiClient.put("/api/user-profiles/me/location", { city });
+}
+
+export async function updateLeaderboardVisibility(showOnLeaderboards: boolean) {
+  await apiClient.put("/api/user-profiles/me/leaderboard-visibility", {
+    showOnLeaderboards,
+  });
+}
+
+/** Sıralamada görünme tercihi; profil yanıtında yoksa varsayılan açık. */
+export async function getLeaderboardVisibility(): Promise<boolean> {
+  const response = await apiClient.get<ApiMyProfile>("/api/user-profiles/me");
+  return response.data?.showOnLeaderboards ?? true;
 }
 
 export async function updateVisibility(isProfilePublic: boolean) {

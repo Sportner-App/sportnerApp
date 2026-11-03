@@ -27,6 +27,9 @@ import { subscribeToHomeListView } from "@/features/app-shell/components/glass-t
 import { EventCard } from "@/features/events/components/event-card";
 import { EventFilterSheet } from "@/features/events/components/home/event-filter-sheet";
 import { PendingRequestsCard } from "@/features/events/components/home/pending-requests-card";
+import { ShareMomentsCard } from "@/features/events/components/home/share-moments-card";
+import { ProgressStrip } from "@/features/progress/components/progress-strip";
+import { RecapRevealModal } from "@/features/recaps/components/recap-reveal-modal";
 import { EventsMap } from "@/features/events/components/home/events-map";
 
 type ViewMode = "list" | "map";
@@ -244,6 +247,9 @@ export function HomeScreen() {
         className="gap-md"
       >
         <PendingRequestsCard />
+        <ShareMomentsCard />
+        <ProgressStrip />
+        <RecapRevealModal />
 
         <View className="flex-row items-center">
           <Pressable

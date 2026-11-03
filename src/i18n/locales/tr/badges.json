@@ -14,5 +14,22 @@
   "questBody": "{{description}} · %{{percent}}",
   "toasts": {
     "loadFailedTitle": "Yüklenemedi"
+  },
+  "challenges": {
+    "title": "CHALLENGE'LAR",
+    "homeTitle": "Bu ayın challenge'ları",
+    "seeAll": "Tümü",
+    "intro": "Her ay yeni challenge'lar açılıyor. Katıl, ay bitmeden hedefi tamamla ve madalyayı kap. Yoklamada \"geldi\" işaretlendiğin ve düzenlediğin etkinlikler sayılır.",
+    "empty": "Şu an açık challenge yok.",
+    "join": "Katıl",
+    "leave": "Ayrıl",
+    "completed": "Tamamlandı",
+    "meta_one": "{{days}} gün kaldı · {{count}} katılımcı",
+    "meta_other": "{{days}} gün kaldı · {{count}} katılımcı",
+    "finishers_one": "{{count}} kişi tamamladı",
+    "finishers_other": "{{count}} kişi tamamladı",
+    "medalsTitle_one": "Madalyalar ({{count}})",
+    "medalsTitle_other": "Madalyalar ({{count}})",
+    "actionFailed": "İşlem yapılamadı"
   }
 }

@@ -23,6 +23,9 @@ import { ProfileAboutSection } from "@/features/profile/components/profile-about
 import { ProfileHero } from "@/features/profile/components/profile-hero";
 import { ReviewsSection } from "@/features/profile/components/reviews-section";
 import { SportsSection } from "@/features/profile/components/sports-section";
+import { SportReportCard } from "@/features/profile/components/sport-report-card";
+import { ChallengeMedals } from "@/features/challenges/components/challenge-medals";
+import { DistrictCrowns } from "@/features/leaderboards/components/district-crowns";
 import { StatsSection } from "@/features/profile/components/stats-section";
 
 import {
@@ -91,7 +94,6 @@ export function ProfileScreen() {
       edit: "/profile/edit",
       sports: "/profile/sports",
       friends: "/friends",
-      feed: "/feed",
       badges: "/badges",
       notifications: "/notifications",
       "notification-settings": "/notifications/settings",
@@ -121,6 +123,13 @@ export function ProfileScreen() {
             profile={profile}
             onEdit={() => router.push("/profile/edit")}
           />
+          <SportReportCard
+            userId={profile.userId}
+            name={profile.fullName}
+            isOwnProfile
+          />
+          <ChallengeMedals userId={profile.userId} linkToChallenges />
+          <DistrictCrowns userId={profile.userId} />
           <ProfileAboutSection
             bio={profile.bio}
             onFriendsPress={() => router.push("/friends")}
@@ -144,7 +153,9 @@ export function ProfileScreen() {
           />
 
           {activeTab === "activity" ? (
-            <StatsSection statistics={profile.statistics} interactive />
+            <>
+              <StatsSection statistics={profile.statistics} interactive />
+            </>
           ) : null}
 
           {activeTab === "reviews" ? (

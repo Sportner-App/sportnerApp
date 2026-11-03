@@ -18,7 +18,8 @@ export type NotificationGroupKey =
   | "posts"
   | "messages"
   | "organizations"
-  | "achievements";
+  | "achievements"
+  | "reminders";
 
 export type NotificationGroup = {
   key: NotificationGroupKey;
@@ -52,6 +53,7 @@ export const NOTIFICATION_GROUPS = [
       T.eventUpdated,
       T.eventAttendancePending,
       T.eventJoinRequested,
+      T.eventSharePrompt,
     ],
   },
   {
@@ -85,7 +87,27 @@ export const NOTIFICATION_GROUPS = [
   {
     key: "achievements",
     icon: "trophy",
-    types: [T.badgeEarned, T.questCompleted],
+    types: [
+      T.badgeEarned,
+      T.questCompleted,
+      T.challengeCompleted,
+      T.districtLeaderTaken,
+      T.districtCrowned,
+      T.monthlyRecapReady,
+      T.yearlyRecapReady,
+    ],
+  },
+  {
+    key: "reminders",
+    icon: "fire",
+    types: [
+      T.streakAtRisk,
+      T.weeklyGoalNudge,
+      T.newEventsNearby,
+      T.comeBack,
+      T.challengesLaunched,
+      T.challengeEndingSoon,
+    ],
   },
 ] as const satisfies readonly NotificationGroup[];
 

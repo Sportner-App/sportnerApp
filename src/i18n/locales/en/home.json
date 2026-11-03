@@ -122,5 +122,29 @@
     },
     "skillLabel": "Level",
     "organizerGenderLabel": "Organizer gender"
+  },
+  "progress": {
+    "title": "PROGRESS",
+    "streakChip_one": "{{count}} week",
+    "streakChip_other": "{{count}} weeks",
+    "challengesChip_one": "{{count}} challenge",
+    "challengesChip_other": "{{count}} challenges",
+    "rankChip": "{{district}} #{{rank}}",
+    "rankChipUnranked": "{{district}}",
+    "nudge": {
+      "streakTitle": "Your streak is at risk",
+      "streakBody_one": "You're on a {{count}}-week streak. Join an event before Sunday night.",
+      "streakBody_other": "You're on a {{count}}-week streak. Join an event before Sunday night.",
+      "challengeTitle": "This month's challenges are live",
+      "challengeBody": "Join, take part in events to progress and earn the medal.",
+      "cta": "View",
+      "dismiss": "Dismiss",
+      "recapTitle": "Your {{month}} recap is ready 📊",
+      "recapBody": "Look back at your month and share it."
+    },
+    "recapRow": {
+      "title": "Monthly recap",
+      "body": "Each month's events, partner and medals"
+    }
   }
 }

@@ -1,0 +1,166 @@
+{
+  "title": "MONTHLY RECAP",
+  "loading": "Preparing your recap",
+  "kicker": "{{month}} recap",
+  "heroLabel_one": "event joined",
+  "heroLabel_other": "events joined",
+  "deltaUp": "+{{count}} vs last month",
+  "deltaDown": "−{{count}} vs last month",
+  "stats": {
+    "hours": "hours",
+    "sports": "sports",
+    "teammates": "teammates"
+  },
+  "highlights": {
+    "sport": "Top sport",
+    "sportValue_one": "{{sport}} · {{count}} event",
+    "sportValue_other": "{{sport}} · {{count}} events",
+    "partner": "Played most with",
+    "partnerValue_one": "{{name}} · {{count}} event",
+    "partnerValue_other": "{{name}} · {{count}} events",
+    "district": "Top district",
+    "weekday": "Favourite day"
+  },
+  "crown": "{{district}} crown",
+  "share": "Share to your story",
+  "shareFailed": "Couldn't share the image",
+  "shareUnavailable": "Sharing isn't available on this device.",
+  "previous": "Previous month",
+  "next": "Next month",
+  "inProgress": "This month isn't over yet; the recap updates until month end.",
+  "empty": {
+    "title": "No recap for this month",
+    "body_one": "A recap needs at least 2 events in a month. You joined {{count}} this month.",
+    "body_other": "A recap needs at least 2 events in a month. You joined {{count}} this month.",
+    "cta": "Explore events"
+  },
+  "entry": {
+    "title": "Your {{month}} recap is ready",
+    "body": "Look back at your month and share it."
+  },
+  "reveal": {
+    "kicker": "{{month}}",
+    "title": "Your month is wrapped 🎉",
+    "subtitle": "Take a look at what you got up to.",
+    "hours": "{{hours}} hours of sport",
+    "sport": "Mostly {{sport}}",
+    "partner": "Mostly with {{name}}",
+    "cta": "See my recap",
+    "later": "Later"
+  },
+  "year": {
+    "title": "YEAR IN REVIEW",
+    "loading": "Wrapping your year",
+    "tapHint": "Tap to continue",
+    "intro": {
+      "kicker": "Your Sportner",
+      "title": "{{year}}",
+      "body": "Ready? A year of sport, people and moments."
+    },
+    "events": {
+      "kicker": "This year",
+      "label_one": "event joined",
+      "label_other": "events joined",
+      "hours": "{{hours}} hours of sport",
+      "sports_one": "{{count}} sport",
+      "sports_other": "{{count}} different sports",
+      "organized_one": "You organized {{count}} event",
+      "organized_other": "You organized {{count}} events"
+    },
+    "sports": {
+      "kicker": "Your favourites",
+      "title": "Your sport of the year: {{sport}}",
+      "count_one": "{{count}} event",
+      "count_other": "{{count}} events"
+    },
+    "people": {
+      "kicker": "Your crew",
+      "title_one": "You did sport with {{count}} person",
+      "title_other": "You did sport with {{count}} people",
+      "together_one": "{{count}} event together",
+      "together_other": "{{count}} events together"
+    },
+    "rhythm": {
+      "kicker": "Your rhythm",
+      "title": "Your most active month: {{month}}",
+      "streak_one": "Longest streak: {{count}} week in a row",
+      "streak_other": "Longest streak: {{count}} weeks in a row",
+      "weekday": "Favourite day: {{day}}"
+    },
+    "places": {
+      "kicker": "Places and trophies",
+      "districts_one": "You played in {{count}} district",
+      "districts_other": "You played in {{count}} districts",
+      "topDistrict": "Mostly {{district}}",
+      "medals_one": "{{count}} medal",
+      "medals_other": "{{count}} medals",
+      "crowns_one": "{{count}} district crown",
+      "crowns_other": "{{count}} district crowns"
+    },
+    "persona": {
+      "kicker": "Your {{year}} label",
+      "explorer": {
+        "title": "Explorer",
+        "body": "One sport was never enough; you kept trying new things."
+      },
+      "captain": {
+        "title": "Captain",
+        "body": "You set up the events and brought people together."
+      },
+      "teamPlayer": {
+        "title": "Team player",
+        "body": "For you, sport is better together."
+      },
+      "unstoppable": {
+        "title": "Unstoppable",
+        "body": "Your calendar is sport, your weekend is sport. Respect."
+      },
+      "weekendWarrior": {
+        "title": "Weekend warrior",
+        "body": "You waited all week, then owned Saturday."
+      },
+      "risingStar": {
+        "title": "Rising star",
+        "body": "You've made a start; next year there's much more."
+      }
+    },
+    "share": {
+      "kicker": "My {{year}} on Sportner",
+      "title": "Share your card",
+      "button": "Share to your story"
+    },
+    "stats": {
+      "hours": "hours",
+      "sports": "sports",
+      "teammates": "people",
+      "streak": "week streak"
+    },
+    "topSport": "Sport of the year",
+    "topPartner": "Partner of the year",
+    "empty": {
+      "kicker": "Your {{year}} on Sportner",
+      "title": "Your story isn't written yet",
+      "body": "Your year in review needs at least 2 events. Find one and start your story before the year ends.",
+      "cta": "Explore events"
+    },
+    "reveal": {
+      "title": "Your year is wrapped 🎉",
+      "cta": "See my year"
+    },
+    "entry": {
+      "title": "Your {{year}}",
+      "body": "Look back at your year and share it."
+    },
+    "failed": {
+      "kicker": "Your {{year}} on Sportner",
+      "title": "We couldn't load your recap",
+      "body": "Something's wrong with your connection or on our side. Try again in a moment.",
+      "cta": "Try again"
+    }
+  },
+  "failed": {
+    "title": "We couldn't load your recap",
+    "body": "Something's wrong with your connection or on our side. Try again in a moment.",
+    "cta": "Try again"
+  }
+}

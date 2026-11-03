@@ -14,5 +14,22 @@
   "questBody": "{{description}} · {{percent}}%",
   "toasts": {
     "loadFailedTitle": "Could not load"
+  },
+  "challenges": {
+    "title": "CHALLENGES",
+    "homeTitle": "This month's challenges",
+    "seeAll": "See all",
+    "intro": "New challenges open every month. Join, hit the goal before the month ends and grab the medal. Events where you're marked present and events you organize count.",
+    "empty": "No open challenges right now.",
+    "join": "Join",
+    "leave": "Leave",
+    "completed": "Completed",
+    "meta_one": "{{days}} days left · {{count}} participant",
+    "meta_other": "{{days}} days left · {{count}} participants",
+    "finishers_one": "{{count}} finished",
+    "finishers_other": "{{count}} finished",
+    "medalsTitle_one": "Medals ({{count}})",
+    "medalsTitle_other": "Medals ({{count}})",
+    "actionFailed": "Something went wrong"
   }
 }

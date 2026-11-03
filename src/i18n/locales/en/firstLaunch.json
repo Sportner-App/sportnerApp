@@ -8,7 +8,7 @@
   },
   "intro1": {
     "title": "DISCOVER,\nGET MOVING.",
-    "subtitle": "Find nearby open matches, athletes, and events that fit you in one place.",
+    "subtitle": "Find nearby open events, athletes and meetups that fit you in one place.",
     "next": "Continue"
   },
   "intro2": {
@@ -18,7 +18,7 @@
   },
   "intro3": {
     "title": "CHAT WITH\nYOUR FRIENDS.",
-    "subtitle": "Plan before the match and keep talking after it. Your friends are always one message away.",
+    "subtitle": "Plan before the event and keep talking after it. Your friends are always one message away.",
     "next": "Continue"
   },
   "intro4": {
@@ -34,18 +34,18 @@
     "welcome": {
       "live": "LIVE",
       "athletesNearby": "120+ athletes",
-      "openMatches": "8 open matches"
+      "openMatches": "8 open events"
     },
     "events": {
       "today": "TODAY",
-      "openMatchesCount": "4 open matches",
+      "openMatchesCount": "4 open events",
       "venueTurf": "Indoor pitch",
       "openBadge": "OPEN",
       "spotsRemaining": "2 spots left · tonight",
       "neighborhoodOpen": "Open near you now"
     },
     "people": {
-      "eveningMatch": "Evening match",
+      "eveningMatch": "Evening run",
       "createdBadge": "CREATED",
       "invitesSent": "3 invites sent",
       "teamReady": "Your team is ready"

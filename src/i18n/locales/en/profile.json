@@ -23,13 +23,12 @@
     "badges": "Badges"
   },
   "social": {
-    "feed": "Feed",
     "albums": "Albums"
   },
   "stats": {
     "joined": "Joined",
     "organized": "Organized",
-    "completed": "Matches",
+    "completed": "Completed",
     "friends": "Friends"
   },
   "sports": {
@@ -173,5 +172,45 @@
   },
   "service": {
     "notFound": "Profile not found."
+  },
+  "reportCard": {
+    "title": "{{year}} Sport Report",
+    "eventsPlayed": "Events played",
+    "hoursPlayed": "Hours played",
+    "sports": "Sports",
+    "teammates": "Teammates",
+    "topSports": "Most played",
+    "sportCount_one": "{{count}} event",
+    "sportCount_other": "{{count}} events",
+    "attendance": "Attendance {{rate}}%",
+    "organized_one": "Organized {{count}} event",
+    "organized_other": "Organized {{count}} events",
+    "empty": "Your report fills up after your first event. Events where you're marked present count.",
+    "kicker": "{{year}} Sport Report",
+    "heroLabel_one": "event joined",
+    "heroLabel_other": "events joined",
+    "leadSport": "Favorite sport:",
+    "share": "Share",
+    "shareFailed": "Couldn't share the report",
+    "shareUnavailable": "Sharing isn't available on this device."
+  },
+  "streak": {
+    "weeks_one": "{{count}}-week streak",
+    "weeks_other": "{{count}}-week streak",
+    "goalReached": "Weekly goal done! Your streak is alive.",
+    "goalRemaining_one": "{{count}} event to go.",
+    "goalRemaining_other": "{{count}} events to go.",
+    "keepAlive": "No event yet this week. Join one before Sunday night to keep your streak.",
+    "start": "Join an event this week to start your streak.",
+    "goalShort": "Goal",
+    "goalTitle": "Weekly goal",
+    "goalSubtitle": "How many events a week? Your streak continues with just 1 event a week.",
+    "perWeek": "events",
+    "weeksAgo_one": "{{count}} week ago",
+    "weeksAgo_other": "{{count}} weeks ago",
+    "thisWeek": "This week",
+    "goalFailed": "Couldn't save your goal",
+    "badge_one": "{{count}}-week streak",
+    "badge_other": "{{count}}-week streak"
   }
 }

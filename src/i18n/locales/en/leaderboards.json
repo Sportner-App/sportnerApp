@@ -1,0 +1,37 @@
+{
+  "title": "LEADERBOARDS",
+  "loading": "Loading leaderboard",
+  "noDistricts": "Not enough events for leaderboards yet.",
+  "heading": "Most active in {{district}}",
+  "period": {
+    "month": "This month",
+    "allTime": "All time"
+  },
+  "allSports": "All sports",
+  "you": "You",
+  "games_one": "{{count}} event",
+  "games_other": "{{count}} events",
+  "empty": {
+    "title": "No leaderboard yet",
+    "body_one": "{{district}} needs {{count}} more player for a leaderboard. Join the first event and take the top spot!",
+    "body_other": "{{district}} needs {{count}} more players for a leaderboard. Join the first event and take the top spot!"
+  },
+  "rules": "Events where you're marked present and events you organize and complete count. Ties go to whoever got there first. Each month's leader wins the 👑 crown.",
+  "visibility": {
+    "title": "Show me on leaderboards",
+    "description": "Turn off to hide your name from district lists. Private profiles never appear.",
+    "failed": "Couldn't save the setting"
+  },
+  "home": {
+    "title": "{{district}} leaderboard",
+    "ranked": "You're #{{rank}} this month · {{total}} players",
+    "unranked": "No events yet this month. Join one to get on the board!",
+    "leader": "You're #1 this month 👑 · {{total}} players"
+  },
+  "eventRow": "See who's most active in {{district}}",
+  "crowns": {
+    "title_one": "Crowns ({{count}})",
+    "title_other": "Crowns ({{count}})",
+    "label": "{{month}} · {{district}}"
+  }
+}

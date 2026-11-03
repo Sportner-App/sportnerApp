@@ -34,7 +34,11 @@
       },
       "achievements": {
         "title": "Rozet ve görevler",
-        "description": "Kazandığın rozetler ve tamamladığın görevler."
+        "description": "Kazandığın rozetler, tamamladığın görevler, challenge madalyaları ve semt taçları."
+      },
+      "reminders": {
+        "title": "Hatırlatıcılar",
+        "description": "Seri tehlikedeyken, haftalık hedefe az kalınca, sevdiğin sporlardan yeni etkinlik açılınca ve challenge'lar başlayıp biterken. Günde en fazla bir tane."
       }
     }
   },
@@ -99,7 +103,19 @@
     "32": "Etkinlik kontenjanı değişti",
     "33": "Gruba eklendin",
     "34": "Etkinlik güncellendi",
-    "37": "Etkinlik katılım isteği"
+    "37": "Etkinlik katılım isteği",
+    "38": "Etkinlik sonrası paylaşım daveti",
+    "39": "Seri tehlikede",
+    "40": "Haftalık hedef hatırlatması",
+    "41": "Yakınında yeni etkinlikler",
+    "42": "Geri dönüş hatırlatması",
+    "43": "Challenge tamamlandı",
+    "44": "Yeni ayın challenge'ları",
+    "45": "Challenge bitmek üzere",
+    "46": "Semtinde 1. sıraya çıkma",
+    "47": "Ayın semt tacı",
+    "48": "Aylık özetin hazır",
+    "49": "Yıllık özetin hazır"
   },
   "push": {
     "channelName": "Sportner Bildirimleri",

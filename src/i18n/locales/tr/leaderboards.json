@@ -1,0 +1,37 @@
+{
+  "title": "SIRALAMALAR",
+  "loading": "Sıralama yükleniyor",
+  "noDistricts": "Henüz sıralama yapılacak kadar etkinlik yok.",
+  "heading": "{{district}} en aktifleri",
+  "period": {
+    "month": "Bu ay",
+    "allTime": "Tüm zamanlar"
+  },
+  "allSports": "Tüm sporlar",
+  "you": "Sen",
+  "games_one": "{{count}} etkinlik",
+  "games_other": "{{count}} etkinlik",
+  "empty": {
+    "title": "Liste henüz oluşmadı",
+    "body_one": "{{district}} sıralaması için {{count}} oyuncu daha lazım. İlk etkinliğe sen katıl, listenin başına geç!",
+    "body_other": "{{district}} sıralaması için {{count}} oyuncu daha lazım. İlk etkinliğe sen katıl, listenin başına geç!"
+  },
+  "rules": "Yoklamada \"geldi\" işaretlendiğin ve düzenleyip tamamladığın etkinlikler sayılır. Eşitlikte o sayıya önce ulaşan önde. Her ayın lideri 👑 tacı kazanır.",
+  "visibility": {
+    "title": "Sıralamalarda görün",
+    "description": "Kapatırsan semt listelerinde adın görünmez. Gizli profiller zaten görünmez.",
+    "failed": "Ayar kaydedilemedi"
+  },
+  "home": {
+    "title": "{{district}} sıralaması",
+    "ranked": "Bu ay {{rank}}. sıradasın · {{total}} oyuncu",
+    "unranked": "Bu ay henüz etkinliğin yok. Bir etkinliğe katıl, listeye gir!",
+    "leader": "Bu ay 1. sıradasın 👑 · {{total}} oyuncu"
+  },
+  "eventRow": "{{district}} semtinin en aktiflerini gör",
+  "crowns": {
+    "title_one": "Taçlar ({{count}})",
+    "title_other": "Taçlar ({{count}})",
+    "label": "{{month}} · {{district}}"
+  }
+}

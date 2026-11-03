@@ -18,6 +18,9 @@ import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { ProfileHero } from "@/features/profile/components/profile-hero";
 import { ReviewsSection } from "@/features/profile/components/reviews-section";
 import { SportsSection } from "@/features/profile/components/sports-section";
+import { SportReportCard } from "@/features/profile/components/sport-report-card";
+import { ChallengeMedals } from "@/features/challenges/components/challenge-medals";
+import { DistrictCrowns } from "@/features/leaderboards/components/district-crowns";
 import { StatsSection } from "@/features/profile/components/stats-section";
 import { createDirectConversation } from "@/features/messaging/services/messaging-service";
 import { getPublicProfile } from "@/features/profile/services/profile-service";
@@ -306,6 +309,9 @@ export function PublicProfileScreen() {
       ) : (
         <>
           <ProfileHero profile={profile} />
+          <SportReportCard userId={profile.userId} name={profile.fullName} />
+          <ChallengeMedals userId={profile.userId} />
+          <DistrictCrowns userId={profile.userId} />
           <ProfileAboutSection bio={profile.bio} />
           <View className="gap-2">
             {isIncomingPending ? (
@@ -386,7 +392,9 @@ export function PublicProfileScreen() {
           />
 
           {activeTab === "activity" ? (
-            <StatsSection statistics={profile.statistics} />
+            <>
+              <StatsSection statistics={profile.statistics} />
+            </>
           ) : null}
 
           {activeTab === "reviews" ? (

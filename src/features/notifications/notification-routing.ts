@@ -4,6 +4,13 @@ import {
 } from "@/features/notifications/types";
 import { setPendingProfileTab } from "@/features/profile/pending-tab";
 
+const REMINDER_TYPES = new Set<number>([
+  NOTIFICATION_TYPE.streakAtRisk,
+  NOTIFICATION_TYPE.weeklyGoalNudge,
+  NOTIFICATION_TYPE.newEventsNearby,
+  NOTIFICATION_TYPE.comeBack,
+]);
+
 type NotificationRouteData = {
   notificationType?: number | string;
   entityType?: number | string;
@@ -15,6 +22,12 @@ export function resolveNotificationRoute(data: NotificationRouteData): string {
   const entityType = Number(data.entityType);
   const notificationType = Number(data.notificationType);
   const entityId = typeof data.entityId === "string" ? data.entityId : null;
+
+  // Hatırlatıcılar (seri, hedef, yeni etkinlikler, geri dönüş) tek bir
+  // etkinliğe bağlı değilse seri kartı ve etkinlik listesinin olduğu ana sayfaya.
+  if (!entityId && REMINDER_TYPES.has(notificationType)) {
+    return "/(tabs)";
+  }
 
   if (!entityId) {
     return "/notifications";
@@ -68,6 +81,10 @@ export function resolveNotificationRoute(data: NotificationRouteData): string {
     if (notificationType === NOTIFICATION_TYPE.eventJoinRequested) {
       return `/events/${entityId}?focus=requests`;
     }
+    // "Maçtan kareler" daveti: paylaşım bölümü genel bakış sekmesinde.
+    if (notificationType === NOTIFICATION_TYPE.eventSharePrompt) {
+      return `/events/${entityId}?focus=moments`;
+    }
     return `/events/${entityId}`;
   }
   if (entityType === NOTIFICATION_ENTITY.post) {
@@ -89,6 +106,18 @@ export function resolveNotificationRoute(data: NotificationRouteData): string {
   ) {
     // Quests are shown inline on the same badges screen - there's no dedicated quest route.
     return "/badges";
+  }
+  if (entityType === NOTIFICATION_ENTITY.challenge) {
+    return "/challenges";
+  }
+  if (entityType === NOTIFICATION_ENTITY.districtLeader) {
+    return "/leaderboards";
+  }
+  if (entityType === NOTIFICATION_ENTITY.monthlyRecap) {
+    return "/recap";
+  }
+  if (entityType === NOTIFICATION_ENTITY.yearlyRecap) {
+    return "/recap/year";
   }
   if (entityType === NOTIFICATION_ENTITY.organization) {
     return `/organizations/${entityId}`;

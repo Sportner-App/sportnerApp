@@ -23,13 +23,12 @@
     "badges": "Rozetler"
   },
   "social": {
-    "feed": "Akış",
     "albums": "Albümler"
   },
   "stats": {
     "joined": "Katılım",
     "organized": "Düzenlenen",
-    "completed": "Maç",
+    "completed": "Tamamlanan",
     "friends": "Arkadaş"
   },
   "sports": {
@@ -173,5 +172,45 @@
   },
   "service": {
     "notFound": "Profil bulunamadı."
+  },
+  "reportCard": {
+    "title": "{{year}} Spor Karnesi",
+    "eventsPlayed": "Oynanan etkinlik",
+    "hoursPlayed": "Saat oyun",
+    "sports": "Farklı spor",
+    "teammates": "Takım arkadaşı",
+    "topSports": "En çok oynadığı",
+    "sportCount_one": "{{count}} etkinlik",
+    "sportCount_other": "{{count}} etkinlik",
+    "attendance": "Katılım oranı %{{rate}}",
+    "organized_one": "{{count}} etkinlik düzenledi",
+    "organized_other": "{{count}} etkinlik düzenledi",
+    "empty": "İlk etkinliğinden sonra karnen dolmaya başlar. Yoklamada \"geldi\" işaretlenen etkinlikler sayılır.",
+    "kicker": "{{year}} Spor Karnesi",
+    "heroLabel_one": "etkinliğe katıldı",
+    "heroLabel_other": "etkinliğe katıldı",
+    "leadSport": "Favori sporu:",
+    "share": "Paylaş",
+    "shareFailed": "Karne paylaşılamadı",
+    "shareUnavailable": "Bu cihazda paylaşım kullanılamıyor."
+  },
+  "streak": {
+    "weeks_one": "{{count}} haftalık seri",
+    "weeks_other": "{{count}} haftalık seri",
+    "goalReached": "Haftalık hedef tamam! Seri devam ediyor.",
+    "goalRemaining_one": "Hedefe {{count}} etkinlik kaldı.",
+    "goalRemaining_other": "Hedefe {{count}} etkinlik kaldı.",
+    "keepAlive": "Bu hafta henüz etkinliğin yok. Pazar gecesine kadar bir etkinliğe katıl, serin bozulmasın.",
+    "start": "Bu hafta bir etkinliğe katıl, serini başlat.",
+    "goalShort": "Hedef",
+    "goalTitle": "Haftalık hedef",
+    "goalSubtitle": "Haftada kaç etkinliğe katılmak istiyorsun? Seri haftada 1 etkinlikle de devam eder.",
+    "perWeek": "etkinlik",
+    "weeksAgo_one": "{{count}} hafta önce",
+    "weeksAgo_other": "{{count}} hafta önce",
+    "thisWeek": "Bu hafta",
+    "goalFailed": "Hedef kaydedilemedi",
+    "badge_one": "{{count}} haftalık seri",
+    "badge_other": "{{count}} haftalık seri"
   }
 }

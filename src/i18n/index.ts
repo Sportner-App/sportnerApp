@@ -32,6 +32,8 @@ import enHelp from "./locales/en/help.json";
 import enFriends from "./locales/en/friends.json";
 import enFeedback from "./locales/en/feedback.json";
 import enBadges from "./locales/en/badges.json";
+import enLeaderboards from "./locales/en/leaderboards.json";
+import enRecap from "./locales/en/recap.json";
 import enActivity from "./locales/en/activity.json";
 import enAlbums from "./locales/en/albums.json";
 import trMessaging from "./locales/tr/messaging.json";
@@ -64,6 +66,8 @@ import trHelp from "./locales/tr/help.json";
 import trFriends from "./locales/tr/friends.json";
 import trFeedback from "./locales/tr/feedback.json";
 import trBadges from "./locales/tr/badges.json";
+import trLeaderboards from "./locales/tr/leaderboards.json";
+import trRecap from "./locales/tr/recap.json";
 import trActivity from "./locales/tr/activity.json";
 import trAlbums from "./locales/tr/albums.json";
 
@@ -116,6 +120,8 @@ export const resources = {
     friends: enFriends,
     feedback: enFeedback,
     badges: enBadges,
+    leaderboards: enLeaderboards,
+    recap: enRecap,
     activity: enActivity,
     albums: enAlbums,
   },
@@ -150,6 +156,8 @@ export const resources = {
     friends: trFriends,
     feedback: trFeedback,
     badges: trBadges,
+    leaderboards: trLeaderboards,
+    recap: trRecap,
     activity: trActivity,
     albums: trAlbums,
   },
@@ -219,6 +227,8 @@ void i18n.use(initReactI18next).init({
     "friends",
     "feedback",
     "badges",
+    "leaderboards",
+    "recap",
     "activity",
     "albums",
   ],

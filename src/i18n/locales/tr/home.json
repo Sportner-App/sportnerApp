@@ -122,5 +122,29 @@
     },
     "skillLabel": "Seviye",
     "organizerGenderLabel": "Organizatör cinsiyeti"
+  },
+  "progress": {
+    "title": "İLERLEME",
+    "streakChip_one": "{{count}} hafta",
+    "streakChip_other": "{{count}} hafta",
+    "challengesChip_one": "{{count}} challenge",
+    "challengesChip_other": "{{count}} challenge",
+    "rankChip": "{{district}} #{{rank}}",
+    "rankChipUnranked": "{{district}}",
+    "nudge": {
+      "streakTitle": "Serin bozulmak üzere",
+      "streakBody_one": "{{count}} haftalık serin var. Pazar gecesine kadar bir etkinliğe katıl.",
+      "streakBody_other": "{{count}} haftalık serin var. Pazar gecesine kadar bir etkinliğe katıl.",
+      "challengeTitle": "Bu ayın challenge'ları açıldı",
+      "challengeBody": "Katıl, etkinliklere katıldıkça ilerle, madalyayı kap.",
+      "cta": "Gör",
+      "dismiss": "Kapat",
+      "recapTitle": "{{month}} özetin hazır 📊",
+      "recapBody": "Ayına bak, hikâyende paylaş."
+    },
+    "recapRow": {
+      "title": "Aylık özet",
+      "body": "Her ayın etkinlikleri, partnerin ve madalyaların"
+    }
   }
 }

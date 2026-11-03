@@ -34,7 +34,11 @@
       },
       "achievements": {
         "title": "Badges and quests",
-        "description": "Badges you earn and quests you finish."
+        "description": "Badges you earn, quests you complete, challenge medals and district crowns."
+      },
+      "reminders": {
+        "title": "Reminders",
+        "description": "When your streak is at risk, your weekly goal is close, new events open in your sports, or challenges start and end. At most one a day."
       }
     }
   },
@@ -99,7 +103,19 @@
     "32": "Event capacity changed",
     "33": "Added to group",
     "34": "Event updated",
-    "37": "Event join request"
+    "37": "Event join request",
+    "38": "Post-event share reminder",
+    "39": "Streak at risk",
+    "40": "Weekly goal reminder",
+    "41": "New events near you",
+    "42": "Come back reminder",
+    "43": "Challenge completed",
+    "44": "New monthly challenges",
+    "45": "Challenge ending soon",
+    "46": "Reached #1 in your district",
+    "47": "Monthly district crown",
+    "48": "Your monthly recap is ready",
+    "49": "Your year in review is ready"
   },
   "push": {
     "channelName": "Sportner Notifications",

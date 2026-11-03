@@ -69,7 +69,7 @@
   },
   "toasts": {
     "successTitle": "You're all set",
-    "successDescription": "Your profile is ready. Have a great match!",
+    "successDescription": "Your profile is ready. Let's get moving!",
     "saveFailed": "Setup could not be saved",
     "completeFailed": "Profile setup could not be completed",
     "sportRequiredTitle": "Sport required",

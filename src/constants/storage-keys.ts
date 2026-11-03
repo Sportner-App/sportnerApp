@@ -18,4 +18,8 @@ export const STORAGE_KEYS = {
   themePreference: "sportner:theme-preference",
   appTourSeen: "sportner:app-tour:v1",
   dismissedUpdateVersion: "sportner:dismissed-update-version",
+  dismissedShareEventIds: "sportner:dismissed-share-events",
+  dismissedProgressNudge: "sportner:dismissed-progress-nudge",
+  seenRecapReveal: "sportner:seen-recap-reveal",
+  seenYearlyRecapReveal: "sportner:seen-yearly-recap-reveal",
 } as const;

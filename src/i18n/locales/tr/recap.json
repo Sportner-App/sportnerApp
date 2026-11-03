@@ -1,0 +1,166 @@
+{
+  "title": "AYLIK ÖZET",
+  "loading": "Özet hazırlanıyor",
+  "kicker": "{{month}} özeti",
+  "heroLabel_one": "etkinliğe katıldın",
+  "heroLabel_other": "etkinliğe katıldın",
+  "deltaUp": "geçen aydan +{{count}}",
+  "deltaDown": "geçen aydan −{{count}}",
+  "stats": {
+    "hours": "saat",
+    "sports": "spor",
+    "teammates": "takım arkadaşı"
+  },
+  "highlights": {
+    "sport": "En çok oynadığın spor",
+    "sportValue_one": "{{sport}} · {{count}} etkinlik",
+    "sportValue_other": "{{sport}} · {{count}} etkinlik",
+    "partner": "En çok birlikte oynadığın",
+    "partnerValue_one": "{{name}} · {{count}} etkinlik",
+    "partnerValue_other": "{{name}} · {{count}} etkinlik",
+    "district": "En çok oynadığın semt",
+    "weekday": "En sevdiğin gün"
+  },
+  "crown": "{{district}} tacı",
+  "share": "Hikâyende paylaş",
+  "shareFailed": "Görsel paylaşılamadı",
+  "shareUnavailable": "Bu cihazda paylaşım kullanılamıyor.",
+  "previous": "Önceki ay",
+  "next": "Sonraki ay",
+  "inProgress": "Bu ay henüz bitmedi; özet ay sonuna kadar güncellenir.",
+  "empty": {
+    "title": "Bu ay için özet yok",
+    "body_one": "Özet için ayda en az 2 etkinlik gerekiyor. Bu ay {{count}} etkinliğe katıldın.",
+    "body_other": "Özet için ayda en az 2 etkinlik gerekiyor. Bu ay {{count}} etkinliğe katıldın.",
+    "cta": "Etkinlik keşfet"
+  },
+  "entry": {
+    "title": "{{month}} özetin hazır",
+    "body": "Ayına bak, hikâyende paylaş."
+  },
+  "reveal": {
+    "kicker": "{{month}}",
+    "title": "Ayın özetin hazır 🎉",
+    "subtitle": "Bu ay neler yaptığına bir bak.",
+    "hours": "{{hours}} saat spor",
+    "sport": "En çok {{sport}}",
+    "partner": "En çok {{name}} ile",
+    "cta": "Özetime bak",
+    "later": "Sonra"
+  },
+  "year": {
+    "title": "YILIN ÖZETİ",
+    "loading": "Yılın hazırlanıyor",
+    "tapHint": "Dokunarak ilerle",
+    "intro": {
+      "kicker": "Sportner'da",
+      "title": "{{year}} yılın",
+      "body": "Hazır mısın? Bir yılın sporu, insanları ve anları."
+    },
+    "events": {
+      "kicker": "Bu yıl",
+      "label_one": "etkinliğe katıldın",
+      "label_other": "etkinliğe katıldın",
+      "hours": "{{hours}} saat spor",
+      "sports_one": "{{count}} farklı spor",
+      "sports_other": "{{count}} farklı spor",
+      "organized_one": "{{count}} etkinlik düzenledin",
+      "organized_other": "{{count}} etkinlik düzenledin"
+    },
+    "sports": {
+      "kicker": "Favorilerin",
+      "title": "Yılın sporu {{sport}}",
+      "count_one": "{{count}} etkinlik",
+      "count_other": "{{count}} etkinlik"
+    },
+    "people": {
+      "kicker": "Ekibin",
+      "title_one": "{{count}} kişiyle spor yaptın",
+      "title_other": "{{count}} kişiyle spor yaptın",
+      "together_one": "{{count}} etkinlik birlikte",
+      "together_other": "{{count}} etkinlik birlikte"
+    },
+    "rhythm": {
+      "kicker": "Ritmin",
+      "title": "En hareketli ayın {{month}}",
+      "streak_one": "En uzun serin: {{count}} hafta üst üste",
+      "streak_other": "En uzun serin: {{count}} hafta üst üste",
+      "weekday": "En sevdiğin gün {{day}}"
+    },
+    "places": {
+      "kicker": "Yerler ve kupalar",
+      "districts_one": "{{count}} semtte spor yaptın",
+      "districts_other": "{{count}} semtte spor yaptın",
+      "topDistrict": "En çok {{district}}",
+      "medals_one": "{{count}} madalya",
+      "medals_other": "{{count}} madalya",
+      "crowns_one": "{{count}} semt tacı",
+      "crowns_other": "{{count}} semt tacı"
+    },
+    "persona": {
+      "kicker": "Senin {{year}} etiketin",
+      "explorer": {
+        "title": "Kaşif",
+        "body": "Tek bir spora sığmadın; her ay yeni bir şey denedin."
+      },
+      "captain": {
+        "title": "Kaptan",
+        "body": "Etkinlikleri sen kurdun, insanları sen topladın."
+      },
+      "teamPlayer": {
+        "title": "Takım oyuncusu",
+        "body": "Spor senin için birlikte yapılınca güzel."
+      },
+      "unstoppable": {
+        "title": "Durmak bilmeyen",
+        "body": "Takvimin spor, hafta sonun spor. Saygı."
+      },
+      "weekendWarrior": {
+        "title": "Hafta sonu savaşçısı",
+        "body": "Hafta içi bekledin, cumartesi sahaya çıktın."
+      },
+      "risingStar": {
+        "title": "Yükselen yıldız",
+        "body": "Başlangıç yaptın; seneye çok daha fazlası var."
+      }
+    },
+    "share": {
+      "kicker": "Sportner'da {{year}}",
+      "title": "Kartını paylaş",
+      "button": "Hikâyende paylaş"
+    },
+    "stats": {
+      "hours": "saat",
+      "sports": "spor",
+      "teammates": "kişi",
+      "streak": "hafta seri"
+    },
+    "topSport": "Yılın sporu",
+    "topPartner": "Yılın partneri",
+    "empty": {
+      "kicker": "Sportner'da {{year}}",
+      "title": "Hikâyen henüz yazılmadı",
+      "body": "Yılın özeti için en az 2 etkinliğe katılman gerekiyor. Bir etkinlik bul, yıl bitmeden hikâyeni başlat.",
+      "cta": "Etkinlik keşfet"
+    },
+    "reveal": {
+      "title": "Yılın özetin hazır 🎉",
+      "cta": "Yılıma bak"
+    },
+    "entry": {
+      "title": "{{year}} yılın",
+      "body": "Yılın özetine bak, hikâyende paylaş."
+    },
+    "failed": {
+      "kicker": "Sportner'da {{year}}",
+      "title": "Özetine şu an ulaşamadık",
+      "body": "Bağlantında ya da bizde bir sorun var. Birazdan tekrar dene.",
+      "cta": "Tekrar dene"
+    }
+  },
+  "failed": {
+    "title": "Özetine şu an ulaşamadık",
+    "body": "Bağlantında ya da bizde bir sorun var. Birazdan tekrar dene.",
+    "cta": "Tekrar dene"
+  }
+}

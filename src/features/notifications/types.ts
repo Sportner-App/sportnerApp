@@ -33,6 +33,10 @@ export const NOTIFICATION_ENTITY = {
   badge: 5,
   quest: 6,
   organization: 7,
+  challenge: 8,
+  districtLeader: 9,
+  monthlyRecap: 10,
+  yearlyRecap: 11,
 } as const;
 
 export const NOTIFICATION_TYPE = {
@@ -74,6 +78,18 @@ export const NOTIFICATION_TYPE = {
   eventAttendancePending: 35,
   postMentioned: 36,
   eventJoinRequested: 37,
+  eventSharePrompt: 38,
+  streakAtRisk: 39,
+  weeklyGoalNudge: 40,
+  newEventsNearby: 41,
+  comeBack: 42,
+  challengeCompleted: 43,
+  challengesLaunched: 44,
+  challengeEndingSoon: 45,
+  districtLeaderTaken: 46,
+  districtCrowned: 47,
+  monthlyRecapReady: 48,
+  yearlyRecapReady: 49,
 } as const;
 
 const NAMED_ACTION_TYPES = new Set<number>([
