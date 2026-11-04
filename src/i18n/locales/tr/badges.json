@@ -30,6 +30,18 @@
     "finishers_other": "{{count}} kişi tamamladı",
     "medalsTitle_one": "Madalyalar ({{count}})",
     "medalsTitle_other": "Madalyalar ({{count}})",
-    "actionFailed": "İşlem yapılamadı"
+    "actionFailed": "İşlem yapılamadı",
+    "poster": {
+      "kicker": "Challenge tamamlandı",
+      "completedOn": "{{date}} tarihinde tamamladı",
+      "goal": "Hedef: {{goal}}"
+    },
+    "share": {
+      "action": "Paylaş",
+      "title": "Madalyanı paylaş",
+      "subtitle": "Görsel hikâye boyutunda hazırlanır.",
+      "unavailable": "Bu cihazda paylaşım kullanılamıyor.",
+      "failed": "Görsel paylaşılamadı"
+    }
   }
 }

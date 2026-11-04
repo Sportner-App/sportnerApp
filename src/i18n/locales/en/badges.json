@@ -30,6 +30,18 @@
     "finishers_other": "{{count}} finished",
     "medalsTitle_one": "Medals ({{count}})",
     "medalsTitle_other": "Medals ({{count}})",
-    "actionFailed": "Something went wrong"
+    "actionFailed": "Something went wrong",
+    "poster": {
+      "kicker": "Challenge completed",
+      "completedOn": "Completed on {{date}}",
+      "goal": "Goal: {{goal}}"
+    },
+    "share": {
+      "action": "Share",
+      "title": "Share your medal",
+      "subtitle": "The image is sized for stories.",
+      "unavailable": "Sharing isn't available on this device.",
+      "failed": "Couldn't share the image"
+    }
   }
 }

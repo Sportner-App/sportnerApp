@@ -14,9 +14,12 @@ import type { IconName } from "@/types/components";
 export function ChallengeMedals({
   userId,
   linkToChallenges = false,
+  onSelect,
 }: {
   userId: string;
   linkToChallenges?: boolean;
+  /** Verilirse madalyaya dokununca bu çalışır (kendi madalyanı paylaşmak için). */
+  onSelect?: (medal: Challenge) => void;
 }) {
   const { t } = useTranslation("badges");
   const router = useRouter();
@@ -47,8 +50,10 @@ export function ChallengeMedals({
         {medals.map((medal) => (
           <Pressable
             key={medal.id}
-            disabled={!linkToChallenges}
-            onPress={() => router.push("/challenges")}
+            disabled={!linkToChallenges && !onSelect}
+            onPress={() =>
+              onSelect ? onSelect(medal) : router.push("/challenges")
+            }
             className="w-24 items-center gap-1.5 rounded-2xl border border-border-default bg-surface-secondary px-2 py-3"
           >
             <View className="h-11 w-11 items-center justify-center rounded-full bg-brand-primary">

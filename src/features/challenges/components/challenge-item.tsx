@@ -23,6 +23,8 @@ type ChallengeItemProps = {
   compact?: boolean;
   onJoin: () => void;
   onLeave?: () => void;
+  /** Verilirse tamamlanan challenge'da paylaş düğmesi çıkar. */
+  onShare?: () => void;
 };
 
 /**
@@ -35,6 +37,7 @@ export function ChallengeItem({
   compact = false,
   onJoin,
   onLeave,
+  onShare,
 }: ChallengeItemProps) {
   const { t } = useTranslation("badges");
   const ratio = Math.min(1, challenge.progress / challenge.targetValue);
@@ -106,6 +109,16 @@ export function ChallengeItem({
             style={{ width: `${Math.max(ratio * 100, 4)}%` }}
           />
         </View>
+      ) : null}
+
+      {challenge.isCompleted && onShare ? (
+        <Button
+          label={t("challenges.share.action")}
+          icon="arrow-up-from-bracket"
+          size="sm"
+          variant="secondary"
+          onPress={onShare}
+        />
       ) : null}
 
       {!compact ? (
