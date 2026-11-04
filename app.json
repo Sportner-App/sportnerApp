@@ -2,7 +2,7 @@
   "expo": {
     "name": "Sportner",
     "slug": "sportner",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "runtimeVersion": {
       "policy": "appVersion"
     },
@@ -19,7 +19,7 @@
       "appleTeamId": "MN3MXLT7QL",
       "supportsTablet": false,
       "bundleIdentifier": "com.yagizerdenler.sportner",
-      "buildNumber": "51",
+      "buildNumber": "52",
       "infoPlist": {
         "CFBundleDisplayName": "Sportner",
         "ITSAppUsesNonExemptEncryption": false,

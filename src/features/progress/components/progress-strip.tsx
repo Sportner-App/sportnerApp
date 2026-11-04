@@ -39,7 +39,8 @@ function todayKey() {
 /**
  * Ana sayfada seri, challenge ve semt sırasını tek satırlık chip'lere indiren
  * şerit. Yapılacak bir şey olduğunda (seri tehlikede, katılınmamış challenge)
- * şeridin yerine tek bir uyarı kartı çıkıyor; ikisi birden gösterilmiyor.
+ * altına tek bir uyarı kartı ekleniyor; chip'ler İlerleme ekranının yolu olduğu
+ * için kart varken de duruyor.
  */
 export function ProgressStrip() {
   const { t } = useTranslation("home");
@@ -106,7 +107,8 @@ export function ProgressStrip() {
     );
   };
 
-  if (nudge) {
+  const renderNudge = () => {
+    if (!nudge) return null;
     const copy = {
       streak: {
         icon: "fire" as const,
@@ -161,45 +163,48 @@ export function ProgressStrip() {
         </Pressable>
       </Animated.View>
     );
-  }
+  };
 
   const joined = challenges.filter((c) => c.isJoined).length;
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerClassName="gap-2"
-    >
-      {streak ? (
-        <Chip
-          icon="fire"
-          active={streak.currentStreak > 0}
-          label={`${t("progress.streakChip", { count: streak.currentStreak })} · ${streak.thisWeekCount}/${streak.weeklyGoal}`}
-          onPress={openProgress}
-        />
-      ) : null}
-      {challenges.length > 0 ? (
-        <Chip
-          icon="medal"
-          active={joined > 0}
-          label={t("progress.challengesChip", { count: challenges.length })}
-          onPress={openProgress}
-        />
-      ) : null}
-      {standing ? (
-        <Chip
-          icon="crown"
-          active={standing.rank === 1}
-          label={
-            standing.rank
-              ? t("progress.rankChip", { district: standing.district, rank: standing.rank })
-              : t("progress.rankChipUnranked", { district: standing.district })
-          }
-          onPress={openProgress}
-        />
-      ) : null}
-    </ScrollView>
+    <View className="gap-3">
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerClassName="gap-2"
+      >
+        {streak ? (
+          <Chip
+            icon="fire"
+            active={streak.currentStreak > 0}
+            label={`${t("progress.streakChip", { count: streak.currentStreak })} · ${streak.thisWeekCount}/${streak.weeklyGoal}`}
+            onPress={openProgress}
+          />
+        ) : null}
+        {challenges.length > 0 ? (
+          <Chip
+            icon="medal"
+            active={joined > 0}
+            label={t("progress.challengesChip", { count: challenges.length })}
+            onPress={openProgress}
+          />
+        ) : null}
+        {standing ? (
+          <Chip
+            icon="crown"
+            active={standing.rank === 1}
+            label={
+              standing.rank
+                ? t("progress.rankChip", { district: standing.district, rank: standing.rank })
+                : t("progress.rankChipUnranked", { district: standing.district })
+            }
+            onPress={openProgress}
+          />
+        ) : null}
+      </ScrollView>
+      {renderNudge()}
+    </View>
   );
 }
 
