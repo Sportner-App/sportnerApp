@@ -5,6 +5,8 @@ export { AppTextInput } from "./app-text-input";
 export { Avatar } from "./avatar";
 export { AvatarPhotoPreview } from "./avatar-photo-preview";
 export { BottomSheet } from "./bottom-sheet";
+export { KeyboardDock } from "./keyboard-dock";
+export { SendIconButton } from "./send-icon-button";
 export { BrandMark } from "./brand-mark";
 export { Button } from "./button";
 export { Chip } from "./chip";

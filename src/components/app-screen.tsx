@@ -16,6 +16,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TAB_BAR_CLEARANCE } from "@/constants/tabs";
+import { useKeyboardToolbarVisible } from "@/hooks/use-keyboard-toolbar-visible";
 import type { AppScreenProps } from "@/types/components";
 import { restoreTabBar, shrinkTabBar } from "@/utils/tab-bar-scroll";
 
@@ -85,6 +86,9 @@ export function AppScreen({
         }
       }
     : undefined;
+  const toolbarOffset = useKeyboardToolbarVisible()
+    ? KEYBOARD_TOOLBAR_OFFSET
+    : 0;
   const useKeyboardAwareScroll = keyboardAvoiding && keyboardAwareScroll;
   const ScrollContainer = useKeyboardAwareScroll
     ? KeyboardAwareScrollView
@@ -94,7 +98,7 @@ export function AppScreen({
     <ScrollContainer
       ref={scrollRef}
       {...(useKeyboardAwareScroll
-        ? { bottomOffset: footerHeight + KEYBOARD_TOOLBAR_OFFSET + 12 }
+        ? { bottomOffset: footerHeight + toolbarOffset + 12 }
         : {})}
       style={bodyStyle}
       onContentSizeChange={onContentSizeChange}
@@ -176,7 +180,7 @@ export function AppScreen({
         <>
           <View className="flex-1">{mainContent}</View>
           {footer ? (
-            <KeyboardStickyView offset={{ opened: -KEYBOARD_TOOLBAR_OFFSET }}>
+            <KeyboardStickyView offset={{ opened: -toolbarOffset }}>
               <View onLayout={handleFooterLayout}>{footer}</View>
             </KeyboardStickyView>
           ) : null}

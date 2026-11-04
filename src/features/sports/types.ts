@@ -6,6 +6,7 @@ export type Sport = {
   name: string;
   slug: string;
   iconUrl: string | null;
+  coverImageUrl?: string | null;
   displayOrder: number;
   categoryId: string | null;
   categoryName: string | null;
@@ -26,6 +27,8 @@ export type SportOption = {
   key: string;
   label: string;
   icon: IconName;
+  /** Etkinlik kartlarındaki arka plan görseli. */
+  coverImageUrl?: string | null;
   /** Katalog kategorisi (seçim listelerinde alt satır olarak gösterilir). */
   description?: string;
   /** Katalog kategorisi id'si (sheet içi kategori filtresi için). */

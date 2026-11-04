@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   KeyboardAvoidingView,
@@ -38,6 +38,7 @@ const SHEET_EASING = Easing.bezier(0.32, 0.72, 0, 1);
 export function BottomSheet({
   visible,
   onClose,
+  onClosed,
   title,
   subtitle,
   showCancel = true,
@@ -104,6 +105,17 @@ export function BottomSheet({
       ),
     );
   }, [dragY, mounted, progress, reduceMotion, visible]);
+
+  const wasMounted = useRef(mounted);
+  const latestOnClosed = useRef(onClosed);
+  latestOnClosed.current = onClosed;
+
+  useEffect(() => {
+    if (wasMounted.current && !mounted) {
+      latestOnClosed.current?.();
+    }
+    wasMounted.current = mounted;
+  }, [mounted]);
 
   const panGesture = useMemo(
     () =>

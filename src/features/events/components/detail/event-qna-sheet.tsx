@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
 import { Pressable, useWindowDimensions, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { AppText as Text, BottomSheet, Button, Input } from "@/components";
+import { AppText as Text, BottomSheet, Input, SendIconButton } from "@/components";
 import { useToast } from "@/contexts";
 import { HIT_SLOP } from "@/constants/theme";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
@@ -20,6 +20,14 @@ import { successNotification } from "@/utils/haptics";
 
 export const QNA_MIN_LENGTH = 5;
 export const QNA_MAX_LENGTH = 1000;
+
+// Sağdaki boşluk, metin gönder düğmesinin altına girmesin diye.
+const COMPOSER_INPUT_STYLE = {
+  minHeight: 72,
+  paddingTop: 10,
+  paddingBottom: 10,
+  paddingRight: 36,
+};
 
 type EventQnASheetProps = {
   visible: boolean;
@@ -153,49 +161,53 @@ export function EventQnASheet({
           </Text>
         </Pressable>
       </View>
-      <Input
-        value={replyDraft}
-        onChangeText={setReplyDraft}
-        multiline
-        maxLength={QNA_MAX_LENGTH}
-        placeholder={t("eventDetail:qna.replyPlaceholder")}
-        style={{ minHeight: 72, paddingTop: 10, paddingBottom: 10 }}
-        textAlignVertical="top"
-      />
-      <Button
-        label={
-          isOrganizer
-            ? t("eventDetail:qna.replyOrganizer")
-            : t("eventDetail:qna.replyParticipant")
-        }
-        size="sm"
-        disabled={replyDraft.trim().length < QNA_MIN_LENGTH}
-        isLoading={saving}
-        onPress={() => void submitReply()}
-      />
+      <View>
+        <Input
+          value={replyDraft}
+          onChangeText={setReplyDraft}
+          multiline
+          maxLength={QNA_MAX_LENGTH}
+          placeholder={t("eventDetail:qna.replyPlaceholder")}
+          style={COMPOSER_INPUT_STYLE}
+          textAlignVertical="top"
+        />
+        <InputSendButton
+          label={
+            isOrganizer
+              ? t("eventDetail:qna.replyOrganizer")
+              : t("eventDetail:qna.replyParticipant")
+          }
+          disabled={replyDraft.trim().length < QNA_MIN_LENGTH}
+          loading={saving}
+          onPress={() => void submitReply()}
+        />
+      </View>
     </View>
   ) : canAsk ? (
     <View className="gap-2">
-      <Input
-        value={draft}
-        onChangeText={setDraft}
-        onSelectionChange={(event_) =>
-          mention.onSelectionChange(event_.nativeEvent.selection.start)
-        }
-        multiline
-        maxLength={QNA_MAX_LENGTH}
-        placeholder={t("eventDetail:qna.askPlaceholder")}
-        helperText={`${draft.trim().length}/${QNA_MAX_LENGTH}`}
-        style={{ minHeight: 72, paddingTop: 10, paddingBottom: 10 }}
-        textAlignVertical="top"
-      />
-      <Button
-        label={t("eventDetail:qna.ask")}
-        size="sm"
-        disabled={draft.trim().length < QNA_MIN_LENGTH}
-        isLoading={saving}
-        onPress={() => void submitQuestion()}
-      />
+      <View>
+        <Input
+          value={draft}
+          onChangeText={setDraft}
+          onSelectionChange={(event_) =>
+            mention.onSelectionChange(event_.nativeEvent.selection.start)
+          }
+          multiline
+          maxLength={QNA_MAX_LENGTH}
+          placeholder={t("eventDetail:qna.askPlaceholder")}
+          style={COMPOSER_INPUT_STYLE}
+          textAlignVertical="top"
+        />
+        <InputSendButton
+          label={t("eventDetail:qna.ask")}
+          disabled={draft.trim().length < QNA_MIN_LENGTH}
+          loading={saving}
+          onPress={() => void submitQuestion()}
+        />
+      </View>
+      <Text className="font-body text-caption text-text-tertiary">
+        {`${draft.trim().length}/${QNA_MAX_LENGTH}`}
+      </Text>
     </View>
   ) : null;
 
@@ -251,5 +263,17 @@ export function EventQnASheet({
         )}
       </View>
     </BottomSheet>
+  );
+}
+
+/** Giriş alanının sağında, dikeyde ortalı gönder ikonu. */
+function InputSendButton(props: ComponentProps<typeof SendIconButton>) {
+  return (
+    <View
+      pointerEvents="box-none"
+      className="absolute bottom-0 right-2.5 top-0 justify-center"
+    >
+      <SendIconButton {...props} />
+    </View>
   );
 }

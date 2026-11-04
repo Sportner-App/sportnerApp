@@ -1,7 +1,27 @@
 import { noLocationLabel } from "@/features/events/format";
 
-function isPostcode(value: string) {
-  return /^\d{4,6}$/.test(value);
+/** Yalnızca sayıdan oluşan parça: posta kodu ya da konumu seçilen pinin koordinatı. */
+function isNumberOnly(value: string) {
+  return /^-?\d+(\.\d+)?$/.test(value);
+}
+
+const MONTHS =
+  "ocak|şubat|mart|nisan|mayıs|haziran|temmuz|ağustos|eylül|ekim|kasım|aralık";
+const LEADING_HOUSE_NUMBER = new RegExp(
+  `^\\d{1,3}[a-z]?\\s+(?!(?:${MONTHS})(?:\\s|$))`,
+  "i",
+);
+
+/**
+ * "34710 Moda" ve "33 Dashiell Hammett St" gibi baştaki posta kodunu ve kapı
+ * numarasını atar. "19 Mayıs" ve "29 Ekim" gibi tarihli yer adlarına dokunmaz.
+ */
+function stripNumbers(value: string) {
+  return value
+    .replace(/^\d{4,6}\s+/, "")
+    .replace(/\s+\d{4,6}$/, "")
+    .replace(LEADING_HOUSE_NUMBER, "")
+    .trim();
 }
 
 function isCountryOrRegion(value: string) {
@@ -72,9 +92,10 @@ export function shortLocation(address: string): string {
   // Hermes on physical iOS devices can crash inside String.prototype.split
   // for this regex path. Scan the two separators without invoking split.
   const parts = addressParts(trimmed);
-  const useful = parts.filter(
-    (part) => !isPostcode(part) && !isCountryOrRegion(part),
-  );
+  const useful = parts
+    .filter((part) => !isNumberOnly(part))
+    .map(stripNumbers)
+    .filter((part) => part && !isCountryOrRegion(part));
 
   if (useful.length === 0) {
     return noLocationLabel();

@@ -70,6 +70,11 @@ export type SegmentedTabsProps<T extends string> = {
 export type BottomSheetProps = PropsWithChildren<{
   visible: boolean;
   onClose: () => void;
+  /**
+   * Kapanış animasyonu bitip modal kalktıktan sonra çalışır. Peş peşine sheet
+   * açmak için: iOS, biri kapanırken açılan ikinci modalı sessizce göstermiyor.
+   */
+  onClosed?: () => void;
   title: string;
   subtitle?: string;
   /** true ise altta Vazgeç butonu gösterilir (varsayılan: true) */

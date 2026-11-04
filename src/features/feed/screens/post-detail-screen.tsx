@@ -21,6 +21,7 @@ import {
   Avatar,
   Button,
   ScreenHeader,
+  SendIconButton,
   SportLoader,
 } from "@/components";
 import { MentionSuggestionList } from "@/features/feed/components/mention-suggestion-list";
@@ -28,7 +29,7 @@ import { MentionText } from "@/features/feed/components/mention-text";
 import { PostEventTag } from "@/features/feed/components/post-event-tag";
 import { useMentionComposer } from "@/features/feed/hooks/use-mention-composer";
 import { CommentThread } from "@/features/feed/components/comment-thread";
-import { useToast } from "@/contexts";
+import { useAuth, useToast } from "@/contexts";
 import { useScrollToSection } from "@/hooks/use-scroll-to-section";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
@@ -69,6 +70,7 @@ export function PostDetailScreen() {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { user } = useAuth();
   const { showToast } = useToast();
   const { t } = useTranslation(["feed", "social", "events", "common"]);
   const [post, setPost] = useState<ApiPost | null>(null);
@@ -153,6 +155,70 @@ export function PostDetailScreen() {
       });
     } finally {
       setIsLiking(false);
+    }
+  };
+
+  const submitComment = async () => {
+    if (!id || !draft.trim()) return;
+    setIsCommenting(true);
+    try {
+      if (replyingTo) {
+        const reply = await createReply(
+          id,
+          replyingTo.id,
+          draft.trim(),
+          mention.mentionedUserIds,
+        );
+        if (!reply) {
+          throw new Error(t("social:toasts.replyFailed"));
+        }
+        setDraft("");
+        setReplyingTo(null);
+        setIncomingReply(reply);
+        setComments((current) =>
+          current.map((item) =>
+            item.id === (reply.parentCommentId ?? replyingTo.id)
+              ? { ...item, replyCount: item.replyCount + 1 }
+              : item,
+          ),
+        );
+        setPost((current) =>
+          current
+            ? {
+                ...current,
+                commentCount: current.commentCount + 1,
+              }
+            : current,
+        );
+      } else {
+        const comment = await createComment(
+          id,
+          draft.trim(),
+          mention.mentionedUserIds,
+        );
+        if (comment) {
+          setComments((current) => [...current, comment]);
+          setPost((current) =>
+            current
+              ? {
+                  ...current,
+                  commentCount: current.commentCount + 1,
+                }
+              : current,
+          );
+        }
+        setDraft("");
+      }
+    } catch (error) {
+      showToast({
+        type: "error",
+        title: replyingTo
+          ? t("social:toasts.replyFailed")
+          : t("social:toasts.commentFailed"),
+        description: getApiErrorMessage(error),
+      });
+    } finally {
+      setIsCommenting(false);
     }
   };
 
@@ -330,109 +396,53 @@ export function PostDetailScreen() {
               </View>
             ) : null}
 
-            <AppTextInput
-              value={draft}
-              onSelectionChange={(event) =>
-                mention.onSelectionChange(event.nativeEvent.selection.start)
-              }
-              onChangeText={setDraft}
-              placeholder={
-                replyingTo
-                  ? t("social:comments.replyPlaceholder", {
-                      username: replyUsername,
-                    })
-                  : t("social:comments.placeholder")
-              }
-              placeholderTextColor={themeColors.placeholder}
-              multiline
-              textAlignVertical="top"
-              style={{ minHeight: 48, maxHeight: 120 }}
-              className="rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
-            />
-            <Button
-              label={
-                replyingTo
-                  ? t("social:comments.sendReply")
-                  : t("social:comments.sendComment")
-              }
-              disabled={!draft.trim()}
-              isLoading={isCommenting}
-              onPress={async () => {
-                if (!id || !draft.trim()) return;
-                setIsCommenting(true);
-                try {
-                  if (replyingTo) {
-                    const reply = await createReply(
-                      id,
-                      replyingTo.id,
-                      draft.trim(),
-                      mention.mentionedUserIds,
-                    );
-                    if (!reply) {
-                      throw new Error(t("social:toasts.replyFailed"));
-                    }
-                    setDraft("");
-                    setReplyingTo(null);
-                    setIncomingReply(reply);
-                    setComments((current) =>
-                      current.map((item) =>
-                        item.id === (reply.parentCommentId ?? replyingTo.id)
-                          ? { ...item, replyCount: item.replyCount + 1 }
-                          : item,
-                      ),
-                    );
-                    setPost((current) =>
-                      current
-                        ? {
-                            ...current,
-                            commentCount: current.commentCount + 1,
-                          }
-                        : current,
-                    );
-                  } else {
-                    const comment = await createComment(
-                      id,
-                      draft.trim(),
-                      mention.mentionedUserIds,
-                    );
-                    if (comment) {
-                      setComments((current) => [...current, comment]);
-                      setPost((current) =>
-                        current
-                          ? {
-                              ...current,
-                              commentCount: current.commentCount + 1,
-                            }
-                          : current,
-                      );
-                    }
-                    setDraft("");
-                  }
-                } catch (error) {
-                  showToast({
-                    type: "error",
-                    title: replyingTo
-                      ? t("social:toasts.replyFailed")
-                      : t("social:toasts.commentFailed"),
-                    description: getApiErrorMessage(error),
-                  });
-                } finally {
-                  setIsCommenting(false);
+            <View className="flex-row items-end gap-2">
+              <AppTextInput
+                value={draft}
+                onSelectionChange={(event) =>
+                  mention.onSelectionChange(event.nativeEvent.selection.start)
                 }
-              }}
-            />
+                onChangeText={setDraft}
+                placeholder={
+                  replyingTo
+                    ? t("social:comments.replyPlaceholder", {
+                        username: replyUsername,
+                      })
+                    : t("social:comments.placeholder")
+                }
+                placeholderTextColor={themeColors.placeholder}
+                multiline
+                textAlignVertical="top"
+                style={{ minHeight: 48, maxHeight: 120 }}
+                className="min-w-0 flex-1 rounded-2xl border border-border-default px-4 py-3 font-body text-text-primary"
+              />
+              <View className="pb-1">
+                <SendIconButton
+                  label={
+                    replyingTo
+                      ? t("social:comments.sendReply")
+                      : t("social:comments.sendComment")
+                  }
+                  disabled={!draft.trim()}
+                  loading={isCommenting}
+                  onPress={() => void submitComment()}
+                />
+              </View>
+            </View>
 
-            <Button
-              label={t("social:report")}
-              variant="dangerOutline"
-              size="sm"
-              onPress={() =>
-                router.push({
-                  pathname: "/report",
-                  params: { entityType: "2", entityId: post.id },
-                })
-              }
-            />
+            {post.userId !== user?.id ? (
+              <Button
+                label={t("social:report")}
+                variant="dangerOutline"
+                size="sm"
+                onPress={() =>
+                  router.push({
+                    pathname: "/report",
+                    params: { entityType: "2", entityId: post.id },
+                  })
+                }
+              />
+            ) : null}
           </View>
         </>
       )}

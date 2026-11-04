@@ -38,6 +38,7 @@ function toSportOptions(sports: Sport[]): SportOption[] {
       key: sport.slug,
       label: sport.name,
       icon: sportIconForSlug(sport.slug),
+      coverImageUrl: sport.coverImageUrl,
       description: sport.categoryName ?? undefined,
       groupKey: sport.categoryId ?? undefined,
     }));

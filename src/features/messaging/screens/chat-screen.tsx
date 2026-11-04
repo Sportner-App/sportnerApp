@@ -6,8 +6,6 @@ import { Pressable, ScrollView, View } from "react-native";
 import { useKeyboardHandler } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useKeyboardHeight } from "@/hooks/use-keyboard-height";
-
 import { useMentionComposer } from "@/features/feed/hooks/use-mention-composer";
 import { normalizeSearch } from "@/utils/search";
 import {
@@ -22,6 +20,7 @@ import {
   Avatar,
   BottomSheet,
   EmptyState,
+  KeyboardDock,
   ScreenHeader,
   AppText as Text,
 } from "@/components";
@@ -91,7 +90,6 @@ export function EventChatScreen({
   const { user } = useSession();
   const { showToast } = useToast();
   const insets = useSafeAreaInsets();
-  const keyboardHeight = useKeyboardHeight();
   const { t } = useTranslation("messaging");
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversation, setConversation] = useState<ApiConversation | null>(
@@ -306,6 +304,7 @@ export function EventChatScreen({
   );
   const [backgroundSheetOpen, setBackgroundSheetOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const openBackgroundAfterMenu = useRef(false);
   const [eventImageUrl, setEventImageUrl] = useState<string | null>(null);
 
   // Sohbet yanıtı etkinliğin görselini taşımıyor, yalnızca kimliğini. Zemin
@@ -469,7 +468,6 @@ export function EventChatScreen({
     <AppScreen
       keyboardAvoiding
       keyboardAwareScroll={false}
-      keyboardVerticalOffset={54}
       scrollRef={scrollRef}
       onContentSizeChange={handleContentSizeChange}
       background={
@@ -549,7 +547,7 @@ export function EventChatScreen({
         ) : (
           // Yazma alanı kendi zeminini taşıyor: fotoğraflı sohbette şeffaf bir
           // çubuk, altındaki açık bölgede kayboluyordu.
-          <View className="border-t border-border-default bg-background-primary/95">
+          <KeyboardDock>
             {mention.isPicking && mention.suggestions.length > 0 ? (
               <View className="gap-1 border-b border-border-default px-4 py-2">
                 {mention.suggestions.map((member) => (
@@ -578,11 +576,7 @@ export function EventChatScreen({
             ) : null}
 
             <View
-              style={{
-                paddingBottom:
-                  keyboardHeight > 0 ? 8 : Math.max(insets.bottom, 10),
-              }}
-              className="flex-row items-end gap-2 px-5 pt-4"
+              className="flex-row items-end gap-2 px-4 pt-2"
             >
               <AppTextInput
                 value={draft}
@@ -631,7 +625,7 @@ export function EventChatScreen({
                 />
               </Pressable>
             </View>
-          </View>
+          </KeyboardDock>
         )
       }
     >
@@ -663,6 +657,12 @@ export function EventChatScreen({
       <BottomSheet
         visible={menuOpen}
         onClose={() => setMenuOpen(false)}
+        onClosed={() => {
+          if (openBackgroundAfterMenu.current) {
+            openBackgroundAfterMenu.current = false;
+            setBackgroundSheetOpen(true);
+          }
+        }}
         title={t("menu.title")}
         subtitle={headerTitle}
       >
@@ -670,8 +670,8 @@ export function EventChatScreen({
           <Pressable
             accessibilityRole="button"
             onPress={() => {
+              openBackgroundAfterMenu.current = true;
               setMenuOpen(false);
-              setBackgroundSheetOpen(true);
             }}
             className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-4 active:bg-surface-secondary"
           >

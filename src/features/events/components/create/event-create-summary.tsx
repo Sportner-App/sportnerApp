@@ -1,7 +1,9 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { View } from "react-native";
+import { useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
+import { shortLocation } from "@/features/events/address";
 import { useDurationOptions } from "@/features/events/copy";
 import {
   skillKeyFromCode,
@@ -17,7 +19,13 @@ import type { IconName } from "@/types/components";
 import type { CreateEventFormValues } from "@/features/events/types";
 import type { SportOption } from "@/features/sports/types";
 import { getCurrentLocale } from "@/i18n";
-import { AppText as Text } from "@/components";
+import { AppText as Text, Chip } from "@/components";
+import { resolveEventPhoto } from "@/features/sports/sport-images";
+import {
+  MetaItem,
+  MistOverlay,
+  SportPhoto,
+} from "@/features/events/components/event-card-parts";
 
 type EventCreateSummaryProps = {
   values: CreateEventFormValues;
@@ -38,32 +46,23 @@ function formatSummaryDate(date: Date) {
   return `${day} · ${time}`;
 }
 
-function compactLocation(address: string) {
-  const trimmed = address.trim();
-  if (!trimmed) {
-    return null;
-  }
-
-  return trimmed.split(",")[0]?.trim() || trimmed;
-}
-
-function SummaryRow({
+function SummaryPill({
   icon,
-  children,
+  label,
   accent,
 }: {
   icon: IconName;
-  children: string;
+  label: string;
   accent: string;
 }) {
   return (
-    <View className="flex-row items-center gap-2.5">
-      <FontAwesome6 name={icon} size={12} color={accent} />
+    <View className="max-w-full flex-row items-center gap-1.5 rounded-full border border-border-default bg-surface-secondary px-3 py-1.5">
+      <FontAwesome6 name={icon} size={11} color={accent} />
       <Text
-        className="flex-1 font-body text-body-sm text-text-secondary"
         numberOfLines={1}
+        className="shrink font-body-bold text-caption text-text-secondary"
       >
-        {children}
+        {label}
       </Text>
     </View>
   );
@@ -74,14 +73,16 @@ export function EventCreateSummary({
   sportOptions,
 }: EventCreateSummaryProps) {
   const { t } = useTranslation("eventCreate");
+  const [photoSize, setPhotoSize] = useState({ width: 0, height: 0 });
   const SKILL_LEVEL_LABELS = useSkillLevelLabels();
   const DURATION_OPTIONS = useDurationOptions();
   const sport = sportOptions.find((option) => option.key === values.sportSlug);
   const sportToken = sportAccentToken(values.sportSlug);
   const accent = sportToken?.accent ?? themeColors.brand.primary;
-  const soft = sportToken?.soft ?? themeColors.surface.secondary;
   const title = values.title.trim();
-  const location = compactLocation(values.addressText);
+  const location = values.addressText.trim()
+    ? shortLocation(values.addressText)
+    : null;
   const duration =
     DURATION_OPTIONS.find((option) => option.minutes === values.durationMinutes)
       ?.label ??
@@ -97,99 +98,115 @@ export function EventCreateSummary({
       : null;
   const schedule = [dateLabel, duration].filter(Boolean).join("   •   ");
 
+  const gender =
+    values.participantGender === 1
+      ? t("participantGender.womenOnly")
+      : values.participantGender === 2
+        ? t("participantGender.menOnly")
+        : t("participantGender.everyone");
+  const ageLabel = values.hasAgeRestriction
+    ? formatAgeRange(
+        Number(values.minParticipantAge),
+        Number(values.maxParticipantAge),
+      )
+    : formatAgeRange(null, null);
+  const feeLabel = formatEventFee(
+    values.isPaid,
+    values.isPaid ? parseFeeAmount(values.feeAmountText) : null,
+  );
+
   return (
     <View>
       <Text className="mb-2 font-body-bold text-label text-text-secondary">
         {t("summary.heading")}
       </Text>
 
-      <View className="rounded-[24px] border border-border-default bg-surface-primary px-4 py-4">
-        {sport ? (
-          <View className="flex-row items-center gap-2.5">
-            <View
-              className="h-9 w-9 items-center justify-center rounded-full"
-              style={{ backgroundColor: soft }}
-            >
-              <FontAwesome6 name={sport.icon} size={14} color={accent} />
+      <View className="overflow-hidden rounded-[24px] border border-border-default bg-surface-primary">
+        {/* Yayınlanınca listede görünecek kartın aynısı: fotoğraf ve sis. */}
+        <View
+          className="min-h-[190px] justify-between px-4 py-3.5"
+          onLayout={(event) => {
+            const { width, height } = event.nativeEvent.layout;
+            if (width !== photoSize.width || height !== photoSize.height) {
+              setPhotoSize({ width, height });
+            }
+          }}
+        >
+          <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+            <SportPhoto
+              image={resolveEventPhoto(sport?.coverImageUrl)}
+              width={photoSize.width}
+              height={photoSize.height}
+            />
+            <MistOverlay
+              fadeId="create-summary"
+              width={photoSize.width}
+              height={photoSize.height}
+            />
+          </View>
+
+          {sport ? (
+            <Chip
+              variant="sport"
+              sport={values.sportSlug}
+              icon={sport.icon}
+              label={sport.label}
+              className="mb-3"
+            />
+          ) : (
+            <View />
+          )}
+
+          <View className="w-[72%] gap-2">
+            {title ? (
+              <Text
+                numberOfLines={2}
+                className="font-display text-heading-sm leading-6 text-white"
+              >
+                {title}
+              </Text>
+            ) : null}
+            <View className="gap-1">
+              {location ? (
+                <MetaItem icon="location-dot" label={location} accent={accent} />
+              ) : null}
+              <MetaItem icon="calendar-day" label={schedule} accent={accent} />
             </View>
-            <Text
-              className="font-body-bold text-body-sm text-text-primary"
-              numberOfLines={1}
-            >
-              {sport.label}
-            </Text>
           </View>
-        ) : null}
+        </View>
 
-        {title ? (
-          <Text
-            className={`font-display text-heading-sm text-text-primary ${sport ? "mt-2" : ""}`}
-            numberOfLines={1}
-          >
-            {title}
-          </Text>
-        ) : null}
-
-        {location || schedule || playersLabel ? (
-          <View className={`gap-2 ${sport || title ? "mt-3" : ""}`}>
-            {location ? (
-              <SummaryRow icon="location-dot" accent={accent}>
-                {location}
-              </SummaryRow>
-            ) : null}
-            {schedule ? (
-              <SummaryRow icon="calendar-days" accent={accent}>
-                {schedule}
-              </SummaryRow>
-            ) : null}
-            {playersLabel ? (
-              <SummaryRow icon="users" accent={accent}>
-                {playersLabel}
-              </SummaryRow>
-            ) : null}
-            <SummaryRow icon="id-card" accent={accent}>
-              {values.hasAgeRestriction
-                ? formatAgeRange(
-                    Number(values.minParticipantAge),
-                    Number(values.maxParticipantAge),
-                  )
-                : formatAgeRange(null, null)}
-            </SummaryRow>
-            <SummaryRow icon="venus-mars" accent={accent}>
-              {values.participantGender === 1
-                ? t("participantGender.womenOnly")
-                : values.participantGender === 2
-                  ? t("participantGender.menOnly")
-                  : t("participantGender.everyone")}
-            </SummaryRow>
-            {values.isRecurring ? (
-              <SummaryRow icon="repeat" accent={accent}>
-                {[
-                  t("recurring.summarySeries", {
-                    count: values.recurrenceCount,
-                  }),
-                  values.recurrenceIntervalWeeks === 1
-                    ? t("recurring.summaryWeekly")
-                    : t("recurring.summaryEveryNWeeks", {
-                        weeks: values.recurrenceIntervalWeeks,
-                      }),
-                  t("recurring.summaryAutoOpens"),
-                ].join(" · ")}
-              </SummaryRow>
-            ) : null}
-            {values.skillLevel != null ? (
-              <SummaryRow icon="medal" accent={accent}>
-                {SKILL_LEVEL_LABELS[skillKeyFromCode(values.skillLevel)]}
-              </SummaryRow>
-            ) : null}
-            <SummaryRow icon="coins" accent={accent}>
-              {formatEventFee(
-                values.isPaid,
-                values.isPaid ? parseFeeAmount(values.feeAmountText) : null,
-              )}
-            </SummaryRow>
-          </View>
-        ) : null}
+        <View className="flex-row flex-wrap gap-2 p-3">
+          {playersLabel ? (
+            <SummaryPill icon="users" accent={accent} label={playersLabel} />
+          ) : null}
+          <SummaryPill icon="id-card" accent={accent} label={ageLabel} />
+          <SummaryPill icon="venus-mars" accent={accent} label={gender} />
+          {values.skillLevel != null ? (
+            <SummaryPill
+              icon="medal"
+              accent={accent}
+              label={SKILL_LEVEL_LABELS[skillKeyFromCode(values.skillLevel)]}
+            />
+          ) : null}
+          <SummaryPill icon="coins" accent={accent} label={feeLabel} />
+          {values.isRecurring ? (
+            <SummaryPill
+              icon="repeat"
+              accent={accent}
+              label={[
+                t("recurring.summarySeries", {
+                  count: values.recurrenceCount,
+                }),
+                values.recurrenceIntervalWeeks === 1
+                  ? t("recurring.summaryWeekly")
+                  : t("recurring.summaryEveryNWeeks", {
+                      weeks: values.recurrenceIntervalWeeks,
+                    }),
+                t("recurring.summaryAutoOpens"),
+              ].join(" · ")}
+            />
+          ) : null}
+        </View>
       </View>
     </View>
   );

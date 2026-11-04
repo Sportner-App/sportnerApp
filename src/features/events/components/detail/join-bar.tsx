@@ -120,7 +120,6 @@ function resolveBar({
 
   if (hasPendingParticipation(event.myParticipationStatus)) {
     return {
-      statusTitle: t("join.applicationSent"),
       actionLabel: t("join.awaitingApproval"),
       variant: "secondary",
     };

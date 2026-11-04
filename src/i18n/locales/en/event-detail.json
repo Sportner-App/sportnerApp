@@ -192,7 +192,6 @@
     "invitedBy": "{{name}} invited you",
     "accept": "Accept",
     "decline": "Decline",
-    "applicationSent": "Your request was sent",
     "awaitingApproval": "Awaiting approval",
     "onWaitlist": "You're on the waitlist",
     "closed": "Joining closed",

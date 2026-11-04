@@ -23,6 +23,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useKeyboardToolbarVisible } from "@/hooks/use-keyboard-toolbar-visible";
 import {
   KeyboardProvider,
   KeyboardToolbar,
@@ -93,6 +94,7 @@ function RootLayoutNav() {
 
 function ThemedRootLayoutNav() {
   const { t } = useTranslation("common");
+  const keyboardToolbarVisible = useKeyboardToolbarVisible();
   const { resolvedScheme: colorScheme } = useThemePreference();
   const appColors =
     colorScheme === "dark" ? DARK_THEME_COLORS : LIGHT_THEME_COLORS;
@@ -132,10 +134,12 @@ function ThemedRootLayoutNav() {
                 <Stack.Screen name="report" />
                 <Stack.Screen name="help" />
               </Stack>
-              <KeyboardToolbar
-                doneText={t("close")}
-                theme={keyboardToolbarTheme}
-              />
+              {keyboardToolbarVisible ? (
+                <KeyboardToolbar
+                  doneText={t("close")}
+                  theme={keyboardToolbarTheme}
+                />
+              ) : null}
             </ThemeProvider>
           </UpdateRequiredGate>
         </AppProviders>
