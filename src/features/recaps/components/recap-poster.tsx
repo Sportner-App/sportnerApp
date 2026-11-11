@@ -1,18 +1,18 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useTranslation } from "react-i18next";
-import { Image, View } from "react-native";
+import { View } from "react-native";
 
 import { AppText as Text, Avatar } from "@/components";
 import { fonts, palette } from "@/constants/theme";
+import { useCountUp } from "@/features/profile/components/sport-report-card";
 import {
-  PosterBackdrop,
-  useCountUp,
-} from "@/features/profile/components/sport-report-card";
+  PosterBrand,
+  PosterGlow,
+  PosterStatStrip,
+} from "@/features/recaps/components/poster-parts";
 import { formatRecapMonth, formatWeekday } from "@/features/recaps/format";
 import type { MonthlyRecap } from "@/features/recaps/types";
 import { sportIconForSlug } from "@/features/sports/sports";
-
-const LOGO = require("../../../../assets/images/icon.png");
 
 /**
  * Aylık özet posteri: ekranda ve paylaşılan hikâye görselinde (360×640 → 1080×1920)
@@ -86,14 +86,18 @@ export function RecapPoster({
           borderRadius: story ? 0 : 26,
           backgroundColor: palette.canvas,
           padding: story ? 28 : 20,
-          gap: story ? 20 : 18,
+          gap: story ? 12 : 18,
         },
         story ? { width: 360, height: 640, justifyContent: "space-between" } : null,
       ]}
     >
-      <PosterBackdrop />
+      <PosterGlow />
 
-      <View style={{ gap: 4 }}>
+      <View style={{ position: "absolute", top: story ? 28 : 20, right: story ? 28 : 20 }}>
+        <PosterBrand />
+      </View>
+
+      <View style={{ gap: 4, paddingRight: 90 }}>
         <Text
           style={{
             fontFamily: fonts.bodyBold,
@@ -117,8 +121,8 @@ export function RecapPoster({
           <Text
             style={{
               fontFamily: fonts.display,
-              fontSize: story ? 104 : 84,
-              lineHeight: story ? 112 : 90,
+              fontSize: story ? 92 : 84,
+              lineHeight: story ? 100 : 90,
               color: palette.lime,
               letterSpacing: -3,
             }}
@@ -146,30 +150,7 @@ export function RecapPoster({
         ) : null}
       </View>
 
-      <View style={{ flexDirection: "row", gap: 8 }}>
-        {stats.map((stat) => (
-          <View
-            key={stat.label}
-            style={{
-              flex: 1,
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: palette.line,
-              backgroundColor: palette.surface,
-              paddingVertical: 12,
-              paddingHorizontal: 10,
-              gap: 2,
-            }}
-          >
-            <Text style={{ fontFamily: fonts.display, fontSize: 22, color: palette.ink }}>
-              {stat.value}
-            </Text>
-            <Text numberOfLines={1} style={{ fontFamily: fonts.body, fontSize: 11, color: palette.inkMuted }}>
-              {stat.label}
-            </Text>
-          </View>
-        ))}
-      </View>
+      <PosterStatStrip stats={stats} />
 
       <View style={{ gap: 10 }}>
         {highlights.map((item) => (
@@ -217,23 +198,6 @@ export function RecapPoster({
         </View>
       ) : null}
 
-      {story ? (
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 6,
-            borderTopWidth: 1,
-            borderTopColor: palette.line,
-            paddingTop: 12,
-          }}
-        >
-          <Image source={LOGO} style={{ width: 18, height: 18, borderRadius: 5 }} />
-          <Text style={{ fontFamily: fonts.displaySemiBold, fontSize: 12, color: palette.ink }}>
-            Sportner
-          </Text>
-        </View>
-      ) : null}
     </View>
   );
 }

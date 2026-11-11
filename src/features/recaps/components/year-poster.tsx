@@ -1,14 +1,16 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useTranslation } from "react-i18next";
-import { Image, View } from "react-native";
+import { View } from "react-native";
 
 import { AppText as Text, Avatar } from "@/components";
 import { fonts, palette } from "@/constants/theme";
-import { PosterBackdrop } from "@/features/profile/components/sport-report-card";
+import {
+  PosterBrand,
+  PosterGlow,
+  PosterStatStrip,
+} from "@/features/recaps/components/poster-parts";
 import type { YearlyRecap } from "@/features/recaps/types";
 import { sportIconForSlug } from "@/features/sports/sports";
-
-const LOGO = require("../../../../assets/images/icon.png");
 
 /**
  * Yıllık özetin paylaşılan kartı (360×640 → 1080×1920). Temadan bağımsız
@@ -49,9 +51,13 @@ export function YearPoster({
         justifyContent: "space-between",
       }}
     >
-      <PosterBackdrop />
+      <PosterGlow />
 
-      <View style={{ gap: 4 }}>
+      <View style={{ position: "absolute", top: 28, right: 28 }}>
+        <PosterBrand />
+      </View>
+
+      <View style={{ gap: 4, paddingRight: 90 }}>
         <Text style={{ fontFamily: fonts.bodyBold, fontSize: 11, letterSpacing: 2.4, color: palette.lime }}>
           {t("year.share.kicker", { year: recap.year }).toLocaleUpperCase()}
         </Text>
@@ -90,27 +96,7 @@ export function YearPoster({
         </Text>
       </View>
 
-      <View style={{ flexDirection: "row", gap: 6 }}>
-        {stats.map((stat) => (
-          <View
-            key={stat.label}
-            style={{
-              flex: 1,
-              borderRadius: 14,
-              borderWidth: 1,
-              borderColor: palette.line,
-              backgroundColor: palette.surface,
-              paddingVertical: 10,
-              paddingHorizontal: 8,
-            }}
-          >
-            <Text style={{ fontFamily: fonts.display, fontSize: 20, color: palette.ink }}>{stat.value}</Text>
-            <Text numberOfLines={1} style={{ fontFamily: fonts.body, fontSize: 10, color: palette.inkMuted }}>
-              {stat.label}
-            </Text>
-          </View>
-        ))}
-      </View>
+      <PosterStatStrip stats={stats} compact />
 
       <View style={{ gap: 10 }}>
         {lead ? (
@@ -130,19 +116,6 @@ export function YearPoster({
         ) : null}
       </View>
 
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 6,
-          borderTopWidth: 1,
-          borderTopColor: palette.line,
-          paddingTop: 12,
-        }}
-      >
-        <Image source={LOGO} style={{ width: 18, height: 18, borderRadius: 5 }} />
-        <Text style={{ fontFamily: fonts.displaySemiBold, fontSize: 12, color: palette.ink }}>Sportner</Text>
-      </View>
     </View>
   );
 }
