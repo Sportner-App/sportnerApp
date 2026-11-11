@@ -19,10 +19,11 @@ import {
   markAllNotificationsRead,
   markNotificationRead,
 } from "@/features/notifications/services/notifications-service";
+import { NotificationRow } from "@/features/notifications/components/notification-row";
+import { groupNotifications } from "@/features/notifications/group-notifications";
 import type { ApiNotification } from "@/features/notifications/types";
 import {
   NOTIFICATION_TYPE,
-  notificationCopy,
 } from "@/features/notifications/types";
 import { resolveNotificationRoute } from "@/features/notifications/notification-routing";
 
@@ -99,7 +100,7 @@ export function NotificationsScreen() {
         />
       }
       belowHeader={<LinearRefreshBar visible={isRefreshing} />}
-      contentClassName="gap-3 px-6 pt-2"
+      contentClassName="px-6"
       refreshControl={brandRefreshControl({
         refreshing: isRefreshing,
         onRefresh: refresh,
@@ -113,29 +114,20 @@ export function NotificationsScreen() {
           {t("notifications:empty")}
         </Text>
       ) : (
-        items.map((item) => {
-          const copy = notificationCopy(item);
-          return (
-            <Pressable
-              key={item.id}
-              onPress={() => open(item)}
-              className={`rounded-2xl border px-4 py-3.5 ${
-                item.isRead
-                  ? "border-border-default bg-surface-primary"
-                  : "border-brand-primary/30 bg-brand-primary/10"
-              }`}
-            >
-              <Text className="font-body-bold text-body-sm text-text-primary">
-                {copy.title}
-              </Text>
-              {copy.body && copy.body !== copy.title ? (
-                <Text className="mt-1 font-body text-caption text-text-tertiary">
-                  {copy.body}
-                </Text>
-              ) : null}
-            </Pressable>
-          );
-        })
+        groupNotifications(items).map((group) => (
+          <View key={group.key}>
+            <Text className="pb-1 pt-5 font-display text-body-sm text-text-primary">
+              {t(`notifications:groups.${group.key}`)}
+            </Text>
+            {group.items.map((item) => (
+              <NotificationRow
+                key={item.id}
+                item={item}
+                onPress={() => open(item)}
+              />
+            ))}
+          </View>
+        ))
       )}
 
       {isLoadingMore ? (

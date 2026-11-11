@@ -15,6 +15,8 @@ export type ApiNotification = {
   /** How many occurrences are folded into this row (e.g. several DMs from the same person
    * while still unread). 1 for a normal, ungrouped notification. */
   occurrenceCount: number;
+  /** Eski API sürümünden gelmeyebilir; yoksa baş harfler gösterilir. */
+  actorProfileImageUrl?: string | null;
 };
 
 export type ApiNotificationSetting = {

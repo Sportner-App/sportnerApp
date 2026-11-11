@@ -3,6 +3,11 @@
   "markAllRead": "Mark all read",
   "loading": "Loading notifications",
   "empty": "No new notifications.",
+  "groups": {
+    "today": "Today",
+    "week": "This week",
+    "older": "Earlier"
+  },
   "loadFailed": "Could not load",
   "settings": {
     "title": "NOTIFICATION SETTINGS",

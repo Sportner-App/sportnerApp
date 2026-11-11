@@ -3,6 +3,11 @@
   "markAllRead": "Tümünü oku",
   "loading": "Bildirimler yükleniyor",
   "empty": "Yeni bildirimin yok.",
+  "groups": {
+    "today": "Bugün",
+    "week": "Bu hafta",
+    "older": "Daha eski"
+  },
   "loadFailed": "Yüklenemedi",
   "settings": {
     "title": "BİLDİRİM AYARLARI",
