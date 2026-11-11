@@ -241,6 +241,12 @@ const KVKK_DOCUMENT: LegalDocument = {
               "Anlık bildirim gönderimi",
               "Yurt dışı",
             ],
+            [
+              "Cloudflare",
+              "Bize yazdığınız e-postalar",
+              "Destek e-postalarının iletilmesi",
+              "Yurt dışı",
+            ],
           ],
         },
         {
@@ -515,6 +521,7 @@ const PRIVACY_DOCUMENT: LegalDocument = {
             ["Mapbox", "Harita", "Harita görüntüleme talebi"],
             ["Resend", "E-posta gönderimi", "E-posta adresin"],
             ["Expo", "Anlık bildirim", "Cihaz bildirim jetonun"],
+            ["Cloudflare", "Destek e-postası yönlendirme", "Bize yazdığın e-postalar"],
           ],
         },
         {
