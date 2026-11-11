@@ -7,6 +7,7 @@ import { ScrollView as GestureScrollView } from "react-native-gesture-handler";
 
 import { AppText as Text, Avatar } from "@/components";
 import { CommentsSheet } from "@/features/feed/components/comments-sheet";
+import { MentionText } from "@/features/feed/components/mention-text";
 import { useSession, useToast } from "@/contexts";
 import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
@@ -95,6 +96,7 @@ export function DiscoverPost({
     (item) => item.mediaType === POST_MEDIA_TYPE.video,
   );
   const caption = post.content?.trim() ?? "";
+  const isTextPost = images.length === 0 && videos.length === 0;
 
   const like = async () => {
     if (isLiking) {
@@ -132,7 +134,11 @@ export function DiscoverPost({
 
   return (
     <View>
-      <View className="mb-2.5 flex-row items-center gap-3 px-4">
+      <View
+        className={`flex-row items-center gap-3 px-4 ${
+          isTextPost ? "mb-4" : "mb-2.5"
+        }`}
+      >
         <Pressable
           onPress={onAuthorPress}
           className="flex-1 flex-row items-center gap-3 active:opacity-75"
@@ -168,7 +174,10 @@ export function DiscoverPost({
         ) : null}
       </View>
 
-      <Pressable onPress={handleMediaPress} className="bg-background-secondary">
+      <Pressable
+        onPress={handleMediaPress}
+        className={isTextPost ? "px-4" : "bg-background-secondary"}
+      >
         {images.length > 0 ? (
           <GestureScrollView
             horizontal
@@ -188,30 +197,28 @@ export function DiscoverPost({
               />
             ))}
           </GestureScrollView>
-        ) : (
+        ) : videos.length > 0 ? (
           <View
-            className="justify-center bg-background-secondary px-6"
+            className="items-center justify-center gap-3 bg-background-secondary px-6"
             style={{ width: mediaWidth, height: mediaWidth * 0.9 }}
           >
-            {videos.length > 0 ? (
-              <View className="items-center gap-3">
-                <View className="h-16 w-16 items-center justify-center rounded-full border border-brand-primary/40 bg-brand-primary/10">
-                  <FontAwesome6
-                    name="play"
-                    size={22}
-                    color={themeColors.brand.primary}
-                  />
-                </View>
-                <Text className="text-center font-body text-body-sm text-text-secondary">
-                  {t("social:videoShare")}
-                </Text>
-              </View>
-            ) : (
-              <Text className="font-display text-heading-md text-text-primary">
-                {caption || t("social:fallback.post")}
-              </Text>
-            )}
+            <View className="h-16 w-16 items-center justify-center rounded-full border border-brand-primary/40 bg-brand-primary/10">
+              <FontAwesome6
+                name="play"
+                size={22}
+                color={themeColors.brand.primary}
+              />
+            </View>
+            <Text className="text-center font-body text-body-sm text-text-secondary">
+              {t("social:videoShare")}
+            </Text>
           </View>
+        ) : (
+          <MentionText
+            className="font-body text-body leading-6 text-text-primary"
+            content={caption || t("social:fallback.post")}
+            mentions={post.mentions}
+          />
         )}
 
         {/* Etkinlikten paylaşılan kare: hangi maçtan olduğu ve oraya geçiş. */}
@@ -220,7 +227,11 @@ export function DiscoverPost({
             accessibilityRole="link"
             hitSlop={HIT_SLOP}
             onPress={() => router.push(`/events/${post.event?.id}`)}
-            className="absolute left-3 top-3 max-w-[75%] flex-row items-center gap-1.5 rounded-pill bg-background-primary/75 px-2.5 py-1.5 active:opacity-80"
+            className={`max-w-[75%] flex-row items-center gap-1.5 rounded-pill px-2.5 py-1.5 active:opacity-80 ${
+              isTextPost
+                ? "mt-2.5 self-start bg-background-secondary"
+                : "absolute left-3 top-3 bg-background-primary/75"
+            }`}
           >
             <FontAwesome6
               name={sportIconForSlug(post.event.sportSlug)}
@@ -260,7 +271,7 @@ export function DiscoverPost({
         </View>
       ) : null}
 
-      <View className="gap-3 px-4 pt-3">
+      <View className={`px-4 ${isTextPost ? "gap-4 pt-4" : "gap-3 pt-3"}`}>
         <View className="flex-row items-center gap-2">
           <Pressable
             hitSlop={HIT_SLOP}
@@ -303,17 +314,17 @@ export function DiscoverPost({
         {caption && images.length > 0 ? (
           <Text className="font-body text-body-sm leading-5 text-text-primary">
             <Text className="font-body-bold">{athleteHandle} </Text>
-            {caption}
+            <MentionText content={caption} mentions={post.mentions} />
           </Text>
         ) : null}
 
-        <Pressable onPress={() => setCommentsOpen(true)}>
-          <Text className="font-body text-body-sm text-text-secondary">
-            {post.commentCount > 0
-              ? t("social:viewComments", { count: post.commentCount })
-              : t("social:comments.placeholder")}
-          </Text>
-        </Pressable>
+        {post.commentCount > 0 ? (
+          <Pressable onPress={() => setCommentsOpen(true)}>
+            <Text className="font-body text-body-sm text-text-secondary">
+              {t("social:viewComments", { count: post.commentCount })}
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
 
       {/* Yorumlar kartın içinde değil: yazarken ve okurken ekranın tamamı
