@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Keyboard, Platform } from "react-native";
+import { KeyboardEvents } from "react-native-keyboard-controller";
 
 /**
  * Klavyenin kapladığı yükseklik; klavye kapalıyken 0.
@@ -12,22 +12,19 @@ import { Keyboard, Platform } from "react-native";
  * - **Sabit yükseklik sınırları:** klavye açılınca ekranda kalan alan azalıyor.
  *   Sınır bunu hesaba katmazsa içerik üstten taşıyor.
  *
- * iOS'ta `will` olayları kullanılıyor: klavye animasyonuyla aynı karede
- * güncellenip zıplama olmasın diye. Android'de o olaylar yok, `did` kalıyor.
+ * keyboard-controller olayları kullanılıyor: RN'nin `Keyboard` olayları
+ * Android'de `will` sürümlerini vermiyor ve edge-to-edge telefonlarda yükseklik
+ * güvenilir gelmiyordu. Bu olaylar iki platformda da klavye animasyonu
+ * başlarken gelir.
  */
 export function useKeyboardHeight() {
   const [height, setHeight] = useState(0);
 
   useEffect(() => {
-    const showEvent =
-      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-    const hideEvent =
-      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
-
-    const showSub = Keyboard.addListener(showEvent, (event) => {
-      setHeight(event.endCoordinates.height);
+    const showSub = KeyboardEvents.addListener("keyboardWillShow", (event) => {
+      setHeight(event.height);
     });
-    const hideSub = Keyboard.addListener(hideEvent, () => {
+    const hideSub = KeyboardEvents.addListener("keyboardWillHide", () => {
       setHeight(0);
     });
 

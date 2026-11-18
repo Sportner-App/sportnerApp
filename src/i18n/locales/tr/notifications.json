@@ -34,7 +34,7 @@
         "description": "Yeni mesajlar ve bir sohbete eklenmen."
       },
       "organizations": {
-        "title": "Organizasyonlar",
+        "title": "Kulüpler",
         "description": "Üyelik istekleri, onaylar, rol değişiklikleri ve üyelik durumun."
       },
       "achievements": {
@@ -65,12 +65,12 @@
     "11": "mesaj gönderdi",
     "14": "etkinliğine soru sordu",
     "15": "soruna yanıt verdi",
-    "16": "organizasyona katılmak istiyor",
-    "17": "organizasyon katılımını onayladı",
-    "18": "organizasyon katılımını reddetti",
-    "19": "organizasyon rolünü güncelledi",
-    "20": "seni organizasyondan çıkardı",
-    "21": "seni organizasyondan engelledi"
+    "16": "kulübe katılmak istiyor",
+    "17": "kulüp katılımını onayladı",
+    "18": "kulüp katılımını reddetti",
+    "19": "kulüp rolünü güncelledi",
+    "20": "seni kulüpten çıkardı",
+    "21": "seni kulüpten engelledi"
   },
   "settingsLabels": {
     "0": "Arkadaşlık isteği",
@@ -89,12 +89,12 @@
     "13": "Görev tamamlandı",
     "14": "Etkinlik sorusu",
     "15": "Soru yanıtı",
-    "16": "Organizasyon katılım isteği",
-    "17": "Organizasyon katılımı onaylandı",
-    "18": "Organizasyon katılımı reddedildi",
-    "19": "Organizasyon rolü değişti",
-    "20": "Organizasyondan çıkarıldın",
-    "21": "Organizasyondan engellendin",
+    "16": "Kulüp katılım isteği",
+    "17": "Kulüp katılımı onaylandı",
+    "18": "Kulüp katılımı reddedildi",
+    "19": "Kulüp rolü değişti",
+    "20": "Kulüpten çıkarıldın",
+    "21": "Kulüpten engellendin",
     "22": "Değerlendirme hatırlatması",
     "23": "Yeni değerlendirmeler",
     "24": "Yeni üye katıldı",

@@ -33,6 +33,7 @@ export function Input({
   icon,
   isPassword = false,
   disabled = false,
+  size = "md",
   onFocus,
   onBlur,
   ...inputProps
@@ -81,9 +82,17 @@ export function Input({
 
       <Animated.View
         style={containerStyle}
-        className="min-h-[58px] flex-row items-center gap-3 rounded-2xl border bg-surface-primary px-4"
+        className={`flex-row items-center rounded-2xl border bg-surface-primary px-4 ${
+          size === "sm" ? "min-h-[44px] gap-2.5" : "min-h-[58px] gap-3"
+        }`}
       >
-        {icon && <FontAwesome6 name={icon} size={16} color={iconColor} />}
+        {icon && (
+          <FontAwesome6
+            name={icon}
+            size={size === "sm" ? 14 : 16}
+            color={iconColor}
+          />
+        )}
 
         <AppTextInput
           {...inputProps}

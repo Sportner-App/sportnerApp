@@ -2,7 +2,12 @@ import { useState, type ComponentProps } from "react";
 import { Pressable, useWindowDimensions, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { AppText as Text, BottomSheet, Input, SendIconButton } from "@/components";
+import {
+  AppText as Text,
+  BottomSheet,
+  Input,
+  SendIconButton,
+} from "@/components";
 import { useToast } from "@/contexts";
 import { HIT_SLOP } from "@/constants/theme";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
@@ -221,10 +226,13 @@ export function EventQnASheet({
           : t("eventDetail:qna.heading")
       }
       subtitle={
-        isOrganizer ? t("eventDetail:qna.ownerIntro") : t("eventDetail:qna.intro")
+        isOrganizer
+          ? t("eventDetail:qna.ownerIntro")
+          : t("eventDetail:qna.intro")
       }
       showCancel={!composer}
       footer={composer ?? undefined}
+      footerIsComposer
     >
       <View style={{ minHeight: Math.round(windowHeight * 0.4) }}>
         {mention.isPicking ? (

@@ -1,11 +1,12 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useState } from "react";
+import { memo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 import { AppText as Text, Chip } from "@/components";
@@ -32,6 +33,8 @@ import {
   hasEventEnded,
   hasPendingParticipation,
 } from "@/features/events/status";
+import { OrganizationImage } from "@/features/organizations/components/organization-image";
+import { lightImpact } from "@/utils/haptics";
 import { formatClockTime } from "@/utils/date-format";
 import { getCurrentLocale } from "@/i18n";
 import {
@@ -44,14 +47,26 @@ import {
 type EventCardProps = {
   event: EventSummary;
   onPress?: () => void;
+  /** Kimlikle çağrılan sabit bir işleyici; memo'yu bozmaz. */
+  onPressEvent?: (eventId: string) => void;
 };
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const PRESS_MS = 120;
-export function EventCard({ event, onPress }: EventCardProps) {
+/**
+ * Kart ağır (fotoğraf, SVG sis, avatarlar). Tek seferde çiziliyor: fotoğraf ve
+ * sis ölçü beklemeden kartı dolduruyor. Liste yeniden çizildiğinde
+ * değişmeyen kartlar atlanıyor; `onPress` yerine `onPressEvent`
+ * verilirse liste her çizimde yeni fonksiyon üretmek zorunda kalmıyor.
+ */
+export const EventCard = memo(function EventCard({
+  event,
+  onPress,
+  onPressEvent,
+}: EventCardProps) {
   const { t } = useTranslation("home");
+  const router = useRouter();
   const SKILL_LEVEL_LABELS = useSkillLevelLabels();
-  const [cardSize, setCardSize] = useState({ width: 0, height: 0 });
   const scale = useSharedValue(1);
   const pressStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -132,6 +147,7 @@ export function EventCard({ event, onPress }: EventCardProps) {
     : event.dateLabel.trim() || null;
 
   const accessibilityLabel = [
+    event.organizationName,
     sportLabel
       ? t("eventCard.accessibility.sportEvent", { sport: sportLabel })
       : t("eventCard.accessibility.defaultEvent"),
@@ -150,11 +166,36 @@ export function EventCard({ event, onPress }: EventCardProps) {
     .join(", ");
 
   return (
-    <View style={[shadows.md, { borderRadius: radius.xl }]}>
+    // Gölgeli kabuğun arka planı iç kartla aynı: arka planı olmayan gölgeyi
+    // iOS her karede ekran dışında yeniden hesaplıyor.
+    <View
+      style={[
+        shadows.md,
+        {
+          borderRadius: radius.xl,
+          backgroundColor: themeColors.surface.primary,
+        },
+      ]}
+    >
       <AnimatedPressable
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}
-        onPress={onPress}
+        accessibilityActions={
+          event.organizationId && event.organizationName
+            ? [
+                {
+                  name: "openClub",
+                  label: t("eventCard.accessibility.openClub"),
+                },
+              ]
+            : undefined
+        }
+        onAccessibilityAction={(action) => {
+          if (action.nativeEvent.actionName === "openClub") {
+            router.push(`/clubs/${event.organizationId}`);
+          }
+        }}
+        onPress={onPressEvent ? () => onPressEvent(event.id) : onPress}
         onPressIn={() => {
           scale.value = withTiming(0.985, { duration: PRESS_MS });
         }}
@@ -170,26 +211,10 @@ export function EventCard({ event, onPress }: EventCardProps) {
           },
         ]}
       >
-        <View
-          className="min-h-[210px]"
-          onLayout={(event) => {
-            const { width, height } = event.nativeEvent.layout;
-            if (width !== cardSize.width || height !== cardSize.height) {
-              setCardSize({ width, height });
-            }
-          }}
-        >
+        <View className="min-h-[210px]">
           <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-            <SportPhoto
-              image={photo}
-              width={cardSize.width}
-              height={cardSize.height}
-            />
-            <MistOverlay
-              fadeId={event.id}
-              width={cardSize.width}
-              height={cardSize.height}
-            />
+            <SportPhoto image={photo} />
+            <MistOverlay />
             {isEnded ? (
               <View
                 style={[
@@ -209,14 +234,51 @@ export function EventCard({ event, onPress }: EventCardProps) {
           ) : null}
 
           <View className="z-10 min-h-[210px] justify-between px-4 py-3.5">
-            {sportLabel ? (
-              <Chip
-                variant="sport"
-                sport={event.sport}
-                icon={event.sportIcon}
-                label={sportLabel}
-                className="mb-3"
-              />
+            {sportLabel || event.organizationName ? (
+              <View className="mb-3 flex-row items-center gap-1.5">
+                {sportLabel ? (
+                  <Chip
+                    variant="sport"
+                    sport={event.sport}
+                    icon={event.sportIcon}
+                    label={sportLabel}
+                  />
+                ) : null}
+                {event.organizationName ? (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={event.organizationName}
+                    disabled={!event.organizationId}
+                    hitSlop={6}
+                    onPress={() => {
+                      lightImpact();
+                      router.push(`/clubs/${event.organizationId}`);
+                    }}
+                    className="min-w-0 shrink flex-row items-center gap-1.5 self-start rounded-small bg-surface-secondary py-1 pl-1 pr-2 active:opacity-80"
+                  >
+                    <OrganizationImage
+                      uri={event.organizationImageUrl}
+                      name={event.organizationName}
+                      size={18}
+                      radius={5}
+                      textClassName="text-overline"
+                    />
+                    {event.isOrganizationOnly ? (
+                      <FontAwesome6
+                        name="lock"
+                        size={9}
+                        color={themeColors.text.secondary}
+                      />
+                    ) : null}
+                    <Text
+                      numberOfLines={1}
+                      className="shrink font-body-bold text-caption text-text-primary"
+                    >
+                      {event.organizationName}
+                    </Text>
+                  </Pressable>
+                ) : null}
+              </View>
             ) : (
               <View />
             )}
@@ -328,4 +390,4 @@ export function EventCard({ event, onPress }: EventCardProps) {
       </AnimatedPressable>
     </View>
   );
-}
+});

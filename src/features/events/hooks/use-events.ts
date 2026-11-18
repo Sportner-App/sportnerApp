@@ -15,7 +15,6 @@ export const DEFAULT_EVENT_FILTERS: EventListFilters = {
   gender: null,
   skillLevel: null,
   isPaid: null,
-  organizationId: null,
   sportId: null,
   sortBy: "location",
 };
@@ -29,14 +28,13 @@ export type EventListFilters = {
   gender: number | null;
   skillLevel: number | null;
   isPaid: boolean | null;
-  organizationId: string | null;
   /** Tek bir spor branşı (filtre çekmecesinden seçilir). */
   sportId: string | null;
   /** "location": konuma göre yakından uzağa, "time": tarihe göre. */
   sortBy: EventSortBy;
 };
 
-export type EventFeedScope = "all" | "friends" | "organizations";
+export type EventFeedScope = "all" | "friends";
 
 /** Listeyi yakından uzağa sıralamak için kullanıcının konumu. */
 export type EventFeedOrigin = {
@@ -55,7 +53,6 @@ type EventQuery = {
 
 export function useEvents(
   initialScope: EventFeedScope = "all",
-  initialOrganizationId: string | null = null,
   origin: EventFeedOrigin = null,
 ) {
   const { t } = useTranslation("home");
@@ -69,10 +66,7 @@ export function useEvents(
   /** Chip satırındaki kategori filtresi (kategori id'si; null = Tümü). */
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [scope, setScope] = useState<EventFeedScope>(initialScope);
-  const [filters, setFilters] = useState<EventListFilters>({
-    ...DEFAULT_EVENT_FILTERS,
-    organizationId: initialOrganizationId,
-  });
+  const [filters, setFilters] = useState<EventListFilters>(DEFAULT_EVENT_FILTERS);
   const [error, setError] = useState<string | null>(null);
 
   // Konum ortam bilgisi: her çağrı yerinde argüman olarak taşımak yerine
@@ -141,11 +135,6 @@ export function useEvents(
           skillLevel: activeFilters.skillLevel ?? undefined,
           isPaid: activeFilters.isPaid ?? undefined,
           friendsOnly: activeScope === "friends",
-          organizationsOnly: activeScope === "organizations",
-          organizationId:
-            activeScope === "organizations"
-              ? (activeFilters.organizationId ?? undefined)
-              : undefined,
         });
         if (!isLatest()) return;
 
@@ -252,14 +241,8 @@ export function useEvents(
 
   const changeScope = useCallback(
     (nextScope: EventFeedScope) => {
-      const nextFilters = { ...queryRef.current.filters, organizationId: null };
       setScope(nextScope);
-      setFilters(nextFilters);
-      void fetchPage(
-        "initial",
-        { ...queryRef.current, filters: nextFilters, scope: nextScope },
-        1,
-      );
+      void fetchPage("initial", { ...queryRef.current, scope: nextScope }, 1);
     },
     [fetchPage],
   );

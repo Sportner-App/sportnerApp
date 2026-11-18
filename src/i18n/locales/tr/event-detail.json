@@ -14,6 +14,7 @@
     "questions": "Sorular"
   },
   "participantTab": {
+    "removeAccessibility": "{{name}} kişisini etkinlikten çıkar",
     "heading": "Kadro",
     "count": "{{count}} kişi",
     "empty": "Henüz onaylanmış katılımcı yok.",
@@ -29,7 +30,8 @@
   },
   "organizerSection": {
     "heading": "Etkinlik Sahibi",
-    "chatAccessibility": "Sohbete git"
+    "chatAccessibility": "Sohbete git",
+    "clubLabel": "Kulüp"
   },
   "primaryInfo": {
     "unlimited": "Sınırsız",
@@ -45,7 +47,8 @@
     },
     "paymentDisclaimer": "Uygulama üzerinden ödeme alınmaz. Ücret etkinlikte ödenir.",
     "womenOnly": "Sadece kadınlar",
-    "menOnly": "Sadece erkekler"
+    "menOnly": "Sadece erkekler",
+    "membersOnly": "Sadece üyeler"
   },
   "qna": {
     "heading": "Sorular",
@@ -75,7 +78,8 @@
     "loadFailedTitle": "Sorular yüklenemedi",
     "askFailedTitle": "Soru gönderilemedi",
     "askRateLimited": "Çok sık soru soruyorsun. Biraz bekle.",
-    "replyFailedTitle": "Yanıt gönderilemedi"
+    "replyFailedTitle": "Yanıt gönderilemedi",
+    "roleClub": "Kulüp"
   },
   "share": {
     "title": "Etkinliği paylaş",
@@ -137,7 +141,10 @@
     "cancelConfirmTitle": "Etkinlik iptal edilsin mi?",
     "cancelConfirmWithParticipants": "{{count}} katılımcıya iptal bildirimi gider ve sohbet kapanır. Bu işlem geri alınamaz.",
     "cancelConfirmAlone": "Etkinlik iptal edilecek ve listelerden kalkacak. Bu işlem geri alınamaz.",
-    "cancelConfirmAction": "Etkinliği iptal et"
+    "cancelConfirmAction": "Etkinliği iptal et",
+    "participationTitle": "Ben de oynuyorum",
+    "participationOnHint": "Kontenjandan bir yer kaplıyorsun.",
+    "participationOffHint": "Yalnızca düzenliyorsun; kontenjandan yer kaplamıyorsun."
   },
   "manageSheet": {
     "requestsTitle": "Katılım istekleri",
@@ -257,7 +264,9 @@
     "eventCancelledDescription": "Katılımcılar bilgilendirilecek.",
     "eventCompletedTitle": "Etkinlik tamamlandı",
     "eventCompletedDescription": "Önce yoklama al, sonra gelenleri puanla. Yorumlar profillerinde görünür.",
-    "detailLoadFailed": "Etkinlik detayı yüklenemedi."
+    "detailLoadFailed": "Etkinlik detayı yüklenemedi.",
+    "organizerJoinedTitle": "Katılımcı oldun",
+    "organizerLeftTitle": "Katılımcılıktan çıktın"
   },
   "birthDatePrompt": {
     "title": "Bu etkinlik için yaş bilgisi gerekiyor",

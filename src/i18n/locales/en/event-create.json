@@ -91,14 +91,21 @@
   },
   "organization": {
     "lockedText": "This event is being created under <bold>{{name}}</bold>.",
-    "lockedFallbackName": "your organization",
-    "intentQuestion": "Is this event tied to an organization?",
+    "lockedFallbackName": "your club",
+    "intentQuestion": "Is this event tied to a club?",
     "individual": "Individual event",
-    "organizationEvent": "Organization event",
-    "label": "Organization",
-    "placeholder": "Select organization",
-    "sheetTitle": "Select organization",
-    "sheetSubtitle": "Which organization is this event for?"
+    "organizationEvent": "Club event",
+    "label": "Club",
+    "placeholder": "Select club",
+    "sheetTitle": "Select club",
+    "sheetSubtitle": "Which club is this event for?",
+    "visibilityQuestion": "Who can see this event?",
+    "visibilityPublic": "Everyone",
+    "visibilityMembersOnly": "Club members only",
+    "participationQuestion": "Will you also take part in the event?",
+    "participationYes": "Yes, I'm playing too",
+    "participationNo": "No, I'm only organizing",
+    "participationNoHint": "You won't take a spot from the capacity; the event still appears under the club's name."
   },
   "players": {
     "capacityLabel": "Participant Capacity",
@@ -108,7 +115,8 @@
     "limitLabel": "Capacity",
     "limited": "Limited",
     "unlimited": "Unlimited",
-    "unlimitedHint": "No cap on participants. You still approve who joins."
+    "unlimitedHint": "No cap on participants. You still approve who joins.",
+    "hintNoOrganizer": "You can use the buttons or tap the number to type the capacity directly.\nYou don't count toward the capacity since you're not playing."
   },
   "ageRange": {
     "label": "Participant age range",
@@ -136,7 +144,10 @@
   "summary": {
     "heading": "Event Summary",
     "playersLabel": "{{count}} people",
-    "playersUnlimited": "Unlimited capacity"
+    "playersUnlimited": "Unlimited capacity",
+    "clubHost": "On behalf of {{name}}",
+    "organizerPlays": "You're playing too",
+    "organizerNotPlaying": "You're not playing"
   },
   "companions": {
     "slotsAvailable": "{{count}} spots open",
@@ -152,7 +163,25 @@
     "friendsSubtitle": "Selected people become participants once they accept.",
     "friendsLoading": "Loading friends…",
     "friendsEmpty": "No accepted friends found that you can add.",
-    "slotsUnlimited": "Unlimited spots"
+    "slotsUnlimited": "Unlimited spots",
+    "reservedBreakdownNoOrganizer": "{{count}} companions (you're not playing)",
+    "membersTitle": "Invite members",
+    "membersSubtitle": "Selected members become participants once they accept.",
+    "memberPick": "Select members",
+    "memberSelectedCount": "{{count}} members selected",
+    "memberRemove": "Remove member",
+    "memberSheetTitle": "Club members",
+    "memberSearchPlaceholder": "Search members",
+    "memberConfirm": "Add {{count}} members",
+    "memberDone": "Done",
+    "membersCapacityFull": "Spots are full, you can't select more members.",
+    "membersEmpty": "There are no other members in the club to invite.",
+    "membersNoResults": "No members match your search.",
+    "membersError": "Couldn't load members.",
+    "membersRetry": "Try again",
+    "reservedBreakdownClub": "1 organizer + {{count}} members invited",
+    "reservedBreakdownClubNoOrganizer": "{{count}} members invited (you're not playing)",
+    "_toast": "Invitation sent to club members."
   },
   "toast": {
     "sportNotFoundTitle": "Sport not found",
@@ -168,7 +197,8 @@
     "friendInviteSent": "Invitation sent to your friends.",
     "waitingForPlayers": "Players are waiting for you.",
     "invitesFailedDescription": "{{reason}} You can resend invites from the event details.",
-    "invitesGenericFailure": "Invites couldn't be sent."
+    "invitesGenericFailure": "Invites couldn't be sent.",
+    "memberInviteSent": "Invitation sent to club members."
   },
   "participantGender": {
     "label": "Who can join?",

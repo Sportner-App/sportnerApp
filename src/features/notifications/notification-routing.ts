@@ -40,7 +40,8 @@ export function resolveNotificationRoute(data: NotificationRouteData): string {
   // Sekmeyi rota yerine burada bırakıyoruz: profil bir sekme rotası ve sorgu
   // parametresi ekrana güvenilir biçimde ulaşmıyor.
   if (notificationType === NOTIFICATION_TYPE.reviewReceived) {
-    setPendingProfileTab("reviews");
+    // Değerlendirmeler Aktivite sekmesinin altında.
+    setPendingProfileTab("activity");
     return "/profile";
   }
 
@@ -120,7 +121,7 @@ export function resolveNotificationRoute(data: NotificationRouteData): string {
     return "/recap/year";
   }
   if (entityType === NOTIFICATION_ENTITY.organization) {
-    return `/organizations/${entityId}`;
+    return `/clubs/${entityId}`;
   }
 
   return "/notifications";

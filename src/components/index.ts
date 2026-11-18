@@ -6,6 +6,7 @@ export { Avatar } from "./avatar";
 export { AvatarPhotoPreview } from "./avatar-photo-preview";
 export { BottomSheet } from "./bottom-sheet";
 export { KeyboardDock } from "./keyboard-dock";
+export { KeyboardScrollView } from "./keyboard-scroll-view";
 export { SendIconButton } from "./send-icon-button";
 export { BrandMark } from "./brand-mark";
 export { Button } from "./button";

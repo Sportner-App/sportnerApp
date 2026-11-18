@@ -55,7 +55,7 @@ export function OrganizationJoinScreen() {
         description: t("join.requestSentDescription"),
       });
       if (joined?.id) {
-        router.replace(`/organizations/${joined.id}`);
+        router.replace(`/clubs/${joined.id}`);
       } else {
         router.back();
       }

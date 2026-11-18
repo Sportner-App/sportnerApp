@@ -14,7 +14,18 @@ import {
 import { useToast } from "@/contexts";
 import { useCities } from "@/features/location/hooks/use-cities";
 import { getApiErrorMessage } from "@/lib/api/errors";
-import { createOrganization } from "@/features/organizations/services/organizations-service";
+import {
+  createOrganization,
+  uploadOrganizationImage,
+} from "@/features/organizations/services/organizations-service";
+import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
+import { OrganizationPhotoPicker } from "@/features/organizations/components/organization-photo-picker";
+import { OrganizationVisibilityPicker } from "@/features/organizations/components/organization-visibility-picker";
+import {
+  mediaDeniedMessage,
+  pickProfileImage,
+  type PickedMedia,
+} from "@/utils/media-picker";
 import type { SelectOption } from "@/types/components";
 
 export function OrganizationCreateScreen() {
@@ -25,7 +36,10 @@ export function OrganizationCreateScreen() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [cityId, setCityId] = useState<string | undefined>();
+  const [isPublic, setIsPublic] = useState(true);
+  const [photo, setPhoto] = useState<PickedMedia | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { chooseSource, sourceSheet } = useMediaSourceChoice();
 
   const cityOptions = useMemo<SelectOption<string>[]>(
     () =>
@@ -38,6 +52,23 @@ export function OrganizationCreateScreen() {
       })),
     [cities, t],
   );
+
+  const choosePhoto = async () => {
+    const source = await chooseSource();
+    if (!source) return;
+
+    const picked = await pickProfileImage(source);
+    if (picked === "denied") {
+      showToast({
+        type: "error",
+        title: t("organizations:photo.permissionRequired"),
+        description: mediaDeniedMessage(source),
+      });
+      return;
+    }
+    if (picked === "cancelled") return;
+    setPhoto(picked);
+  };
 
   const submit = async () => {
     const trimmed = name.trim();
@@ -56,14 +87,26 @@ export function OrganizationCreateScreen() {
         name: trimmed,
         description: description.trim() || null,
         cityId: cityId || null,
+        isPublic,
       });
       showToast({
         type: "success",
         title: t("organizations:create.createdTitle"),
         description: t("organizations:create.createdDescription"),
       });
+      if (created?.id && photo) {
+        try {
+          await uploadOrganizationImage(created.id, photo);
+        } catch {
+          showToast({
+            type: "error",
+            title: t("organizations:create.photoUploadFailed"),
+            description: t("organizations:create.photoUploadFailedDescription"),
+          });
+        }
+      }
       if (created?.id) {
-        router.replace(`/organizations/${created.id}`);
+        router.replace(`/clubs/${created.id}`);
       } else {
         router.back();
       }
@@ -81,14 +124,27 @@ export function OrganizationCreateScreen() {
   return (
     <AppScreen
       header={<ScreenHeader title={t("organizations:create.title")} showBack />}
+      footer={sourceSheet}
       contentClassName="gap-4 px-6 pt-3"
     >
+      <OrganizationPhotoPicker
+        uri={photo?.uri}
+        name={name}
+        onPick={() => void choosePhoto()}
+        onRemove={photo ? () => setPhoto(null) : undefined}
+      />
+
       <Text className="font-display text-heading-lg text-text-primary">
         {t("organizations:create.heading")}
       </Text>
       <Text className="font-body text-body-sm text-text-secondary">
         {t("organizations:create.subtitle")}
       </Text>
+
+      <OrganizationVisibilityPicker
+        isPublic={isPublic}
+        onChange={setIsPublic}
+      />
 
       <Input
         label={t("organizations:form.nameLabel")}

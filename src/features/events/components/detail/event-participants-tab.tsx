@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { AppText as Text, Avatar } from "@/components";
-import { themeColors } from "@/constants/theme";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import type { EventDetail } from "@/features/events/types";
 import { isCurrentParticipant } from "@/features/events/status";
 import { lightImpact } from "@/utils/haptics";
@@ -13,6 +13,8 @@ type EventParticipantsTabProps = {
   pendingCount: number;
   onOpenPendingRequests: () => void;
   onOpenUser: (userId: string) => void;
+  /** Yalnızca etkinliği yönetebilen sahibe verilir; kişiyi kadrodan çıkarma akışını açar. */
+  onRemoveParticipant?: (participantId: string) => void;
 };
 
 export function EventParticipantsTab({
@@ -20,6 +22,7 @@ export function EventParticipantsTab({
   pendingCount,
   onOpenPendingRequests,
   onOpenUser,
+  onRemoveParticipant,
 }: EventParticipantsTabProps) {
   const { t } = useTranslation("eventDetail");
   const participants = event.participants.filter((participant) =>
@@ -120,7 +123,27 @@ export function EventParticipantsTab({
                       : t("participantTab.member")}
                 </Text>
               </View>
-              {participant.userId ? (
+              {onRemoveParticipant &&
+              participant.userId !== event.organizerUserId ? (
+                <Pressable
+                  hitSlop={HIT_SLOP}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("participantTab.removeAccessibility", {
+                    name: participant.name,
+                  })}
+                  onPress={() => {
+                    lightImpact();
+                    onRemoveParticipant(participant.id);
+                  }}
+                  className="h-9 w-9 items-center justify-center rounded-full bg-status-error/10 active:opacity-70"
+                >
+                  <FontAwesome6
+                    name="user-minus"
+                    size={12}
+                    color={themeColors.destructive}
+                  />
+                </Pressable>
+              ) : participant.userId ? (
                 <FontAwesome6
                   name="chevron-right"
                   size={10}

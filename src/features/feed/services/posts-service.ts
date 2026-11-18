@@ -33,6 +33,14 @@ export async function listEventPosts(eventId: string, before?: string) {
   return toCursorPage(response.data, normalizePost);
 }
 
+export async function listUserPosts(userId: string, before?: string) {
+  const response = await apiClient.get<CursorPagedResult<ApiPost>>(
+    `/api/users/${userId}/posts`,
+    { params: { before, limit: 21 } },
+  );
+  return toCursorPage(response.data, normalizePost);
+}
+
 export async function getPost(postId: string) {
   const response = await apiClient.get<ApiPost>(`/api/posts/${postId}`);
   return response.data ? normalizePost(response.data) : response.data;

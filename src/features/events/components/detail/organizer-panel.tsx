@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect, useRef, useState } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, Switch, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
@@ -39,6 +39,12 @@ type OrganizerPanelProps = {
    * kendiliğinden geri açılmaz.
    */
   autoOpenTab?: OrganizerManageTab | null;
+  /** Yalnızca kulüp etkinliğini kuran kişiye: "Ben de oynuyorum" anahtarı. */
+  participationToggle?: {
+    value: boolean;
+    disabled: boolean;
+    onChange: (participates: boolean) => void;
+  };
 };
 
 export function OrganizerPanel({
@@ -59,6 +65,7 @@ export function OrganizerPanel({
   onRateUser,
   onShareMoments,
   autoOpenTab = null,
+  participationToggle,
 }: OrganizerPanelProps) {
   const { t } = useTranslation("eventDetail");
   const [sheetTab, setSheetTab] = useState<OrganizerManageTab | null>(null);
@@ -97,6 +104,31 @@ export function OrganizerPanel({
       entering={FadeInDown.duration(400).delay(140)}
       className="gap-md"
     >
+      {participationToggle ? (
+        <View className="flex-row items-center gap-3 rounded-3xl border border-white/10 bg-background-secondary/55 p-4">
+          <View className="min-w-0 flex-1 gap-0.5">
+            <Text className="font-body-bold text-body-sm text-text-primary">
+              {t("organizerPanel.participationTitle")}
+            </Text>
+            <Text className="font-body text-caption text-text-secondary">
+              {participationToggle.value
+                ? t("organizerPanel.participationOnHint")
+                : t("organizerPanel.participationOffHint")}
+            </Text>
+          </View>
+          <Switch
+            value={participationToggle.value}
+            disabled={participationToggle.disabled}
+            onValueChange={participationToggle.onChange}
+            trackColor={{
+              false: themeColors.surface.secondary,
+              true: themeColors.brand.primary,
+            }}
+            thumbColor={themeColors.background.primary}
+          />
+        </View>
+      ) : null}
+
       {canManage ? (
         <View className="gap-sm">
           <Pressable

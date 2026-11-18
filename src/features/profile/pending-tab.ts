@@ -7,7 +7,7 @@
  * okuyup siliyor. Tek seferlik: kullanıcı sonra kendi sekmesini seçtiğinde
  * geri zıplamıyor.
  */
-export type ProfileTab = "activity" | "reviews" | "settings";
+export type ProfileTab = "posts" | "activity" | "sports" | "groups";
 
 let pending: ProfileTab | null = null;
 

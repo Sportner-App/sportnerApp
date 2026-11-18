@@ -67,7 +67,10 @@ module.exports = {
       // Linking.canOpenURL ile doğru tespit edebilmek için (bkz.
       // organization-invite.ts). iOS'ta bunun karşılığı zaten
       // app.json > ios.infoPlist.LSApplicationQueriesSchemes.
-      [withAndroidPackageQueries, ["com.whatsapp"]],
+      [
+        withAndroidPackageQueries,
+        ["com.whatsapp", "com.instagram.android"],
+      ],
       // Harita render'ı Mapbox'ta; adres arama Google Places'te kalıyor.
       // Secret download token artık gerekmiyor, public pk.* token yeterli.
       ["@rnmapbox/maps", { RNMapboxMapsUseV11: true }],

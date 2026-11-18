@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useDeferredValue, useState } from "react";
 
 import i18n from "@/i18n";
 import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
@@ -146,12 +146,19 @@ export function useActivity(initialTab: ActivityTab = "upcoming") {
     refocusMode: "silent",
   });
 
+  // Seçili sekme (SegmentedTabs ve rozetler) acil güncellenir; listenin
+  // gösterdiği sekme ikinci planda render edilir. Böylece kartların yeniden
+  // çizimi dokunuşu bekletmez. Liste verisi ve loadMore'un istek attığı
+  // sekme hep ertelenmiş sekmeden hesaplanır: erteleme sürerken yanlış
+  // sekmeye sayfa eklenmesin.
+  const listTab = useDeferredValue(tab);
+
   const current =
-    tab === "upcoming"
+    listTab === "upcoming"
       ? upcoming
-      : tab === "past"
+      : listTab === "past"
         ? past
-        : tab === "pending"
+        : listTab === "pending"
           ? pending
           : organized;
 
@@ -164,16 +171,16 @@ export function useActivity(initialTab: ActivityTab = "upcoming") {
     try {
       const nextPage = current.page + 1;
       const result =
-        tab === "organized"
+        listTab === "organized"
           ? await getMyOrganizedEvents(nextPage, PAGE_SIZE)
           : await getMyParticipatingEvents(
               nextPage,
               PAGE_SIZE,
-              tab === "past" ? "past" : "upcoming",
+              listTab === "past" ? "past" : "upcoming",
             );
 
       const next =
-        tab === "organized"
+        listTab === "organized"
           ? {
               items: result.items,
               page: result.page,
@@ -182,14 +189,14 @@ export function useActivity(initialTab: ActivityTab = "upcoming") {
             }
           : filterPage(
               result,
-              tab === "past"
+              listTab === "past"
                 ? (event) => hasEventEnded(event)
-                : tab === "pending"
+                : listTab === "pending"
                   ? isAwaitingResponse
                   : isConfirmedActive,
             );
 
-      if (tab === "organized") {
+      if (listTab === "organized") {
         const hostedPast = result.items.filter((event) => hasEventEnded(event));
         if (hostedPast.length > 0) {
           setPast((prev) => {
@@ -204,11 +211,11 @@ export function useActivity(initialTab: ActivityTab = "upcoming") {
       }
 
       const setter =
-        tab === "past"
+        listTab === "past"
           ? setPast
-          : tab === "pending"
+          : listTab === "pending"
             ? setPending
-            : tab === "organized"
+            : listTab === "organized"
               ? setOrganized
               : setUpcoming;
 
@@ -228,11 +235,12 @@ export function useActivity(initialTab: ActivityTab = "upcoming") {
     } finally {
       setIsLoadingMore(false);
     }
-  }, [current.hasNext, current.page, isLoadingMore, tab]);
+  }, [current.hasNext, current.page, isLoadingMore, listTab]);
 
   return {
     tab,
     setTab,
+    listTab,
     events: current.items,
     totalCount: current.totalCount,
     tabCounts: {

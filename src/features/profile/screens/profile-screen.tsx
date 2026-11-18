@@ -1,60 +1,48 @@
-import { View } from "react-native";
-import { useTranslation } from "react-i18next";
-
-import {
-  AppText as Text,
-  ErrorState,
-  ScreenLoader,
-  SegmentedTabs,
-} from "@/components";
-import { TabPage } from "@/features/app-shell/components/tab-page";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
-import { useProfileCopy, useProfileTabs } from "@/features/profile/copy";
-import { useAppTour } from "@/contexts";
-import { useProfile } from "@/features/profile/hooks/use-profile";
+import { ErrorState, ScreenLoader } from "@/components";
+import {
+  TabListItem,
+  TabListPage,
+} from "@/features/app-shell/components/tab-list-page";
+import { ChallengeMedals } from "@/features/challenges/components/challenge-medals";
 import { listUserReviews } from "@/features/events/services/reviews-service";
 import type { ApiReview } from "@/features/events/types";
-
+import { DistrictCrowns } from "@/features/leaderboards/components/district-crowns";
 import { OrganizationsSection } from "@/features/organizations/components/organizations-section";
-import { MenuSection } from "@/features/profile/components/menu-section";
+import {
+  PostsGridLoadingMore,
+  PostsGridPlaceholder,
+  PostsGridRowView,
+  useUserPosts,
+  type PostsGridRow,
+} from "@/features/profile/components/posts-grid";
 import { ProfileAboutSection } from "@/features/profile/components/profile-about-section";
+import { ProfileTabs } from "@/features/profile/components/profile-tabs";
 import { ProfileHero } from "@/features/profile/components/profile-hero";
+import { ReportCardReadyBanner } from "@/features/profile/components/report-card-ready-banner";
 import { ReviewsSection } from "@/features/profile/components/reviews-section";
 import { SportsSection } from "@/features/profile/components/sports-section";
-import { SportReportCard } from "@/features/profile/components/sport-report-card";
-import { ChallengeMedals } from "@/features/challenges/components/challenge-medals";
-import { DistrictCrowns } from "@/features/leaderboards/components/district-crowns";
 import { StatsSection } from "@/features/profile/components/stats-section";
-
+import { useProfileCopy, useProfileTabs } from "@/features/profile/copy";
+import { useProfile } from "@/features/profile/hooks/use-profile";
 import {
   consumePendingProfileTab,
   type ProfileTab,
 } from "@/features/profile/pending-tab";
 
 export function ProfileScreen() {
-  // Bildirimden gelen sekme. "x seni değerlendirdi" bildirimi doğrudan
-  // değerlendirmelerin listesine açılıyor; kullanıcının sekmeyi kendisi
-  // bulması gerekmiyor.
-  const { t } = useTranslation(["profile", "common", "settings"]);
+  const { t } = useTranslation("profile");
   const PROFILE_COPY = useProfileCopy();
   const PROFILE_TABS = useProfileTabs();
   const router = useRouter();
-  const { startTour } = useAppTour();
-  const {
-    profile,
-    isLoading,
-    isRefreshing,
-    isSigningOut,
-    error,
-    notFound,
-    refresh,
-    logout,
-  } = useProfile();
+  const { profile, isLoading, isRefreshing, error, notFound, refresh } =
+    useProfile();
   const [reviews, setReviews] = useState<ApiReview[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<ProfileTab>("activity");
+  const [activeTab, setActiveTab] = useState<ProfileTab>("posts");
 
   // Bildirimden gelen sekme isteği. Ekran zaten açıkken gelen bildirim de
   // çalışsın diye her odaklanmada okunuyor; istek tek seferlik tüketiliyor.
@@ -65,6 +53,18 @@ export function ProfileScreen() {
         setActiveTab(requested);
       }
     }, []),
+  );
+
+  const posts = useUserPosts(profile?.userId);
+  const showPosts = activeTab === "posts" && Boolean(profile);
+  const lastRowKey = posts.rows[posts.rows.length - 1]?.key;
+  const renderRow = useCallback(
+    ({ item }: { item: PostsGridRow }) => (
+      <TabListItem>
+        <PostsGridRowView row={item} isLast={item.key === lastRowKey} />
+      </TabListItem>
+    ),
+    [lastRowKey],
   );
 
   useEffect(() => {
@@ -80,102 +80,109 @@ export function ProfileScreen() {
       .finally(() => setReviewsLoading(false));
   }, [profile?.userId, isRefreshing]);
 
-  const openMenu = (key: string) => {
-    if (key === "app-tour") {
-      router.navigate("/(tabs)" as never);
-      setTimeout(startTour, 250);
-      return;
-    }
-    if (key === "logout") {
-      void logout();
-      return;
-    }
-    const routes: Record<string, string> = {
-      edit: "/profile/edit",
-      sports: "/profile/sports",
-      friends: "/friends",
-      badges: "/badges",
-      notifications: "/notifications",
-      "notification-settings": "/notifications/settings",
-      privacy: "/profile/privacy",
-      feedback: "/feedback",
-      help: "/help",
-    };
-    const href = routes[key];
-    if (href) {
-      router.push(href as never);
-    }
-  };
-
   return (
-    <TabPage refreshing={isRefreshing} onRefresh={refresh}>
-      {isLoading ? (
-        <ScreenLoader label={t("profile:loading")} size={148} />
-      ) : !profile ? (
-        <ErrorState
-          icon={notFound ? "user-slash" : "triangle-exclamation"}
-          message={error ?? PROFILE_COPY.notFound}
-          onRetry={refresh}
-        />
-      ) : (
-        <>
-          <ProfileHero
-            profile={profile}
-            onEdit={() => router.push("/profile/edit")}
-          />
-          <SportReportCard
-            userId={profile.userId}
-            name={profile.fullName}
+    <TabListPage
+      data={showPosts && !posts.isLoading ? posts.rows : []}
+      keyExtractor={(row) => row.key}
+      renderItem={renderRow}
+      itemGap={0}
+      listTopGap={12}
+      onEndReached={showPosts ? posts.loadMore : undefined}
+      empty={
+        showPosts ? (
+          <PostsGridPlaceholder
+            isLoading={posts.isLoading}
+            failed={posts.failed}
             isOwnProfile
           />
-          <ChallengeMedals userId={profile.userId} linkToChallenges />
-          <DistrictCrowns userId={profile.userId} />
-          <ProfileAboutSection
-            bio={profile.bio}
-            onFriendsPress={() => router.push("/friends")}
-            onBadgesPress={() => router.push("/badges")}
-          />
-          <SportsSection
-            profile={profile}
-            onPress={() => router.push("/profile/sports")}
-            onAdd={() => router.push("/profile/add-sport")}
-          />
-          <OrganizationsSection
-            onPressList={() => router.push("/organizations")}
-            onPressItem={(organizationId) =>
-              router.push(`/organizations/${organizationId}`)
-            }
-          />
-          <SegmentedTabs
-            options={PROFILE_TABS}
-            value={activeTab}
-            onChange={setActiveTab}
-          />
-
-          {activeTab === "activity" ? (
-            <>
-              <StatsSection statistics={profile.statistics} interactive />
-            </>
-          ) : null}
-
-          {activeTab === "reviews" ? (
-            <ReviewsSection
-              reviews={reviews}
-              isLoading={reviewsLoading}
-              averageRating={
-                profile.statistics?.averageRating ?? profile.averageRating
-              }
-              totalReviews={
-                profile.statistics?.totalReviews ?? profile.reviewCount
-              }
+        ) : null
+      }
+      footer={
+        showPosts && posts.isLoadingMore ? <PostsGridLoadingMore /> : null
+      }
+      refreshing={isRefreshing}
+      onRefresh={refresh}
+      headerAction={{
+        icon: "gear",
+        label: t("hero.settingsAccessibility"),
+        onPress: () => router.push("/profile/settings"),
+        replacesSearch: true,
+      }}
+      header={
+        <>
+          {isLoading ? (
+            <ScreenLoader label={t("loading")} size={148} />
+          ) : !profile ? (
+            <ErrorState
+              icon={notFound ? "user-slash" : "triangle-exclamation"}
+              message={error ?? PROFILE_COPY.notFound}
+              onRetry={refresh}
             />
-          ) : null}
+          ) : (
+            <>
+              <ProfileHero
+                profile={profile}
+                onPostsPress={() => setActiveTab("posts")}
+                onFriendsPress={() => router.push("/friends")}
+                onBadgesPress={() => router.push("/badges")}
+              />
+              <ProfileAboutSection bio={profile.bio} />
+              <ReportCardReadyBanner userId={profile.userId} />
 
-          {activeTab === "settings" ? (
-            <MenuSection onItemPress={openMenu} isSigningOut={isSigningOut} />
-          ) : null}
+              <ProfileTabs
+                options={PROFILE_TABS}
+                value={activeTab}
+                onChange={setActiveTab}
+              />
+
+              {activeTab === "activity" ? (
+                <>
+                  <StatsSection statistics={profile.statistics} interactive />
+                  <ChallengeMedals userId={profile.userId} linkToChallenges />
+                  <DistrictCrowns userId={profile.userId} />
+                  <ReviewsSection
+                    reviews={reviews}
+                    isLoading={reviewsLoading}
+                    averageRating={
+                      profile.statistics?.averageRating ?? profile.averageRating
+                    }
+                    totalReviews={
+                      profile.statistics?.totalReviews ?? profile.reviewCount
+                    }
+                  />
+                </>
+              ) : null}
+
+              {activeTab === "sports" ? (
+                <SportsSection
+                  profile={profile}
+                  onPress={() => router.push("/profile/sports")}
+                  onAdd={() => router.push("/profile/add-sport")}
+                />
+              ) : null}
+
+              {activeTab === "groups" ? (
+                <OrganizationsSection
+                  onPressList={() =>
+                    router.push({
+                      pathname: "/(tabs)/discover",
+                      // ts: aynı parametrelerle ikinci gelişte de sekme açılsın.
+                      params: {
+                        mode: "clubs",
+                        scope: "mine",
+                        ts: String(Date.now()),
+                      },
+                    })
+                  }
+                  onPressItem={(organizationId) =>
+                    router.push(`/clubs/${organizationId}`)
+                  }
+                />
+              ) : null}
+            </>
+          )}
         </>
-      )}
-    </TabPage>
+      }
+    />
   );
 }

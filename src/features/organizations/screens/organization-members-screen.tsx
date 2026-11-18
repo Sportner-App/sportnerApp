@@ -27,6 +27,7 @@ import {
   listOrganizationMembers,
   rejectOrganizationMember,
   removeOrganizationMember,
+  transferOrganizationFounder,
   unblockOrganizationMember,
   updateOrganizationMemberRole,
 } from "@/features/organizations/services/organizations-service";
@@ -36,6 +37,7 @@ import {
   type ApiOrganizationDetail,
   type ApiOrganizationMember,
 } from "@/features/organizations/types";
+import { confirmDestructive } from "@/utils/confirm";
 import { resolveRouteParam } from "@/utils/route-params";
 
 import {
@@ -278,6 +280,26 @@ export function OrganizationMembersScreen() {
                     ? ORGANIZATION_ROLE.member
                     : ORGANIZATION_ROLE.admin,
                 );
+              })
+            }
+            onTransferFounder={() =>
+              confirmDestructive({
+                title: t("memberRow.transferTitle"),
+                message: t("memberRow.transferMessage", {
+                  name: member.username ?? member.firstName ?? "",
+                }),
+                confirmLabel: t("memberRow.transferConfirm"),
+                onConfirm: () =>
+                  void runMemberAction(member.userId, async () => {
+                    await transferOrganizationFounder(
+                      organization.id,
+                      member.userId,
+                    );
+                    showToast({
+                      type: "success",
+                      title: t("memberRow.transferred"),
+                    });
+                  }),
               })
             }
             onRemove={() =>

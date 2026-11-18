@@ -1,6 +1,6 @@
 {
   "fallback": {
-    "name": "Organization"
+    "name": "Club"
   },
   "role": {
     "founder": "Founder",
@@ -26,15 +26,14 @@
     "plateCodeDescription": "Plate code {{code}}"
   },
   "list": {
-    "title": "ORGANIZATIONS",
     "create": "Create",
     "joinWithCode": "Join with code",
-    "empty": "You don't have any organizations yet. Create one or join with an invite code.",
+    "empty": "You don't have any clubs yet. Create one or join with an invite code.",
     "memberCount": "{{count}} members"
   },
   "detail": {
-    "title": "ORGANIZATION",
-    "notFound": "Organization not found.",
+    "title": "CLUB",
+    "notFound": "Club not found.",
     "eventsLoadFailed": "Could not load events",
     "membersLoadFailed": "Could not load members",
     "loadFailed": "Could not load",
@@ -44,9 +43,9 @@
     "codeRotated": "New code generated",
     "codeRotateFailed": "Could not refresh code",
     "leaveTitle": "Leave",
-    "leaveMessage": "Do you want to leave this organization?",
+    "leaveMessage": "Do you want to leave this club?",
     "leaveConfirm": "Leave",
-    "left": "You left the organization",
+    "left": "You left the club",
     "leaveFailed": "Could not leave",
     "pendingTitle": "Pending approval",
     "pendingDescription": "Once the founder or an admin approves your request, you can see events.",
@@ -55,25 +54,45 @@
     "copyCodeHint": "You can also tap the code to copy it.",
     "share": "Share",
     "refreshCode": "Refresh",
+    "refreshCodeConfirm": "Invalidate old code",
     "eventsTitle": "Events",
     "createEvent": "Create",
-    "noEvents": "No published events for this organization.",
-    "viewLinkedEvents": "View organization events",
-    "membersTitle": "Members",
+    "noEvents": "No published events for this club.",
     "memberCount": "{{count}} members",
     "pendingCount": "{{count}} pending approval",
-    "seeAll": "See all",
-    "noMembers": "No members yet.",
-    "moreMembers": "+{{count}} more members",
-    "leaveOrganization": "Leave organization",
-    "editAccessibility": "Edit organization details",
+    "menuA11y": "Club options",
+    "menuEdit": "Edit club",
+    "inviteAction": "Invite",
+    "leaveOrganization": "Leave club",
     "defaultDescription": "Grow your sports community, bring members together, and manage events as a team.",
     "statMembers": "Members",
-    "statEvents": "Events"
+    "statEvents": "Events",
+    "joinWithInviteCode": "Join with invite code",
+    "join": "Join club",
+    "joined": "You joined the club",
+    "joinFailed": "Could not join",
+    "joinAuthReason": "You need to sign in to join a club.",
+    "privateCannotJoin": "This club is private. You need an invite code to join.",
+    "openEventsTitle": "Public events",
+    "menuTransferFounder": "Transfer founder role",
+    "menuEditSubtitle": "Name, description, photo and settings",
+    "menuTransferFounderSubtitle": "Hand the founder role to another member",
+    "menuLeaveSubtitle": "Your membership ends",
+    "menuDeleteSubtitle": "Can't be undone, events are cancelled",
+    "deleteOrganization": "Delete club",
+    "deleteTitle": "Delete club",
+    "deleteMessage": "The club will be hidden from everyone, its upcoming club events will be cancelled and participants will be notified. This cannot be undone.",
+    "deleteConfirm": "Delete",
+    "deleted": "Club deleted",
+    "deleteFailed": "Couldn't delete the club",
+    "statCompleted": "Completed",
+    "pastEventsTitle": "Past events",
+    "pastEventsMore": "Show more",
+    "pastEventsLoadFailed": "Could not load past events"
   },
   "members": {
     "title": "MEMBERS",
-    "notFound": "Organization not found.",
+    "notFound": "Club not found.",
     "loadFailed": "Could not load",
     "actionFailed": "Action failed",
     "searchPlaceholder": "Search by name or username",
@@ -94,47 +113,91 @@
     "remove": "Remove",
     "block": "Block",
     "removeTitle": "Remove member",
-    "removeMessage": "They will be removed from the organization. They can reapply with an invite code if they want.",
+    "removeMessage": "They will be removed from the club. They can reapply with an invite code if they want.",
     "blockTitle": "Block member",
-    "blockMessage": "Blocked users cannot rejoin with an invite code. You can unblock them later."
+    "blockMessage": "Blocked users cannot rejoin with an invite code. You can unblock them later.",
+    "makeFounder": "Make founder",
+    "transferTitle": "Transfer founder role",
+    "transferMessage": "{{name}} will become the club's founder and you will become an admin. Only the new founder can undo this.",
+    "transferConfirm": "Transfer",
+    "transferred": "Founder role transferred"
   },
   "join": {
     "title": "JOIN",
     "heading": "Invite code",
-    "subtitle": "Enter the 8-character code from the organization founder.",
+    "subtitle": "Enter the 8-character code from the club founder.",
     "codeLabel": "Code",
     "codePlaceholder": "e.g. 4K7N2M9P",
     "submit": "Join",
     "invalidCodeTitle": "Invalid code",
     "invalidCodeDescription": "Invite code must be 8 characters.",
     "requestSentTitle": "Welcome aboard",
-    "requestSentDescription": "You've joined the organization.",
+    "requestSentDescription": "You've joined the club.",
     "joinFailed": "Could not join"
   },
   "create": {
-    "title": "ORGANIZATION",
-    "heading": "New organization",
-    "subtitle": "University team, club, or venue. Joining is invite-code only.",
+    "title": "CLUB",
+    "heading": "New club",
+    "subtitle": "University team, venue or club. Make it public or private.",
     "namePlaceholder": "e.g. ITU Tennis",
     "submit": "Create",
     "nameRequiredTitle": "Name required",
-    "nameRequiredDescription": "Enter a name for the organization.",
-    "createdTitle": "Organization created",
+    "nameRequiredDescription": "Enter a name for the club.",
+    "createdTitle": "Club created",
     "createdDescription": "You can share the invite code with members.",
-    "createFailed": "Could not create"
+    "createFailed": "Could not create",
+    "photoUploadFailed": "Could not upload photo",
+    "photoUploadFailedDescription": "The club was created but the photo could not be uploaded. You can retry from edit."
   },
   "edit": {
     "title": "EDIT",
-    "heading": "Edit organization",
+    "heading": "Edit club",
     "loadFailed": "Could not load",
     "nameRequired": "Name required",
-    "updated": "Organization updated",
-    "saveFailed": "Could not save"
+    "updated": "Club updated",
+    "saveFailed": "Could not save",
+    "photoUploadFailed": "Could not upload photo"
   },
   "invite": {
     "message": "Join {{organizationName}} on Sportner",
     "codeLabel": "Invite code:",
-    "howToJoin": "App: Profile → Organizations → Join with code",
+    "howToJoin": "App: Clubs → My clubs → Join with code",
     "shareTitle": "{{organizationName}} invite code"
+  },
+  "visibility": {
+    "label": "Visibility",
+    "public": "Public",
+    "publicDescription": "Anyone can find and join it.",
+    "private": "Private",
+    "privateDescription": "Visible to everyone, membership by invite code only."
+  },
+  "photo": {
+    "add": "Add photo",
+    "change": "Change photo",
+    "remove": "Remove photo",
+    "accessibility": "Choose club photo",
+    "permissionRequired": "Permission required"
+  },
+  "explore": {
+    "searchPlaceholder": "Search clubs",
+    "emptySearch": "No clubs match your search.",
+    "empty": "No public clubs yet. Be the first to create one.",
+    "createCta": "Create a club",
+    "createAuthReason": "You need to sign in to create a club.",
+    "memberBadge": "Member",
+    "loadFailed": "Could not load clubs",
+    "memberCount": "{{count}} members"
+  },
+  "clubs": {
+    "tabAll": "All clubs",
+    "tabMine": "My clubs",
+    "signInToSeeMine": "Sign in to see your clubs."
+  },
+  "eventPolicy": {
+    "label": "Who can create events",
+    "allMembers": "All members",
+    "managersOnly": "Admins only",
+    "allMembersDescription": "Every approved member can create events for the club.",
+    "managersOnlyDescription": "Only the founder and admins can create events."
   }
 }

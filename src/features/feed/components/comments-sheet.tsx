@@ -143,6 +143,7 @@ export function CommentsSheet({
       onClose={onClose}
       title={t("social:comments.title")}
       showCancel={false}
+      footerIsComposer
       footer={
         <View className="gap-2">
           {replyingTo ? (

@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Image,
   Pressable,
@@ -48,13 +48,13 @@ export function Avatar({
   accessibilityLabel,
 }: AvatarProps) {
   const { t } = useTranslation("components");
-  const [imageFailed, setImageFailed] = useState(false);
+  // Hata görsele bağlı: sanal listede yeniden kullanılan kartta önceki
+  // kişinin "yüklenemedi" durumu yeni kişiye taşınmasın. (Önceki effect
+  // sıfırlaması bir kare geç kalıyor, o arada yanlış içerik çiziliyordu.)
+  const [failedUri, setFailedUri] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const resolvedUri = uri ? resolveMediaUrl(uri) : null;
-
-  useEffect(() => {
-    setImageFailed(false);
-  }, [resolvedUri]);
+  const imageFailed = resolvedUri != null && failedUri === resolvedUri;
 
   const hasPhoto = Boolean(resolvedUri && !imageFailed);
   const hasFallbackName = Boolean(name?.trim());
@@ -80,7 +80,7 @@ export function Avatar({
     resolvedUri && !imageFailed ? (
       <Image
         source={{ uri: resolvedUri }}
-        onError={() => setImageFailed(true)}
+        onError={() => setFailedUri(resolvedUri)}
         style={{ width: "100%", height: "100%" }}
       />
     ) : fallbackIcon || !hasFallbackName ? (

@@ -14,6 +14,10 @@ export function BasicsStep({ form }: { form: CreateEventForm }) {
     update,
     organizationId,
     setOrganizationId,
+    isOrganizationOnly,
+    setIsOrganizationOnly,
+    organizerParticipates,
+    setOrganizerParticipates,
     wantsOrganizationEvent,
     setOrganizationIntent,
     organizations,
@@ -37,6 +41,10 @@ export function BasicsStep({ form }: { form: CreateEventForm }) {
         organizations={organizations}
         organizationId={organizationId}
         onOrganizationChange={setOrganizationId}
+        isOrganizationOnly={isOrganizationOnly}
+        onOrganizationOnlyChange={setIsOrganizationOnly}
+        organizerParticipates={organizerParticipates}
+        onOrganizerParticipatesChange={setOrganizerParticipates}
         disabled={isSubmitting}
       />
 

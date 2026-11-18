@@ -1,5 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Pressable, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Image, Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
@@ -20,6 +21,7 @@ import {
 } from "@/features/events/format";
 import { isCurrentParticipant } from "@/features/events/status";
 import { lightImpact } from "@/utils/haptics";
+import { resolveMediaUrl } from "@/utils/media-url";
 
 import { InboxRow } from "./inbox-row";
 import { formatClockTime } from "@/utils/date-format";
@@ -50,6 +52,7 @@ export function EventPrimaryInfo({
   onOpenReviews,
 }: EventPrimaryInfoProps) {
   const { t } = useTranslation("eventDetail");
+  const router = useRouter();
   const SKILL_LEVEL_LABELS = useSkillLevelLabels();
   const title = event.title.trim() || t("events:fallback.event");
   const time = formatClockTime(event.eventDate);
@@ -130,16 +133,44 @@ export function EventPrimaryInfo({
       </View>
 
       {event.organizationName ? (
-        <View className="flex-row items-center gap-2 rounded-full border border-brand-primary/30 bg-brand-primary/10 self-start px-3 py-1.5">
-          <FontAwesome6
-            name="users"
-            size={10}
-            color={themeColors.brand.primary}
-          />
-          <Text className="font-body-bold text-caption text-text-primary">
+        <Pressable
+          disabled={!event.organizationId}
+          accessibilityRole="button"
+          onPress={() => {
+            lightImpact();
+            router.push(`/clubs/${event.organizationId}`);
+          }}
+          className="flex-row items-center gap-2 self-start rounded-full border border-brand-primary/30 bg-brand-primary/10 px-3 py-1.5 active:opacity-80"
+        >
+          {event.organizationImageUrl ? (
+            <Image
+              source={{ uri: resolveMediaUrl(event.organizationImageUrl) }}
+              style={{ width: 16, height: 16, borderRadius: 5 }}
+            />
+          ) : (
+            <FontAwesome6
+              name="users"
+              size={10}
+              color={themeColors.brand.primary}
+            />
+          )}
+          {event.isOrganizationOnly ? (
+            <FontAwesome6
+              name="lock"
+              size={9}
+              color={themeColors.brand.primary}
+            />
+          ) : null}
+          <Text
+            numberOfLines={1}
+            className="shrink font-body-bold text-caption text-text-primary"
+          >
             {event.organizationName}
+            {event.isOrganizationOnly
+              ? ` · ${t("primaryInfo.membersOnly")}`
+              : ""}
           </Text>
-        </View>
+        </Pressable>
       ) : null}
 
       {event.isPaid ? (

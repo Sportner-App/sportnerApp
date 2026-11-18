@@ -14,6 +14,7 @@
     "questions": "Questions"
   },
   "participantTab": {
+    "removeAccessibility": "Remove {{name}} from the event",
     "heading": "Roster",
     "count": "{{count}} people",
     "empty": "There are no approved participants yet.",
@@ -29,7 +30,8 @@
   },
   "organizerSection": {
     "heading": "Event Host",
-    "chatAccessibility": "Go to chat"
+    "chatAccessibility": "Go to chat",
+    "clubLabel": "Club"
   },
   "primaryInfo": {
     "unlimited": "Unlimited",
@@ -45,7 +47,8 @@
     },
     "paymentDisclaimer": "Payment isn't collected through the app. The fee is paid at the event.",
     "womenOnly": "Women only",
-    "menOnly": "Men only"
+    "menOnly": "Men only",
+    "membersOnly": "Members only"
   },
   "qna": {
     "heading": "Questions",
@@ -75,7 +78,8 @@
     "loadFailedTitle": "Questions couldn't load",
     "askFailedTitle": "Question couldn't be sent",
     "askRateLimited": "You're asking questions too often. Wait a bit.",
-    "replyFailedTitle": "Reply couldn't be sent"
+    "replyFailedTitle": "Reply couldn't be sent",
+    "roleClub": "Club"
   },
   "share": {
     "title": "Share event",
@@ -137,7 +141,10 @@
     "cancelConfirmTitle": "Cancel this event?",
     "cancelConfirmWithParticipants": "{{count}} participants will be notified and the chat will close. This cannot be undone.",
     "cancelConfirmAlone": "The event will be cancelled and removed from listings. This cannot be undone.",
-    "cancelConfirmAction": "Cancel event"
+    "cancelConfirmAction": "Cancel event",
+    "participationTitle": "I'm playing too",
+    "participationOnHint": "You take one spot from the capacity.",
+    "participationOffHint": "You're only organizing; you don't take a spot."
   },
   "manageSheet": {
     "requestsTitle": "Join requests",
@@ -257,7 +264,9 @@
     "eventCancelledDescription": "Participants will be notified.",
     "eventCompletedTitle": "Event completed",
     "eventCompletedDescription": "Take attendance first, then rate attendees. Reviews appear on their profiles.",
-    "detailLoadFailed": "Event details couldn't load."
+    "detailLoadFailed": "Event details couldn't load.",
+    "organizerJoinedTitle": "You're now a participant",
+    "organizerLeftTitle": "You left the participant list"
   },
   "birthDatePrompt": {
     "title": "This event needs your age",

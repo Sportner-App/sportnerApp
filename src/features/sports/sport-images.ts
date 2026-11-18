@@ -1,6 +1,6 @@
 import type { ImageSourcePropType } from "react-native";
 
-export const FALLBACK_SPORT_IMAGE: ImageSourcePropType = require("../../../assets/images/sports/fallback.png");
+export const FALLBACK_SPORT_IMAGE: ImageSourcePropType = require("../../../assets/images/sports/fallback.jpg");
 
 /**
  * Etkinlik/spor fotoğrafı: backend'in yüklediği kapak görseli varsa onu,

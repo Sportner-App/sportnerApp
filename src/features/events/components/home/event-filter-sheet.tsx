@@ -16,7 +16,6 @@ import {
 } from "@/features/events/hooks/use-events";
 import { AgeRangeSlider } from "@/features/events/components/age-range-slider";
 import type { SelectOption } from "@/types/components";
-import type { ApiOrganizationListItem } from "@/features/organizations/types";
 import type { Sport } from "@/features/sports/types";
 import { sportIconForSlug } from "@/features/sports/sports";
 
@@ -25,7 +24,6 @@ type EventFilterSheetProps = {
   filters: EventListFilters;
   onClose: () => void;
   onApply: (filters: EventListFilters) => void;
-  organizations?: ApiOrganizationListItem[];
   sports?: Sport[];
   cities?: SelectOption<string>[];
   isCitiesLoading?: boolean;
@@ -36,7 +34,6 @@ export function EventFilterSheet({
   filters,
   onClose,
   onApply,
-  organizations = [],
   sports = [],
   cities = [],
   isCitiesLoading = false,
@@ -53,17 +50,6 @@ export function EventFilterSheet({
       description: t("filterSheet.location.allDescription"),
     },
     ...cities,
-  ];
-  const organizationOptions = [
-    {
-      key: "",
-      label: t("filterSheet.organization.allLabel"),
-      description: t("filterSheet.organization.allDescription"),
-    },
-    ...organizations.map((organization) => ({
-      key: organization.id,
-      label: organization.name,
-    })),
   ];
   const sportOptions = [
     {
@@ -186,26 +172,6 @@ export function EventFilterSheet({
             sheetSubtitle={t("filterSheet.sport.sheetSubtitle")}
             groups={sportGroups}
             allGroupLabel={t("filterSheet.sport.allGroupLabel")}
-          />
-        ) : null}
-
-        {organizations.length > 1 ? (
-          <SelectField
-            label={t("filterSheet.organization.label")}
-            placeholder={t("filterSheet.organization.placeholder")}
-            icon="building"
-            options={organizationOptions}
-            value={draft.organizationId ?? ""}
-            onChange={(organizationId) =>
-              setDraft((current) => ({
-                ...current,
-                organizationId: organizationId || null,
-              }))
-            }
-            searchable
-            searchPlaceholder={t("filterSheet.organization.searchPlaceholder")}
-            sheetTitle={t("filterSheet.organization.sheetTitle")}
-            sheetSubtitle={t("filterSheet.organization.sheetSubtitle")}
           />
         ) : null}
 

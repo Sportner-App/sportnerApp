@@ -31,6 +31,10 @@
     "reply": "You need to sign in to reply.",
     "friendsFilter": "You need to sign in to see your friends' posts."
   },
+  "mode": {
+    "feed": "Feed",
+    "clubs": "Clubs"
+  },
   "filter": {
     "all": "All posts",
     "friends": "My friends"

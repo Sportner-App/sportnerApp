@@ -1,13 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import Svg, {
-  Defs,
-  LinearGradient,
-  RadialGradient,
-  Rect,
-  Stop,
-} from "react-native-svg";
 
 import { AppText as Text, Avatar } from "@/components";
 import {
@@ -47,129 +40,49 @@ export function MetaItem({
   );
 }
 
-export function MistOverlay({
-  fadeId,
-  width,
-  height,
-}: {
-  fadeId: string;
-  width: number;
-  height: number;
-}) {
-  const radialLeftId = `mist-radial-left-${fadeId}`;
-  const radialRightId = `mist-radial-right-${fadeId}`;
-  const leftId = `mist-left-${fadeId}`;
-  const bottomId = `mist-bottom-${fadeId}`;
+// Beyaz + alfa maske; `tools/generate-event-mist.js` üretir.
+const MIST_MASK = require("../../../../assets/images/event-card-mist.png");
 
-  if (width <= 0 || height <= 0) {
-    return null;
-  }
-
+/**
+ * Fotoğrafın üstündeki sis. Önceden react-native-svg ile 4 gradyan katmanı
+ * olarak çiziliyordu; iOS'ta SVG ana thread'de CPU ile çizildiği için ekrana
+ * aynı anda birkaç kart girince (ör. boş sekmeden dolu sekmeye geçiş) ana
+ * thread tıkanıyordu. Aynı gradyanlar artık hazır bir maske: bir kez
+ * çözülüp önbellekte kalıyor, GPU'da birleştiriliyor. Gradyanlar kartın
+ * kutusuna göre tanımlı olduğundan esnetince görünüm aynı.
+ */
+export function MistOverlay() {
   return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-      <Svg width={width} height={height}>
-        <Defs>
-          <RadialGradient
-            id={radialLeftId}
-            cx="12%"
-            cy="78%"
-            rx="72%"
-            ry="108%"
-            fx="12%"
-            fy="78%"
-          >
-            <Stop offset="0" stopColor={MIST} stopOpacity="0.94" />
-            <Stop offset="0.35" stopColor={MIST} stopOpacity="0.62" />
-            <Stop offset="0.62" stopColor={MIST} stopOpacity="0.02" />
-            <Stop offset="1" stopColor={MIST} stopOpacity="0" />
-          </RadialGradient>
-          <RadialGradient
-            id={radialRightId}
-            cx="92%"
-            cy="92%"
-            rx="36%"
-            ry="64%"
-            fx="92%"
-            fy="92%"
-          >
-            <Stop offset="0" stopColor={MIST} stopOpacity="0.9" />
-            <Stop offset="0.45" stopColor={MIST} stopOpacity="0.48" />
-            <Stop offset="0.78" stopColor={MIST} stopOpacity="0.1" />
-            <Stop offset="1" stopColor={MIST} stopOpacity="0" />
-          </RadialGradient>
-          <LinearGradient id={leftId} x1="0" y1="0" x2="1" y2="0">
-            <Stop offset="0" stopColor={MIST} stopOpacity="0.68" />
-            <Stop offset="0.28" stopColor={MIST} stopOpacity="0.18" />
-            <Stop offset="0.5" stopColor={MIST} stopOpacity="0.1" />
-          </LinearGradient>
-          <LinearGradient id={bottomId} x1="0" y1="1" x2="0" y2="0">
-            <Stop offset="0" stopColor={MIST} stopOpacity="0.28" />
-            <Stop offset="0.1" stopColor={MIST} stopOpacity="0.48" />
-            <Stop offset="0.22" stopColor={MIST} stopOpacity="0.12" />
-            <Stop offset="0.32" stopColor={MIST} stopOpacity="0" />
-          </LinearGradient>
-        </Defs>
-        <Rect
-          x="0"
-          y="0"
-          width={width}
-          height={height}
-          fill={`url(#${leftId})`}
-        />
-        <Rect
-          x="0"
-          y="0"
-          width={width}
-          height={height}
-          fill={`url(#${bottomId})`}
-        />
-        <Rect
-          x="0"
-          y="0"
-          width={width}
-          height={height}
-          fill={`url(#${radialLeftId})`}
-        />
-        <Rect
-          x="0"
-          y="0"
-          width={width}
-          height={height}
-          fill={`url(#${radialRightId})`}
-        />
-      </Svg>
-    </View>
+    <Image
+      source={MIST_MASK}
+      resizeMode="stretch"
+      tintColor={MIST}
+      style={StyleSheet.absoluteFill}
+    />
   );
 }
 
 export function SportPhoto({
   image,
-  width,
-  height,
 }: {
   image: ReturnType<typeof resolveEventPhoto>;
-  width: number;
-  height: number;
 }) {
-  const [failed, setFailed] = useState(false);
-
-  if (width <= 0 || height <= 0) {
-    return null;
-  }
+  // Sanal listede kart görünümü başka bir etkinlik için yeniden
+  // kullanılıyor; "yüklenemedi" durumu görsele bağlı tutuluyor ki önceki
+  // etkinliğin hatası yenisine taşınmasın.
+  const imageKey =
+    typeof image === "object" && image && "uri" in image
+      ? String(image.uri)
+      : String(image);
+  const [failedKey, setFailedKey] = useState<string | null>(null);
+  const failed = failedKey === imageKey;
 
   return (
     <Image
       source={failed ? FALLBACK_SPORT_IMAGE : image}
       resizeMode="cover"
-      onError={() => setFailed(true)}
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width,
-        height,
-        backgroundColor: "transparent",
-      }}
+      onError={() => setFailedKey(imageKey)}
+      style={[StyleSheet.absoluteFill, { backgroundColor: "transparent" }]}
     />
   );
 }

@@ -1,27 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Platform,
   ScrollView,
   StyleSheet,
   View,
-  type LayoutChangeEvent,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from "react-native";
 import {
   KeyboardAvoidingView,
   KeyboardAwareScrollView,
-  KeyboardStickyView,
 } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TAB_BAR_CLEARANCE } from "@/constants/tabs";
-import { useKeyboardToolbarVisible } from "@/hooks/use-keyboard-toolbar-visible";
+import {
+  KEYBOARD_TOOLBAR_OFFSET,
+  useKeyboardToolbarVisible,
+} from "@/hooks/use-keyboard-toolbar-visible";
 import type { AppScreenProps } from "@/types/components";
 import { restoreTabBar, shrinkTabBar } from "@/utils/tab-bar-scroll";
-
-/** app/_layout'taki KeyboardToolbar klavyenin üstünde bu kadar yer kaplar. */
-const KEYBOARD_TOOLBAR_OFFSET = Platform.OS === "ios" ? 53 : 42;
 
 export function AppScreen({
   children,
@@ -48,13 +46,6 @@ export function AppScreen({
 }: AppScreenProps) {
   const insets = useSafeAreaInsets();
   const bottomPad = withTabBar ? TAB_BAR_CLEARANCE + 16 : 32;
-  const [footerHeight, setFooterHeight] = useState(0);
-
-  const handleFooterLayout = (event: LayoutChangeEvent) => {
-    const next = Math.round(event.nativeEvent.layout.height);
-    setFooterHeight((current) => (current === next ? current : next));
-  };
-
   // Scroll sırasında tab bar'ı küçült; yalnızca bar'ın görünür olduğu ekranlarda.
   const tabBarScrollProps = withTabBar
     ? {
@@ -97,9 +88,7 @@ export function AppScreen({
   const body = scroll ? (
     <ScrollContainer
       ref={scrollRef}
-      {...(useKeyboardAwareScroll
-        ? { bottomOffset: footerHeight + toolbarOffset + 12 }
-        : {})}
+      {...(useKeyboardAwareScroll ? { bottomOffset: toolbarOffset + 16 } : {})}
       style={bodyStyle}
       onContentSizeChange={onContentSizeChange}
       contentContainerClassName={contentClassName}
@@ -179,16 +168,17 @@ export function AppScreen({
         // KeyboardAwareScrollView klavyeyi kendi telafi ediyor; ayrıca KeyboardAvoidingView ile sarmak telafiyi ikiye katlar.
         <>
           <View className="flex-1">{mainContent}</View>
-          {footer ? (
-            <KeyboardStickyView offset={{ opened: -toolbarOffset }}>
-              <View onLayout={handleFooterLayout}>{footer}</View>
-            </KeyboardStickyView>
-          ) : null}
+          {/* Alt aksiyonlar klavyenin üstüne binmez: klavye açıkken arkasında
+              kalır, kullanıcı klavyeyi kapatınca görünür. Klavye üstünde
+              yüzen butonlar yazılan alanı da kapatıyordu. */}
+          {footer}
         </>
       ) : (
         <KeyboardAvoidingView
           className="flex-1"
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          // keyboard-controller'ın sürümü Android'de de çalışıyor; behavior
+          // verilmezse Android'de klavye alt çubuğu (ör. sohbet) kapatıyordu.
+          behavior="padding"
           keyboardVerticalOffset={keyboardVerticalOffset}
         >
           <View className="flex-1">{mainContent}</View>

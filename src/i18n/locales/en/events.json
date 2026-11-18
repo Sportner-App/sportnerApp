@@ -98,7 +98,8 @@
       "capacityPositive": "Player count must be greater than 0.",
       "ageRangeInvalid": "Participant age range must be between 13–120 and in order.",
       "paidFeeRequired": "Enter a price greater than 0 for a paid event."
-    }
+    },
+    "organizerParticipationFailed": "Could not update your participation"
   },
   "pendingRequestsCard": {
     "title_one": "{{count}} person is waiting for your approval",

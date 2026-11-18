@@ -93,6 +93,12 @@ export async function createEvent(
       isPaid: payload.isPaid,
       feeAmount: payload.isPaid ? payload.feeAmount : null,
       organizationId: payload.organizationId || undefined,
+      isOrganizationOnly: payload.organizationId
+        ? (payload.isOrganizationOnly ?? true)
+        : false,
+      organizerParticipates: payload.organizationId
+        ? (payload.organizerParticipates ?? true)
+        : undefined,
     };
     if ((payload.recurrenceCount ?? 1) > 1) {
       const created = await apiClient.post<{

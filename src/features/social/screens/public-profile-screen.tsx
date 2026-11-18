@@ -1,24 +1,35 @@
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
-import { View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
-  AppScreen,
   AppText as Text,
   BottomSheet,
   Button,
   ScreenHeader,
   ScreenLoader,
-  SegmentedTabs,
 } from "@/components";
+import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { ProfileAboutSection } from "@/features/profile/components/profile-about-section";
 import { useSession, useToast } from "@/contexts";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
+import { ProfileTabs } from "@/features/profile/components/profile-tabs";
 import { ProfileHero } from "@/features/profile/components/profile-hero";
+import {
+  PostsGridLoadingMore,
+  PostsGridPlaceholder,
+  PostsGridRowView,
+  useUserPosts,
+  type PostsGridRow,
+} from "@/features/profile/components/posts-grid";
+import {
+  TabListItem,
+  TabListPage,
+} from "@/features/app-shell/components/tab-list-page";
 import { ReviewsSection } from "@/features/profile/components/reviews-section";
 import { SportsSection } from "@/features/profile/components/sports-section";
-import { SportReportCard } from "@/features/profile/components/sport-report-card";
 import { ChallengeMedals } from "@/features/challenges/components/challenge-medals";
 import { DistrictCrowns } from "@/features/leaderboards/components/district-crowns";
 import { StatsSection } from "@/features/profile/components/stats-section";
@@ -46,7 +57,7 @@ import { useRequireAuth } from "@/features/auth/hooks/use-require-auth";
 
 type FriendAction =
   "send" | "accept" | "reject" | "remove" | "block" | "message" | null;
-type ProfileTab = "activity" | "reviews";
+type ProfileTab = "posts" | "activity" | "sports";
 
 export function PublicProfileScreen() {
   const { t } = useTranslation("users");
@@ -62,12 +73,29 @@ export function PublicProfileScreen() {
   const [friendAction, setFriendAction] = useState<FriendAction>(null);
   const [blockConfirmOpen, setBlockConfirmOpen] = useState(false);
   const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<ProfileTab>("activity");
+  const [menuOpen, setMenuOpen] = useState(false);
+  // Menü kapandıktan sonra açılacak onay sayfası: iki sheet aynı anda açık
+  // kalmasın diye menünün kapanma animasyonu bitince açılıyor.
+  const afterMenu = useRef<"block" | "report" | null>(null);
+  const [activeTab, setActiveTab] = useState<ProfileTab>("posts");
 
   const profileTabs = useMemo(
     () => [
-      { key: "activity" as const, label: t("publicProfile.tabs.activity") },
-      { key: "reviews" as const, label: t("publicProfile.tabs.reviews") },
+      {
+        key: "posts" as const,
+        icon: "table-cells" as const,
+        label: t("publicProfile.tabs.posts"),
+      },
+      {
+        key: "activity" as const,
+        icon: "chart-simple" as const,
+        label: t("publicProfile.tabs.activity"),
+      },
+      {
+        key: "sports" as const,
+        icon: "medal" as const,
+        label: t("publicProfile.tabs.sports"),
+      },
     ],
     [t],
   );
@@ -101,6 +129,17 @@ export function PublicProfileScreen() {
 
   const isMe = Boolean(
     user?.id && profile && sameUserId(user.id, profile.userId),
+  );
+  const posts = useUserPosts(profile?.userId);
+  const showPosts = activeTab === "posts" && Boolean(profile);
+  const lastRowKey = posts.rows[posts.rows.length - 1]?.key;
+  const renderRow = useCallback(
+    ({ item }: { item: PostsGridRow }) => (
+      <TabListItem>
+        <PostsGridRowView row={item} isLast={item.key === lastRowKey} />
+      </TabListItem>
+    ),
+    [lastRowKey],
   );
   const friendship = profile?.friendship ?? null;
   const status = friendship?.status ?? null;
@@ -296,211 +335,294 @@ export function PublicProfileScreen() {
   };
 
   return (
-    <AppScreen
-      header={<ScreenHeader title={t("publicProfile.title")} showBack />}
-      contentClassName="gap-6 px-5 pt-3"
-    >
-      {isLoading ? (
-        <ScreenLoader label={t("publicProfile.loading")} size={140} />
-      ) : !profile ? (
-        <Text className="text-center font-body text-body-sm text-text-tertiary">
-          {t("publicProfile.notFound")}
-        </Text>
-      ) : (
+    <TabListPage
+      data={showPosts && !posts.isLoading ? posts.rows : []}
+      keyExtractor={(row) => row.key}
+      renderItem={renderRow}
+      itemGap={0}
+      listTopGap={12}
+      onEndReached={showPosts ? posts.loadMore : undefined}
+      empty={
+        showPosts ? (
+          <PostsGridPlaceholder
+            isLoading={posts.isLoading}
+            failed={posts.failed}
+            isOwnProfile={isMe}
+          />
+        ) : null
+      }
+      footer={
+        showPosts && posts.isLoadingMore ? <PostsGridLoadingMore /> : null
+      }
+      screenHeader={
+        <ScreenHeader
+          title={t("publicProfile.title")}
+          showBack
+          right={
+            profile && !isMe ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t("publicProfile.menu.a11y")}
+                hitSlop={HIT_SLOP}
+                onPress={() => setMenuOpen(true)}
+                className="h-10 w-10 items-center justify-center rounded-full border border-border-default bg-surface-primary active:opacity-70"
+              >
+                <FontAwesome6
+                  name="ellipsis"
+                  size={15}
+                  color={themeColors.text.secondary}
+                />
+              </Pressable>
+            ) : undefined
+          }
+        />
+      }
+      header={
         <>
-          <ProfileHero profile={profile} />
-          <SportReportCard userId={profile.userId} name={profile.fullName} />
-          <ChallengeMedals userId={profile.userId} />
-          <DistrictCrowns userId={profile.userId} />
-          <ProfileAboutSection bio={profile.bio} />
-          <View className="gap-2">
-            {isIncomingPending ? (
-              <View className="flex-row gap-2">
-                <View className="flex-1">
-                  <Button
-                    label={t("publicProfile.actions.accept")}
-                    size="sm"
-                    isLoading={friendAction === "accept"}
-                    disabled={friendAction === "reject"}
-                    onPress={() => void handleAccept()}
-                  />
-                </View>
-                <View className="flex-1">
-                  <Button
-                    label={t("publicProfile.actions.reject")}
-                    variant="dangerOutline"
-                    size="sm"
-                    isLoading={friendAction === "reject"}
-                    disabled={friendAction === "accept"}
-                    onPress={() => void handleReject()}
-                  />
-                </View>
-              </View>
-            ) : null}
-
-            {!isMe ? (
-              <View className="flex-row gap-2">
-                {!isIncomingPending && !isBlocked ? (
-                  <View className="flex-1">
-                    {isAccepted ? (
-                      <Button
-                        label={t("publicProfile.actions.message")}
-                        size="sm"
-                        isLoading={friendAction === "message"}
-                        disabled={
-                          friendAction !== null && friendAction !== "message"
-                        }
-                        onPress={() => void handleMessage()}
-                      />
-                    ) : isOutgoingPending ? (
-                      <Button
-                        label={t("publicProfile.actions.requestSent")}
-                        variant="secondary"
-                        size="sm"
-                        disabled
-                      />
-                    ) : (
-                      <Button
-                        label={t("publicProfile.actions.addFriend")}
-                        size="sm"
-                        isLoading={friendAction === "send"}
-                        onPress={() => void handleSend()}
-                      />
-                    )}
-                  </View>
-                ) : null}
-                {isAccepted ? (
-                  <View className="flex-1">
-                    <Button
-                      label={t("publicProfile.actions.removeFriend")}
-                      variant="dangerOutline"
-                      size="sm"
-                      disabled={friendAction !== null}
-                      onPress={() => setRemoveConfirmOpen(true)}
-                    />
-                  </View>
-                ) : null}
-              </View>
-            ) : null}
-          </View>
-
-          <SportsSection profile={profile} />
-          <SegmentedTabs
-            options={profileTabs}
-            value={activeTab}
-            onChange={setActiveTab}
-          />
-
-          {activeTab === "activity" ? (
+          {isLoading ? (
+            <ScreenLoader label={t("publicProfile.loading")} size={140} />
+          ) : !profile ? (
+            <Text className="text-center font-body text-body-sm text-text-tertiary">
+              {t("publicProfile.notFound")}
+            </Text>
+          ) : (
             <>
-              <StatsSection statistics={profile.statistics} />
-            </>
-          ) : null}
+              <ProfileHero
+                profile={profile}
+                onPostsPress={() => setActiveTab("posts")}
+              />
+              <ProfileAboutSection bio={profile.bio} />
+              <View className="gap-2">
+                {isIncomingPending ? (
+                  <View className="flex-row gap-2">
+                    <View className="flex-1">
+                      <Button
+                        label={t("publicProfile.actions.accept")}
+                        size="sm"
+                        isLoading={friendAction === "accept"}
+                        disabled={friendAction === "reject"}
+                        onPress={() => void handleAccept()}
+                      />
+                    </View>
+                    <View className="flex-1">
+                      <Button
+                        label={t("publicProfile.actions.reject")}
+                        variant="dangerOutline"
+                        size="sm"
+                        isLoading={friendAction === "reject"}
+                        disabled={friendAction === "accept"}
+                        onPress={() => void handleReject()}
+                      />
+                    </View>
+                  </View>
+                ) : null}
 
-          {activeTab === "reviews" ? (
-            <ReviewsSection
-              reviews={reviews}
-              isLoading={reviewsLoading}
-              averageRating={
-                profile.statistics?.averageRating ?? profile.averageRating
-              }
-              totalReviews={
-                profile.statistics?.totalReviews ?? profile.reviewCount
-              }
-            />
-          ) : null}
+                {!isMe ? (
+                  <View className="flex-row gap-2">
+                    {!isIncomingPending && !isBlocked ? (
+                      <View className="flex-1">
+                        {isAccepted ? (
+                          <Button
+                            label={t("publicProfile.actions.message")}
+                            size="sm"
+                            isLoading={friendAction === "message"}
+                            disabled={
+                              friendAction !== null &&
+                              friendAction !== "message"
+                            }
+                            onPress={() => void handleMessage()}
+                          />
+                        ) : isOutgoingPending ? (
+                          <Button
+                            label={t("publicProfile.actions.requestSent")}
+                            variant="secondary"
+                            size="sm"
+                            disabled
+                          />
+                        ) : (
+                          <Button
+                            label={t("publicProfile.actions.addFriend")}
+                            size="sm"
+                            isLoading={friendAction === "send"}
+                            onPress={() => void handleSend()}
+                          />
+                        )}
+                      </View>
+                    ) : null}
+                    {isAccepted ? (
+                      <View className="flex-1">
+                        <Button
+                          label={t("publicProfile.actions.removeFriend")}
+                          variant="dangerOutline"
+                          size="sm"
+                          disabled={friendAction !== null}
+                          onPress={() => setRemoveConfirmOpen(true)}
+                        />
+                      </View>
+                    ) : null}
+                  </View>
+                ) : null}
+              </View>
 
-          {!isMe ? (
-            <View className="gap-2">
-              <Button
-                label={t("publicProfile.actions.report")}
-                variant="dangerOutline"
-                size="sm"
-                onPress={() => {
-                  if (!requireAuth(t("publicProfile.auth.reportUser"))) return;
-                  router.push({
-                    pathname: "/report",
-                    params: { entityType: "0", entityId: profile.userId },
-                  });
+              <ProfileTabs
+                options={profileTabs}
+                value={activeTab}
+                onChange={setActiveTab}
+              />
+
+              {activeTab === "activity" ? (
+                <>
+                  <StatsSection statistics={profile.statistics} />
+                  <ChallengeMedals userId={profile.userId} />
+                  <DistrictCrowns userId={profile.userId} />
+                  <ReviewsSection
+                    reviews={reviews}
+                    isLoading={reviewsLoading}
+                    averageRating={
+                      profile.statistics?.averageRating ?? profile.averageRating
+                    }
+                    totalReviews={
+                      profile.statistics?.totalReviews ?? profile.reviewCount
+                    }
+                  />
+                </>
+              ) : null}
+
+              {activeTab === "sports" ? (
+                <SportsSection profile={profile} />
+              ) : null}
+
+              <BottomSheet
+                visible={menuOpen}
+                onClose={() => setMenuOpen(false)}
+                onClosed={() => {
+                  const next = afterMenu.current;
+                  afterMenu.current = null;
+                  if (next === "block") {
+                    setBlockConfirmOpen(true);
+                  } else if (next === "report") {
+                    router.push({
+                      pathname: "/report",
+                      params: { entityType: "0", entityId: profile.userId },
+                    });
+                  }
                 }}
-              />
-              <Button
-                label={t("publicProfile.actions.block")}
-                variant="dangerOutline"
-                size="sm"
-                disabled={friendAction === "block"}
-                onPress={() => setBlockConfirmOpen(true)}
-              />
-            </View>
-          ) : null}
+                title={profile.fullName}
+              >
+                <View className="gap-2">
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => {
+                      if (!requireAuth(t("publicProfile.auth.reportUser"))) {
+                        setMenuOpen(false);
+                        return;
+                      }
+                      afterMenu.current = "report";
+                      setMenuOpen(false);
+                    }}
+                    className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-4 active:bg-surface-secondary"
+                  >
+                    <FontAwesome6
+                      name="flag"
+                      size={16}
+                      color={themeColors.text.secondary}
+                    />
+                    <Text className="flex-1 font-body text-body text-text-primary">
+                      {t("publicProfile.actions.report")}
+                    </Text>
+                  </Pressable>
 
-          <BottomSheet
-            visible={blockConfirmOpen}
-            onClose={() => {
-              if (friendAction !== "block") {
-                setBlockConfirmOpen(false);
-              }
-            }}
-            title={t("publicProfile.blockSheet.title")}
-            subtitle={t("publicProfile.blockSheet.subtitle")}
-            showCancel={false}
-            footer={
-              <View className="flex-row gap-3">
-                <View className="flex-1">
-                  <Button
-                    label={t("common:cancel")}
-                    variant="dangerOutline"
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityState={{ disabled: friendAction === "block" }}
                     disabled={friendAction === "block"}
-                    onPress={() => setBlockConfirmOpen(false)}
-                  />
+                    onPress={() => {
+                      afterMenu.current = "block";
+                      setMenuOpen(false);
+                    }}
+                    className="flex-row items-center gap-3 rounded-2xl border border-destructive/25 bg-destructive/10 px-4 py-4 active:opacity-70"
+                  >
+                    <FontAwesome6
+                      name="ban"
+                      size={16}
+                      color={themeColors.destructive}
+                    />
+                    <Text className="flex-1 font-body text-body text-destructive">
+                      {t("publicProfile.actions.block")}
+                    </Text>
+                  </Pressable>
                 </View>
-                <View className="flex-1">
-                  <Button
-                    label={t("publicProfile.blockSheet.confirm")}
-                    variant="danger"
-                    isLoading={friendAction === "block"}
-                    disabled={friendAction === "block"}
-                    onPress={() => void handleBlock()}
-                  />
-                </View>
-              </View>
-            }
-          />
+              </BottomSheet>
 
-          <BottomSheet
-            visible={removeConfirmOpen}
-            onClose={() => {
-              if (friendAction !== "remove") {
-                setRemoveConfirmOpen(false);
-              }
-            }}
-            title={t("publicProfile.removeFriendSheet.title")}
-            subtitle={t("publicProfile.removeFriendSheet.subtitle")}
-            showCancel={false}
-            footer={
-              <View className="flex-row gap-3">
-                <View className="flex-1">
-                  <Button
-                    label={t("common:cancel")}
-                    variant="dangerOutline"
-                    disabled={friendAction === "remove"}
-                    onPress={() => setRemoveConfirmOpen(false)}
-                  />
-                </View>
-                <View className="flex-1">
-                  <Button
-                    label={t("publicProfile.removeFriendSheet.confirm")}
-                    variant="danger"
-                    isLoading={friendAction === "remove"}
-                    disabled={friendAction === "remove"}
-                    onPress={() => void handleRemove()}
-                  />
-                </View>
-              </View>
-            }
-          />
+              <BottomSheet
+                visible={blockConfirmOpen}
+                onClose={() => {
+                  if (friendAction !== "block") {
+                    setBlockConfirmOpen(false);
+                  }
+                }}
+                title={t("publicProfile.blockSheet.title")}
+                subtitle={t("publicProfile.blockSheet.subtitle")}
+                showCancel={false}
+                footer={
+                  <View className="flex-row gap-3">
+                    <View className="flex-1">
+                      <Button
+                        label={t("common:cancel")}
+                        variant="dangerOutline"
+                        disabled={friendAction === "block"}
+                        onPress={() => setBlockConfirmOpen(false)}
+                      />
+                    </View>
+                    <View className="flex-1">
+                      <Button
+                        label={t("publicProfile.blockSheet.confirm")}
+                        variant="danger"
+                        isLoading={friendAction === "block"}
+                        disabled={friendAction === "block"}
+                        onPress={() => void handleBlock()}
+                      />
+                    </View>
+                  </View>
+                }
+              />
+
+              <BottomSheet
+                visible={removeConfirmOpen}
+                onClose={() => {
+                  if (friendAction !== "remove") {
+                    setRemoveConfirmOpen(false);
+                  }
+                }}
+                title={t("publicProfile.removeFriendSheet.title")}
+                subtitle={t("publicProfile.removeFriendSheet.subtitle")}
+                showCancel={false}
+                footer={
+                  <View className="flex-row gap-3">
+                    <View className="flex-1">
+                      <Button
+                        label={t("common:cancel")}
+                        variant="dangerOutline"
+                        disabled={friendAction === "remove"}
+                        onPress={() => setRemoveConfirmOpen(false)}
+                      />
+                    </View>
+                    <View className="flex-1">
+                      <Button
+                        label={t("publicProfile.removeFriendSheet.confirm")}
+                        variant="danger"
+                        isLoading={friendAction === "remove"}
+                        disabled={friendAction === "remove"}
+                        onPress={() => void handleRemove()}
+                      />
+                    </View>
+                  </View>
+                }
+              />
+            </>
+          )}
         </>
-      )}
-    </AppScreen>
+      }
+    />
   );
 }

@@ -3,8 +3,10 @@ import { useCallback, useRef, useState } from "react";
 import i18n from "@/i18n";
 import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
 import { getApiErrorMessage } from "@/lib/api/errors";
-import { explorePeople } from "@/features/social/services/social-service";
-import { listFriends } from "@/features/social/services/social-service";
+import {
+  explorePeople,
+  listFriends,
+} from "@/features/social/services/social-service";
 import {
   createComment,
   createReply,

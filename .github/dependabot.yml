@@ -1,0 +1,25 @@
+# Bilinen güvenlik açığı çıkan paketler için haftalık güncelleme PR'ı açar.
+# Expo SDK ve react-native sürümleri birlikte yükseltilmeli (npx expo install --fix);
+# Dependabot bunları ayrı ayrı yükseltip native build'i bozmasın diye hariç.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "expo"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "expo-*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@expo/*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react-native"
+      - dependency-name: "react-native-*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react"
+      - dependency-name: "react-dom"
+    groups:
+      patch:
+        update-types: [patch]

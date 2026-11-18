@@ -30,7 +30,10 @@ import { lightImpact } from "@/utils/haptics";
 
 export function EventParticipantsScreen() {
   const { t } = useTranslation(["eventParticipants", "events"]);
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, remove } = useLocalSearchParams<{
+    id: string;
+    remove?: string;
+  }>();
   const router = useRouter();
   const { user } = useSession();
   const { showToast } = useToast();
@@ -66,14 +69,30 @@ export function EventParticipantsScreen() {
     trigger: "mount",
   });
 
-  const isOrganizer = Boolean(user?.id && event?.organizerUserId === user.id);
+  // Kuran kişi ya da kulüp yöneticisi; sunucu yetkiyi yine doğrular.
+  const isManager = Boolean(
+    event &&
+    (event.canManage || (user?.id && event.organizerUserId === user.id)),
+  );
 
   useEffect(() => {
-    if (!isOrganizer || reasons.length > 0) return;
+    if (!isManager || reasons.length > 0) return;
     void listReportReasons()
       .then(setReasons)
       .catch(() => setReasons([]));
-  }, [isOrganizer, reasons.length]);
+  }, [isManager, reasons.length]);
+
+  // Detaydaki kadro sekmesinden "çıkar" ile gelindiyse onay sayfası doğrudan açılır.
+  const [handledRemoveParam, setHandledRemoveParam] = useState(false);
+  useEffect(() => {
+    if (!remove || handledRemoveParam || !isManager) return;
+    const target = participants.find((item) => item.id === remove);
+    if (!target) return;
+    setHandledRemoveParam(true);
+    setRemovalTarget(target);
+    setReasonId(null);
+    setNote("");
+  }, [remove, handledRemoveParam, isManager, participants]);
 
   const closeRemoval = () => {
     if (isRemoving) return;
@@ -163,7 +182,7 @@ export function EventParticipantsScreen() {
           renderItem={({ item }) => (
             <ParticipantRow
               participant={item}
-              canRemove={isOrganizer && item.userId !== event?.organizerUserId}
+              canRemove={isManager && item.userId !== event?.organizerUserId}
               onRemove={() => {
                 setRemovalTarget(item);
                 setReasonId(null);

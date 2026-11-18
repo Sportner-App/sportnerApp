@@ -14,6 +14,7 @@ import {
   markNoShow,
   promoteFromWaitlist,
   rejectParticipant,
+  setOrganizerParticipation,
 } from "@/features/events/services/organizer-service";
 import {
   acceptEventInvitation,
@@ -68,6 +69,7 @@ export function useEventDetail(id: string | undefined) {
   const [isRespondingInvitation, setIsRespondingInvitation] = useState(false);
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
   const [isMutating, setIsMutating] = useState(false);
+  const [isTogglingParticipation, setIsTogglingParticipation] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [detailPrompt, setDetailPrompt] = useState<PersonalDetailPrompt | null>(
     null,
@@ -99,23 +101,27 @@ export function useEventDetail(id: string | undefined) {
     event?.isOnWaitlist,
   );
 
+  /** Etkinliği kuran kişi (kişisel işler: başvuru yapamaz, kendi katılım anahtarı). */
   const isOrganizer = Boolean(
     event && user?.id && event.organizerUserId === user.id,
   );
+
+  /** Yönetim yetkisi: kuran kişi ya da onaylı kulüp kurucusu/yöneticisi. */
+  const isManager = Boolean(event && (event.canManage || isOrganizer));
 
   const isFull =
     event?.maxParticipants != null &&
     event.participantCount >= event.maxParticipants;
 
   const canManage =
-    isOrganizer &&
+    isManager &&
     event != null &&
     (event.status === EVENT_STATUS.published ||
       event.status === EVENT_STATUS.full ||
       event.status === EVENT_STATUS.draft);
 
   const canComplete =
-    isOrganizer &&
+    isManager &&
     event != null &&
     (event.status === EVENT_STATUS.published ||
       event.status === EVENT_STATUS.full) &&
@@ -124,7 +130,14 @@ export function useEventDetail(id: string | undefined) {
       Date.now();
 
   const canTakeAttendance =
-    isOrganizer && event?.status === EVENT_STATUS.completed;
+    isManager && event?.status === EVENT_STATUS.completed;
+
+  /** Kulüp etkinliğini kuran kişi kendi katılımını açıp kapatabilir. */
+  const canToggleOrganizerParticipation =
+    isOrganizer &&
+    event != null &&
+    event.organizationId != null &&
+    !hasEventEnded(event);
 
   const canCancel =
     event?.canCancel === true &&
@@ -370,6 +383,49 @@ export function useEventDetail(id: string | undefined) {
         )
       : Promise.resolve();
 
+  const toggleOrganizerParticipation = async (participates: boolean) => {
+    if (!event || isTogglingParticipation) {
+      return;
+    }
+    setIsTogglingParticipation(true);
+    try {
+      const { data, error: toggleError } = await setOrganizerParticipation(
+        event.id,
+        participates,
+      );
+      if (toggleError || !data) {
+        errorNotification();
+        showToast({
+          type: "error",
+          title: t("toast.actionFailedTitle"),
+          description: toggleError?.message,
+        });
+        return;
+      }
+      // Yanıt katılımcı/bekleme listesi taşımıyor; mevcut listeler korunur,
+      // ardından sunucudaki güncel kadro sessizce yeniden çekilir.
+      setEvent((current) =>
+        current
+          ? {
+              ...data,
+              participants: current.participants,
+              waitlist: current.waitlist,
+            }
+          : data,
+      );
+      successNotification();
+      showToast({
+        type: "success",
+        title: participates
+          ? t("toast.organizerJoinedTitle")
+          : t("toast.organizerLeftTitle"),
+      });
+      void refresh();
+    } finally {
+      setIsTogglingParticipation(false);
+    }
+  };
+
   const cancel = async () => {
     if (!event || isMutating) {
       return;
@@ -414,6 +470,10 @@ export function useEventDetail(id: string | undefined) {
     hasJoined,
     isFull,
     isOrganizer,
+    isManager,
+    canToggleOrganizerParticipation,
+    isTogglingParticipation,
+    toggleOrganizerParticipation,
     canCancel,
     canManage,
     canComplete,

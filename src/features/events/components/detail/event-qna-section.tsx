@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
+import { useRouter } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
@@ -14,6 +15,7 @@ import type { EventDetail } from "@/features/events/types";
 import { hasEventEnded } from "@/features/events/status";
 import { MentionText } from "@/features/feed/components/mention-text";
 import { type MentionCandidate } from "@/features/feed/hooks/use-mention-composer";
+import { OrganizationImage } from "@/features/organizations/components/organization-image";
 import { normalizeSearch } from "@/utils/search";
 
 /** Sayfada yalnızca ilk sorular görünür; gerisi sheet'te. */
@@ -32,6 +34,7 @@ export function EventQnASection({
 }: EventQnASectionProps) {
   const { t } = useTranslation("eventDetail");
   const { showToast } = useToast();
+  const router = useRouter();
   const [items, setItems] = useState<ApiEventQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -67,6 +70,11 @@ export function EventQnASection({
   );
 
   const ended = hasEventEnded(event);
+  const clubId = event.organizationId;
+  const openClub = useCallback(
+    (organizationId: string) => router.push(`/clubs/${organizationId}`),
+    [router],
+  );
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -128,7 +136,9 @@ export function EventQnASection({
               key={question.id}
               question={question}
               canReply={false}
+              clubId={clubId}
               onOpenUser={onOpenUser}
+              onOpenClub={openClub}
               onReply={() => setSheetOpen(true)}
             />
           ))}
@@ -182,9 +192,14 @@ export function EventQnASection({
           <QuestionCard
             question={question}
             canReply={canReply}
+            clubId={clubId}
             onOpenUser={(userId) => {
               setSheetOpen(false);
               onOpenUser(userId);
+            }}
+            onOpenClub={(organizationId) => {
+              setSheetOpen(false);
+              openClub(organizationId);
             }}
             onReply={onReply}
           />
@@ -197,12 +212,16 @@ export function EventQnASection({
 function QuestionCard({
   question,
   canReply,
+  clubId,
   onOpenUser,
+  onOpenClub,
   onReply,
 }: {
   question: ApiEventQuestion;
   canReply: boolean;
+  clubId: string | null;
   onOpenUser: (userId: string) => void;
+  onOpenClub: (organizationId: string) => void;
   onReply: (item: ApiEventQuestion) => void;
 }) {
   return (
@@ -210,7 +229,9 @@ function QuestionCard({
       <QnARow
         item={question}
         canReply={canReply}
+        clubId={clubId}
         onOpenUser={onOpenUser}
+        onOpenClub={onOpenClub}
         onReply={onReply}
       />
       {(question.replies ?? []).map((reply) => (
@@ -218,7 +239,9 @@ function QuestionCard({
           <QnARow
             item={reply}
             canReply={canReply}
+            clubId={clubId}
             onOpenUser={onOpenUser}
+            onOpenClub={onOpenClub}
             onReply={onReply}
           />
         </View>
@@ -230,22 +253,33 @@ function QuestionCard({
 function QnARow({
   item,
   canReply,
+  clubId,
   onOpenUser,
+  onOpenClub,
   onReply,
 }: {
   item: ApiEventQuestion;
   canReply: boolean;
+  clubId: string | null;
   onOpenUser: (userId: string) => void;
+  onOpenClub: (organizationId: string) => void;
   onReply: (item: ApiEventQuestion) => void;
 }) {
   const { t } = useTranslation("eventDetail");
+  // Kulüp adına verilen cevapta yazar kişi değil kulüp görünür.
+  const clubName = item.answeredByClub ? item.clubName?.trim() || null : null;
   const name =
+    clubName ||
     item.username?.trim() ||
     item.firstName?.trim() ||
     t("events:fallback.athlete");
   const mention = item.replyToUsername?.trim();
-  const badge =
-    item.authorRole === EVENT_QNA_ROLE.organizer
+  const openAuthor = () =>
+    clubName && clubId ? onOpenClub(clubId) : onOpenUser(item.authorUserId);
+  const avatarSize = item.parentId ? 24 : 32;
+  const badge = clubName
+    ? { label: t("qna.roleClub"), tone: "owner" as const }
+    : item.authorRole === EVENT_QNA_ROLE.organizer
       ? { label: t("qna.roleOwner"), tone: "owner" as const }
       : item.authorRole === EVENT_QNA_ROLE.participant
         ? { label: t("qna.roleMember"), tone: "member" as const }
@@ -253,20 +287,27 @@ function QnARow({
 
   return (
     <View className="flex-row items-start gap-2.5">
-      <Pressable
-        onPress={() => onOpenUser(item.authorUserId)}
-        className="mt-0.5"
-      >
-        <Avatar
-          uri={item.profileImageUrl}
-          name={name}
-          size={item.parentId ? 24 : 32}
-          borderWidth={0}
-        />
+      <Pressable onPress={openAuthor} className="mt-0.5">
+        {clubName ? (
+          <OrganizationImage
+            uri={item.clubImageUrl}
+            name={clubName}
+            size={avatarSize}
+            radius={avatarSize * 0.3}
+            textClassName="text-label"
+          />
+        ) : (
+          <Avatar
+            uri={item.profileImageUrl}
+            name={name}
+            size={avatarSize}
+            borderWidth={0}
+          />
+        )}
       </Pressable>
       <View className="min-w-0 flex-1 gap-1">
         <View className="flex-row flex-wrap items-center gap-1.5">
-          <Pressable onPress={() => onOpenUser(item.authorUserId)}>
+          <Pressable onPress={openAuthor}>
             <Text className="font-body-bold text-label text-text-primary">
               {name}
             </Text>

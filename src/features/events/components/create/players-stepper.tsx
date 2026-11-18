@@ -13,6 +13,8 @@ import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { AppText as Text, AppTextInput } from "@/components";
 
 type PlayersStepperProps = {
+  /** false: kulüp etkinliğinde düzenleyen oynamıyor, kontenjana sayılmaz. */
+  organizerCounts?: boolean;
   value: string;
   onChange: (value: string) => void;
 };
@@ -24,7 +26,11 @@ const COUNT_MS = 60;
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
+export function PlayersStepper({
+  value,
+  onChange,
+  organizerCounts = true,
+}: PlayersStepperProps) {
   const { t } = useTranslation("eventCreate");
   const parsedValue = Number(value);
   const count =
@@ -147,7 +153,7 @@ export function PlayersStepper({ value, onChange }: PlayersStepperProps) {
       </View>
 
       <Text className="mt-5 text-center font-body text-caption text-text-tertiary">
-        {t("players.hint")}
+        {t(organizerCounts ? "players.hint" : "players.hintNoOrganizer")}
       </Text>
     </View>
   );

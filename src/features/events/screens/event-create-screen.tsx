@@ -53,6 +53,11 @@ export function EventCreateScreen() {
     isFriendsLoading,
     guests,
     selectedFriendIds,
+    selectedMembers,
+    clubMembers,
+    clubMembersStatus,
+    loadClubMembers,
+    setMembers,
     remainingCompanionSlots,
     addGuest,
     updateGuest,
@@ -124,7 +129,9 @@ export function EventCreateScreen() {
         ) : (
           <SubmitBar
             label={
-              guests.length === 0 && selectedFriendIds.length === 0
+              guests.length === 0 &&
+              selectedFriendIds.length === 0 &&
+              selectedMembers.length === 0
                 ? t("skipAndPublish")
                 : CREATE_EVENT_COPY.submit
             }
@@ -189,6 +196,15 @@ export function EventCreateScreen() {
                 values.isUnlimitedPlayers ? null : Number(values.maxPlayers)
               }
               remainingSlots={remainingCompanionSlots}
+              organizerTakesSlot={
+                !form.organizationId || form.organizerParticipates
+              }
+              isClubEvent={Boolean(form.organizationId)}
+              clubMembers={clubMembers}
+              clubMembersStatus={clubMembersStatus}
+              selectedMembers={selectedMembers}
+              onLoadClubMembers={loadClubMembers}
+              onSetMembers={setMembers}
               guests={guests}
               friends={friends}
               selectedFriendIds={selectedFriendIds}
@@ -199,7 +215,19 @@ export function EventCreateScreen() {
               onToggleFriend={toggleFriend}
             />
             <View className="mt-6">
-              <EventCreateSummary values={values} sportOptions={sportOptions} />
+              <EventCreateSummary
+                values={values}
+                sportOptions={sportOptions}
+                clubName={
+                  form.organizationId
+                    ? form.organizations.find(
+                        (organization) =>
+                          organization.id === form.organizationId,
+                      )?.name
+                    : undefined
+                }
+                organizerParticipates={form.organizerParticipates}
+              />
             </View>
           </>
         ) : null}

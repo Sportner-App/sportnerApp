@@ -38,6 +38,13 @@ export const APP_LINK_BASE_URL =
   optional(process.env.EXPO_PUBLIC_APP_LINK_BASE_URL) || API_URL;
 
 /**
+ * Meta (Facebook) uygulama kimliği. Instagram hikâyesine doğrudan paylaşım
+ * bunu istiyor; gizli değil. Boşsa Instagram seçeneği sistem paylaşım
+ * sayfasına düşer.
+ */
+export const META_APP_ID = optional(process.env.EXPO_PUBLIC_META_APP_ID);
+
+/**
  * Mapbox public token (pk.*) ve stil URL'i. Eksik olmaları uygulamayı
  * durdurmaz; harita boş render edilir (bkz. services/mapbox.ts).
  */

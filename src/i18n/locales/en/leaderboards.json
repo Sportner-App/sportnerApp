@@ -2,7 +2,7 @@
   "title": "LEADERBOARDS",
   "loading": "Loading leaderboard",
   "noDistricts": "Not enough events for leaderboards yet.",
-  "heading": "Most active in {{district}}",
+  "heading": "{{district}} leaders",
   "period": {
     "month": "This month",
     "allTime": "All time"
@@ -28,7 +28,7 @@
     "unranked": "No events yet this month. Join one to get on the board!",
     "leader": "You're #1 this month 👑 · {{total}} players"
   },
-  "eventRow": "See who's most active in {{district}}",
+  "eventRow": "See the {{district}} leaders",
   "crowns": {
     "title_one": "Crowns ({{count}})",
     "title_other": "Crowns ({{count}})",

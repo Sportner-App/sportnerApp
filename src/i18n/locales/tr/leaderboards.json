@@ -2,7 +2,7 @@
   "title": "SIRALAMALAR",
   "loading": "Sıralama yükleniyor",
   "noDistricts": "Henüz sıralama yapılacak kadar etkinlik yok.",
-  "heading": "{{district}} en aktifleri",
+  "heading": "{{district}} liderleri",
   "period": {
     "month": "Bu ay",
     "allTime": "Tüm zamanlar"
@@ -28,7 +28,7 @@
     "unranked": "Bu ay henüz etkinliğin yok. Bir etkinliğe katıl, listeye gir!",
     "leader": "Bu ay 1. sıradasın 👑 · {{total}} oyuncu"
   },
-  "eventRow": "{{district}} semtinin en aktiflerini gör",
+  "eventRow": "{{district}} liderlerini gör",
   "crowns": {
     "title_one": "Taçlar ({{count}})",
     "title_other": "Taçlar ({{count}})",

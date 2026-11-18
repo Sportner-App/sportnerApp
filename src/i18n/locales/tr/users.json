@@ -4,8 +4,10 @@
     "loading": "Profil yükleniyor",
     "notFound": "Profil bulunamadı.",
     "tabs": {
+      "posts": "Gönderiler",
       "activity": "Aktivite",
-      "reviews": "Yorumlar"
+      "reviews": "Yorumlar",
+      "sports": "Sporlar"
     },
     "auth": {
       "sendFriendRequest": "Arkadaşlık isteği göndermek için giriş yapmalısın.",
@@ -44,6 +46,9 @@
       "blockFailedTitle": "Engellenemedi",
       "removedTitle": "Arkadaşlıktan çıkarıldı",
       "removeFailedTitle": "Çıkarılamadı"
+    },
+    "menu": {
+      "a11y": "Daha fazla seçenek"
     }
   }
 }

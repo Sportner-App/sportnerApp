@@ -1,16 +1,16 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useTranslation } from "react-i18next";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  View,
-} from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AppText as Text, Button, Input, SelectField } from "@/components";
+import {
+  AppText as Text,
+  Button,
+  Input,
+  SelectField,
+  KeyboardScrollView,
+} from "@/components";
 import { useOnboardingCopy } from "@/features/onboarding/copy";
 import { useMediaSourceChoice } from "@/hooks/use-media-source-choice";
 import { useOnboarding } from "@/features/onboarding/hooks/use-onboarding";
@@ -36,121 +36,113 @@ export function OnboardingScreen() {
       {isSportsStep ? (
         <SportsPickerStep form={form} />
       ) : (
-        <KeyboardAvoidingView
+        <KeyboardScrollView
           className="flex-1"
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          contentContainerClassName="flex-grow px-6 pb-10"
+          contentContainerStyle={{ paddingTop: Math.max(insets.top, 16) + 8 }}
         >
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode={
-              Platform.OS === "ios" ? "interactive" : "on-drag"
-            }
-            contentContainerClassName="flex-grow px-6 pb-10"
-            contentContainerStyle={{ paddingTop: Math.max(insets.top, 16) + 8 }}
+          <Animated.View
+            entering={FadeInDown.duration(450)}
+            className="mb-8 flex-row items-center gap-3"
           >
-            <Animated.View
-              entering={FadeInDown.duration(450)}
-              className="mb-8 flex-row items-center gap-3"
+            <Pressable
+              hitSlop={HIT_SLOP}
+              onPress={() => form.setStep("sports")}
+              accessibilityRole="button"
+              accessibilityLabel={detailsCopy.backAccessibility}
+              className="h-11 w-11 items-center justify-center rounded-full border border-border-default bg-surface-primary active:opacity-80"
             >
-              <Pressable
-                hitSlop={HIT_SLOP}
-                onPress={() => form.setStep("sports")}
-                accessibilityRole="button"
-                accessibilityLabel={detailsCopy.backAccessibility}
-                className="h-11 w-11 items-center justify-center rounded-full border border-border-default bg-surface-primary active:opacity-80"
-              >
-                <FontAwesome6
-                  name="arrow-left"
-                  size={14}
-                  color={themeColors.brand.primary}
-                />
-              </Pressable>
+              <FontAwesome6
+                name="arrow-left"
+                size={14}
+                color={themeColors.brand.primary}
+              />
+            </Pressable>
 
-              <View className="flex-1 flex-row items-center gap-2.5">
-                <View className="h-2.5 w-2.5 rounded-full bg-brand-primary" />
-                <Text className="font-body-bold text-caption tracking-[4px] text-text-tertiary">
-                  {ONBOARDING_COPY.eyebrow}
-                </Text>
-              </View>
-
-              <View className="rounded-full border border-brand-primary/25 bg-brand-primary/10 px-3 py-1.5">
-                <Text className="font-body-bold text-overline tracking-wide text-brand-primary">
-                  {detailsCopy.stepLabel}
-                </Text>
-              </View>
-            </Animated.View>
-
-            <Animated.View entering={FadeInDown.duration(420)}>
-              <Text className="font-display text-display leading-[52px] text-text-primary">
-                {detailsCopy.title}
+            <View className="flex-1 flex-row items-center gap-2.5">
+              <View className="h-2.5 w-2.5 rounded-full bg-brand-primary" />
+              <Text className="font-body-bold text-caption tracking-[4px] text-text-tertiary">
+                {ONBOARDING_COPY.eyebrow}
               </Text>
-              <Text className="mt-3 font-body text-body leading-6 text-text-tertiary">
-                {detailsCopy.subtitle}
+            </View>
+
+            <View className="rounded-full border border-brand-primary/25 bg-brand-primary/10 px-3 py-1.5">
+              <Text className="font-body-bold text-overline tracking-wide text-brand-primary">
+                {detailsCopy.stepLabel}
               </Text>
-            </Animated.View>
+            </View>
+          </Animated.View>
 
-            <Animated.View
-              entering={FadeInUp.duration(500).delay(120)}
-              className="mt-8 gap-4 rounded-[28px] border border-border-default bg-surface-primary p-5"
-            >
-              <MediaFields
-                avatar={form.avatar}
-                existingAvatarUrl={form.existingAvatarUrl}
-                onPickAvatar={() => {
-                  void (async () => {
-                    const source = await chooseSource();
-                    if (source) {
-                      await form.chooseAvatar(source);
-                    }
-                  })();
-                }}
-                onClearAvatar={form.clearAvatar}
-              />
-              <SelectField
-                label={t("profile:edit.cityLabel")}
-                placeholder={
-                  form.isCitiesLoading
-                    ? t("profile:edit.cityLoadingPlaceholder")
-                    : t("profile:edit.cityPlaceholder")
-                }
-                icon="location-dot"
-                options={form.cityOptions}
-                value={form.city}
-                onChange={form.setCity}
-                disabled={form.isCitiesLoading || Boolean(form.citiesError)}
-                searchable
-                searchPlaceholder={t("profile:edit.citySearchPlaceholder")}
-                sheetTitle={t("profile:edit.citySheetTitle")}
-                sheetSubtitle={t("profile:edit.citySheetSubtitle")}
-              />
-              <Input
-                label={detailsCopy.bioLabel}
-                placeholder={detailsCopy.bioPlaceholder}
-                icon="align-left"
-                value={form.bio}
-                onChangeText={form.setBio}
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-                style={{ minHeight: 110, paddingTop: 14 }}
-                maxLength={500}
-              />
-            </Animated.View>
+          <Animated.View entering={FadeInDown.duration(420)}>
+            <Text className="font-display text-display leading-[52px] text-text-primary">
+              {detailsCopy.title}
+            </Text>
+            <Text className="mt-3 font-body text-body leading-6 text-text-tertiary">
+              {detailsCopy.subtitle}
+            </Text>
+          </Animated.View>
 
-            <Animated.View
-              entering={FadeInUp.duration(500).delay(200)}
-              className="mt-8 gap-3"
-            >
-              <Button
-                label={detailsCopy.submit}
-                size="lg"
-                isLoading={form.isSubmitting}
-                disabled={form.isSubmitting || !form.canFinish}
-                onPress={form.finish}
-              />
-            </Animated.View>
-          </ScrollView>
-        </KeyboardAvoidingView>
+          <Animated.View
+            entering={FadeInUp.duration(500).delay(120)}
+            className="mt-8 gap-4 rounded-[28px] border border-border-default bg-surface-primary p-5"
+          >
+            <MediaFields
+              avatar={form.avatar}
+              existingAvatarUrl={form.existingAvatarUrl}
+              onPickAvatar={() => {
+                void (async () => {
+                  const source = await chooseSource();
+                  if (source) {
+                    await form.chooseAvatar(source);
+                  }
+                })();
+              }}
+              onClearAvatar={form.clearAvatar}
+            />
+            <SelectField
+              label={t("profile:edit.cityLabel")}
+              placeholder={
+                form.isCitiesLoading
+                  ? t("profile:edit.cityLoadingPlaceholder")
+                  : t("profile:edit.cityPlaceholder")
+              }
+              icon="location-dot"
+              options={form.cityOptions}
+              value={form.city}
+              onChange={form.setCity}
+              disabled={form.isCitiesLoading || Boolean(form.citiesError)}
+              searchable
+              searchPlaceholder={t("profile:edit.citySearchPlaceholder")}
+              sheetTitle={t("profile:edit.citySheetTitle")}
+              sheetSubtitle={t("profile:edit.citySheetSubtitle")}
+            />
+            <Input
+              label={detailsCopy.bioLabel}
+              placeholder={detailsCopy.bioPlaceholder}
+              icon="align-left"
+              value={form.bio}
+              onChangeText={form.setBio}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+              style={{ minHeight: 110, paddingTop: 14 }}
+              maxLength={500}
+            />
+          </Animated.View>
+
+          <Animated.View
+            entering={FadeInUp.duration(500).delay(200)}
+            className="mt-8 gap-3"
+          >
+            <Button
+              label={detailsCopy.submit}
+              size="lg"
+              isLoading={form.isSubmitting}
+              disabled={form.isSubmitting || !form.canFinish}
+              onPress={form.finish}
+            />
+          </Animated.View>
+        </KeyboardScrollView>
       )}
       {sourceSheet}
     </View>

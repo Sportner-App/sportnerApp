@@ -32,9 +32,14 @@ function responsiveSize(width: number, min: number, max: number): number {
 
 /** Sekmeye özel birincil aksiyon; verilirse arama ikonunun yerini alır. */
 export type TabHeaderAction = {
-  icon: "plus";
+  icon: "plus" | "gear";
   label: string;
   onPress: () => void;
+  /**
+   * Aramayı gizler, kendisi en sağa geçer (ör. profilde ayarlar çarkı: orada
+   * arama kullanılmıyor). Varsayılan: aramanın yanına, vurgu rengiyle eklenir.
+   */
+  replacesSearch?: boolean;
 };
 
 export function TabScreenHeader({ action }: { action?: TabHeaderAction }) {
@@ -104,7 +109,7 @@ export function TabScreenHeader({ action }: { action?: TabHeaderAction }) {
         className="flex-row flex-shrink-0 items-center"
         style={{ gap: actionGap }}
       >
-        {action ? (
+        {action && !action.replacesSearch ? (
           <HeaderAction
             icon={action.icon}
             size={actionSize}
@@ -115,17 +120,19 @@ export function TabScreenHeader({ action }: { action?: TabHeaderAction }) {
             onPress={action.onPress}
           />
         ) : null}
-        <HeaderAction
-          icon="magnifying-glass"
-          size={actionSize}
-          iconSize={actionIconSize}
-          indicatorSize={indicatorSize}
-          label={t("tabHeader.search")}
-          onPress={() =>
-            requireAuth(t("tabHeader.searchAuthRequired")) &&
-            router.push("/people")
-          }
-        />
+        {action?.replacesSearch ? null : (
+          <HeaderAction
+            icon="magnifying-glass"
+            size={actionSize}
+            iconSize={actionIconSize}
+            indicatorSize={indicatorSize}
+            label={t("tabHeader.search")}
+            onPress={() =>
+              requireAuth(t("tabHeader.searchAuthRequired")) &&
+              router.push("/people")
+            }
+          />
+        )}
         <HeaderAction
           icon="comments"
           size={actionSize}
@@ -151,6 +158,16 @@ export function TabScreenHeader({ action }: { action?: TabHeaderAction }) {
             router.push("/notifications")
           }
         />
+        {action?.replacesSearch ? (
+          <HeaderAction
+            icon={action.icon}
+            size={actionSize}
+            iconSize={actionIconSize}
+            indicatorSize={indicatorSize}
+            label={action.label}
+            onPress={action.onPress}
+          />
+        ) : null}
       </View>
     </View>
   );
@@ -167,7 +184,7 @@ function HeaderAction({
   indicatorSize,
   tint,
 }: {
-  icon: "magnifying-glass" | "comments" | "bell" | "plus";
+  icon: "magnifying-glass" | "comments" | "bell" | "plus" | "gear";
   label: string;
   showIndicator?: boolean;
   onPress: () => void;

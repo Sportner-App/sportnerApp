@@ -2,20 +2,32 @@
   "loading": "Profil yükleniyor",
   "loadFailed": "Profil yüklenemedi.",
   "sportsTitle": "Sporlar",
-  "organizationsTitle": "Organizasyonlar",
-  "emptyOrganizations": "Henüz organizasyonun yok. Dokunarak ekle veya katıl.",
+  "organizationsTitle": "Kulüpler",
+  "emptyOrganizations": "Henüz kulübün yok. Dokunarak ekle veya katıl.",
   "emptySports": "Henüz spor eklemedin. Dokunarak ekle.",
   "emptySportsPublic": "Henüz spor eklenmemiş.",
   "reviewsTitle": "Değerlendirmeler",
   "emptyReviews": "Henüz değerlendirme yok. Etkinlik sonrası gelen yorumlar burada görünür.",
   "notFound": "Profil bulunamadı. Kayıt sırasında profil oluşmamış olabilir.",
   "tabs": {
+    "posts": "Gönderiler",
     "activity": "Aktivite",
     "reviews": "Yorumlar",
-    "settings": "Ayarlar"
+    "settings": "Ayarlar",
+    "sports": "Sporlar",
+    "groups": "Gruplar"
   },
   "hero": {
-    "editAccessibility": "Profili düzenle"
+    "editAccessibility": "Profili düzenle",
+    "settingsAccessibility": "Ayarlar",
+    "counts": {
+      "posts_one": "gönderi",
+      "posts_other": "gönderi",
+      "friends_one": "arkadaş",
+      "friends_other": "arkadaş",
+      "badges_one": "rozet",
+      "badges_other": "rozet"
+    }
   },
   "about": {
     "emptyBio": "Henüz profil açıklaması eklenmemiş.",
@@ -192,7 +204,16 @@
     "leadSport": "Favori sporu:",
     "share": "Paylaş",
     "shareFailed": "Karne paylaşılamadı",
-    "shareUnavailable": "Bu cihazda paylaşım kullanılamıyor."
+    "shareUnavailable": "Bu cihazda paylaşım kullanılamıyor.",
+    "readyTitle": "{{year}} spor karnen hazır",
+    "readyBody": "Bu yıl neler yaptığına bir bak, istersen hikâyende paylaş.",
+    "screenTitle": "Spor Karnem",
+    "shareTo": "Paylaş",
+    "targets": {
+      "instagramStory": "Hikâye",
+      "whatsapp": "WhatsApp",
+      "other": "Diğer"
+    }
   },
   "streak": {
     "weeks_one": "{{count}} haftalık seri",
@@ -212,5 +233,13 @@
     "goalFailed": "Hedef kaydedilemedi",
     "badge_one": "{{count}} haftalık seri",
     "badge_other": "{{count}} haftalık seri"
+  },
+  "posts": {
+    "empty": "Henüz paylaşılan bir gönderi yok.",
+    "emptyOwn": "Henüz bir şey paylaşmadın. Etkinlikten bir kare paylaş, burada görünsün.",
+    "unavailable": "Gönderiler şu an yüklenemedi.",
+    "create": "Gönderi paylaş",
+    "loadMore": "Daha fazla göster",
+    "openAccessibility": "Gönderiyi aç"
   }
 }

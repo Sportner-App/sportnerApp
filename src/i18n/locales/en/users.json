@@ -4,8 +4,10 @@
     "loading": "Loading profile",
     "notFound": "Profile not found.",
     "tabs": {
+      "posts": "Posts",
       "activity": "Activity",
-      "reviews": "Reviews"
+      "reviews": "Reviews",
+      "sports": "Sports"
     },
     "auth": {
       "sendFriendRequest": "You need to sign in to send a friend request.",
@@ -44,6 +46,9 @@
       "blockFailedTitle": "Could not block",
       "removedTitle": "Removed from friends",
       "removeFailedTitle": "Could not remove"
+    },
+    "menu": {
+      "a11y": "More options"
     }
   }
 }

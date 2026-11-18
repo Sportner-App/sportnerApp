@@ -1,10 +1,14 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { AppText as Text, AppTextInput, Avatar } from "@/components";
 import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { isValidEmail } from "@/constants/validation";
+import { ClubMemberPickerSheet } from "@/features/events/components/create/club-member-picker-sheet";
+import type { ClubMembersStatus } from "@/features/events/hooks/use-event-companions";
+import type { ApiOrganizationMember } from "@/features/organizations/types";
 import type { ApiFriend } from "@/features/social/types";
 import { formatHandle } from "@/utils/person";
 
@@ -19,6 +23,15 @@ type Props = {
   /** null: sınırsız kontenjan. */
   maxParticipants: number | null;
   remainingSlots: number;
+  /** false: düzenleyen oynamıyor (kulüp etkinliği), kontenjandan yer kaplamaz. */
+  organizerTakesSlot?: boolean;
+  /** Kulüp etkinliği: misafir yok, davet yalnızca kulüp üyelerinden. */
+  isClubEvent?: boolean;
+  clubMembers: ApiOrganizationMember[];
+  clubMembersStatus: ClubMembersStatus;
+  selectedMembers: ApiOrganizationMember[];
+  onLoadClubMembers: (force?: boolean) => void;
+  onSetMembers: (members: ApiOrganizationMember[]) => void;
   guests: GuestDraft[];
   friends: ApiFriend[];
   selectedFriendIds: string[];
@@ -36,6 +49,13 @@ type Props = {
 export function EventCompanionsStep({
   maxParticipants,
   remainingSlots,
+  organizerTakesSlot = true,
+  isClubEvent = false,
+  clubMembers,
+  clubMembersStatus,
+  selectedMembers,
+  onLoadClubMembers,
+  onSetMembers,
   guests,
   friends,
   selectedFriendIds,
@@ -46,7 +66,11 @@ export function EventCompanionsStep({
   onToggleFriend,
 }: Props) {
   const { t } = useTranslation("eventCreate");
-  const reserved = guests.length + selectedFriendIds.length;
+  const [isMemberSheetOpen, setIsMemberSheetOpen] = useState(false);
+  const reserved = isClubEvent
+    ? selectedMembers.length
+    : guests.length + selectedFriendIds.length;
+  const occupied = (organizerTakesSlot ? 1 : 0) + reserved;
 
   return (
     <View className="mt-7 gap-5">
@@ -59,180 +83,285 @@ export function EventCompanionsStep({
                 : t("companions.slotsAvailable", { count: remainingSlots })}
             </Text>
             <Text className="mt-1 font-body text-caption text-text-secondary">
-              {t("companions.reservedBreakdown", { count: reserved })}
+              {t(
+                isClubEvent
+                  ? organizerTakesSlot
+                    ? "companions.reservedBreakdownClub"
+                    : "companions.reservedBreakdownClubNoOrganizer"
+                  : organizerTakesSlot
+                    ? "companions.reservedBreakdown"
+                    : "companions.reservedBreakdownNoOrganizer",
+                { count: reserved },
+              )}
             </Text>
           </View>
           <Text className="font-body-bold text-heading-sm text-brand-primary">
             {maxParticipants == null
-              ? 1 + reserved
-              : `${1 + reserved}/${maxParticipants}`}
+              ? occupied
+              : `${occupied}/${maxParticipants}`}
           </Text>
         </View>
       </View>
 
-      <View className="gap-3">
-        <View className="flex-row items-center justify-between">
+      {isClubEvent ? (
+        <View className="gap-3">
           <View>
             <Text className="font-body-bold text-body-sm text-text-primary">
-              {t("companions.guestsTitle")}
+              {t("companions.membersTitle")}
             </Text>
             <Text className="mt-0.5 font-body text-caption text-text-tertiary">
-              {t("companions.guestsSubtitle")}
+              {t("companions.membersSubtitle")}
             </Text>
           </View>
+
           <Pressable
-            disabled={remainingSlots <= 0}
-            onPress={onAddGuest}
-            className="h-10 w-10 items-center justify-center rounded-full bg-brand-primary disabled:opacity-35"
+            onPress={() => {
+              onLoadClubMembers();
+              setIsMemberSheetOpen(true);
+            }}
+            className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-3.5 active:opacity-80"
           >
             <FontAwesome6
-              name="plus"
+              name="user-plus"
               size={14}
-              color={themeColors.text.onPrimary}
+              color={themeColors.brand.primary}
+            />
+            <View className="flex-1">
+              <Text className="font-body-bold text-body-sm text-text-primary">
+                {t("companions.memberPick")}
+              </Text>
+              {selectedMembers.length > 0 ? (
+                <Text className="mt-0.5 font-body text-caption text-text-secondary">
+                  {t("companions.memberSelectedCount", {
+                    count: selectedMembers.length,
+                  })}
+                </Text>
+              ) : null}
+            </View>
+            <FontAwesome6
+              name="chevron-right"
+              size={12}
+              color={themeColors.text.tertiary}
             />
           </Pressable>
-        </View>
 
-        {guests.map((guest, index) => (
-          <View
-            key={guest.localId}
-            className="gap-3 rounded-[22px] border border-border-default bg-surface-primary p-3.5"
-          >
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center gap-2">
-                <View className="h-8 w-8 items-center justify-center rounded-full bg-surface-secondary">
-                  <FontAwesome6
-                    name="user"
-                    size={12}
-                    color={themeColors.text.secondary}
+          {selectedMembers.length > 0 ? (
+            <View className="flex-row flex-wrap gap-2">
+              {selectedMembers.map((member) => (
+                <View
+                  key={member.userId}
+                  className="flex-row items-center gap-2 rounded-full border border-brand-primary/40 bg-brand-primary/10 py-1 pl-1 pr-3"
+                >
+                  <Avatar
+                    uri={member.profileImageUrl}
+                    name={member.firstName || member.username || ""}
+                    size={24}
+                    borderWidth={0}
                   />
+                  <Text className="font-body-bold text-caption text-text-primary">
+                    {formatHandle(member.username)}
+                  </Text>
+                  <Pressable
+                    hitSlop={HIT_SLOP}
+                    accessibilityRole="button"
+                    accessibilityLabel={t("companions.memberRemove")}
+                    onPress={() =>
+                      onSetMembers(
+                        selectedMembers.filter(
+                          (item) => item.userId !== member.userId,
+                        ),
+                      )
+                    }
+                  >
+                    <FontAwesome6
+                      name="xmark"
+                      size={12}
+                      color={themeColors.text.secondary}
+                    />
+                  </Pressable>
                 </View>
-                <Text className="font-body-bold text-caption text-text-secondary">
-                  {t("companions.guestLabel", { number: index + 1 })}
+              ))}
+            </View>
+          ) : null}
+
+          <ClubMemberPickerSheet
+            visible={isMemberSheetOpen}
+            onClose={() => setIsMemberSheetOpen(false)}
+            members={clubMembers}
+            status={clubMembersStatus}
+            selected={selectedMembers}
+            maxSelectable={selectedMembers.length + remainingSlots}
+            onRetry={() => onLoadClubMembers(true)}
+            onConfirm={onSetMembers}
+          />
+        </View>
+      ) : (
+        <>
+          <View className="gap-3">
+            <View className="flex-row items-center justify-between">
+              <View>
+                <Text className="font-body-bold text-body-sm text-text-primary">
+                  {t("companions.guestsTitle")}
+                </Text>
+                <Text className="mt-0.5 font-body text-caption text-text-tertiary">
+                  {t("companions.guestsSubtitle")}
                 </Text>
               </View>
               <Pressable
-                hitSlop={HIT_SLOP}
-                onPress={() => onRemoveGuest(guest.localId)}
+                disabled={remainingSlots <= 0}
+                onPress={onAddGuest}
+                className="h-10 w-10 items-center justify-center rounded-full bg-brand-primary disabled:opacity-35"
               >
                 <FontAwesome6
-                  name="xmark"
+                  name="plus"
                   size={14}
-                  color={themeColors.destructive}
+                  color={themeColors.text.onPrimary}
                 />
               </Pressable>
             </View>
-            <View className="flex-row gap-2">
-              <GuestInput
-                placeholder={t("companions.guestFirstName")}
-                value={guest.firstName}
-                hasError={!guest.firstName.trim()}
-                onChangeText={(value) =>
-                  onUpdateGuest(guest.localId, "firstName", value)
-                }
-              />
-              <GuestInput
-                placeholder={t("companions.guestLastName")}
-                value={guest.lastName}
-                hasError={!guest.lastName.trim()}
-                onChangeText={(value) =>
-                  onUpdateGuest(guest.localId, "lastName", value)
-                }
-              />
-            </View>
-            <GuestInput
-              placeholder={t("companions.guestEmail")}
-              value={guest.email}
-              hasError={!isValidEmail(guest.email)}
-              keyboardType="email-address"
-              maxLength={320}
-              onChangeText={(value) =>
-                onUpdateGuest(guest.localId, "email", value)
-              }
-            />
-            {!guest.firstName.trim() ||
-            !guest.lastName.trim() ||
-            !isValidEmail(guest.email) ? (
-              <Text className="font-body text-overline text-destructive">
-                {t("companions.guestRequiredError")}
-              </Text>
-            ) : null}
-          </View>
-        ))}
-      </View>
 
-      <View className="gap-3">
-        <View>
-          <Text className="font-body-bold text-body-sm text-text-primary">
-            {t("companions.friendsTitle")}
-          </Text>
-          <Text className="mt-0.5 font-body text-caption text-text-tertiary">
-            {t("companions.friendsSubtitle")}
-          </Text>
-        </View>
-
-        {isFriendsLoading ? (
-          <Text className="py-4 text-center font-body text-body-sm text-text-secondary">
-            {t("companions.friendsLoading")}
-          </Text>
-        ) : friends.length === 0 ? (
-          <Text className="rounded-2xl border border-border-default bg-surface-primary px-4 py-5 text-center font-body text-body-sm text-text-secondary">
-            {t("companions.friendsEmpty")}
-          </Text>
-        ) : (
-          <ScrollView
-            className="max-h-[260px]"
-            nestedScrollEnabled
-            showsVerticalScrollIndicator={false}
-          >
-            <View className="gap-2">
-              {friends.map((friend) => {
-                const selected = selectedFriendIds.includes(friend.userId);
-                const disabled = !selected && remainingSlots <= 0;
-                return (
+            {guests.map((guest, index) => (
+              <View
+                key={guest.localId}
+                className="gap-3 rounded-[22px] border border-border-default bg-surface-primary p-3.5"
+              >
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-2">
+                    <View className="h-8 w-8 items-center justify-center rounded-full bg-surface-secondary">
+                      <FontAwesome6
+                        name="user"
+                        size={12}
+                        color={themeColors.text.secondary}
+                      />
+                    </View>
+                    <Text className="font-body-bold text-caption text-text-secondary">
+                      {t("companions.guestLabel", { number: index + 1 })}
+                    </Text>
+                  </View>
                   <Pressable
-                    key={friend.userId}
-                    disabled={disabled}
-                    onPress={() => onToggleFriend(friend.userId)}
-                    className={`flex-row items-center gap-3 rounded-2xl border px-3.5 py-3 disabled:opacity-35 ${
-                      selected
-                        ? "border-brand-primary/50 bg-brand-primary/10"
-                        : "border-border-default bg-surface-primary"
-                    }`}
+                    hitSlop={HIT_SLOP}
+                    onPress={() => onRemoveGuest(guest.localId)}
                   >
-                    <Avatar
-                      uri={friend.profileImageUrl}
-                      name={friend.firstName || friend.username}
-                      size={44}
-                      borderWidth={0}
+                    <FontAwesome6
+                      name="xmark"
+                      size={14}
+                      color={themeColors.destructive}
                     />
-                    <View className="flex-1">
-                      <Text className="font-body-bold text-body-sm text-text-primary">
-                        {formatHandle(friend.username)}
-                      </Text>
-                    </View>
-                    <View
-                      className={`h-6 w-6 items-center justify-center rounded-full border ${
-                        selected
-                          ? "border-brand-primary bg-brand-primary"
-                          : "border-border-strong bg-transparent"
-                      }`}
-                    >
-                      {selected ? (
-                        <FontAwesome6
-                          name="check"
-                          size={10}
-                          color={themeColors.text.onPrimary}
-                        />
-                      ) : null}
-                    </View>
                   </Pressable>
-                );
-              })}
+                </View>
+                <View className="flex-row gap-2">
+                  <GuestInput
+                    placeholder={t("companions.guestFirstName")}
+                    value={guest.firstName}
+                    hasError={!guest.firstName.trim()}
+                    onChangeText={(value) =>
+                      onUpdateGuest(guest.localId, "firstName", value)
+                    }
+                  />
+                  <GuestInput
+                    placeholder={t("companions.guestLastName")}
+                    value={guest.lastName}
+                    hasError={!guest.lastName.trim()}
+                    onChangeText={(value) =>
+                      onUpdateGuest(guest.localId, "lastName", value)
+                    }
+                  />
+                </View>
+                <GuestInput
+                  placeholder={t("companions.guestEmail")}
+                  value={guest.email}
+                  hasError={!isValidEmail(guest.email)}
+                  keyboardType="email-address"
+                  maxLength={320}
+                  onChangeText={(value) =>
+                    onUpdateGuest(guest.localId, "email", value)
+                  }
+                />
+                {!guest.firstName.trim() ||
+                !guest.lastName.trim() ||
+                !isValidEmail(guest.email) ? (
+                  <Text className="font-body text-overline text-destructive">
+                    {t("companions.guestRequiredError")}
+                  </Text>
+                ) : null}
+              </View>
+            ))}
+          </View>
+
+          <View className="gap-3">
+            <View>
+              <Text className="font-body-bold text-body-sm text-text-primary">
+                {t("companions.friendsTitle")}
+              </Text>
+              <Text className="mt-0.5 font-body text-caption text-text-tertiary">
+                {t("companions.friendsSubtitle")}
+              </Text>
             </View>
-          </ScrollView>
-        )}
-      </View>
+
+            {isFriendsLoading ? (
+              <Text className="py-4 text-center font-body text-body-sm text-text-secondary">
+                {t("companions.friendsLoading")}
+              </Text>
+            ) : friends.length === 0 ? (
+              <Text className="rounded-2xl border border-border-default bg-surface-primary px-4 py-5 text-center font-body text-body-sm text-text-secondary">
+                {t("companions.friendsEmpty")}
+              </Text>
+            ) : (
+              <ScrollView
+                className="max-h-[260px]"
+                nestedScrollEnabled
+                showsVerticalScrollIndicator={false}
+              >
+                <View className="gap-2">
+                  {friends.map((friend) => {
+                    const selected = selectedFriendIds.includes(friend.userId);
+                    const disabled = !selected && remainingSlots <= 0;
+                    return (
+                      <Pressable
+                        key={friend.userId}
+                        disabled={disabled}
+                        onPress={() => onToggleFriend(friend.userId)}
+                        className={`flex-row items-center gap-3 rounded-2xl border px-3.5 py-3 disabled:opacity-35 ${
+                          selected
+                            ? "border-brand-primary/50 bg-brand-primary/10"
+                            : "border-border-default bg-surface-primary"
+                        }`}
+                      >
+                        <Avatar
+                          uri={friend.profileImageUrl}
+                          name={friend.firstName || friend.username}
+                          size={44}
+                          borderWidth={0}
+                        />
+                        <View className="flex-1">
+                          <Text className="font-body-bold text-body-sm text-text-primary">
+                            {formatHandle(friend.username)}
+                          </Text>
+                        </View>
+                        <View
+                          className={`h-6 w-6 items-center justify-center rounded-full border ${
+                            selected
+                              ? "border-brand-primary bg-brand-primary"
+                              : "border-border-strong bg-transparent"
+                          }`}
+                        >
+                          {selected ? (
+                            <FontAwesome6
+                              name="check"
+                              size={10}
+                              color={themeColors.text.onPrimary}
+                            />
+                          ) : null}
+                        </View>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </ScrollView>
+            )}
+          </View>
+        </>
+      )}
     </View>
   );
 }

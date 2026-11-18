@@ -21,15 +21,12 @@
   },
   "scope": {
     "all": "General",
-    "friends": "My friends",
-    "organizations": "My organizations"
+    "friends": "My friends"
   },
   "requireAuth": {
-    "friends": "You need to sign in to see your friends' events.",
-    "organizations": "You need to sign in to see your organizations' events."
+    "friends": "You need to sign in to see your friends' events."
   },
   "contextLabel": {
-    "organizationsFallback": "Your organizations' events",
     "friendsWithCity": "{{city}} · Your friends' events",
     "friends": "Events organized by your friends",
     "cityEvents": "Events in {{city}}",
@@ -44,7 +41,6 @@
   "loadingEvents": "Loading events",
   "loadFailed": "Events couldn't load.",
   "empty": {
-    "organizations": "Your organizations don't have any upcoming events yet.",
     "friends": "Your friends haven't created any upcoming events yet.",
     "default": "No upcoming events match these filters."
   },
@@ -74,7 +70,8 @@
       "capacity": "capacity {{count}} people",
       "myStatusApproved": "you're in",
       "myStatusPending": "pending approval",
-      "ended": "event ended"
+      "ended": "event ended",
+      "openClub": "Open club"
     },
     "ended": "Ended"
   },
@@ -100,15 +97,6 @@
       "allGroupLabel": "All categories",
       "allLabel": "All sports",
       "allDescription": "Don't filter by sport"
-    },
-    "organization": {
-      "label": "Organization",
-      "placeholder": "Select organization",
-      "sheetTitle": "Select organization",
-      "sheetSubtitle": "Whose organization's events do you want to see?",
-      "searchPlaceholder": "Search organization",
-      "allLabel": "All organizations",
-      "allDescription": "Don't filter by organization"
     },
     "fee": {
       "label": "Fee",

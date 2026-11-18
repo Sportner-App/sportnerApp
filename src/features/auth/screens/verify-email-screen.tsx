@@ -1,15 +1,15 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  View,
-} from "react-native";
+import { Pressable, View } from "react-native";
 
-import { AppText as Text, BrandMark, Button, Input } from "@/components";
+import {
+  AppText as Text,
+  BrandMark,
+  Button,
+  Input,
+  KeyboardScrollView,
+} from "@/components";
 import { useAuth, useToast } from "@/contexts";
 
 import { AnimatedBackground } from "@/components/animated-background";
@@ -104,81 +104,73 @@ export function VerifyEmailScreen() {
     <View className="flex-1 bg-background-primary">
       <AnimatedBackground />
 
-      <KeyboardAvoidingView
+      <KeyboardScrollView
         className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        contentContainerClassName="flex-grow justify-center px-6 py-14"
       >
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode={
-            Platform.OS === "ios" ? "interactive" : "on-drag"
-          }
-          contentContainerClassName="flex-grow justify-center px-6 py-14"
-        >
-          <View className="mb-10">
-            <BrandMark tone="light" />
-          </View>
+        <View className="mb-10">
+          <BrandMark tone="light" />
+        </View>
 
-          <Text className="font-display text-display leading-[52px] text-text-primary">
-            {t("verifyEmail.title")}
-          </Text>
-          <Text className="mt-3 font-body text-body leading-6 text-text-tertiary">
-            {t("verifyEmail.subtitle", { email: userEmail })}
-          </Text>
+        <Text className="font-display text-display leading-[52px] text-text-primary">
+          {t("verifyEmail.title")}
+        </Text>
+        <Text className="mt-3 font-body text-body leading-6 text-text-tertiary">
+          {t("verifyEmail.subtitle", { email: userEmail })}
+        </Text>
 
-          <View className="mt-9 rounded-[28px] border border-border-default bg-surface-primary p-5">
-            <Input
-              icon="key"
-              placeholder={t("verifyEmail.codePlaceholder")}
-              value={code}
-              onChangeText={(value) =>
-                setCode(
-                  value.replace(/\D/g, "").slice(0, VERIFICATION_CODE_LENGTH),
-                )
+        <View className="mt-9 rounded-[28px] border border-border-default bg-surface-primary p-5">
+          <Input
+            icon="key"
+            placeholder={t("verifyEmail.codePlaceholder")}
+            value={code}
+            onChangeText={(value) =>
+              setCode(
+                value.replace(/\D/g, "").slice(0, VERIFICATION_CODE_LENGTH),
+              )
+            }
+            keyboardType="number-pad"
+            maxLength={VERIFICATION_CODE_LENGTH}
+            autoFocus
+          />
+
+          <View className="mt-6">
+            <Button
+              label={t("verifyEmail.confirm")}
+              size="lg"
+              isLoading={isVerifying}
+              disabled={
+                isVerifying || code.trim().length !== VERIFICATION_CODE_LENGTH
               }
-              keyboardType="number-pad"
-              maxLength={VERIFICATION_CODE_LENGTH}
-              autoFocus
+              pressScale={0.98}
+              haptic="light"
+              onPress={() => void handleVerify()}
             />
-
-            <View className="mt-6">
-              <Button
-                label={t("verifyEmail.confirm")}
-                size="lg"
-                isLoading={isVerifying}
-                disabled={
-                  isVerifying || code.trim().length !== VERIFICATION_CODE_LENGTH
-                }
-                pressScale={0.98}
-                haptic="light"
-                onPress={() => void handleVerify()}
-              />
-            </View>
-
-            <Pressable
-              onPress={() => void handleResend()}
-              disabled={isResending || cooldown > 0}
-              className="mt-4 items-center py-2"
-            >
-              <Text className="font-body-bold text-caption text-brand-primary">
-                {cooldown > 0
-                  ? t("verifyEmail.resendCooldown", { seconds: cooldown })
-                  : t("verifyEmail.resend")}
-              </Text>
-            </Pressable>
           </View>
 
           <Pressable
-            onPress={() => void handleChangeAccount()}
-            disabled={isChangingAccount}
-            className="mt-8 items-center py-2"
+            onPress={() => void handleResend()}
+            disabled={isResending || cooldown > 0}
+            className="mt-4 items-center py-2"
           >
-            <Text className="font-body text-caption text-text-tertiary">
-              {t("verifyEmail.changeAccount")}
+            <Text className="font-body-bold text-caption text-brand-primary">
+              {cooldown > 0
+                ? t("verifyEmail.resendCooldown", { seconds: cooldown })
+                : t("verifyEmail.resend")}
             </Text>
           </Pressable>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </View>
+
+        <Pressable
+          onPress={() => void handleChangeAccount()}
+          disabled={isChangingAccount}
+          className="mt-8 items-center py-2"
+        >
+          <Text className="font-body text-caption text-text-tertiary">
+            {t("verifyEmail.changeAccount")}
+          </Text>
+        </Pressable>
+      </KeyboardScrollView>
     </View>
   );
 }

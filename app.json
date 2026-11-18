@@ -24,7 +24,9 @@
         "CFBundleDisplayName": "Sportner",
         "ITSAppUsesNonExemptEncryption": false,
         "LSApplicationQueriesSchemes": [
-          "whatsapp"
+          "whatsapp",
+          "instagram",
+          "instagram-stories"
         ]
       }
     },

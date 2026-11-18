@@ -40,7 +40,14 @@ export function memberStatusMeta(member: ApiOrganizationMember) {
 
 type MemberActionChipProps = {
   label: string;
-  icon: "check" | "xmark" | "user-shield" | "user-minus" | "ban" | "lock-open";
+  icon:
+    | "check"
+    | "xmark"
+    | "crown"
+    | "user-shield"
+    | "user-minus"
+    | "ban"
+    | "lock-open";
   tone?: "default" | "primary" | "danger";
   disabled?: boolean;
   loading?: boolean;
@@ -100,7 +107,11 @@ type OrganizationMemberRowProps = {
   member: ApiOrganizationMember;
   organization: Pick<
     ApiOrganizationDetail,
-    "id" | "myRole" | "canManageMembers" | "canRotateInviteCode"
+    | "id"
+    | "myRole"
+    | "canManageMembers"
+    | "canRotateInviteCode"
+    | "canTransferFounder"
   >;
   currentUserId?: string;
   busyUserId?: string | null;
@@ -109,6 +120,7 @@ type OrganizationMemberRowProps = {
   onApprove?: () => void;
   onReject?: () => void;
   onToggleAdmin?: () => void;
+  onTransferFounder?: () => void;
   onRemove?: () => void;
   onBlock?: () => void;
   onUnblock?: () => void;
@@ -124,6 +136,7 @@ export function OrganizationMemberRow({
   onApprove,
   onReject,
   onToggleAdmin,
+  onTransferFounder,
   onRemove,
   onBlock,
   onUnblock,
@@ -137,11 +150,18 @@ export function OrganizationMemberRow({
   const canModerate =
     organization.canManageMembers &&
     isApproved &&
+    organization.myRole != null &&
     canModerateOrganizationMember(organization.myRole, currentUserId, member);
 
   const canToggleAdmin =
     organization.canRotateInviteCode &&
     isApproved &&
+    member.role !== ORGANIZATION_ROLE.founder;
+
+  const canTransferFounder =
+    organization.canTransferFounder &&
+    isApproved &&
+    member.userId !== currentUserId &&
     member.role !== ORGANIZATION_ROLE.founder;
 
   const trailing =
@@ -188,6 +208,16 @@ export function OrganizationMemberRow({
             tone="primary"
             disabled={busy}
             onPress={() => onToggleAdmin?.()}
+          />
+        ) : null}
+
+        {canTransferFounder ? (
+          <MemberActionChip
+            label={t("organizations:memberRow.makeFounder")}
+            icon="crown"
+            tone="primary"
+            disabled={busy}
+            onPress={() => onTransferFounder?.()}
           />
         ) : null}
 
@@ -239,34 +269,4 @@ export function OrganizationMemberRow({
       />
     </View>
   );
-}
-
-export const MEMBER_PREVIEW_LIMIT = 5;
-
-export function buildMemberPreview(
-  members: ApiOrganizationMember[],
-  canManageMembers: boolean,
-) {
-  const pending = members.filter(
-    (member) => member.status === ORGANIZATION_STATUS.pending,
-  );
-  const approved = members.filter(
-    (member) => member.status === ORGANIZATION_STATUS.approved,
-  );
-
-  if (!canManageMembers) {
-    return approved.slice(0, MEMBER_PREVIEW_LIMIT);
-  }
-
-  const preview: ApiOrganizationMember[] = [];
-  for (const member of pending) {
-    if (preview.length >= MEMBER_PREVIEW_LIMIT) break;
-    preview.push(member);
-  }
-  for (const member of approved) {
-    if (preview.length >= MEMBER_PREVIEW_LIMIT) break;
-    preview.push(member);
-  }
-
-  return preview;
 }

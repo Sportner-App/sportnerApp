@@ -95,7 +95,12 @@ export type DesignTokens = {
     slate400: string;
     slate500: string;
   };
-  brands: { google: string; apple: string };
+  brands: {
+    google: string;
+    apple: string;
+    whatsapp: string;
+    instagramGradient: readonly string[];
+  };
   illustration: {
     indigoGlow: string;
     photoBackdrop: string;

@@ -128,7 +128,7 @@ export function EventDetailScreen() {
   };
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
 
-  const pendingCount = detail.isOrganizer
+  const pendingCount = detail.isManager
     ? (detail.event?.participants.filter(
         (item) =>
           !item.isGuest &&
@@ -166,7 +166,7 @@ export function EventDetailScreen() {
   }, [detail.event, detail.isLoading, focus, pendingCount]);
 
   const handleOpenPendingRequests = () => {
-    if (!detail.isOrganizer) {
+    if (!detail.isManager) {
       return;
     }
     setPendingSheetOpen(true);
@@ -344,6 +344,9 @@ export function EventDetailScreen() {
                   event={detail.event}
                   isOrganizer={detail.isOrganizer}
                   onOpenUser={(userId) => router.push(`/users/${userId}`)}
+                  onOpenClub={(organizationId) =>
+                    router.push(`/clubs/${organizationId}`)
+                  }
                   onChat={openChat}
                 />
               </View>
@@ -368,11 +371,21 @@ export function EventDetailScreen() {
                   }
                   className="flex-row items-center gap-3 rounded-3xl border border-white/10 bg-background-secondary/55 p-4 active:opacity-80"
                 >
-                  <FontAwesome6 name="crown" size={14} color={themeColors.brand.primary} />
+                  <FontAwesome6
+                    name="crown"
+                    size={14}
+                    color={themeColors.brand.primary}
+                  />
                   <Text className="flex-1 font-body-bold text-body-sm text-text-primary">
-                    {t("leaderboards:eventRow", { district: detail.event.district })}
+                    {t("leaderboards:eventRow", {
+                      district: detail.event.district,
+                    })}
                   </Text>
-                  <FontAwesome6 name="chevron-right" size={11} color={themeColors.text.tertiary} />
+                  <FontAwesome6
+                    name="chevron-right"
+                    size={11}
+                    color={themeColors.text.tertiary}
+                  />
                 </Pressable>
               ) : null}
 
@@ -387,7 +400,7 @@ export function EventDetailScreen() {
                 />
               ) : null}
 
-              {!detail.isOrganizer && detail.canCancel ? (
+              {!detail.isManager && detail.canCancel ? (
                 <Button
                   label={t("closeEvent")}
                   variant="danger"
@@ -397,7 +410,7 @@ export function EventDetailScreen() {
                 />
               ) : null}
 
-              {!detail.isOrganizer && isAuthenticated ? (
+              {!detail.isManager && isAuthenticated ? (
                 <Button
                   label={t("report")}
                   variant="dangerOutline"
@@ -426,9 +439,17 @@ export function EventDetailScreen() {
                 pendingCount={pendingCount}
                 onOpenPendingRequests={handleOpenPendingRequests}
                 onOpenUser={(userId) => router.push(`/users/${userId}`)}
+                onRemoveParticipant={
+                  detail.canManage
+                    ? (participantId) =>
+                        router.push(
+                          `/events/${detail.event?.id}/participants?remove=${participantId}`,
+                        )
+                    : undefined
+                }
               />
 
-              {detail.isOrganizer ? (
+              {detail.isManager ? (
                 <OrganizerPanel
                   event={detail.event}
                   canManage={detail.canManage}
@@ -447,6 +468,18 @@ export function EventDetailScreen() {
                     router.push(`/events/${detail.event?.id}/reviews`)
                   }
                   autoOpenTab={organizerAutoOpenTab}
+                  participationToggle={
+                    detail.canToggleOrganizerParticipation
+                      ? {
+                          value: detail.event.isOrganizerParticipant,
+                          disabled: detail.isTogglingParticipation,
+                          onChange: (participates) =>
+                            void detail.toggleOrganizerParticipation(
+                              participates,
+                            ),
+                        }
+                      : undefined
+                  }
                   onShareMoments={canShareMoments ? shareMoments : undefined}
                   onRateUser={(userId) => {
                     if (!detail.event) return;
@@ -465,7 +498,7 @@ export function EventDetailScreen() {
             >
               <EventQnASection
                 event={detail.event}
-                isOrganizer={detail.isOrganizer}
+                isOrganizer={detail.isManager}
                 onOpenUser={(userId) => router.push(`/users/${userId}`)}
               />
             </View>
@@ -522,7 +555,7 @@ export function EventDetailScreen() {
           </View>
         </BottomSheet>
       ) : null}
-      {detail.event && detail.isOrganizer ? (
+      {detail.event && detail.isManager ? (
         <PendingRequestsSheet
           visible={pendingSheetOpen}
           event={detail.event}

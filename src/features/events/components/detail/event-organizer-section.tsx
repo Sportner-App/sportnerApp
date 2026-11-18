@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { AppText as Text, Avatar } from "@/components";
 import { HIT_SLOP, themeColors, typeStyles } from "@/constants/theme";
 import type { EventDetail } from "@/features/events/types";
+import { OrganizationImage } from "@/features/organizations/components/organization-image";
 import { canAccessEventChat } from "@/features/events/status";
 import { lightImpact } from "@/utils/haptics";
 import { formatHandle } from "@/utils/person";
@@ -14,6 +15,7 @@ type EventOrganizerSectionProps = {
   event: EventDetail;
   isOrganizer: boolean;
   onOpenUser: (userId: string) => void;
+  onOpenClub: (organizationId: string) => void;
   onChat: () => void;
 };
 
@@ -21,6 +23,7 @@ export function EventOrganizerSection({
   event,
   isOrganizer,
   onOpenUser,
+  onOpenClub,
   onChat,
 }: EventOrganizerSectionProps) {
   const { t } = useTranslation("eventDetail");
@@ -29,6 +32,10 @@ export function EventOrganizerSection({
   );
   const avatarUrl = profile?.avatarUrl ?? null;
   const username = profile?.username?.trim() || null;
+  // Kulüp etkinliğinin ev sahibi kulüp; düzenleyen kişi oynasa da oynamasa da.
+  const clubId = event.organizationId;
+  const clubName = event.organizationName?.trim() || null;
+  const showClub = Boolean(clubId && clubName);
   const showChat =
     !isOrganizer &&
     canAccessEventChat(
@@ -48,34 +55,71 @@ export function EventOrganizerSection({
       </Text>
 
       <View className="flex-row items-center gap-3">
-        <Avatar
-          uri={avatarUrl}
-          name={event.hostName}
-          size={44}
-          borderWidth={0}
-          onPress={() => {
-            lightImpact();
-            onOpenUser(event.organizerUserId);
-          }}
-          backgroundColor={themeColors.surface.secondary}
-          textColor={themeColors.text.secondary}
-        />
-
-        <Pressable
-          onPress={() => {
-            lightImpact();
-            onOpenUser(event.organizerUserId);
-          }}
-          className="min-w-0 flex-1"
-        >
-          <Text
-            numberOfLines={1}
-            className="font-body-bold text-body"
-            style={{ color: themeColors.text.primary }}
+        {showClub && clubId && clubName ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={clubName}
+            onPress={() => {
+              lightImpact();
+              onOpenClub(clubId);
+            }}
+            className="min-w-0 flex-1 flex-row items-center gap-3 active:opacity-80"
           >
-            {formatHandle(username)}
-          </Text>
-        </Pressable>
+            <OrganizationImage
+              uri={event.organizationImageUrl}
+              name={clubName}
+              size={44}
+              radius={14}
+            />
+            <View className="min-w-0 flex-1">
+              <Text
+                numberOfLines={1}
+                className="font-body-bold text-body"
+                style={{ color: themeColors.text.primary }}
+              >
+                {clubName}
+              </Text>
+              <Text
+                numberOfLines={1}
+                className="font-body text-caption"
+                style={{ color: themeColors.text.secondary }}
+              >
+                {t("organizerSection.clubLabel")}
+              </Text>
+            </View>
+          </Pressable>
+        ) : (
+          <>
+            <Avatar
+              uri={avatarUrl}
+              name={event.hostName}
+              size={44}
+              borderWidth={0}
+              onPress={() => {
+                lightImpact();
+                onOpenUser(event.organizerUserId);
+              }}
+              backgroundColor={themeColors.surface.secondary}
+              textColor={themeColors.text.secondary}
+            />
+
+            <Pressable
+              onPress={() => {
+                lightImpact();
+                onOpenUser(event.organizerUserId);
+              }}
+              className="min-w-0 flex-1"
+            >
+              <Text
+                numberOfLines={1}
+                className="font-body-bold text-body"
+                style={{ color: themeColors.text.primary }}
+              >
+                {formatHandle(username)}
+              </Text>
+            </Pressable>
+          </>
+        )}
 
         {showChat ? (
           <Pressable

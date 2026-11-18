@@ -55,11 +55,17 @@ export function useCreateEvent(initialOrganizationId?: string) {
   const [wantsOrganizationEvent, setWantsOrganizationEvent] =
     useState(isOrganizationLocked);
   const isOrganizationEvent = Boolean(organizationId);
+  const [isOrganizationOnly, setIsOrganizationOnly] = useState(true);
+  // Kulüp etkinliğinde düzenleyen de oynuyor mu; varsayılan evet.
+  const [organizerParticipates, setOrganizerParticipates] = useState(true);
 
   const setOrganizationIntent = (wants: boolean) => {
     setWantsOrganizationEvent(wants);
     if (!wants) {
       setOrganizationId(undefined);
+      // Kulüp bırakılıp sonra yeniden seçilirse görünürlük varsayılana dönsün.
+      setIsOrganizationOnly(true);
+      setOrganizerParticipates(true);
     }
   };
 
@@ -67,7 +73,9 @@ export function useCreateEvent(initialOrganizationId?: string) {
   const organizations = useMemo(
     () =>
       myOrganizations.filter(
-        (organization) => organization.status === ORGANIZATION_STATUS.approved,
+        (organization) =>
+          organization.status === ORGANIZATION_STATUS.approved &&
+          organization.canCreateEvents,
       ),
     [myOrganizations],
   );
@@ -232,6 +240,8 @@ export function useCreateEvent(initialOrganizationId?: string) {
   const companions = useEventCompanions({
     maxPlayers: values.isUnlimitedPlayers ? Infinity : maxPlayersNumber,
     isCapacityValid: isStep4Valid,
+    organizerTakesSlot: !organizationId || organizerParticipates,
+    organizationId,
   });
 
   const canSubmit =
@@ -300,6 +310,10 @@ export function useCreateEvent(initialOrganizationId?: string) {
             ? values.recurrenceCount
             : 1,
         organizationId,
+        isOrganizationOnly: organizationId ? isOrganizationOnly : undefined,
+        organizerParticipates: organizationId
+          ? organizerParticipates
+          : undefined,
       });
 
       if (!data) {
@@ -343,8 +357,12 @@ export function useCreateEvent(initialOrganizationId?: string) {
             ? t("toast.seriesDescription", {
                 count: values.recurrenceCount - 1,
               })
-            : companions.selectedFriendIds.length > 0
-              ? t("toast.friendInviteSent")
+            : companions.invitedUserIds.length > 0
+              ? t(
+                  isOrganizationEvent
+                    ? "toast.memberInviteSent"
+                    : "toast.friendInviteSent",
+                )
               : t("toast.waitingForPlayers")
           : t("toast.invitesFailedDescription", {
               reason: assignment.reason,
@@ -364,6 +382,10 @@ export function useCreateEvent(initialOrganizationId?: string) {
     clearLocation,
     organizationId,
     setOrganizationId,
+    isOrganizationOnly,
+    setIsOrganizationOnly,
+    organizerParticipates,
+    setOrganizerParticipates,
     wantsOrganizationEvent,
     setOrganizationIntent,
     organizations,
@@ -383,6 +405,11 @@ export function useCreateEvent(initialOrganizationId?: string) {
     isFriendsLoading: companions.isFriendsLoading,
     guests: companions.guests,
     selectedFriendIds: companions.selectedFriendIds,
+    selectedMembers: companions.selectedMembers,
+    clubMembers: companions.clubMembers,
+    clubMembersStatus: companions.clubMembersStatus,
+    loadClubMembers: companions.loadClubMembers,
+    setMembers: companions.setMembers,
     remainingCompanionSlots: companions.remainingSlots,
     addGuest: companions.addGuest,
     updateGuest: companions.updateGuest,

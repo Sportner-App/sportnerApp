@@ -1,6 +1,6 @@
 {
   "fallback": {
-    "name": "Organizasyon"
+    "name": "Kulüp"
   },
   "role": {
     "founder": "Kurucu",
@@ -26,15 +26,14 @@
     "plateCodeDescription": "{{code}} plaka kodu"
   },
   "list": {
-    "title": "ORGANİZASYONLAR",
     "create": "Oluştur",
     "joinWithCode": "Kod ile katıl",
-    "empty": "Henüz bir organizasyonun yok. Oluştur veya davet koduyla katıl.",
+    "empty": "Henüz bir kulübün yok. Oluştur veya davet koduyla katıl.",
     "memberCount": "{{count}} üye"
   },
   "detail": {
-    "title": "ORGANİZASYON",
-    "notFound": "Organizasyon bulunamadı.",
+    "title": "KULÜP",
+    "notFound": "Kulüp bulunamadı.",
     "eventsLoadFailed": "Etkinlikler yüklenemedi",
     "membersLoadFailed": "Üyeler yüklenemedi",
     "loadFailed": "Yüklenemedi",
@@ -44,9 +43,9 @@
     "codeRotated": "Yeni kod oluşturuldu",
     "codeRotateFailed": "Kod yenilenemedi",
     "leaveTitle": "Ayrıl",
-    "leaveMessage": "Bu organizasyondan ayrılmak istiyor musun?",
+    "leaveMessage": "Bu kulüpten ayrılmak istiyor musun?",
     "leaveConfirm": "Ayrıl",
-    "left": "Organizasyondan ayrıldın",
+    "left": "Kulüpten ayrıldın",
     "leaveFailed": "Ayrılamadın",
     "pendingTitle": "Onay bekleniyor",
     "pendingDescription": "Kurucu veya yönetici isteğini onaylayınca etkinlikleri görebilirsin.",
@@ -55,25 +54,45 @@
     "copyCodeHint": "Koda dokunarak da kopyalayabilirsin.",
     "share": "Paylaş",
     "refreshCode": "Yenile",
+    "refreshCodeConfirm": "Eski kodu geçersiz kıl",
     "eventsTitle": "Etkinlikler",
     "createEvent": "Oluştur",
-    "noEvents": "Bu organizasyona ait yayınlanmış etkinlik yok.",
-    "viewLinkedEvents": "Organizasyona bağlı etkinlikleri gör",
-    "membersTitle": "Üyeler",
+    "noEvents": "Bu kulübe ait yayınlanmış etkinlik yok.",
     "memberCount": "{{count}} üye",
     "pendingCount": "{{count}} onay bekliyor",
-    "seeAll": "Tümünü gör",
-    "noMembers": "Henüz üye yok.",
-    "moreMembers": "+{{count}} üye daha",
-    "leaveOrganization": "Organizasyondan ayrıl",
-    "editAccessibility": "Organizasyon bilgilerini düzenle",
+    "menuA11y": "Kulüp seçenekleri",
+    "menuEdit": "Kulübü düzenle",
+    "inviteAction": "Davet et",
+    "leaveOrganization": "Kulüpten ayrıl",
     "defaultDescription": "Spor topluluğunu büyüt, üyelerini bir araya getir ve etkinliklerini birlikte yönet.",
     "statMembers": "Üye",
-    "statEvents": "Etkinlik"
+    "statEvents": "Etkinlik",
+    "joinWithInviteCode": "Davet koduyla katıl",
+    "join": "Kulübe katıl",
+    "joined": "Kulübe katıldın",
+    "joinFailed": "Katılınamadı",
+    "joinAuthReason": "Kulübe katılmak için giriş yapmalısın.",
+    "privateCannotJoin": "Bu kulüp özel. Katılmak için davet koduna ihtiyacın var.",
+    "openEventsTitle": "Açık etkinlikler",
+    "menuTransferFounder": "Kurucuyu devret",
+    "menuEditSubtitle": "Ad, açıklama, fotoğraf ve ayarlar",
+    "menuTransferFounderSubtitle": "Kurucu rolünü başka bir üyeye ver",
+    "menuLeaveSubtitle": "Üyeliğin sona erer",
+    "menuDeleteSubtitle": "Geri alınamaz, etkinlikler iptal edilir",
+    "deleteOrganization": "Kulübü sil",
+    "deleteTitle": "Kulübü sil",
+    "deleteMessage": "Kulüp herkesten gizlenecek, başlamamış kulüp etkinlikleri iptal edilecek ve katılımcılara bildirim gidecek. Bu işlem geri alınamaz.",
+    "deleteConfirm": "Sil",
+    "deleted": "Kulüp silindi",
+    "deleteFailed": "Kulüp silinemedi",
+    "statCompleted": "Tamamlanan",
+    "pastEventsTitle": "Geçmiş etkinlikler",
+    "pastEventsMore": "Daha fazla göster",
+    "pastEventsLoadFailed": "Geçmiş etkinlikler yüklenemedi"
   },
   "members": {
     "title": "ÜYELER",
-    "notFound": "Organizasyon bulunamadı.",
+    "notFound": "Kulüp bulunamadı.",
     "loadFailed": "Yüklenemedi",
     "actionFailed": "İşlem yapılamadı",
     "searchPlaceholder": "İsim veya kullanıcı adı ara",
@@ -94,47 +113,91 @@
     "remove": "Çıkar",
     "block": "Engelle",
     "removeTitle": "Üyeyi çıkar",
-    "removeMessage": "Kişi organizasyondan çıkarılır. İsterse davet koduyla tekrar başvurabilir.",
+    "removeMessage": "Kişi kulüpten çıkarılır. İsterse davet koduyla tekrar başvurabilir.",
     "blockTitle": "Üyeyi engelle",
-    "blockMessage": "Engellenen kişi davet koduyla tekrar katılamaz. İstersen sonra engeli kaldırırsın."
+    "blockMessage": "Engellenen kişi davet koduyla tekrar katılamaz. İstersen sonra engeli kaldırırsın.",
+    "makeFounder": "Kurucu yap",
+    "transferTitle": "Kurucuyu devret",
+    "transferMessage": "{{name}} kulübün kurucusu olacak, sen yönetici olacaksın. Bu işlemi yalnızca yeni kurucu geri alabilir.",
+    "transferConfirm": "Devret",
+    "transferred": "Kurucu rolü devredildi"
   },
   "join": {
     "title": "KATIL",
     "heading": "Davet kodu",
-    "subtitle": "Organizasyon kurucusundan aldığın 8 karakterlik kodu yaz.",
+    "subtitle": "Kulüp kurucusundan aldığın 8 karakterlik kodu yaz.",
     "codeLabel": "Kod",
     "codePlaceholder": "Örn. 4K7N2M9P",
     "submit": "Katıl",
     "invalidCodeTitle": "Kod geçersiz",
     "invalidCodeDescription": "Davet kodu 8 karakter olmalı.",
     "requestSentTitle": "Aramıza hoş geldin",
-    "requestSentDescription": "Organizasyona katıldın.",
+    "requestSentDescription": "Kulübe katıldın.",
     "joinFailed": "Katılınamadı"
   },
   "create": {
-    "title": "ORGANİZASYON",
-    "heading": "Yeni organizasyon",
-    "subtitle": "Üniversite takımı, salon veya kulüp. Katılım yalnızca davet koduyla.",
+    "title": "KULÜP",
+    "heading": "Yeni kulüp",
+    "subtitle": "Üniversite takımı, salon veya kulüp. Herkese açık ya da özel olarak kur.",
     "namePlaceholder": "Örn. İTÜ Tenis",
     "submit": "Oluştur",
     "nameRequiredTitle": "İsim gerekli",
-    "nameRequiredDescription": "Organizasyon için bir ad yaz.",
-    "createdTitle": "Organizasyon kuruldu",
+    "nameRequiredDescription": "Kulüp için bir ad yaz.",
+    "createdTitle": "Kulüp kuruldu",
     "createdDescription": "Davet kodunu üyelerle paylaşabilirsin.",
-    "createFailed": "Oluşturulamadı"
+    "createFailed": "Oluşturulamadı",
+    "photoUploadFailed": "Fotoğraf yüklenemedi",
+    "photoUploadFailedDescription": "Kulüp kuruldu ama fotoğraf yüklenemedi. Düzenleyerek tekrar deneyebilirsin."
   },
   "edit": {
     "title": "DÜZENLE",
-    "heading": "Organizasyonu düzenle",
+    "heading": "Kulübü düzenle",
     "loadFailed": "Yüklenemedi",
     "nameRequired": "İsim gerekli",
-    "updated": "Organizasyon güncellendi",
-    "saveFailed": "Kaydedilemedi"
+    "updated": "Kulüp güncellendi",
+    "saveFailed": "Kaydedilemedi",
+    "photoUploadFailed": "Fotoğraf yüklenemedi"
   },
   "invite": {
-    "message": "{{organizationName}} organizasyonuna Sportner'dan katıl",
+    "message": "{{organizationName}} kulübüne Sportner'dan katıl",
     "codeLabel": "Davet kodu:",
-    "howToJoin": "Uygulama: Profil → Organizasyonlar → Kod ile katıl",
+    "howToJoin": "Uygulama: Kulüpler → Kulüplerim → Kod ile katıl",
     "shareTitle": "{{organizationName}} davet kodu"
+  },
+  "visibility": {
+    "label": "Görünürlük",
+    "public": "Herkese açık",
+    "publicDescription": "Keşfet'te herkes görür, isteyen katılır.",
+    "private": "Özel",
+    "privateDescription": "Herkes görür, üyelik yalnızca davet koduyla."
+  },
+  "photo": {
+    "add": "Fotoğraf ekle",
+    "change": "Fotoğrafı değiştir",
+    "remove": "Fotoğrafı kaldır",
+    "accessibility": "Kulüp fotoğrafını seç",
+    "permissionRequired": "İzin gerekli"
+  },
+  "explore": {
+    "searchPlaceholder": "Kulüp ara",
+    "emptySearch": "Aramana uygun kulüp yok.",
+    "empty": "Henüz herkese açık kulüp yok. İlkini sen kur.",
+    "createCta": "Kulüp kur",
+    "createAuthReason": "Kulüp kurmak için giriş yapmalısın.",
+    "memberBadge": "Üyesin",
+    "loadFailed": "Kulüpler yüklenemedi",
+    "memberCount": "{{count}} üye"
+  },
+  "clubs": {
+    "tabAll": "Tüm kulüpler",
+    "tabMine": "Kulüplerim",
+    "signInToSeeMine": "Kulüplerini görmek için giriş yap."
+  },
+  "eventPolicy": {
+    "label": "Etkinlik açabilenler",
+    "allMembers": "Tüm üyeler",
+    "managersOnly": "Yalnızca yöneticiler",
+    "allMembersDescription": "Onaylı her üye kulüp adına etkinlik açabilir.",
+    "managersOnlyDescription": "Yalnızca kurucu ve yöneticiler etkinlik açabilir."
   }
 }

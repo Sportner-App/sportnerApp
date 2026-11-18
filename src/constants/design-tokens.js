@@ -36,6 +36,9 @@ const palette = {
 const brands = {
   google: "#4285F4",
   apple: palette.white,
+  whatsapp: "#25D366",
+  /** Instagram logosunun gradyanı, sol alttan sağ üste. */
+  instagramGradient: ["#FEDA75", "#FA7E1E", "#D62976", "#962FBF", "#4F5BD5"],
 };
 
 /**

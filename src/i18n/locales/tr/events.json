@@ -98,7 +98,8 @@
       "capacityPositive": "Oyuncu sayısı 0'dan büyük olmalı.",
       "ageRangeInvalid": "Katılım yaş aralığı 13–120 arasında ve sıralı olmalı.",
       "paidFeeRequired": "Ücretli etkinlik için 0'dan büyük bir fiyat gir."
-    }
+    },
+    "organizerParticipationFailed": "Katılım durumun güncellenemedi"
   },
   "pendingRequestsCard": {
     "title_one": "{{count}} kişi onayını bekliyor",

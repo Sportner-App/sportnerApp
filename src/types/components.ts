@@ -46,6 +46,8 @@ export type InputProps = TextInputProps & {
   icon?: IconName;
   isPassword?: boolean;
   disabled?: boolean;
+  /** "sm": arama gibi ikincil alanlar için alçak (44px) kutu. */
+  size?: "md" | "sm";
 };
 
 // SegmentedTabs
@@ -58,7 +60,11 @@ export type SegmentedTabOption<T extends string> = {
 export type SegmentedTabsProps<T extends string> = {
   options: SegmentedTabOption<T>[];
   value: T;
-  onChange: (key: T) => void;
+  /**
+   * Gösterge dokunuşta hemen kayar. Seçimi reddetmek için (ör. giriş
+   * gerektiren sekme) `false` dön; gösterge eski sekmeye geri kayar.
+   */
+  onChange: (key: T) => void | boolean;
   disabled?: boolean;
   indicatorMotion?: "spring" | "timing";
   badgePlacement?: "inline" | "top";
@@ -81,6 +87,12 @@ export type BottomSheetProps = PropsWithChildren<{
   showCancel?: boolean;
   /** Scroll alanının dışında, sheet'in altında sabit kalan birincil aksiyonlar. */
   footer?: ReactNode;
+  /**
+   * Footer'da metin girişi varsa (yorum, soru yanıtı gibi) true verilir:
+   * footer klavye açıkken gizlenmez, klavyenin üstünde kalır. Aksi halde
+   * yazılan alan gizlenir ve klavye anında kapanır.
+   */
+  footerIsComposer?: boolean;
   /** Açık ekranlarda warm-white sheet yüzeyi kullanır. */
   tone?: UiTone;
 }>;

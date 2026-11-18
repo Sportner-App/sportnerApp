@@ -57,6 +57,12 @@ class APIClient {
   private authListeners = new Set<AuthChangeListener>();
   /** Aynı anda birden fazla 401 gelirse tek refresh paylaşılır */
   private refreshPromise: Promise<boolean> | null = null;
+  /**
+   * Son yenileme sunucuya ulaşamadığı için mi başarısız oldu (ağ kopması,
+   * uygulamanın arka plana atılması)? O durumda oturum silinmez; yalnızca
+   * sunucu anahtarı açıkça reddederse çıkış yapılır.
+   */
+  private lastRefreshWasNetworkFailure = false;
 
   constructor() {
     this.instance = axios.create({
@@ -119,7 +125,7 @@ class APIClient {
           }
         }
 
-        if (status === 401) {
+        if (status === 401 && !this.lastRefreshWasNetworkFailure) {
           await this.clearToken();
         }
 
@@ -157,6 +163,7 @@ class APIClient {
     }
 
     this.refreshPromise = (async () => {
+      this.lastRefreshWasNetworkFailure = false;
       try {
         const refreshToken = await this.getRefreshToken();
         const existingUser = await this.getUser();
@@ -192,6 +199,9 @@ class APIClient {
         return true;
       } catch (error) {
         console.warn("Token refresh failed:", error);
+        // Sunucudan yanıt yoksa (status yok) bu bir ağ hatası; oturumu koru.
+        const status = (error as { status?: number })?.status;
+        this.lastRefreshWasNetworkFailure = !status;
         return false;
       }
     })();

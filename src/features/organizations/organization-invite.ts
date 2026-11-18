@@ -4,7 +4,7 @@ import { Platform, Share } from "react-native";
 import i18n from "@/i18n";
 
 export function buildOrganizationJoinUrl(inviteCode: string) {
-  return Linking.createURL("/organizations/join", {
+  return Linking.createURL("/clubs/join", {
     scheme: "sportner",
     queryParams: { inviteCode },
   });

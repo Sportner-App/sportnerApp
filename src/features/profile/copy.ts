@@ -1,11 +1,11 @@
+import type { ProfileTabOption } from "@/features/profile/components/profile-tabs";
 import { useTranslation } from "react-i18next";
 
 import type { ProfileMenuGroup } from "@/features/profile/types";
-import type { SegmentedTabOption } from "@/types/components";
 import type { ProfileStatistics } from "@/features/profile/types";
 import { FEATURE_FLAGS } from "@/constants/feature-flags";
 
-type ProfileTab = "activity" | "reviews" | "settings";
+type ProfileTab = "posts" | "activity" | "sports" | "groups";
 
 /**
  * Profil ekranı paylaşılan kopya metinleri — modül düzeyinde sabit yerine hook:
@@ -27,30 +27,14 @@ export function useProfileCopy() {
   } as const;
 }
 
-export function useProfileTabs(): SegmentedTabOption<ProfileTab>[] {
+export function useProfileTabs(): ProfileTabOption<ProfileTab>[] {
   const { t } = useTranslation("profile");
 
   return [
-    { key: "activity", label: t("tabs.activity") },
-    { key: "reviews", label: t("tabs.reviews") },
-    { key: "settings", label: t("tabs.settings") },
-  ];
-}
-
-export function useProfileQuickActions() {
-  const { t } = useTranslation("profile");
-
-  return [
-    {
-      key: "friends" as const,
-      label: t("about.friends"),
-      icon: "user-group" as const,
-    },
-    {
-      key: "badges" as const,
-      label: t("about.badges"),
-      icon: "trophy" as const,
-    },
+    { key: "posts", icon: "table-cells", label: t("tabs.posts") },
+    { key: "activity", icon: "chart-simple", label: t("tabs.activity") },
+    { key: "sports", icon: "medal", label: t("tabs.sports") },
+    { key: "groups", icon: "users", label: t("tabs.groups") },
   ];
 }
 

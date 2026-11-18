@@ -41,6 +41,16 @@ function markSeen() {
   });
 }
 
+/**
+ * Sağlayıcının dışındaki ekranlardan (ör. sekmelerin üstüne açılan Ayarlar)
+ * turu istemek için. Sağlayıcı sekme düzeninde; istek ona iletiliyor.
+ */
+let startListener: (() => void) | null = null;
+
+export function requestAppTour() {
+  startListener?.();
+}
+
 export function AppTourProvider({
   children,
   autoStart = true,
@@ -91,6 +101,16 @@ export function AppTourProvider({
     // Tur gösterilirken zaten işaretlendi; burası elle başlatılan tekrar
     // gösterimler için ve bayrağın bir sebeple yazılamadığı durumda ikinci şans.
     markSeen();
+  }, []);
+
+  useEffect(() => {
+    startListener = () => {
+      setStep(0);
+      setIsVisible(true);
+    };
+    return () => {
+      startListener = null;
+    };
   }, []);
 
   const value = useMemo<AppTourContextValue>(

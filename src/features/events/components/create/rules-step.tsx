@@ -60,6 +60,7 @@ export function RulesStep({ form }: { form: CreateEventForm }) {
         <PlayersStepper
           value={values.maxPlayers}
           onChange={(maxPlayers) => update("maxPlayers", maxPlayers)}
+          organizerCounts={!form.organizationId || form.organizerParticipates}
         />
       )}
 
@@ -185,7 +186,18 @@ export function RulesStep({ form }: { form: CreateEventForm }) {
       </View>
 
       <View className="mt-8">
-        <EventCreateSummary values={values} sportOptions={sportOptions} />
+        <EventCreateSummary
+          values={values}
+          sportOptions={sportOptions}
+          clubName={
+            form.organizationId
+              ? form.organizations.find(
+                  (organization) => organization.id === form.organizationId,
+                )?.name
+              : undefined
+          }
+          organizerParticipates={form.organizerParticipates}
+        />
       </View>
     </View>
   );

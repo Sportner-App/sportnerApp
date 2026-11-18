@@ -1,9 +1,12 @@
 import i18n from "@/i18n";
 import { apiClient } from "@/lib/api/client";
+import { getApiErrorMessage, normalizeApiError } from "@/lib/api/errors";
 import type {
   ApiEventDetail,
+  EventDetail,
   EventParticipantAssignment,
 } from "@/features/events/types";
+import { mapDetailToEvent } from "@/features/events/mappers";
 
 import { eventAction } from "./event-action";
 
@@ -172,4 +175,40 @@ export async function updateEventFee(
     () => apiClient.put(`/api/events/${eventId}/fee`, payload),
     i18n.t("events:service.updateFeeFailed"),
   );
+}
+
+/**
+ * POST /api/events/{id}/organizer-participation — kulüp etkinliğini kuran
+ * kişinin kendi katılımını açıp kapatması. Yanıt güncel etkinlik detayı;
+ * katılımcı/bekleme listesi bu yanıtta olmadığı için çağıran tarafta
+ * mevcut listeler korunur.
+ */
+export async function setOrganizerParticipation(
+  eventId: string,
+  participates: boolean,
+): Promise<{
+  data: EventDetail | null;
+  error: { message: string; code?: string } | null;
+}> {
+  try {
+    const response = await apiClient.post<ApiEventDetail>(
+      `/api/events/${eventId}/organizer-participation`,
+      { participates },
+    );
+    return {
+      data: response.data ? mapDetailToEvent(response.data) : null,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: {
+        message: getApiErrorMessage(
+          error,
+          i18n.t("events:service.organizerParticipationFailed"),
+        ),
+        code: normalizeApiError(error).code,
+      },
+    };
+  }
 }

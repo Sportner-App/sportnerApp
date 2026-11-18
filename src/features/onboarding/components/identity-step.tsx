@@ -1,9 +1,13 @@
-import { ScrollView } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
-import { AppText as Text, Button, Input } from "@/components";
+import {
+  AppText as Text,
+  Button,
+  Input,
+  KeyboardScrollView,
+} from "@/components";
 import type { useOnboarding } from "@/features/onboarding/hooks/use-onboarding";
 
 type IdentityStepProps = {
@@ -15,8 +19,7 @@ export function IdentityStep({ form }: IdentityStepProps) {
   const insets = useSafeAreaInsets();
 
   return (
-    <ScrollView
-      keyboardShouldPersistTaps="handled"
+    <KeyboardScrollView
       contentContainerClassName="flex-grow px-6 pb-10"
       contentContainerStyle={{ paddingTop: Math.max(insets.top, 16) + 8 }}
     >
@@ -89,6 +92,6 @@ export function IdentityStep({ form }: IdentityStepProps) {
           onPress={form.submitIdentity}
         />
       </Animated.View>
-    </ScrollView>
+    </KeyboardScrollView>
   );
 }

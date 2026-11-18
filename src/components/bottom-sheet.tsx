@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  KeyboardAvoidingView,
   Modal,
-  Platform,
   Pressable,
   ScrollView,
+  TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
+import {
+  KeyboardAvoidingView,
+  KeyboardEvents,
+} from "react-native-keyboard-controller";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   Easing,
@@ -43,6 +46,7 @@ export function BottomSheet({
   subtitle,
   showCancel = true,
   footer,
+  footerIsComposer = false,
   children,
 }: BottomSheetProps) {
   const { t: tCommon } = useTranslation("common");
@@ -63,6 +67,40 @@ export function BottomSheet({
     windowHeight - insets.top - TOP_GUTTER - keyboardHeight,
     0,
   );
+  const scrollRef = useRef<ScrollView>(null);
+  const contentRef = useRef<View>(null);
+  const viewportHeight = useRef(0);
+
+  // Sheet klavyenin üstüne itildiği için ayrıca klavye boşluğu eklenmiyor
+  // (KeyboardAwareScrollView eklediğinde butonların altında büyük bir boşluk
+  // kalıyordu). Yalnızca odaklanan alan, sheet'in görünen kısmına kaydırılıyor.
+  useEffect(() => {
+    if (!mounted) {
+      return;
+    }
+
+    const subscription = KeyboardEvents.addListener("keyboardDidShow", () => {
+      const input = TextInput.State.currentlyFocusedInput();
+      const content = contentRef.current;
+      if (!input || !content) {
+        return;
+      }
+
+      input.measureLayout(
+        content,
+        (_x, y, _width, height) => {
+          const target = y + height + 16 - viewportHeight.current;
+          if (target > 0) {
+            scrollRef.current?.scrollTo({ y: target, animated: true });
+          }
+        },
+        () => undefined,
+      );
+    });
+
+    return () => subscription.remove();
+  }, [mounted]);
+
   const reduceMotion = reducedMotion
     ? ReduceMotion.Always
     : ReduceMotion.System;
@@ -184,6 +222,20 @@ export function BottomSheet({
     ],
   }));
 
+  const keyboardOpen = keyboardHeight > 0;
+  const actions = footer ? (
+    <View className="mt-3">{footer}</View>
+  ) : showCancel ? (
+    <View className="mt-3">
+      <Button
+        label={tCommon("cancel")}
+        variant="dangerOutline"
+        size="sm"
+        onPress={onClose}
+      />
+    </View>
+  ) : null;
+
   if (!mounted) {
     return null;
   }
@@ -195,12 +247,12 @@ export function BottomSheet({
       animationType="none"
       presentationStyle="overFullScreen"
       statusBarTranslucent
+      // keyboard-controller'ın Android'de Modal içinde klavyeyi ölçebilmesi
+      // için pencerenin sistem çubuklarının altına uzanması gerekiyor.
+      navigationBarTranslucent
       onRequestClose={onClose}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        className="flex-1 justify-end"
-      >
+      <KeyboardAvoidingView behavior="padding" className="flex-1 justify-end">
         <Pressable className="absolute inset-0" onPress={onClose}>
           <Animated.View
             style={backdropStyle}
@@ -232,11 +284,15 @@ export function BottomSheet({
             }}
           >
             <GestureDetector gesture={panGesture}>
-              <View className="mb-4 items-center pb-1">
-                <View className="mb-4 h-1 w-10 rounded-full bg-brand-primary" />
-                <Text className="font-display text-heading-sm text-text-primary">
-                  {title}
-                </Text>
+              <View className={`items-center ${title ? "mb-4 pb-1" : "mb-1"}`}>
+                <View
+                  className={`h-1 w-10 rounded-full bg-brand-primary ${title ? "mb-4" : "mb-3"}`}
+                />
+                {title ? (
+                  <Text className="font-display text-heading-sm text-text-primary">
+                    {title}
+                  </Text>
+                ) : null}
                 {subtitle ? (
                   <Text className="mt-1 text-center font-body text-caption text-text-secondary">
                     {subtitle}
@@ -246,30 +302,23 @@ export function BottomSheet({
             </GestureDetector>
 
             <ScrollView
+              ref={scrollRef}
               style={{ flexShrink: 1 }}
               contentContainerStyle={{ paddingBottom: 12 }}
-              keyboardDismissMode={
-                Platform.OS === "ios" ? "interactive" : "on-drag"
-              }
+              onLayout={(event) => {
+                viewportHeight.current = event.nativeEvent.layout.height;
+              }}
               keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
               nestedScrollEnabled
               showsVerticalScrollIndicator={false}
             >
-              {children}
+              <View ref={contentRef}>{children}</View>
             </ScrollView>
 
-            {footer ? <View className="mt-3">{footer}</View> : null}
-
-            {!footer && showCancel ? (
-              <View className="mt-3">
-                <Button
-                  label={tCommon("cancel")}
-                  variant="dangerOutline"
-                  size="sm"
-                  onPress={onClose}
-                />
-              </View>
-            ) : null}
+            {/* Yazarken aksiyonlar gizlenir: klavyenin üstünde yer kaplayıp
+                yazılan alanı daraltmasınlar. Klavye kapanınca geri gelir. */}
+            {keyboardOpen && !footerIsComposer ? null : actions}
           </View>
         </Animated.View>
       </KeyboardAvoidingView>

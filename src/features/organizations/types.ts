@@ -6,6 +6,11 @@ export const ORGANIZATION_ROLE = {
   member: 2,
 } as const;
 
+export const ORGANIZATION_EVENT_POLICY = {
+  allMembers: 0,
+  managersOnly: 1,
+} as const;
+
 export const ORGANIZATION_STATUS = {
   pending: 0,
   approved: 1,
@@ -21,6 +26,21 @@ export type ApiOrganizationListItem = {
   role: number;
   status: number;
   approvedMemberCount: number;
+  imageUrl: string | null;
+  isPublic: boolean;
+  canCreateEvents: boolean;
+};
+
+/** API: herkese açık kulüp özeti (keşif listesi). */
+export type ApiOrganizationSummary = {
+  id: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  cityName: string | null;
+  approvedMemberCount: number;
+  isPublic: boolean;
+  myStatus: number | null;
 };
 
 export type ApiOrganizationDetail = {
@@ -30,17 +50,27 @@ export type ApiOrganizationDetail = {
   cityId: string | null;
   cityName: string | null;
   founderUserId: string;
-  myRole: number;
-  myStatus: number;
+  /** Üye olmayan görüntüleyicide null. */
+  myRole: number | null;
+  myStatus: number | null;
+  isPublic: boolean;
+  imageUrl: string | null;
+  canJoin: boolean;
   canManageMembers: boolean;
   canCreateEvents: boolean;
   canRotateInviteCode: boolean;
   canUpdateDetails: boolean;
   canLeave: boolean;
+  canDelete: boolean;
+  canTransferFounder: boolean;
+  /** `ORGANIZATION_EVENT_POLICY` değeri. */
+  eventCreationPolicy: number;
   inviteCode: string | null;
   approvedMemberCount: number;
   pendingMemberCount: number;
   blockedMemberCount: number;
+  /** Tamamlanan etkinlik sayısı; eski yanıtta yok (normalizeDetail 0 yapar). */
+  completedEventCount: number;
 };
 
 export type ApiOrganizationMember = {

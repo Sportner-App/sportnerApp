@@ -18,7 +18,9 @@ export async function connectEventChat(
 
   const connection = new HubConnectionBuilder()
     .withUrl(`${API_URL}/hubs/event-chat`, {
-      accessTokenFactory: () => token,
+      // Erişim anahtarı kısa ömürlü (60 dk); yeniden bağlanırken o anki
+      // anahtarı oku, açılıştakini değil.
+      accessTokenFactory: async () => (await apiClient.getToken()) ?? token,
     })
     .withAutomaticReconnect()
     .configureLogging(LogLevel.Warning)

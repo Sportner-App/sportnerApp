@@ -1,144 +1,244 @@
-import * as Clipboard from "expo-clipboard";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import * as Haptics from "expo-haptics";
-import { Pressable, View } from "react-native";
+import { useState } from "react";
+import { Image, Pressable, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { AppText as Text } from "@/components";
 import { HIT_SLOP, themeColors } from "@/constants/theme";
-import { getCurrentLocale } from "@/i18n";
 import {
   type ApiOrganizationDetail,
+  ORGANIZATION_ROLE,
   organizationRoleLabel,
 } from "@/features/organizations/types";
+import type { IconName } from "@/types/components";
+import { getCurrentLocale } from "@/i18n";
+import { resolveMediaUrl } from "@/utils/media-url";
 
 export function OrganizationHero({
   organization,
   eventCount,
-  onEdit,
+  completedEventCount,
+  onPressMembers,
 }: {
   organization: ApiOrganizationDetail;
   eventCount: number;
-  onEdit?: () => void;
+  completedEventCount: number;
+  onPressMembers?: () => void;
 }) {
   const { t } = useTranslation("organizations");
+  const [failedUri, setFailedUri] = useState<string | null>(null);
   const organizationName = organization.name?.trim() || t("fallback.name");
+  const resolvedUri = organization.imageUrl
+    ? resolveMediaUrl(organization.imageUrl)
+    : null;
+  const hasPhoto = Boolean(resolvedUri && failedUri !== resolvedUri);
   const initial = organizationName
     .charAt(0)
     .toLocaleUpperCase(getCurrentLocale());
 
+  const role = organization.myRole;
+  const isPrivileged =
+    role === ORGANIZATION_ROLE.founder || role === ORGANIZATION_ROLE.admin;
+  const roleIcon: IconName =
+    role === ORGANIZATION_ROLE.founder
+      ? "crown"
+      : role === ORGANIZATION_ROLE.admin
+        ? "shield-halved"
+        : "user";
+
   return (
-    <View className="relative overflow-hidden rounded-[30px] border border-border-default bg-surface-primary p-5">
-      <View className="absolute -right-14 -top-20 h-48 w-48 rounded-full border-[34px] border-brand-primary/10" />
-      <View className="absolute right-20 top-7 h-3 w-3 rounded-full bg-brand-primary/30" />
-
-      <View className="flex-row items-start gap-4">
-        <View className="h-[68px] w-[68px] items-center justify-center rounded-[22px] border border-brand-primary/30 bg-brand-primary/10">
-          <Text className="font-display text-heading-lg text-brand-primary">
-            {initial || "O"}
-          </Text>
-        </View>
-
-        <View className="min-w-0 flex-1 pt-0.5">
-          <Text
-            numberOfLines={2}
-            className="font-display text-heading-lg leading-8 text-text-primary"
-          >
-            {organizationName}
-          </Text>
-
-          <View className="mt-2 flex-row flex-wrap gap-2">
-            <InfoPill
-              icon="shield-halved"
-              label={organizationRoleLabel(organization.myRole)}
+    <View>
+      <View className="overflow-hidden rounded-[24px] border border-border-default bg-surface-primary p-3">
+        {hasPhoto && resolvedUri ? (
+          <>
+            <Image
+              source={{ uri: resolvedUri }}
+              blurRadius={40}
+              resizeMode="cover"
+              style={{ opacity: 0.35 }}
+              className="absolute inset-0"
             />
+            <View
+              pointerEvents="none"
+              className="absolute inset-0"
+              style={{
+                backgroundColor: themeColors.background.primary,
+                opacity: 0.55,
+              }}
+            />
+          </>
+        ) : (
+          <View
+            pointerEvents="none"
+            className="absolute -right-16 -top-16 h-48 w-48 rounded-full"
+            style={{
+              backgroundColor: themeColors.brand.primary,
+              opacity: 0.08,
+            }}
+          />
+        )}
+
+        <View className="flex-row items-center gap-3">
+          {hasPhoto && resolvedUri ? (
+            <Image
+              source={{ uri: resolvedUri }}
+              resizeMode="cover"
+              onError={() => setFailedUri(resolvedUri)}
+              className="h-16 w-16 overflow-hidden rounded-[18px] border-2 border-border-default"
+            />
+          ) : (
+            <View className="h-16 w-16 items-center justify-center overflow-hidden rounded-[18px] border-2 border-border-default bg-surface-secondary">
+              <Text
+                className="font-display text-brand-primary"
+                style={{ fontSize: 30, lineHeight: 36 }}
+              >
+                {initial || "K"}
+              </Text>
+            </View>
+          )}
+
+          <View className="min-w-0 flex-1">
+            <Text
+              numberOfLines={2}
+              className="font-display text-heading-sm text-text-primary"
+            >
+              {organizationName}
+            </Text>
             {organization.cityName ? (
-              <InfoPill icon="location-dot" label={organization.cityName} />
+              <View className="mt-0.5 flex-row items-center gap-1.5">
+                <FontAwesome6
+                  name="location-dot"
+                  size={10}
+                  color={themeColors.text.tertiary}
+                />
+                <Text
+                  numberOfLines={1}
+                  className="min-w-0 shrink font-body text-caption text-text-secondary"
+                >
+                  {organization.cityName}
+                </Text>
+              </View>
             ) : null}
+
+            <View className="mt-1.5 flex-row flex-wrap gap-1.5">
+              <View className="flex-row items-center gap-1.5 rounded-full bg-surface-secondary px-2 py-0.5">
+                <FontAwesome6
+                  name={organization.isPublic ? "globe" : "lock"}
+                  size={9}
+                  color={themeColors.text.secondary}
+                />
+                <Text className="font-body-bold text-caption text-text-secondary">
+                  {organization.isPublic
+                    ? t("visibility.public")
+                    : t("visibility.private")}
+                </Text>
+              </View>
+              {role != null ? (
+                <View
+                  className={`flex-row items-center gap-1.5 rounded-full px-2 py-0.5 ${
+                    isPrivileged
+                      ? "bg-brand-primary/15"
+                      : "bg-surface-secondary"
+                  }`}
+                >
+                  <FontAwesome6
+                    name={roleIcon}
+                    size={9}
+                    color={
+                      isPrivileged
+                        ? themeColors.brand.primary
+                        : themeColors.text.secondary
+                    }
+                  />
+                  <Text
+                    className={`font-body-bold text-caption ${
+                      isPrivileged
+                        ? "text-brand-primary"
+                        : "text-text-secondary"
+                    }`}
+                  >
+                    {organizationRoleLabel(role)}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
           </View>
         </View>
 
-        {onEdit ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t("detail.editAccessibility")}
-            hitSlop={HIT_SLOP}
-            onPress={onEdit}
-            className="h-10 w-10 items-center justify-center rounded-full border border-border-strong bg-background-secondary/80 active:opacity-70"
-          >
-            <FontAwesome6
-              name="pen"
-              size={11}
-              color={themeColors.brand.primary}
-            />
-          </Pressable>
-        ) : null}
+        <View className="mt-3 flex-row items-center rounded-xl bg-surface-secondary/70 py-2">
+          <HeroStat
+            value={organization.approvedMemberCount}
+            label={t("detail.statMembers")}
+            onPress={onPressMembers}
+          />
+          <View className="h-6 w-px bg-border-default" />
+          <HeroStat value={eventCount} label={t("detail.statEvents")} />
+          <View className="h-6 w-px bg-border-default" />
+          <HeroStat
+            value={completedEventCount}
+            label={t("detail.statCompleted")}
+          />
+        </View>
       </View>
 
       {organization.description ? (
-        <Text className="mt-5 font-body text-body-sm leading-5 text-text-secondary">
+        <Text className="mt-4 font-body text-body-sm leading-5 text-text-secondary">
           {organization.description}
         </Text>
       ) : (
-        <Text className="mt-5 font-body text-body-sm leading-5 text-text-tertiary">
+        <Text className="mt-4 font-body text-body-sm leading-5 text-text-tertiary">
           {t("detail.defaultDescription")}
         </Text>
       )}
-
-      <View className="mt-5 flex-row border-t border-border-default pt-4">
-        <OrganizationStat
-          value={organization.approvedMemberCount}
-          label={t("detail.statMembers")}
-          icon="user-group"
-        />
-        <View className="mx-4 h-9 w-px bg-border-default" />
-        <OrganizationStat
-          value={eventCount}
-          label={t("detail.statEvents")}
-          icon="calendar-day"
-        />
-      </View>
     </View>
   );
 }
 
-export function InfoPill({
-  icon,
-  label,
-}: {
-  icon: "shield-halved" | "location-dot";
-  label: string;
-}) {
-  return (
-    <View className="flex-row items-center gap-1.5 rounded-full border border-border-default bg-background-secondary/70 px-2.5 py-1.5">
-      <FontAwesome6 name={icon} size={9} color={themeColors.brand.primary} />
-      <Text className="font-body-bold text-overline text-text-secondary">
-        {label}
-      </Text>
-    </View>
-  );
-}
-
-export function OrganizationStat({
+function HeroStat({
   value,
   label,
-  icon,
+  onPress,
 }: {
+  onPress?: () => void;
   value: number;
   label: string;
-  icon: "user-group" | "calendar-day";
 }) {
-  return (
-    <View className="flex-1">
-      <Text className="font-body-bold text-heading-sm text-text-primary">
+  const content = (
+    <>
+      <Text
+        numberOfLines={1}
+        className="font-display text-heading-sm text-text-primary"
+      >
         {value}
       </Text>
-      <View className="mt-0.5 flex-row items-center gap-1.5">
-        <FontAwesome6 name={icon} size={9} color={themeColors.brand.primary} />
-        <Text className="font-body text-overline text-text-tertiary">
+      <View className="flex-row items-center gap-1">
+        <Text
+          numberOfLines={1}
+          className="shrink font-body text-caption text-text-tertiary"
+        >
           {label}
         </Text>
+        {onPress ? (
+          <FontAwesome6
+            name="chevron-right"
+            size={9}
+            color={themeColors.text.tertiary}
+          />
+        ) : null}
       </View>
-    </View>
+    </>
   );
+  if (onPress) {
+    return (
+      <Pressable
+        accessibilityRole="button"
+        hitSlop={HIT_SLOP}
+        onPress={onPress}
+        className="min-w-0 flex-1 items-center active:opacity-70"
+      >
+        {content}
+      </Pressable>
+    );
+  }
+  return <View className="min-w-0 flex-1 items-center">{content}</View>;
 }

@@ -2,20 +2,32 @@
   "loading": "Loading profile",
   "loadFailed": "Could not load profile.",
   "sportsTitle": "Sports",
-  "organizationsTitle": "Organizations",
-  "emptyOrganizations": "You don't have any organizations yet. Tap to add or join.",
+  "organizationsTitle": "Clubs",
+  "emptyOrganizations": "You don't have any clubs yet. Tap to add or join.",
   "emptySports": "You haven't added any sports yet. Tap to add.",
   "emptySportsPublic": "No sports added yet.",
   "reviewsTitle": "Reviews",
   "emptyReviews": "No reviews yet. Feedback from events will appear here.",
   "notFound": "Profile not found. It may not have been created during registration.",
   "tabs": {
+    "posts": "Posts",
     "activity": "Activity",
     "reviews": "Reviews",
-    "settings": "Settings"
+    "settings": "Settings",
+    "sports": "Sports",
+    "groups": "Groups"
   },
   "hero": {
-    "editAccessibility": "Edit profile"
+    "editAccessibility": "Edit profile",
+    "settingsAccessibility": "Settings",
+    "counts": {
+      "posts_one": "post",
+      "posts_other": "posts",
+      "friends_one": "friend",
+      "friends_other": "friends",
+      "badges_one": "badge",
+      "badges_other": "badges"
+    }
   },
   "about": {
     "emptyBio": "No profile bio added yet.",
@@ -192,7 +204,16 @@
     "leadSport": "Favorite sport:",
     "share": "Share",
     "shareFailed": "Couldn't share the report",
-    "shareUnavailable": "Sharing isn't available on this device."
+    "shareUnavailable": "Sharing isn't available on this device.",
+    "readyTitle": "Your {{year}} sport report is ready",
+    "readyBody": "See what you did this year and share it to your story if you like.",
+    "screenTitle": "My Sport Report",
+    "shareTo": "Share",
+    "targets": {
+      "instagramStory": "Story",
+      "whatsapp": "WhatsApp",
+      "other": "More"
+    }
   },
   "streak": {
     "weeks_one": "{{count}}-week streak",
@@ -212,5 +233,13 @@
     "goalFailed": "Couldn't save your goal",
     "badge_one": "{{count}}-week streak",
     "badge_other": "{{count}}-week streak"
+  },
+  "posts": {
+    "empty": "No posts shared yet.",
+    "emptyOwn": "You haven't shared anything yet. Share a moment from an event and it will show up here.",
+    "unavailable": "Posts couldn't be loaded right now.",
+    "create": "Share a post",
+    "loadMore": "Show more",
+    "openAccessibility": "Open post"
   }
 }

@@ -1,6 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as Haptics from "expo-haptics";
-import * as Sharing from "expo-sharing";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,6 +7,7 @@ import { ActivityIndicator, Image, Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import Svg, {
   Defs,
+  LinearGradient,
   Line,
   RadialGradient,
   Rect,
@@ -16,12 +16,14 @@ import Svg, {
 import ViewShot, { captureRef } from "react-native-view-shot";
 
 import { AppText as Text } from "@/components";
-import { fonts, palette, themeColors } from "@/constants/theme";
+import { shareImage, type ImageShareTarget } from "@/lib/share/share-image";
+import { brandColors, fonts, palette, themeColors } from "@/constants/theme";
 import { useToast } from "@/contexts";
 import {
   getSportReportCard,
   getStreak,
 } from "@/features/profile/services/profile-service";
+import type { IconName } from "@/types/components";
 import type { SportReportCard as SportReportCardData } from "@/features/profile/types";
 import { sportIconForSlug } from "@/features/sports/sports";
 
@@ -50,7 +52,7 @@ export function SportReportCard({
   const storyRef = useRef<View>(null);
   const [card, setCard] = useState<SportReportCardData | null>(null);
   const [streakWeeks, setStreakWeeks] = useState(0);
-  const [sharing, setSharing] = useState(false);
+  const [sharing, setSharing] = useState<ImageShareTarget | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -87,13 +89,10 @@ export function SportReportCard({
     );
   }
 
-  const share = async () => {
+  const share = async (target: ImageShareTarget) => {
     if (sharing) return;
-    setSharing(true);
+    setSharing(target);
     try {
-      if (!(await Sharing.isAvailableAsync())) {
-        throw new Error(t("reportCard.shareUnavailable"));
-      }
       const uri = await captureRef(storyRef, {
         format: "png",
         quality: 1,
@@ -102,19 +101,18 @@ export function SportReportCard({
         height: 1920,
       });
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      await Sharing.shareAsync(uri, {
-        mimeType: "image/png",
-        UTI: "public.png",
-        dialogTitle: t("reportCard.share"),
-      });
+      await shareImage(uri, target, t("reportCard.share"));
     } catch (error) {
       showToast({
         type: "error",
         title: t("reportCard.shareFailed"),
-        description: error instanceof Error ? error.message : undefined,
+        description:
+          error instanceof Error && error.message === "unavailable"
+            ? t("reportCard.shareUnavailable")
+            : undefined,
       });
     } finally {
-      setSharing(false);
+      setSharing(null);
     }
   };
 
@@ -123,28 +121,36 @@ export function SportReportCard({
       <ReportPoster card={card} name={name} streakWeeks={streakWeeks} animated />
 
       {isOwnProfile ? (
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => void share()}
-          disabled={sharing}
-          className="absolute right-4 top-4 flex-row items-center gap-1.5 rounded-full bg-brand-primary px-3 py-2 active:opacity-80"
-        >
-          {sharing ? (
-            <ActivityIndicator size="small" color={palette.canvas} />
-          ) : (
-            <FontAwesome6
-              name="arrow-up-from-bracket"
-              size={11}
-              color={palette.canvas}
-            />
-          )}
-          <Text
-            className="font-body-bold text-caption"
-            style={{ color: palette.canvas }}
-          >
-            {t("reportCard.share")}
+        <View className="mt-4 gap-2">
+          <Text className="px-1 font-body-bold text-caption text-text-secondary">
+            {t("reportCard.shareTo")}
           </Text>
-        </Pressable>
+          <View className="flex-row gap-2">
+            <ShareTargetButton
+              icon="instagram"
+              brand="instagram"
+              label={t("reportCard.targets.instagramStory")}
+              busy={sharing === "instagramStory"}
+              disabled={sharing != null}
+              onPress={() => void share("instagramStory")}
+            />
+            <ShareTargetButton
+              icon="whatsapp"
+              brand="whatsapp"
+              label={t("reportCard.targets.whatsapp")}
+              busy={sharing === "whatsapp"}
+              disabled={sharing != null}
+              onPress={() => void share("whatsapp")}
+            />
+            <ShareTargetButton
+              icon="arrow-up-from-bracket"
+              label={t("reportCard.targets.other")}
+              busy={sharing === "other"}
+              disabled={sharing != null}
+              onPress={() => void share("other")}
+            />
+          </View>
+        </View>
       ) : null}
 
       {isOwnProfile ? (
@@ -155,6 +161,87 @@ export function SportReportCard({
         </View>
       ) : null}
     </Animated.View>
+  );
+}
+
+function ShareTargetButton({
+  icon,
+  brand,
+  label,
+  busy,
+  disabled,
+  onPress,
+}: {
+  icon: IconName;
+  /** Marka rengiyle dolu ikon rozeti; yoksa nötr. */
+  brand?: "instagram" | "whatsapp";
+  label: string;
+  busy: boolean;
+  disabled: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled, busy }}
+      disabled={disabled}
+      onPress={onPress}
+      className="flex-1 items-center gap-2 rounded-2xl border border-border-default bg-surface-primary px-2 py-3.5 active:bg-surface-secondary"
+      style={{ opacity: disabled && !busy ? 0.5 : 1 }}
+    >
+      <View
+        className="h-10 w-10 items-center justify-center overflow-hidden rounded-xl"
+        style={{
+          backgroundColor:
+            brand === "whatsapp"
+              ? brandColors.whatsapp
+              : brand
+                ? undefined
+                : themeColors.surface.secondary,
+        }}
+      >
+        {brand === "instagram" ? <InstagramGradient /> : null}
+        {busy ? (
+          <ActivityIndicator
+            size="small"
+            color={brand ? palette.white : themeColors.text.primary}
+          />
+        ) : (
+          <FontAwesome6
+            name={icon}
+            size={20}
+            color={brand ? palette.white : themeColors.text.primary}
+          />
+        )}
+      </View>
+      <Text
+        numberOfLines={1}
+        className="font-body-bold text-caption text-text-primary"
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+function InstagramGradient() {
+  const stops = brandColors.instagramGradient;
+  return (
+    <Svg style={{ position: "absolute", inset: 0 }} width="100%" height="100%">
+      <Defs>
+        <LinearGradient id="ig" x1="0" y1="1" x2="1" y2="0">
+          {stops.map((color, index) => (
+            <Stop
+              key={color}
+              offset={index / (stops.length - 1)}
+              stopColor={color}
+            />
+          ))}
+        </LinearGradient>
+      </Defs>
+      <Rect width="100%" height="100%" fill="url(#ig)" />
+    </Svg>
   );
 }
 

@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
-  useDerivedValue,
+  useSharedValue,
   withSpring,
   withTiming,
 } from "react-native-reanimated";
@@ -31,18 +31,34 @@ export function SegmentedTabs<T extends string>({
     options.findIndex((option) => option.key === value),
   );
 
-  const progress = useDerivedValue(() => {
-    return indicatorMotion === "timing"
-      ? withTiming(activeIndex, { duration: 220 })
-      : withSpring(activeIndex, {
-          damping: 26,
-          stiffness: 260,
-          overshootClamping: true,
-        });
-  }, [activeIndex, indicatorMotion]);
+  // Gösterge dokunuş anında, React render'ını beklemeden UI thread'de kayar.
+  // Önceden animasyon commit'e bağlıydı: sekme değişimi ağır bir render
+  // tetiklediğinde gösterge o iş bitene kadar yerinde duruyordu.
+  const progress = useSharedValue(activeIndex);
+  const target = useSharedValue(activeIndex);
+
+  const animateTo = (index: number) => {
+    target.set(index);
+    progress.set(
+      indicatorMotion === "timing"
+        ? withTiming(index, { duration: 220 })
+        : withSpring(index, {
+            damping: 26,
+            stiffness: 260,
+            overshootClamping: true,
+          }),
+    );
+  };
+
+  // Seçim dışarıdan değişirse (ör. route param ile açılış) göstergeyi eşitle.
+  useEffect(() => {
+    if (target.get() !== activeIndex) animateTo(activeIndex);
+    // animateTo her render'da yeniden oluşuyor; yalnızca indeks değişimi önemli.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeIndex]);
 
   const indicatorStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: progress.value * segmentWidth }],
+    transform: [{ translateX: progress.get() * segmentWidth }],
   }));
 
   return (
@@ -61,7 +77,7 @@ export function SegmentedTabs<T extends string>({
         />
       )}
 
-      {options.map((option) => (
+      {options.map((option, index) => (
         <Pressable
           key={option.key}
           disabled={disabled}
@@ -75,7 +91,16 @@ export function SegmentedTabs<T extends string>({
           className={`min-w-0 flex-1 items-center justify-center px-0.5 ${
             badgePlacement === "top" ? "min-h-[54px]" : "min-h-[44px]"
           }`}
-          onPress={() => onChange(option.key)}
+          onPress={() => {
+            if (option.key === value) {
+              onChange(option.key);
+              return;
+            }
+            animateTo(index);
+            // Reddedilen seçimde value değişmiyor, senkron effect de
+            // çalışmıyor; gösterge burada geri alınmazsa yanlış sekmede kalır.
+            if (onChange(option.key) === false) animateTo(activeIndex);
+          }}
         >
           <View
             className={`max-w-full items-center justify-center ${

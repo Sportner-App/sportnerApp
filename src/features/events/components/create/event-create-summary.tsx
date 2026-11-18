@@ -1,5 +1,4 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
@@ -30,6 +29,9 @@ import {
 type EventCreateSummaryProps = {
   values: CreateEventFormValues;
   sportOptions: SportOption[];
+  /** Kulüp etkinliği ise kulüp adı; özet "kulüp adına" satırı gösterir. */
+  clubName?: string;
+  organizerParticipates?: boolean;
 };
 
 function formatSummaryDate(date: Date) {
@@ -71,9 +73,10 @@ function SummaryPill({
 export function EventCreateSummary({
   values,
   sportOptions,
+  clubName,
+  organizerParticipates = true,
 }: EventCreateSummaryProps) {
   const { t } = useTranslation("eventCreate");
-  const [photoSize, setPhotoSize] = useState({ width: 0, height: 0 });
   const SKILL_LEVEL_LABELS = useSkillLevelLabels();
   const DURATION_OPTIONS = useDurationOptions();
   const sport = sportOptions.find((option) => option.key === values.sportSlug);
@@ -123,26 +126,10 @@ export function EventCreateSummary({
 
       <View className="overflow-hidden rounded-[24px] border border-border-default bg-surface-primary">
         {/* Yayınlanınca listede görünecek kartın aynısı: fotoğraf ve sis. */}
-        <View
-          className="min-h-[190px] justify-between px-4 py-3.5"
-          onLayout={(event) => {
-            const { width, height } = event.nativeEvent.layout;
-            if (width !== photoSize.width || height !== photoSize.height) {
-              setPhotoSize({ width, height });
-            }
-          }}
-        >
+        <View className="min-h-[190px] justify-between px-4 py-3.5">
           <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-            <SportPhoto
-              image={resolveEventPhoto(sport?.coverImageUrl)}
-              width={photoSize.width}
-              height={photoSize.height}
-            />
-            <MistOverlay
-              fadeId="create-summary"
-              width={photoSize.width}
-              height={photoSize.height}
-            />
+            <SportPhoto image={resolveEventPhoto(sport?.coverImageUrl)} />
+            <MistOverlay />
           </View>
 
           {sport ? (
@@ -168,7 +155,11 @@ export function EventCreateSummary({
             ) : null}
             <View className="gap-1">
               {location ? (
-                <MetaItem icon="location-dot" label={location} accent={accent} />
+                <MetaItem
+                  icon="location-dot"
+                  label={location}
+                  accent={accent}
+                />
               ) : null}
               <MetaItem icon="calendar-day" label={schedule} accent={accent} />
             </View>
@@ -189,6 +180,24 @@ export function EventCreateSummary({
             />
           ) : null}
           <SummaryPill icon="coins" accent={accent} label={feeLabel} />
+          {clubName ? (
+            <SummaryPill
+              icon="building"
+              accent={accent}
+              label={t("summary.clubHost", { name: clubName })}
+            />
+          ) : null}
+          {clubName ? (
+            <SummaryPill
+              icon={organizerParticipates ? "user-check" : "user-slash"}
+              accent={accent}
+              label={
+                organizerParticipates
+                  ? t("summary.organizerPlays")
+                  : t("summary.organizerNotPlaying")
+              }
+            />
+          ) : null}
           {values.isRecurring ? (
             <SummaryPill
               icon="repeat"

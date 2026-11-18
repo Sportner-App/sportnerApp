@@ -39,7 +39,11 @@ export {
   useSession,
 } from "@/features/auth/session/session-context";
 export { useToast } from "./toast-provider";
-export { AppTourProvider, useAppTour } from "./app-tour-context";
+export {
+  AppTourProvider,
+  requestAppTour,
+  useAppTour,
+} from "./app-tour-context";
 export {
   ThemePreferenceProvider,
   useThemePreference,

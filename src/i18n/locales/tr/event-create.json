@@ -90,15 +90,22 @@
     "summaryAutoOpens": "sırayla açılır"
   },
   "organization": {
-    "lockedText": "Bu etkinlik <bold>{{name}}</bold> organizasyonuna bağlı olarak oluşturuluyor.",
-    "lockedFallbackName": "organizasyonun",
-    "intentQuestion": "Bu etkinlik bir organizasyona mı bağlı?",
+    "lockedText": "Bu etkinlik <bold>{{name}}</bold> adına oluşturuluyor.",
+    "lockedFallbackName": "kulübün",
+    "intentQuestion": "Bu etkinlik bir kulübe mi bağlı?",
     "individual": "Bireysel etkinlik",
-    "organizationEvent": "Organizasyon etkinliği",
-    "label": "Organizasyon",
-    "placeholder": "Organizasyon seç",
-    "sheetTitle": "Organizasyon seç",
-    "sheetSubtitle": "Etkinliği hangi organizasyon adına oluşturuyorsun?"
+    "organizationEvent": "Kulüp etkinliği",
+    "label": "Kulüp",
+    "placeholder": "Kulüp seç",
+    "sheetTitle": "Kulüp seç",
+    "sheetSubtitle": "Etkinliği hangi kulüp adına oluşturuyorsun?",
+    "visibilityQuestion": "Bu etkinlik kimlere görünsün?",
+    "visibilityPublic": "Herkese açık",
+    "visibilityMembersOnly": "Sadece kulüp üyeleri",
+    "participationQuestion": "Etkinliğe sen de katılacak mısın?",
+    "participationYes": "Evet, ben de oynuyorum",
+    "participationNo": "Hayır, yalnızca düzenliyorum",
+    "participationNoHint": "Kontenjandan yer kaplamazsın; etkinlik yine kulübün adıyla görünür."
   },
   "players": {
     "capacityLabel": "Katılımcı Kapasitesi",
@@ -108,7 +115,8 @@
     "limitLabel": "Kontenjan",
     "limited": "Sınırlı",
     "unlimited": "Sınırsız",
-    "unlimitedHint": "Katılımcı sayısına sınır yok. Başvuranları yine sen onaylarsın."
+    "unlimitedHint": "Katılımcı sayısına sınır yok. Başvuranları yine sen onaylarsın.",
+    "hintNoOrganizer": "Butonları kullanabilir veya sayıya dokunup kapasiteyi yazabilirsin.\nSen oynamadığın için kontenjana sayılmazsın."
   },
   "ageRange": {
     "label": "Katılım yaş aralığı",
@@ -136,7 +144,10 @@
   "summary": {
     "heading": "Etkinlik Özeti",
     "playersLabel": "{{count}} kişi",
-    "playersUnlimited": "Sınırsız kontenjan"
+    "playersUnlimited": "Sınırsız kontenjan",
+    "clubHost": "{{name}} kulübü adına",
+    "organizerPlays": "Sen de oynuyorsun",
+    "organizerNotPlaying": "Sen oynamıyorsun"
   },
   "companions": {
     "slotsAvailable": "{{count}} kişilik yer açık",
@@ -152,7 +163,25 @@
     "friendsSubtitle": "Seçtiğin kişiler kabul ettikten sonra katılımcı olur.",
     "friendsLoading": "Arkadaşlar yükleniyor…",
     "friendsEmpty": "Ekleyebileceğin kabul edilmiş arkadaş bulunamadı.",
-    "slotsUnlimited": "Kontenjan sınırsız"
+    "slotsUnlimited": "Kontenjan sınırsız",
+    "reservedBreakdownNoOrganizer": "{{count}} yanında gelen (sen oynamıyorsun)",
+    "membersTitle": "Üyelerden davet et",
+    "membersSubtitle": "Seçtiğin üyeler kabul ettikten sonra katılımcı olur.",
+    "memberPick": "Üye seç",
+    "memberSelectedCount": "{{count}} üye seçildi",
+    "memberRemove": "Üyeyi çıkar",
+    "memberSheetTitle": "Kulüp üyeleri",
+    "memberSearchPlaceholder": "Üye ara",
+    "memberConfirm": "{{count}} üyeyi ekle",
+    "memberDone": "Tamam",
+    "membersCapacityFull": "Kontenjan dolu, daha fazla üye seçemezsin.",
+    "membersEmpty": "Kulüpte davet edebileceğin başka üye yok.",
+    "membersNoResults": "Aramana uygun üye bulunamadı.",
+    "membersError": "Üyeler yüklenemedi.",
+    "membersRetry": "Tekrar dene",
+    "reservedBreakdownClub": "1 organizatör + {{count}} üye davetli",
+    "reservedBreakdownClubNoOrganizer": "{{count}} üye davetli (sen oynamıyorsun)",
+    "_toast": "Kulüp üyelerine etkinlik daveti gönderildi."
   },
   "toast": {
     "sportNotFoundTitle": "Spor bulunamadı",
@@ -168,7 +197,8 @@
     "friendInviteSent": "Arkadaşlarına etkinlik daveti gönderildi.",
     "waitingForPlayers": "Oyuncular seni bekliyor.",
     "invitesFailedDescription": "{{reason}} Davetleri etkinlik detayından tekrar gönderebilirsin.",
-    "invitesGenericFailure": "Davetler gönderilemedi."
+    "invitesGenericFailure": "Davetler gönderilemedi.",
+    "memberInviteSent": "Kulüp üyelerine etkinlik daveti gönderildi."
   },
   "participantGender": {
     "label": "Kimler katılabilir?",

@@ -31,6 +31,10 @@
     "reply": "Yanıt vermek için giriş yapmalısın.",
     "friendsFilter": "Arkadaşlarının gönderilerini görmek için giriş yapmalısın."
   },
+  "mode": {
+    "feed": "Akış",
+    "clubs": "Kulüpler"
+  },
   "filter": {
     "all": "Tüm gönderiler",
     "friends": "Arkadaşlarım"

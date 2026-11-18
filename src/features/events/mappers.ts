@@ -70,6 +70,11 @@ export function mapListItemToSummary(item: ApiEventListItem): EventSummary {
     status: item.status,
     durationMinutes: item.durationMinutes,
     myParticipationStatus: item.myParticipationStatus ?? null,
+    organizationId: item.organizationId ?? null,
+    organizationName: item.organizationName ?? null,
+    organizationImageUrl: item.organizationImageUrl ?? null,
+    isOrganizerParticipant: item.isOrganizerParticipant !== false,
+    isOrganizationOnly: item.isOrganizationOnly === true,
   };
 }
 
@@ -121,6 +126,11 @@ export function mapDetailToEvent(
     organizerUserId: organizer.userId,
     organizationId: detail.organizationId ?? null,
     organizationName: detail.organizationName ?? null,
+    isOrganizationOnly: detail.isOrganizationOnly === true,
+    organizationImageUrl: detail.organizationImageUrl ?? null,
+    // Eski sunucu yanıtında alan yok: hook yaratıcıyı yine yönetici sayar.
+    canManage: detail.canManage === true,
+    isOrganizerParticipant: detail.isOrganizerParticipant !== false,
     canCancel: detail.canCancel === true,
     district: detail.district ?? null,
     city: detail.city ?? null,

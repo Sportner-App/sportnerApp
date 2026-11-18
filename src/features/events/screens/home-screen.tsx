@@ -1,30 +1,32 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { AppText as Text, ScreenLoader, SegmentedTabs } from "@/components";
 import { TabPage } from "@/features/app-shell/components/tab-page";
+import {
+  TabListItem,
+  TabListPage,
+} from "@/features/app-shell/components/tab-list-page";
 import { TabScreenHeader } from "@/features/app-shell/components/tab-screen-header";
 import { shadows, themeColors } from "@/constants/theme";
-import { useAuth } from "@/contexts";
 import { useCities } from "@/features/location/hooks/use-cities";
 import {
   DEFAULT_EVENT_FILTERS,
   type EventFeedScope,
   useEvents,
 } from "@/features/events/hooks/use-events";
-import { useMyOrganizations } from "@/features/organizations/hooks/use-organizations";
 import { useRequireAuth } from "@/features/auth/hooks/use-require-auth";
 import { useSportCatalog } from "@/features/sports/hooks/use-sport-catalog";
 import { useUserLocation } from "@/features/location/hooks/use-user-location";
-import { ORGANIZATION_STATUS } from "@/features/organizations/types";
 
 import { subscribeToHomeListView } from "@/features/app-shell/components/glass-tab-bar";
 
 import { EventCard } from "@/features/events/components/event-card";
+import type { EventSummary } from "@/features/events/types";
 import { EventFilterSheet } from "@/features/events/components/home/event-filter-sheet";
 import { PendingRequestsCard } from "@/features/events/components/home/pending-requests-card";
 import { ShareMomentsCard } from "@/features/events/components/home/share-moments-card";
@@ -37,22 +39,14 @@ type ViewMode = "list" | "map";
 export function HomeScreen() {
   const { t } = useTranslation("home");
   const router = useRouter();
-  const { scope: scopeParam, organizationId: organizationIdParam } =
-    useLocalSearchParams<{ scope?: string; organizationId?: string }>();
+  const { scope: scopeParam } = useLocalSearchParams<{ scope?: string }>();
   const initialScope: EventFeedScope =
-    scopeParam === "friends" || scopeParam === "organizations"
-      ? scopeParam
-      : "all";
-  const initialOrganizationId =
-    initialScope === "organizations" ? (organizationIdParam ?? null) : null;
+    scopeParam === "friends" ? scopeParam : "all";
   const [filterOpen, setFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const { requireAuth } = useRequireAuth();
 
   useEffect(() => subscribeToHomeListView(() => setViewMode("list")), []);
-  const { isAuthenticated } = useAuth();
-  const { items: myOrganizations, isLoading: isOrganizationsLoading } =
-    useMyOrganizations(isAuthenticated);
   const { sports } = useSportCatalog();
   const { options: cityOptions, isLoading: isCitiesLoading } = useCities();
   const {
@@ -72,41 +66,14 @@ export function HomeScreen() {
     applyFilters,
     refresh,
     loadMore,
-  } = useEvents(initialScope, initialOrganizationId, userLocation);
+  } = useEvents(initialScope, userLocation);
 
-  const approvedOrganizations = myOrganizations.filter(
-    (organization) => organization.status === ORGANIZATION_STATUS.approved,
-  );
-  const hasOrganizations = approvedOrganizations.length > 0;
   const isFriends = scope === "friends";
-  const isOrganizations = scope === "organizations";
   const toggleSort = () =>
     applyFilters({
       ...filters,
       sortBy: filters.sortBy === "time" ? "location" : "time",
     });
-
-  useEffect(() => {
-    if (
-      scope === "organizations" &&
-      !isOrganizationsLoading &&
-      !hasOrganizations
-    ) {
-      setScope("all");
-    }
-  }, [hasOrganizations, isOrganizationsLoading, scope, setScope]);
-
-  useEffect(() => {
-    if (
-      filters.organizationId &&
-      !isOrganizationsLoading &&
-      !approvedOrganizations.some(
-        (organization) => organization.id === filters.organizationId,
-      )
-    ) {
-      applyFilters({ ...filters, organizationId: null });
-    }
-  }, [applyFilters, approvedOrganizations, filters, isOrganizationsLoading]);
 
   const hasActiveFilters =
     filters.city != null ||
@@ -115,7 +82,6 @@ export function HomeScreen() {
     filters.gender != null ||
     filters.skillLevel != null ||
     filters.isPaid != null ||
-    filters.organizationId != null ||
     filters.sportId != null;
 
   const viewModeToggle = (
@@ -181,11 +147,23 @@ export function HomeScreen() {
       filters={filters}
       onClose={() => setFilterOpen(false)}
       onApply={applyFilters}
-      organizations={isOrganizations ? approvedOrganizations : []}
       sports={sports}
       cities={cityOptions}
       isCitiesLoading={isCitiesLoading}
     />
+  );
+
+  const openEvent = useCallback(
+    (eventId: string) => router.push(`/events/${eventId}`),
+    [router],
+  );
+  const renderEvent = useCallback(
+    ({ item }: { item: EventSummary }) => (
+      <TabListItem>
+        <EventCard event={item} onPressEvent={openEvent} />
+      </TabListItem>
+    ),
+    [openEvent],
   );
 
   if (viewMode === "map") {
@@ -237,121 +215,100 @@ export function HomeScreen() {
   }
 
   return (
-    <TabPage
+    <TabListPage
+      data={isLoading ? [] : events}
+      keyExtractor={(event) => event.id}
+      renderItem={renderEvent}
       refreshing={isRefreshing}
       onRefresh={refresh}
       onEndReached={loadMore}
-    >
-      <Animated.View
-        entering={FadeInDown.duration(500).delay(60)}
-        className="gap-md"
-      >
-        <PendingRequestsCard />
-        <ShareMomentsCard />
-        <ProgressStrip />
-        <RecapRevealModal />
+      header={
+        <Animated.View
+          entering={FadeInDown.duration(500).delay(60)}
+          className="gap-md"
+        >
+          <PendingRequestsCard />
+          <ShareMomentsCard />
+          <ProgressStrip />
+          <RecapRevealModal />
 
-        <View className="flex-row items-center">
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t("sort.accessibility")}
-            onPress={toggleSort}
-            className="flex-1 flex-row items-center gap-sm active:opacity-70"
-          >
-            <FontAwesome6
-              name={filters.sortBy === "time" ? "clock" : "location-dot"}
-              size={14}
-              color={themeColors.brand.primary}
-            />
-            <Text
-              numberOfLines={1}
-              className="flex-shrink font-body-bold text-body text-text-primary"
+          <View className="flex-row items-center">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t("sort.accessibility")}
+              onPress={toggleSort}
+              className="flex-1 flex-row items-center gap-sm active:opacity-70"
             >
-              {filters.sortBy === "time"
-                ? t("sort.timeLabel")
-                : t("sort.locationLabel")}
-            </Text>
-            <FontAwesome6
-              name="arrows-up-down"
-              size={10}
-              color={themeColors.text.tertiary}
-            />
-          </Pressable>
-        </View>
+              <FontAwesome6
+                name={filters.sortBy === "time" ? "clock" : "location-dot"}
+                size={14}
+                color={themeColors.brand.primary}
+              />
+              <Text
+                numberOfLines={1}
+                className="flex-shrink font-body-bold text-body text-text-primary"
+              >
+                {filters.sortBy === "time"
+                  ? t("sort.timeLabel")
+                  : t("sort.locationLabel")}
+              </Text>
+              <FontAwesome6
+                name="arrows-up-down"
+                size={10}
+                color={themeColors.text.tertiary}
+              />
+            </Pressable>
+          </View>
 
-        <SegmentedTabs
-          options={[
-            { key: "all", label: t("scope.all") },
-            { key: "friends", label: t("scope.friends") },
-            ...(hasOrganizations
-              ? [
-                  {
-                    key: "organizations",
-                    label: t("scope.organizations"),
-                  } as const,
-                ]
-              : []),
-          ]}
-          value={scope}
-          onChange={(next) => {
-            if (
-              (next === "friends" || next === "organizations") &&
-              !requireAuth(
-                next === "friends"
-                  ? t("requireAuth.friends")
-                  : t("requireAuth.organizations"),
-              )
-            ) {
-              return;
-            }
-            setScope(next);
-          }}
-        />
-
-        <View className="flex-row items-center justify-between gap-sm">
-          {viewModeToggle}
-          {filterButtons}
-        </View>
-      </Animated.View>
-
-      {isLoading ? (
-        <ScreenLoader
-          label={t("loadingEvents")}
-          className="items-center py-3xl"
-          size={148}
-        />
-      ) : events.length === 0 ? (
-        <View className="items-center gap-sm rounded-xlarge border border-border-default bg-surface-primary px-xl py-3xl">
-          <FontAwesome6
-            name="calendar-xmark"
-            size={22}
-            color={themeColors.text.secondary}
+          <SegmentedTabs
+            options={[
+              { key: "all", label: t("scope.all") },
+              { key: "friends", label: t("scope.friends") },
+            ]}
+            value={scope}
+            onChange={(next) => {
+              if (next === "friends" && !requireAuth(t("requireAuth.friends"))) {
+                // Gösterge zaten kaymıştı; false ile eski sekmeye geri döner.
+                return false;
+              }
+              setScope(next);
+            }}
           />
-          <Text className="text-center font-body text-body-sm text-text-secondary">
-            {isOrganizations
-              ? t("empty.organizations")
-              : isFriends
-                ? t("empty.friends")
-                : t("empty.default")}
-          </Text>
-        </View>
-      ) : (
-        <View className="gap-lg">
-          {events.map((event) => (
-            <EventCard
-              key={event.id}
-              event={event}
-              onPress={() => router.push(`/events/${event.id}`)}
-            />
-          ))}
-          {isLoadingMore ? (
-            <ScreenLoader label={t("loadingEvents")} variant="more" />
-          ) : null}
-        </View>
-      )}
 
+          <View className="flex-row items-center justify-between gap-sm">
+            {viewModeToggle}
+            {filterButtons}
+          </View>
+        </Animated.View>
+      }
+      empty={
+        isLoading ? (
+          <ScreenLoader
+            label={t("loadingEvents")}
+            className="items-center py-3xl"
+            size={148}
+          />
+        ) : (
+          <View className="items-center gap-sm rounded-xlarge border border-border-default bg-surface-primary px-xl py-3xl">
+            <FontAwesome6
+              name="calendar-xmark"
+              size={22}
+              color={themeColors.text.secondary}
+            />
+            <Text className="text-center font-body text-body-sm text-text-secondary">
+              {isFriends ? t("empty.friends") : t("empty.default")}
+            </Text>
+          </View>
+        )
+      }
+      footer={
+        isLoadingMore ? (
+          <ScreenLoader label={t("loadingEvents")} variant="more" />
+        ) : null
+      }
+    >
       {filterSheet}
-    </TabPage>
+    </TabListPage>
   );
 }
 

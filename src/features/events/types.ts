@@ -36,6 +36,12 @@ export type ApiEventListItem = {
   occupiedParticipantCount: number;
   participantAvatars: ApiParticipantAvatar[] | null;
   myParticipationStatus: number | null;
+  organizationId: string | null;
+  organizationName: string | null;
+  organizationImageUrl?: string | null;
+  /** Kulüp etkinliğinde düzenleyen de oynuyor mu (kontenjandan yer kaplar). */
+  isOrganizerParticipant?: boolean;
+  isOrganizationOnly: boolean;
 };
 
 /** API: OrganizerSnippetResponse */
@@ -78,6 +84,11 @@ export type ApiEventDetail = {
   conversationId: string | null;
   organizationId?: string | null;
   organizationName?: string | null;
+  isOrganizationOnly: boolean;
+  organizationImageUrl: string | null;
+  /** Yaratıcı ya da onaylı kulüp kurucusu/yöneticisi. */
+  canManage?: boolean;
+  isOrganizerParticipant?: boolean;
   canCancel?: boolean;
   district?: string | null;
   city?: string | null;
@@ -169,6 +180,11 @@ export type EventSummary = {
   /** null: süre belirtilmemiş. */
   durationMinutes: number | null;
   myParticipationStatus: number | null;
+  organizationId: string | null;
+  organizationName: string | null;
+  organizationImageUrl: string | null;
+  isOrganizerParticipant: boolean;
+  isOrganizationOnly: boolean;
 };
 
 export type EventParticipant = {
@@ -213,8 +229,8 @@ export type EventDetail = EventSummary & {
   waitlistCount: number;
   conversationId: string | null;
   organizerUserId: string;
-  organizationId?: string | null;
-  organizationName?: string | null;
+  /** Yaratıcı ya da onaylı kulüp kurucusu/yöneticisi: yönetim arayüzü buna bağlı. */
+  canManage: boolean;
   canCancel?: boolean;
   /** Adresten çıkarılan semt/şehir; semt sıralamasına bağlantı için. */
   district?: string | null;
@@ -298,6 +314,9 @@ export type CreateEventPayload = {
   recurrenceIntervalWeeks?: 1 | 2 | 4;
   recurrenceCount?: number;
   organizationId?: string;
+  isOrganizationOnly?: boolean;
+  /** Yalnızca kulüp etkinliğinde anlamlı; false: düzenleyen oynamıyor. */
+  organizerParticipates?: boolean;
 };
 
 export type CreateEventResult = {
@@ -344,8 +363,6 @@ export type DiscoverEventsParams = {
   skillLevel?: number;
   isPaid?: boolean;
   friendsOnly?: boolean;
-  organizationsOnly?: boolean;
-  organizationId?: string;
   page?: number;
   pageSize?: number;
 };
@@ -391,6 +408,10 @@ export type ApiEventQuestion = {
   createdAt: string;
   replies: ApiEventQuestion[];
   mentions: EventQuestionMention[];
+  /** true: cevap kulüp adına verildi; yazar kişi yerine kulüp gösterilir. */
+  answeredByClub?: boolean;
+  clubName?: string | null;
+  clubImageUrl?: string | null;
 };
 
 export type ApiReview = {
