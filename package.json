@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.10",
-    "eslint": "^9.39.5",
+    "eslint": "^10.15.0",
     "eslint-config-expo": "~10.0.0",
     "postcss": "^8.5.22",
     "prettier-plugin-tailwindcss": "^0.8.1",
