@@ -34,6 +34,7 @@ const TYPE_ICONS: Partial<Record<number, string>> = {
   [TYPE.districtLeaderTaken]: "crown",
   [TYPE.monthlyRecapReady]: "chart-simple",
   [TYPE.yearlyRecapReady]: "chart-simple",
+  [TYPE.announcement]: "bullhorn",
   [TYPE.system]: "bell",
 };
 

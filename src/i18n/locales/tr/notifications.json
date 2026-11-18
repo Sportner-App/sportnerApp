@@ -44,6 +44,10 @@
       "reminders": {
         "title": "Hatırlatıcılar",
         "description": "Seri tehlikedeyken, haftalık hedefe az kalınca, sevdiğin sporlardan yeni etkinlik açılınca ve challenge'lar başlayıp biterken. Günde en fazla bir tane."
+      },
+      "announcements": {
+        "title": "Duyurular ve kampanyalar",
+        "description": "Sportner'dan yenilikler, etkinlik önerileri ve kampanyalar. İstediğin zaman kapatabilirsin."
       }
     }
   },
@@ -120,7 +124,8 @@
     "46": "Semtinde 1. sıraya çıkma",
     "47": "Ayın semt tacı",
     "48": "Aylık özetin hazır",
-    "49": "Yıllık özetin hazır"
+    "49": "Yıllık özetin hazır",
+    "50": "Duyurular ve kampanyalar"
   },
   "push": {
     "channelName": "Sportner Bildirimleri",

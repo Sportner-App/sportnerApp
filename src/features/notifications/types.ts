@@ -92,6 +92,7 @@ export const NOTIFICATION_TYPE = {
   districtCrowned: 47,
   monthlyRecapReady: 48,
   yearlyRecapReady: 49,
+  announcement: 50,
 } as const;
 
 const NAMED_ACTION_TYPES = new Set<number>([

@@ -19,7 +19,8 @@ export type NotificationGroupKey =
   | "messages"
   | "organizations"
   | "achievements"
-  | "reminders";
+  | "reminders"
+  | "announcements";
 
 export type NotificationGroup = {
   key: NotificationGroupKey;
@@ -108,6 +109,11 @@ export const NOTIFICATION_GROUPS = [
       T.challengesLaunched,
       T.challengeEndingSoon,
     ],
+  },
+  {
+    key: "announcements",
+    icon: "bullhorn",
+    types: [T.announcement],
   },
 ] as const satisfies readonly NotificationGroup[];
 

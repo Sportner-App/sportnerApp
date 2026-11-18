@@ -44,6 +44,10 @@
       "reminders": {
         "title": "Reminders",
         "description": "When your streak is at risk, your weekly goal is close, new events open in your sports, or challenges start and end. At most one a day."
+      },
+      "announcements": {
+        "title": "Announcements and offers",
+        "description": "News, event suggestions and offers from Sportner. You can turn this off anytime."
       }
     }
   },
@@ -120,7 +124,8 @@
     "46": "Reached #1 in your district",
     "47": "Monthly district crown",
     "48": "Your monthly recap is ready",
-    "49": "Your year in review is ready"
+    "49": "Your year in review is ready",
+    "50": "Announcements and offers"
   },
   "push": {
     "channelName": "Sportner Notifications",

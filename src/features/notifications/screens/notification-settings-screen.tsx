@@ -17,6 +17,7 @@ import {
   NOTIFICATION_GROUPS,
   type NotificationGroup,
 } from "@/features/notifications/settings-groups";
+import { NOTIFICATION_TYPE } from "@/features/notifications/types";
 import {
   getNotificationSettings,
   updateNotificationSettings,
@@ -43,6 +44,8 @@ export function NotificationSettingsScreen() {
         for (const type of ALL_GROUPED_TYPES) {
           next[type] = true;
         }
+        // Duyuru/kampanya açık izin gerektirir (Apple 4.5.4): satır yoksa kapalı.
+        next[NOTIFICATION_TYPE.announcement] = false;
         for (const setting of settings) {
           next[setting.notificationType] = setting.pushEnabled;
         }
@@ -81,7 +84,8 @@ export function NotificationSettingsScreen() {
       await updateNotificationSettings(
         group.types.map((type) => ({
           notificationType: type,
-          inAppEnabled: true,
+          // Duyuru izni kapatılınca uygulama içi bildirimi de kapanır; diğer gruplarda uygulama içi hep açık.
+          inAppEnabled: type === NOTIFICATION_TYPE.announcement ? enabled : true,
           pushEnabled: enabled,
           emailEnabled: false,
         })),
