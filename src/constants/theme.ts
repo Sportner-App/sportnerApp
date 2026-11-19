@@ -89,6 +89,9 @@ const SPORT_ACCENT_BY_SLUG: Record<string, SportAccentName> = {
   bowling: "bowling",
   golf: "golf",
   okculuk: "archery",
+
+  // E-spor
+  "e-spor": "esports",
 };
 
 export const palette = tokens.palette;

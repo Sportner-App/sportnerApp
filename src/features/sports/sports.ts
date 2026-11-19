@@ -91,6 +91,7 @@ const SPORT_ICON_BY_SLUG: Record<string, IconName> = {
   yelken: "sailboat",
   rugby: "football",
   kurek: "water",
+  "e-spor": "gamepad",
   diger: "shapes",
 };
 

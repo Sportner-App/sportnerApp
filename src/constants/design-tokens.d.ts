@@ -67,7 +67,9 @@ export type SportAccentName =
   // Hedef sporları
   | "bowling"
   | "golf"
-  | "archery";
+  | "archery"
+  // E-spor
+  | "esports";
 
 export type DesignTokens = {
   palette: {

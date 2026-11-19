@@ -233,6 +233,9 @@ const sports = {
   bowling: sportAccent("#be123c"),
   golf: sportAccent("#16a34a"),
   archery: sportAccent("#ca8a04"),
+
+  // E-spor
+  esports: sportAccent("#7c3aed"),
 };
 
 /**
