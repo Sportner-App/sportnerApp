@@ -16,6 +16,7 @@ export { DatePickerSheet } from "./date-picker-sheet";
 export { DirectionsSheet } from "./directions-sheet";
 export { EmptyState, ErrorState } from "./empty-state";
 export { Input } from "./input";
+export { InputFrame } from "./input-frame";
 export { LinearRefreshBar } from "./linear-refresh-bar";
 export { LoadMoreFooter } from "./load-more-footer";
 export { MapAttribution } from "./map-attribution";

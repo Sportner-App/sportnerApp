@@ -1,11 +1,12 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Pressable, View } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ActivityIndicator, Pressable, View, TextInput } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
   AppText as Text,
   AppTextInput,
+  InputFrame,
   Avatar,
   BottomSheet,
   Button,
@@ -39,6 +40,7 @@ export function ClubMemberPickerSheet({
   onConfirm,
 }: Props) {
   const { t } = useTranslation("eventCreate");
+  const searchInputRef = useRef<TextInput>(null);
   const [query, setQuery] = useState("");
   const [draftIds, setDraftIds] = useState<string[]>([]);
 
@@ -96,13 +98,17 @@ export function ClubMemberPickerSheet({
         />
       }
     >
-      <View className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-secondary px-4 py-3">
+      <InputFrame
+        inputRef={searchInputRef}
+        className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-secondary px-4 py-3"
+      >
         <FontAwesome6
           name="magnifying-glass"
           size={14}
           color={themeColors.text.tertiary}
         />
         <AppTextInput
+          ref={searchInputRef}
           value={query}
           onChangeText={setQuery}
           placeholder={t("companions.memberSearchPlaceholder")}
@@ -120,7 +126,7 @@ export function ClubMemberPickerSheet({
             />
           </Pressable>
         ) : null}
-      </View>
+      </InputFrame>
 
       {isFull ? (
         <Text className="mb-2 font-body text-caption text-text-tertiary">

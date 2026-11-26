@@ -1,13 +1,15 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Platform,
   Pressable,
   ScrollView,
   useWindowDimensions,
   View,
+  TextInput,
 } from "react-native";
 import { AppTextInput } from "@/components/app-text-input";
+import { InputFrame } from "@/components/input-frame";
 
 import { BottomSheet } from "@/components/bottom-sheet";
 import { HIT_SLOP, sportAccentToken, themeColors } from "@/constants/theme";
@@ -58,6 +60,7 @@ export function SelectSheet<T extends string>({
     searchPlaceholder ?? t("components:select.searchPlaceholder");
   const resolvedAllGroupLabel = allGroupLabel ?? t("common:all");
   const { width: windowWidth } = useWindowDimensions();
+  const searchInputRef = useRef<TextInput>(null);
   const [query, setQuery] = useState("");
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
 
@@ -101,13 +104,17 @@ export function SelectSheet<T extends string>({
       subtitle={subtitle}
     >
       {searchable ? (
-        <View className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-secondary px-4 py-3">
+        <InputFrame
+          inputRef={searchInputRef}
+          className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-secondary px-4 py-3"
+        >
           <FontAwesome6
             name="magnifying-glass"
             size={14}
             color={themeColors.text.tertiary}
           />
           <AppTextInput
+            ref={searchInputRef}
             value={query}
             onChangeText={setQuery}
             placeholder={resolvedSearchPlaceholder}
@@ -129,7 +136,7 @@ export function SelectSheet<T extends string>({
               />
             </Pressable>
           ) : null}
-        </View>
+        </InputFrame>
       ) : null}
 
       {groups && groups.length > 0 ? (

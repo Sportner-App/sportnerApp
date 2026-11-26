@@ -1,12 +1,13 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, Pressable, ScrollView, View } from "react-native";
+import { Platform, Pressable, ScrollView, View, TextInput } from "react-native";
 
 import {
   AppText as Text,
   AppTextInput,
+  InputFrame,
   Avatar,
   BottomSheet,
   ScreenLoader,
@@ -35,6 +36,7 @@ export function NewConversationSheet({
   const { t } = useTranslation(["messaging", "events"]);
   const [friends, setFriends] = useState<ApiFriend[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const searchInputRef = useRef<TextInput>(null);
   const [query, setQuery] = useState("");
   const [startingUserId, setStartingUserId] = useState<string | null>(null);
 
@@ -104,13 +106,17 @@ export function NewConversationSheet({
       title={t("messaging:compose.title")}
       subtitle={t("messaging:compose.subtitle")}
     >
-      <View className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-secondary px-4 py-3">
+      <InputFrame
+        inputRef={searchInputRef}
+        className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-secondary px-4 py-3"
+      >
         <FontAwesome6
           name="magnifying-glass"
           size={14}
           color={themeColors.text.tertiary}
         />
         <AppTextInput
+          ref={searchInputRef}
           value={query}
           onChangeText={setQuery}
           placeholder={t("messaging:compose.searchPlaceholder")}
@@ -132,7 +138,7 @@ export function NewConversationSheet({
             />
           </Pressable>
         ) : null}
-      </View>
+      </InputFrame>
 
       {isLoading ? (
         <ScreenLoader

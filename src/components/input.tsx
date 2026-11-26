@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useEffect, useState } from "react";
-import { Pressable, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Pressable, TextInput, View } from "react-native";
 import Animated, {
   interpolateColor,
   Keyframe,
@@ -14,6 +14,7 @@ import { themeColors } from "@/constants/theme";
 import type { InputProps } from "@/types/components";
 import { AppText as Text } from "@/components/app-text";
 import { AppTextInput } from "@/components/app-text-input";
+import { InputFrame } from "@/components/input-frame";
 
 const ERROR_COLOR = themeColors.warning;
 const FOCUS_COLOR = themeColors.brand.primary;
@@ -38,6 +39,7 @@ export function Input({
   onBlur,
   ...inputProps
 }: InputProps) {
+  const inputRef = useRef<TextInput>(null);
   const focusProgress = useSharedValue(0);
   const errorProgress = useSharedValue(0);
   const [isFocused, setIsFocused] = useState(false);
@@ -80,51 +82,61 @@ export function Input({
         </Text>
       )}
 
-      <Animated.View
-        style={containerStyle}
-        className={`flex-row items-center rounded-2xl border bg-surface-primary px-4 ${
-          size === "sm" ? "min-h-[44px] gap-2.5" : "min-h-[58px] gap-3"
-        }`}
+      <InputFrame
+        inputRef={inputRef}
+        disabled={disabled || inputProps.editable === false}
       >
-        {icon && (
-          <FontAwesome6
-            name={icon}
-            size={size === "sm" ? 14 : 16}
-            color={iconColor}
-          />
-        )}
-
-        <AppTextInput
-          {...inputProps}
-          editable={!disabled && inputProps.editable !== false}
-          secureTextEntry={isPassword && isHidden}
-          placeholderTextColor={IDLE_COLOR}
-          className="flex-1 font-body text-body text-text-primary"
-          onFocus={(event) => {
-            setIsFocused(true);
-            focusProgress.value = withTiming(1, { duration: ACCENT_DURATION });
-            onFocus?.(event);
-          }}
-          onBlur={(event) => {
-            setIsFocused(false);
-            focusProgress.value = withTiming(0, { duration: ACCENT_DURATION });
-            onBlur?.(event);
-          }}
-        />
-
-        {isPassword && (
-          <Pressable
-            hitSlop={10}
-            onPress={() => setIsHidden((value) => !value)}
-          >
+        <Animated.View
+          style={containerStyle}
+          className={`flex-row items-center rounded-2xl border bg-surface-primary px-4 ${
+            size === "sm" ? "min-h-[44px] gap-2.5" : "min-h-[58px] gap-3"
+          }`}
+        >
+          {icon && (
             <FontAwesome6
-              name={isHidden ? "eye-slash" : "eye"}
-              size={16}
+              name={icon}
+              size={size === "sm" ? 14 : 16}
               color={iconColor}
             />
-          </Pressable>
-        )}
-      </Animated.View>
+          )}
+
+          <AppTextInput
+            {...inputProps}
+            ref={inputRef}
+            editable={!disabled && inputProps.editable !== false}
+            secureTextEntry={isPassword && isHidden}
+            placeholderTextColor={IDLE_COLOR}
+            className="flex-1 font-body text-body text-text-primary"
+            onFocus={(event) => {
+              setIsFocused(true);
+              focusProgress.value = withTiming(1, {
+                duration: ACCENT_DURATION,
+              });
+              onFocus?.(event);
+            }}
+            onBlur={(event) => {
+              setIsFocused(false);
+              focusProgress.value = withTiming(0, {
+                duration: ACCENT_DURATION,
+              });
+              onBlur?.(event);
+            }}
+          />
+
+          {isPassword && (
+            <Pressable
+              hitSlop={10}
+              onPress={() => setIsHidden((value) => !value)}
+            >
+              <FontAwesome6
+                name={isHidden ? "eye-slash" : "eye"}
+                size={16}
+                color={iconColor}
+              />
+            </Pressable>
+          )}
+        </Animated.View>
+      </InputFrame>
 
       {hasError || helperText ? (
         <Animated.View layout={LinearTransition.duration(150)}>

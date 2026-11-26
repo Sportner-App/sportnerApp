@@ -6,6 +6,7 @@ import {
   Pressable,
   useWindowDimensions,
   View,
+  TextInput,
 } from "react-native";
 import Animated, { FadeIn, FadeInDown, FadeOut } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
@@ -13,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import {
   AppText as Text,
   AppTextInput,
+  InputFrame,
   MapPin,
   UserDot,
   MapUnavailable,
@@ -52,6 +54,7 @@ export function LocationPicker({
 }: LocationPickerProps) {
   const { t } = useTranslation("eventCreate");
   const { t: tLocation } = useTranslation("location");
+  const searchInputRef = useRef<TextInput>(null);
   const cameraRef = useRef<Mapbox.Camera>(null);
   const { width: screenWidth } = useWindowDimensions();
   const {
@@ -176,13 +179,17 @@ export function LocationPicker({
       <View className="overflow-hidden rounded-[28px] border border-border-default bg-surface-primary">
         {/* Arama */}
         <View className="z-20 border-b border-border-default px-3 py-3">
-          <View className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-secondary px-3.5 py-3">
+          <InputFrame
+            inputRef={searchInputRef}
+            className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-secondary px-3.5 py-3"
+          >
             <FontAwesome6
               name="magnifying-glass"
               size={14}
               color={themeColors.brand.primary}
             />
             <AppTextInput
+              ref={searchInputRef}
               value={query}
               onChangeText={setQuery}
               placeholder={t("location.searchPlaceholder")}
@@ -214,7 +221,7 @@ export function LocationPicker({
                 />
               </Pressable>
             ) : null}
-          </View>
+          </InputFrame>
 
           {suggestions.length > 0 && (
             <Animated.View

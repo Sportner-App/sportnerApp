@@ -1,13 +1,20 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  View,
+  TextInput,
+} from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
   AppText as Text,
   AppTextInput,
+  InputFrame,
   Avatar,
   brandRefreshControl,
   EmptyState,
@@ -201,6 +208,7 @@ function PeopleSearchHeader({
   onChangeText: (value: string) => void;
   onClear: () => void;
 }) {
+  const searchInputRef = useRef<TextInput>(null);
   const router = useRouter();
   const { t } = useTranslation("people");
 
@@ -220,13 +228,17 @@ function PeopleSearchHeader({
         />
       </Pressable>
 
-      <View className="h-11 flex-1 flex-row items-center gap-3 rounded-2xl bg-surface-secondary px-4">
+      <InputFrame
+        inputRef={searchInputRef}
+        className="h-11 flex-1 flex-row items-center gap-3 rounded-2xl bg-surface-secondary px-4"
+      >
         <FontAwesome6
           name="magnifying-glass"
           size={14}
           color={themeColors.text.secondary}
         />
         <AppTextInput
+          ref={searchInputRef}
           // Otomatik odak yok: kullanıcı bu ekrana listeye bakmaya geliyor,
           // açılışta klavyenin yarım ekranı kaplaması aramayı kolaylaştırmıyor.
           value={value}
@@ -255,7 +267,7 @@ function PeopleSearchHeader({
             />
           </Pressable>
         ) : null}
-      </View>
+      </InputFrame>
     </View>
   );
 }

@@ -1,13 +1,14 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Pressable, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Pressable, TextInput } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
   AppScreen,
   AppText as Text,
   AppTextInput,
+  InputFrame,
   brandRefreshControl,
   EmptyState,
   LinearRefreshBar,
@@ -75,6 +76,7 @@ export function OrganizationMembersScreen() {
     [],
   );
   const [tab, setTab] = useState<MembersTab>(initialTab);
+  const searchInputRef = useRef<TextInput>(null);
   const [query, setQuery] = useState("");
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
 
@@ -82,32 +84,35 @@ export function OrganizationMembersScreen() {
     setTab(initialTab);
   }, [initialTab]);
 
-  const load = useCallback(async (mode: LoadMode) => {
-    if (!organizationId) return;
+  const load = useCallback(
+    async (mode: LoadMode) => {
+      if (!organizationId) return;
 
-    try {
-      const detail = await getOrganization(organizationId);
-      setOrganization(detail);
+      try {
+        const detail = await getOrganization(organizationId);
+        setOrganization(detail);
 
-      const [memberItems, blockedItems] = await Promise.all([
-        listOrganizationMembers(organizationId),
-        detail.canManageMembers
-          ? listBlockedOrganizationMembers(organizationId)
-          : Promise.resolve([]),
-      ]);
+        const [memberItems, blockedItems] = await Promise.all([
+          listOrganizationMembers(organizationId),
+          detail.canManageMembers
+            ? listBlockedOrganizationMembers(organizationId)
+            : Promise.resolve([]),
+        ]);
 
-      setMembers(memberItems);
-      setBlockedMembers(blockedItems);
-    } catch (error) {
-      // Sessiz tazelemede hata dolu listeyi bozmaz, toast da çıkmaz.
-      if (mode === "silent") return;
-      showToast({
-        type: "error",
-        title: t("members.loadFailed"),
-        description: getApiErrorMessage(error),
-      });
-    }
-  }, [organizationId, showToast, t]);
+        setMembers(memberItems);
+        setBlockedMembers(blockedItems);
+      } catch (error) {
+        // Sessiz tazelemede hata dolu listeyi bozmaz, toast da çıkmaz.
+        if (mode === "silent") return;
+        showToast({
+          type: "error",
+          title: t("members.loadFailed"),
+          description: getApiErrorMessage(error),
+        });
+      }
+    },
+    [organizationId, showToast, t],
+  );
 
   const { isLoading, isRefreshing, refresh } = useRefreshableLoad(load, {
     trigger: "focus",
@@ -216,13 +221,17 @@ export function OrganizationMembersScreen() {
         <SegmentedTabs options={tabOptions} value={tab} onChange={setTab} />
       ) : null}
 
-      <View className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-secondary px-4 py-3">
+      <InputFrame
+        inputRef={searchInputRef}
+        className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-secondary px-4 py-3"
+      >
         <FontAwesome6
           name="magnifying-glass"
           size={14}
           color={themeColors.text.tertiary}
         />
         <AppTextInput
+          ref={searchInputRef}
           value={query}
           onChangeText={setQuery}
           placeholder={t("members.searchPlaceholder")}
@@ -240,7 +249,7 @@ export function OrganizationMembersScreen() {
             />
           </Pressable>
         ) : null}
-      </View>
+      </InputFrame>
 
       {isLoading ? (
         <ScreenLoader />

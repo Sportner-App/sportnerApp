@@ -1,11 +1,12 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import {
   Platform,
   Pressable,
   ScrollView,
   useWindowDimensions,
   View,
+  TextInput,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import {
   AppText as Text,
   AppTextInput,
+  InputFrame,
   BottomSheet,
   Button,
 } from "@/components";
@@ -104,6 +106,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
   const ONBOARDING_COPY = useOnboardingCopy();
   const copy = ONBOARDING_COPY.sports;
   const configCopy = ONBOARDING_COPY.configSheet;
+  const searchInputRef = useRef<TextInput>(null);
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
 
@@ -141,13 +144,17 @@ export function SportsPickerStep({ form }: { form: Form }) {
           {copy.subtitle}
         </Text>
 
-        <View className="mt-5 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-3">
+        <InputFrame
+          inputRef={searchInputRef}
+          className="mt-5 flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4 py-3"
+        >
           <FontAwesome6
             name="magnifying-glass"
             size={14}
             color={themeColors.icon.muted}
           />
           <AppTextInput
+            ref={searchInputRef}
             value={form.query}
             onChangeText={form.setQuery}
             placeholder={copy.searchPlaceholder}
@@ -169,7 +176,7 @@ export function SportsPickerStep({ form }: { form: Form }) {
               />
             </Pressable>
           ) : null}
-        </View>
+        </InputFrame>
         {form.isSearchTooShort ? (
           <Text className="mt-2 font-body text-caption text-text-tertiary">
             {copy.searchHint}

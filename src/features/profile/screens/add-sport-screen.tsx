@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Pressable, ScrollView, View, TextInput } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useTranslation } from "react-i18next";
 
@@ -8,6 +8,7 @@ import {
   AppScreen,
   AppText as Text,
   AppTextInput,
+  InputFrame,
   Button,
   ScreenHeader,
 } from "@/components";
@@ -31,6 +32,7 @@ export function AddSportScreen() {
   const { showToast } = useToast();
   const { profile, refresh } = useProfile();
   const ONBOARDING_SKILL_OPTIONS = useSkillLevelOptions();
+  const searchInputRef = useRef<TextInput>(null);
   const [query, setQuery] = useState("");
   const [sports, setSports] = useState<Sport[]>([]);
   const [selected, setSelected] = useState<
@@ -127,13 +129,17 @@ export function AddSportScreen() {
         </Text>
       </View>
 
-      <View className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4">
+      <InputFrame
+        inputRef={searchInputRef}
+        className="flex-row items-center gap-3 rounded-2xl border border-border-default bg-surface-primary px-4"
+      >
         <FontAwesome6
           name="magnifying-glass"
           size={13}
           color={themeColors.text.tertiary}
         />
         <AppTextInput
+          ref={searchInputRef}
           value={query}
           onChangeText={setQuery}
           placeholder={t("addSport.searchPlaceholder")}
@@ -149,7 +155,7 @@ export function AddSportScreen() {
             />
           </Pressable>
         ) : null}
-      </View>
+      </InputFrame>
 
       {selectedSports.length > 0 ? (
         <View className="gap-4 rounded-[22px] border border-brand-primary/30 bg-brand-primary/5 p-4">
