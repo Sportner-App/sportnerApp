@@ -13,6 +13,7 @@ import {
   EmptyState,
   ErrorState,
   LinearRefreshBar,
+  LoadMoreFooter,
   ScreenLoader,
 } from "@/components";
 import { HIT_SLOP, themeColors } from "@/constants/theme";
@@ -22,7 +23,7 @@ import { discoverUsers } from "@/features/social/services/users-service";
 import type { DiscoverUser } from "@/features/social/types";
 import { formatHandle } from "@/utils/person";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 30;
 const SEARCH_DEBOUNCE_MS = 350;
 
 /** Sunucu araması için: baştaki @ işaretleri kullanıcı adının parçası değil. */
@@ -71,9 +72,11 @@ export function PeopleScreen() {
     isLoading,
     isRefreshing,
     isLoadingMore,
+    loadMoreFailed,
     refresh,
     reload,
     loadMore,
+    retryLoadMore,
   } = usePaginatedList<DiscoverUser, number>(fetchPage, {
     getKey: (person) => person.userId,
     onError: (reason, mode) =>
@@ -173,20 +176,13 @@ export function PeopleScreen() {
             />
           )}
           onEndReached={loadMore}
-          onEndReachedThreshold={0.35}
+          onEndReachedThreshold={1.5}
           ListFooterComponent={
-            isLoadingMore ? (
-              <ScreenLoader label={t("people:loadingMore")} variant="more" />
-            ) : error ? (
-              <Pressable
-                onPress={loadMore}
-                className="items-center py-5 active:opacity-70"
-              >
-                <Text className="font-body text-caption text-text-secondary">
-                  {t("people:loadMoreRetry", { error })}
-                </Text>
-              </Pressable>
-            ) : null
+            <LoadMoreFooter
+              isLoading={isLoadingMore}
+              failed={loadMoreFailed}
+              onRetry={retryLoadMore}
+            />
           }
         />
       )}

@@ -8,6 +8,7 @@ import {
   AppText as Text,
   brandRefreshControl,
   LinearRefreshBar,
+  LoadMoreFooter,
   ScreenHeader,
   ScreenLoader,
 } from "@/components";
@@ -42,15 +43,21 @@ export function NotificationsScreen() {
     isLoading,
     isRefreshing,
     isLoadingMore,
+    loadMoreFailed,
     refresh,
     loadMore,
+    retryLoadMore,
   } = usePaginatedList<ApiNotification, string>(fetchPage, {
-    onError: (error) =>
+    getKey: (item) => item.id,
+    // Sayfa hatasını alttaki footer gösterir; toast yalnızca ilk yükleme/yenilemede.
+    onError: (error, mode) => {
+      if (mode === "more") return;
       showToast({
         type: "error",
         title: t("notifications:loadFailed"),
         description: getApiErrorMessage(error),
-      }),
+      });
+    },
   });
 
   const open = async (item: ApiNotification) => {
@@ -130,9 +137,11 @@ export function NotificationsScreen() {
         ))
       )}
 
-      {isLoadingMore ? (
-        <ScreenLoader label={t("notifications:loading")} variant="more" />
-      ) : null}
+      <LoadMoreFooter
+        isLoading={isLoadingMore}
+        failed={loadMoreFailed && items.length > 0}
+        onRetry={retryLoadMore}
+      />
     </AppScreen>
   );
 }

@@ -5,7 +5,14 @@ import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
-import { AppText as Text, ScreenLoader, SegmentedTabs } from "@/components";
+import {
+  AppText as Text,
+  ErrorState,
+  LoadMoreFooter,
+  ScreenLoader,
+  SegmentedTabs,
+  SkeletonCard,
+} from "@/components";
 import { TabPage } from "@/features/app-shell/components/tab-page";
 import {
   TabListItem,
@@ -60,12 +67,16 @@ export function HomeScreen() {
     isLoading,
     isRefreshing,
     isLoadingMore,
+    loadMoreFailed,
     scope,
     setScope,
     filters,
     applyFilters,
     refresh,
     loadMore,
+    retryLoadMore,
+    reload,
+    error,
   } = useEvents(initialScope, userLocation);
 
   const isFriends = scope === "friends";
@@ -182,6 +193,10 @@ export function HomeScreen() {
                 className="flex-1 items-center justify-center"
                 size={148}
               />
+            ) : error && events.length === 0 ? (
+              <View className="flex-1 justify-center px-5">
+                <ErrorState message={error} onRetry={reload} />
+              </View>
             ) : (
               <EventsMap
                 events={events}
@@ -288,6 +303,8 @@ export function HomeScreen() {
             className="items-center py-3xl"
             size={148}
           />
+        ) : error ? (
+          <ErrorState message={error} onRetry={reload} />
         ) : (
           <View className="items-center gap-sm rounded-xlarge border border-border-default bg-surface-primary px-xl py-3xl">
             <FontAwesome6
@@ -302,9 +319,16 @@ export function HomeScreen() {
         )
       }
       footer={
-        isLoadingMore ? (
-          <ScreenLoader label={t("loadingEvents")} variant="more" />
-        ) : null
+        <LoadMoreFooter
+          isLoading={isLoadingMore}
+          failed={loadMoreFailed && events.length > 0}
+          onRetry={retryLoadMore}
+        >
+          <View style={{ paddingTop: 16, gap: 16 }}>
+            <SkeletonCard />
+            <SkeletonCard />
+          </View>
+        </LoadMoreFooter>
       }
     >
       {filterSheet}

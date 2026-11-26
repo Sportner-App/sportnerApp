@@ -17,7 +17,10 @@ import {
 } from "@/components";
 import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { useSession, useToast } from "@/contexts";
-import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
+import {
+  useRefreshableLoad,
+  type LoadMode,
+} from "@/hooks/use-refreshable-load";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
   approveOrganizationMember,
@@ -79,7 +82,7 @@ export function OrganizationMembersScreen() {
     setTab(initialTab);
   }, [initialTab]);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (mode: LoadMode) => {
     if (!organizationId) return;
 
     try {
@@ -96,6 +99,8 @@ export function OrganizationMembersScreen() {
       setMembers(memberItems);
       setBlockedMembers(blockedItems);
     } catch (error) {
+      // Sessiz tazelemede hata dolu listeyi bozmaz, toast da çıkmaz.
+      if (mode === "silent") return;
       showToast({
         type: "error",
         title: t("members.loadFailed"),
@@ -106,6 +111,8 @@ export function OrganizationMembersScreen() {
 
   const { isLoading, isRefreshing, refresh } = useRefreshableLoad(load, {
     trigger: "focus",
+    refocusMode: "silent",
+    resetKey: organizationId,
   });
 
   const runMemberAction = async (

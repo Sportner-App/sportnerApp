@@ -10,6 +10,7 @@
   "all": "All",
   "clear": "Clear",
   "apply": "Apply",
+  "loadMoreRetry": "Couldn't load more. Tap to try again.",
   "loading": "Loading",
   "notFound": {
     "title": "Page not found",

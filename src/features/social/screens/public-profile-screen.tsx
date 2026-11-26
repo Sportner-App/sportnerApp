@@ -8,6 +8,7 @@ import {
   AppText as Text,
   BottomSheet,
   Button,
+  LoadMoreFooter,
   ScreenHeader,
   ScreenLoader,
 } from "@/components";
@@ -18,14 +19,12 @@ import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { ProfileTabs } from "@/features/profile/components/profile-tabs";
 import { ProfileHero } from "@/features/profile/components/profile-hero";
 import {
-  PostsGridLoadingMore,
   PostsGridPlaceholder,
   PostsGridRowView,
   useUserPosts,
   type PostsGridRow,
 } from "@/features/profile/components/posts-grid";
 import {
-  TabListItem,
   TabListPage,
 } from "@/features/app-shell/components/tab-list-page";
 import { ReviewsSection } from "@/features/profile/components/reviews-section";
@@ -135,9 +134,8 @@ export function PublicProfileScreen() {
   const lastRowKey = posts.rows[posts.rows.length - 1]?.key;
   const renderRow = useCallback(
     ({ item }: { item: PostsGridRow }) => (
-      <TabListItem>
-        <PostsGridRowView row={item} isLast={item.key === lastRowKey} />
-      </TabListItem>
+      // Izgara kenardan kenara; sayfanın yatay boşluğu uygulanmaz.
+      <PostsGridRowView row={item} isLast={item.key === lastRowKey} />
     ),
     [lastRowKey],
   );
@@ -340,7 +338,8 @@ export function PublicProfileScreen() {
       keyExtractor={(row) => row.key}
       renderItem={renderRow}
       itemGap={0}
-      listTopGap={12}
+      // ProfileTabs -mb-2 ile 8 pt yukarı çekiyor; 8 bunu sıfırlar, ızgara sekme çizgisine yapışır.
+      listTopGap={8}
       onEndReached={showPosts ? posts.loadMore : undefined}
       empty={
         showPosts ? (
@@ -352,7 +351,13 @@ export function PublicProfileScreen() {
         ) : null
       }
       footer={
-        showPosts && posts.isLoadingMore ? <PostsGridLoadingMore /> : null
+        showPosts ? (
+          <LoadMoreFooter
+            isLoading={posts.isLoadingMore}
+            failed={posts.loadMoreFailed}
+            onRetry={posts.retryLoadMore}
+          />
+        ) : null
       }
       screenHeader={
         <ScreenHeader

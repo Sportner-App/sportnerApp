@@ -1,7 +1,7 @@
-import { useCallback, useDeferredValue, useState } from "react";
+import { useCallback, useDeferredValue, useRef, useState } from "react";
 
 import i18n from "@/i18n";
-import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
+import { useRefreshableLoad, type LoadMode } from "@/hooks/use-refreshable-load";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
   getMyOrganizedEvents,
@@ -18,6 +18,8 @@ import {
 export type ActivityTab = "upcoming" | "past" | "pending" | "organized";
 
 const PAGE_SIZE = 20;
+/** Odak tazelemesinde bir liste için yeniden alınabilecek en çok sayfa (100 kayıt). */
+const MAX_SILENT_PAGES = 5;
 
 type ListState = {
   items: EventSummary[];
@@ -80,14 +82,27 @@ export function useActivity(initialTab: ActivityTab = "upcoming") {
   const [organized, setOrganized] = useState<ListState>(EMPTY);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Hata, hangi sekmenin sayfasında olduysa onunla birlikte tutulur; başka
+  // sekmede failed göstermesin.
+  const [failedTab, setFailedTab] = useState<ActivityTab | null>(null);
 
-  const load = useCallback(async () => {
+  // Yüklenmiş sayfa sayıları (silent tazeleme listeyi kısaltmasın diye).
+  // Ref'ten okunur: `load` sabit kalmalı, yoksa odakta yeniden tetiklenir.
+  const pagesRef = useRef({ live: 1, history: 1, hosted: 1 });
+
+  const load = useCallback(async (mode: LoadMode = "initial") => {
     try {
       setError(null);
+      const silent = mode === "silent";
+      const pageCount = (loaded: number) =>
+        silent ? Math.min(Math.max(loaded, 1), MAX_SILENT_PAGES) : 1;
+      const liveCount = pageCount(pagesRef.current.live);
+      const historyCount = pageCount(pagesRef.current.history);
+      const hostedCount = pageCount(pagesRef.current.hosted);
       const [live, history, hosted] = await Promise.all([
-        getMyParticipatingEvents(1, PAGE_SIZE, "upcoming"),
-        getMyParticipatingEvents(1, PAGE_SIZE, "past"),
-        getMyOrganizedEvents(1, PAGE_SIZE),
+        getMyParticipatingEvents(1, liveCount * PAGE_SIZE, "upcoming"),
+        getMyParticipatingEvents(1, historyCount * PAGE_SIZE, "past"),
+        getMyOrganizedEvents(1, hostedCount * PAGE_SIZE),
       ]);
 
       // Backend scope'ları tarih bazlı daraltabilse de gerçek sekme kararı etkinliğin
@@ -119,23 +134,24 @@ export function useActivity(initialTab: ActivityTab = "upcoming") {
 
       setUpcoming({
         items: upcomingItems,
-        page: live.page,
+        page: liveCount,
         hasNext: live.hasNext,
         totalCount: upcomingItems.length,
       });
       setPending({
         items: pendingItems,
-        page: live.page,
+        page: liveCount,
         hasNext: live.hasNext,
         totalCount: pendingItems.length,
       });
       setPast({
         items: pastItems,
-        page: history.page,
+        page: historyCount,
         hasNext: history.hasNext,
         totalCount: pastItems.length,
       });
-      setOrganized(hosted);
+      setOrganized({ ...hosted, page: hostedCount });
+      setFailedTab(null);
     } catch (err) {
       setError(getApiErrorMessage(err, i18n.t("activity:errors.loadFailed")));
     }
@@ -162,12 +178,19 @@ export function useActivity(initialTab: ActivityTab = "upcoming") {
           ? pending
           : organized;
 
-  const loadMore = useCallback(async () => {
+  pagesRef.current = {
+    live: Math.max(upcoming.page, pending.page),
+    history: past.page,
+    hosted: organized.page,
+  };
+
+  const fetchMore = useCallback(async () => {
     if (!current.hasNext || isLoadingMore) {
       return;
     }
 
     setIsLoadingMore(true);
+    setFailedTab(null);
     try {
       const nextPage = current.page + 1;
       const result =
@@ -229,6 +252,7 @@ export function useActivity(initialTab: ActivityTab = "upcoming") {
         };
       });
     } catch (err) {
+      setFailedTab(listTab);
       setError(
         getApiErrorMessage(err, i18n.t("activity:errors.loadMoreFailed")),
       );
@@ -236,6 +260,18 @@ export function useActivity(initialTab: ActivityTab = "upcoming") {
       setIsLoadingMore(false);
     }
   }, [current.hasNext, current.page, isLoadingMore, listTab]);
+
+  // Kaydırmayla çağrılan; hata varken sessiz kalır (footer dener).
+  const loadMore = useCallback(() => {
+    if (failedTab === listTab) {
+      return;
+    }
+    void fetchMore();
+  }, [failedTab, fetchMore, listTab]);
+
+  const retryLoadMore = useCallback(() => {
+    void fetchMore();
+  }, [fetchMore]);
 
   return {
     tab,
@@ -253,8 +289,10 @@ export function useActivity(initialTab: ActivityTab = "upcoming") {
     isLoading,
     isRefreshing,
     isLoadingMore,
+    loadMoreFailed: failedTab === listTab,
     error,
     refresh,
     loadMore,
+    retryLoadMore,
   };
 }

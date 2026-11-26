@@ -2,9 +2,8 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { ErrorState, ScreenLoader } from "@/components";
+import { ErrorState, LoadMoreFooter, ScreenLoader } from "@/components";
 import {
-  TabListItem,
   TabListPage,
 } from "@/features/app-shell/components/tab-list-page";
 import { ChallengeMedals } from "@/features/challenges/components/challenge-medals";
@@ -13,7 +12,6 @@ import type { ApiReview } from "@/features/events/types";
 import { DistrictCrowns } from "@/features/leaderboards/components/district-crowns";
 import { OrganizationsSection } from "@/features/organizations/components/organizations-section";
 import {
-  PostsGridLoadingMore,
   PostsGridPlaceholder,
   PostsGridRowView,
   useUserPosts,
@@ -60,9 +58,8 @@ export function ProfileScreen() {
   const lastRowKey = posts.rows[posts.rows.length - 1]?.key;
   const renderRow = useCallback(
     ({ item }: { item: PostsGridRow }) => (
-      <TabListItem>
-        <PostsGridRowView row={item} isLast={item.key === lastRowKey} />
-      </TabListItem>
+      // Izgara kenardan kenara; sayfanın yatay boşluğu uygulanmaz.
+      <PostsGridRowView row={item} isLast={item.key === lastRowKey} />
     ),
     [lastRowKey],
   );
@@ -86,7 +83,8 @@ export function ProfileScreen() {
       keyExtractor={(row) => row.key}
       renderItem={renderRow}
       itemGap={0}
-      listTopGap={12}
+      // ProfileTabs -mb-2 ile 8 pt yukarı çekiyor; 8 bunu sıfırlar, ızgara sekme çizgisine yapışır.
+      listTopGap={8}
       onEndReached={showPosts ? posts.loadMore : undefined}
       empty={
         showPosts ? (
@@ -98,7 +96,13 @@ export function ProfileScreen() {
         ) : null
       }
       footer={
-        showPosts && posts.isLoadingMore ? <PostsGridLoadingMore /> : null
+        showPosts ? (
+          <LoadMoreFooter
+            isLoading={posts.isLoadingMore}
+            failed={posts.loadMoreFailed}
+            onRetry={posts.retryLoadMore}
+          />
+        ) : null
       }
       refreshing={isRefreshing}
       onRefresh={refresh}

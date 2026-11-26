@@ -46,7 +46,6 @@ export function useActivityCopy(counts: Record<ActivityTab, number>) {
     title: t("title"),
     subtitle: t("subtitle"),
     loading: t("loading"),
-    loadingMore: t("loadingMore"),
     eventCount: (count: number) => t("eventCount", { count }),
     tabs,
     emptyCopy,

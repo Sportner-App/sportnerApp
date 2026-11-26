@@ -247,7 +247,7 @@ export type AppScreenProps = PropsWithChildren<{
   tone?: UiTone;
   /** Scroll listenin sonuna yaklaşılınca (sayfalama) tetiklenir. */
   onEndReached?: () => void;
-  /** `onEndReached`'ın kaç piksel önce tetikleneceği (varsayılan 240). */
+  /** `onEndReached`'ın kaç piksel önce tetikleneceği (varsayılan 1200: yaklaşık iki ekran boyu, sonraki sayfa dibe varmadan istenir). */
   onEndReachedThreshold?: number;
   /** Scroll'u dışarıdan sürmek için (ör. sohbette en alta inmek). */
   scrollRef?: RefObject<ScrollView | null>;

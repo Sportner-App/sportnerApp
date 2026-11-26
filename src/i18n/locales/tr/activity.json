@@ -2,7 +2,6 @@
   "title": "Etkinliklerim",
   "subtitle": "Devam edenler, geçmiştekiler ve düzenlediklerin.",
   "loading": "Etkinlikler yükleniyor",
-  "loadingMore": "Etkinlikler yükleniyor",
   "eventCount": "{{count}} etkinlik",
   "tabs": {
     "upcoming": "Aktif",

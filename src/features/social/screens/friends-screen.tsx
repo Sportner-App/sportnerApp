@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
@@ -16,7 +16,10 @@ import {
   UserIdentity,
 } from "@/components";
 import { useSession, useToast } from "@/contexts";
-import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
+import {
+  useRefreshableLoad,
+  type LoadMode,
+} from "@/hooks/use-refreshable-load";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
   acceptFriendRequest,
@@ -45,17 +48,24 @@ export function FriendsScreen() {
   const [suggestions, setSuggestions] = useState<ApiFriendSuggestion[]>([]);
   const [removingId, setRemovingId] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
+  // Uçuştaki tazeleme, sonradan silinen arkadaşı geri getirmesin.
+  const requestIdRef = useRef(0);
+
+  const load = useCallback(async (mode: LoadMode) => {
+    const requestId = ++requestIdRef.current;
     try {
       const [friendPage, incoming, suggested] = await Promise.all([
         listFriends(),
         listPendingRequests(false),
         listFriendSuggestions(),
       ]);
+      if (requestId !== requestIdRef.current) return;
       setFriends(friendPage?.items ?? []);
       setRequests(incoming);
       setSuggestions(suggested);
     } catch (error) {
+      // Sessiz tazelemede hata eldeki listeyi bozmaz, toast da çıkmaz.
+      if (mode === "silent" || requestId !== requestIdRef.current) return;
       showToast({
         type: "error",
         title: t("toasts.loadFailedTitle"),
@@ -66,12 +76,14 @@ export function FriendsScreen() {
 
   const { isLoading, isRefreshing, refresh } = useRefreshableLoad(load, {
     trigger: "focus",
+    refocusMode: "silent",
   });
 
   const handleRemove = async (friendshipId: string) => {
     setRemovingId(friendshipId);
     try {
       await removeFriendship(friendshipId);
+      requestIdRef.current += 1;
       setFriends((current) =>
         current.filter((item) => item.friendshipId !== friendshipId),
       );

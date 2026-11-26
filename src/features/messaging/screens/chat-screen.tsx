@@ -243,6 +243,10 @@ export function EventChatScreen({
             }
           },
         );
+        // Bağlantı kurulurken ekrandan çıkıldıysa temizlik onu göremedi.
+        if (disposed) {
+          void connection?.stop();
+        }
       } catch (error) {
         showToast({
           type: "error",

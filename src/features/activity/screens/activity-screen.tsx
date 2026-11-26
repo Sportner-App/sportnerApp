@@ -6,8 +6,10 @@ import {
   AppText as Text,
   EmptyState,
   ErrorState,
+  LoadMoreFooter,
   ScreenLoader,
   SegmentedTabs,
+  SkeletonCard,
 } from "@/components";
 import {
   TabListItem,
@@ -46,9 +48,11 @@ export function ActivityScreen() {
     isLoading,
     isRefreshing,
     isLoadingMore,
+    loadMoreFailed,
     error,
     refresh,
     loadMore,
+    retryLoadMore,
   } = useActivity(initialTab);
   const copy = useActivityCopy(tabCounts);
   // Boş durum metni listeyle aynı (ertelenmiş) sekmeden gelsin.
@@ -118,9 +122,16 @@ export function ActivityScreen() {
         )
       }
       footer={
-        isLoadingMore ? (
-          <ScreenLoader label={copy.loadingMore} variant="more" />
-        ) : null
+        <LoadMoreFooter
+          isLoading={isLoadingMore}
+          failed={loadMoreFailed && events.length > 0}
+          onRetry={retryLoadMore}
+        >
+          <View style={{ paddingTop: 12, gap: 12 }}>
+            <SkeletonCard />
+            <SkeletonCard />
+          </View>
+        </LoadMoreFooter>
       }
     />
   );

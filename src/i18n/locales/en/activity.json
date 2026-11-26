@@ -2,7 +2,6 @@
   "title": "My events",
   "subtitle": "Ongoing, past, and events you organize.",
   "loading": "Loading events",
-  "loadingMore": "Loading events",
   "eventCount": "{{count}} events",
   "tabs": {
     "upcoming": "Active",

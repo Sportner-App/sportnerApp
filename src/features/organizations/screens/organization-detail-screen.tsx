@@ -18,8 +18,11 @@ import {
 } from "@/components";
 import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { useToast } from "@/contexts";
-import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
-import { getApiErrorMessage } from "@/lib/api/errors";
+import {
+  useRefreshableLoad,
+  type LoadMode,
+} from "@/hooks/use-refreshable-load";
+import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import {
   deleteOrganization,
   getOrganization,
@@ -52,6 +55,8 @@ import { OrganizationMemberActions } from "@/features/organizations/components/o
 import { OrganizationMenuSheet } from "@/features/organizations/components/organization-menu-sheet";
 
 const PAST_PAGE_SIZE = 10;
+/** Sessiz tazelemede en fazla bu kadar sayfa birden istenir (API üst sınırı 50). */
+const MAX_SILENT_PAST_PAGES = 5;
 
 export function OrganizationDetailScreen() {
   const { t } = useTranslation(["organizations", "common"]);
@@ -73,12 +78,20 @@ export function OrganizationDetailScreen() {
   const isDeletingRef = useRef(false);
   // Her `load` sıfırlamasında artar; uçuştaki "daha fazla" isteğini geçersiz kılar.
   const pastGenerationRef = useRef(0);
+  // Eski yanıt (başka kulüp ya da işlem öncesi) yenisini ezmesin.
+  const requestIdRef = useRef(0);
+  const pastPageRef = useRef(pastPage);
+  pastPageRef.current = pastPage;
   const { isAuthenticated, requireAuth } = useRequireAuth();
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (mode: LoadMode) => {
+    const silent = mode === "silent";
+    const requestId = ++requestIdRef.current;
+    const isStale = () => requestId !== requestIdRef.current;
     if (!organizationId) return;
     try {
       const detail = await getOrganization(organizationId);
+      if (isStale()) return;
       setOrganization(detail);
 
       const isMember = detail.myStatus === ORGANIZATION_STATUS.approved;
@@ -89,33 +102,43 @@ export function OrganizationDetailScreen() {
         try {
           const organizationEvents =
             await listOrganizationEvents(organizationId);
+          if (isStale()) return;
           setEvents(organizationEvents.map(mapListItemToSummary));
         } catch (error) {
-          setEvents([]);
-          showToast({
-            type: "error",
-            title: t("organizations:detail.eventsLoadFailed"),
-            description: getApiErrorMessage(error),
-          });
+          if (!silent && !isStale()) {
+            setEvents([]);
+            showToast({
+              type: "error",
+              title: t("organizations:detail.eventsLoadFailed"),
+              description: getApiErrorMessage(error),
+            });
+          }
         }
 
+        if (isStale()) return;
         // Geçmiş etkinlikler yardımcı bir bölüm: yüklenemezse sessizce gizlenir.
         pastGenerationRef.current += 1;
         const generation = pastGenerationRef.current;
+        // Sessiz tazelemede yüklü sayfa kadarı tek istekle yeniden çekilir.
+        const pages = silent
+          ? Math.min(pastPageRef.current, MAX_SILENT_PAST_PAGES)
+          : 1;
         try {
           const past = await listPastOrganizationEvents(
             organizationId,
             1,
-            PAST_PAGE_SIZE,
+            pages * PAST_PAGE_SIZE,
           );
           if (generation === pastGenerationRef.current) {
             setPastEvents(past.map(mapListItemToSummary));
-            setPastPage(1);
-            setPastHasMore(past.length >= PAST_PAGE_SIZE);
+            setPastPage(pages);
+            setPastHasMore(past.length >= pages * PAST_PAGE_SIZE);
           }
         } catch {
-          setPastEvents([]);
-          setPastHasMore(false);
+          if (!silent && !isStale()) {
+            setPastEvents([]);
+            setPastHasMore(false);
+          }
         }
       } else {
         pastGenerationRef.current += 1;
@@ -126,19 +149,27 @@ export function OrganizationDetailScreen() {
 
       if (isMember) {
         try {
-          setMembers(await listOrganizationMembers(organizationId));
+          const memberItems = await listOrganizationMembers(organizationId);
+          if (isStale()) return;
+          setMembers(memberItems);
         } catch (error) {
-          setMembers([]);
-          showToast({
-            type: "error",
-            title: t("organizations:detail.membersLoadFailed"),
-            description: getApiErrorMessage(error),
-          });
+          if (!silent && !isStale()) {
+            setMembers([]);
+            showToast({
+              type: "error",
+              title: t("organizations:detail.membersLoadFailed"),
+              description: getApiErrorMessage(error),
+            });
+          }
         }
       } else {
         setMembers([]);
       }
     } catch (error) {
+      const gone =
+        isApiError(error) && (error.status === 404 || error.status === 403);
+      // Sessiz tazelemede geçici hata eldeki kulübü silmesin.
+      if (isStale() || (silent && !gone)) return;
       showToast({
         type: "error",
         title: t("organizations:detail.loadFailed"),
@@ -150,6 +181,7 @@ export function OrganizationDetailScreen() {
 
   const { isLoading, isRefreshing, refresh } = useRefreshableLoad(load, {
     trigger: "focus",
+    refocusMode: "silent",
     resetKey: organizationId,
   });
 

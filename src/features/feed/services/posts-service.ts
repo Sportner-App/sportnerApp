@@ -4,9 +4,21 @@ import type { CursorPagedResult } from "@/types/api";
 import type { ApiComment, ApiPost } from "@/features/feed/types";
 import type { PickedMedia } from "@/utils/media-picker";
 
-export async function explorePosts(limit = 36, friendsOnly = false) {
+/**
+ * Keşfet akışı. `before`: son görülen gönderinin id'si (sıralama createdAt
+ * desc, id desc). Devamı var mı: dönen sayı `limit`'e eşit mi. API üst sınırı 50.
+ */
+export async function explorePosts({
+  limit = 12,
+  friendsOnly = false,
+  before,
+}: {
+  limit?: number;
+  friendsOnly?: boolean;
+  before?: string;
+} = {}) {
   const response = await apiClient.get<ApiPost[]>("/api/explore/posts", {
-    params: { limit, friendsOnly: friendsOnly || undefined },
+    params: { limit, friendsOnly: friendsOnly || undefined, before },
   });
   return (response.data ?? []).map(normalizePost);
 }
@@ -33,10 +45,15 @@ export async function listEventPosts(eventId: string, before?: string) {
   return toCursorPage(response.data, normalizePost);
 }
 
-export async function listUserPosts(userId: string, before?: string) {
+/** `limit`: API üst sınırı 50 (üstü sessizce 20'ye düşer), asla aşma. */
+export async function listUserPosts(
+  userId: string,
+  before?: string,
+  limit = 30,
+) {
   const response = await apiClient.get<CursorPagedResult<ApiPost>>(
     `/api/users/${userId}/posts`,
-    { params: { before, limit: 21 } },
+    { params: { before, limit } },
   );
   return toCursorPage(response.data, normalizePost);
 }

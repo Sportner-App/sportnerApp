@@ -1,9 +1,12 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useSession, useToast } from "@/contexts";
-import { getApiErrorMessage } from "@/lib/api/errors";
-import { useRefreshableLoad } from "@/hooks/use-refreshable-load";
+import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
+import {
+  useRefreshableLoad,
+  type LoadMode,
+} from "@/hooks/use-refreshable-load";
 import { getEventById } from "@/features/events/services/events-service";
 import { FALLBACK_EVENT_DURATION_MINUTES } from "@/features/events/copy";
 import {
@@ -75,24 +78,38 @@ export function useEventDetail(id: string | undefined) {
     null,
   );
 
-  const load = useCallback(async () => {
-    if (!id) {
-      return;
-    }
+  /** Eski yanıt (başka id ya da mutasyon öncesi) yenisini ezmesin. */
+  const requestIdRef = useRef(0);
 
-    try {
-      setError(null);
-      setEvent(await getEventById(id));
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : t("toast.detailLoadFailed"),
-      );
-      setEvent(null);
-    }
-  }, [id, t]);
+  const load = useCallback(
+    async (mode: LoadMode) => {
+      if (!id) {
+        return;
+      }
+
+      const requestId = ++requestIdRef.current;
+      try {
+        const next = await getEventById(id);
+        if (requestId !== requestIdRef.current) return;
+        setError(null);
+        setEvent(next);
+      } catch (err) {
+        if (requestId !== requestIdRef.current) return;
+        const gone = isApiError(err) && (err.status === 404 || err.status === 403);
+        // Sessiz tazelemede geçici hata eldeki etkinliği silmesin.
+        if (mode === "silent" && !gone) return;
+        setError(
+          err instanceof Error ? err.message : t("toast.detailLoadFailed"),
+        );
+        setEvent(null);
+      }
+    },
+    [id, t],
+  );
 
   const { isLoading, isRefreshing, refresh } = useRefreshableLoad(load, {
     trigger: "focus",
+    refocusMode: "silent",
     resetKey: id,
   });
 
@@ -404,6 +421,7 @@ export function useEventDetail(id: string | undefined) {
       }
       // Yanıt katılımcı/bekleme listesi taşımıyor; mevcut listeler korunur,
       // ardından sunucudaki güncel kadro sessizce yeniden çekilir.
+      requestIdRef.current++; // uçuştaki eski tazeleme bunu ezmesin
       setEvent((current) =>
         current
           ? {

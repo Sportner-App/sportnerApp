@@ -40,7 +40,7 @@ export function AppScreen({
   headerOverlay = false,
   tone = "dark",
   onEndReached,
-  onEndReachedThreshold = 240,
+  onEndReachedThreshold = 1200,
   scrollRef,
   onContentSizeChange,
 }: AppScreenProps) {

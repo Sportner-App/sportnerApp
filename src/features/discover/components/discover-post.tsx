@@ -1,18 +1,17 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Pressable, useWindowDimensions, View } from "react-native";
 import { ScrollView as GestureScrollView } from "react-native-gesture-handler";
 
 import { AppText as Text, Avatar } from "@/components";
-import { CommentsSheet } from "@/features/feed/components/comments-sheet";
 import { MentionText } from "@/features/feed/components/mention-text";
 import { useSession, useToast } from "@/contexts";
 import { HIT_SLOP, themeColors } from "@/constants/theme";
 import { getApiErrorMessage, isApiError } from "@/lib/api/errors";
 import { sendFriendRequest } from "@/features/social/services/social-service";
-import type { ApiComment, ApiPost } from "@/features/feed/types";
+import type { ApiPost } from "@/features/feed/types";
 import { POST_MEDIA_TYPE } from "@/features/feed/types";
 import { lightImpact } from "@/utils/haptics";
 import { resolveMediaUrl } from "@/utils/media-url";
@@ -22,27 +21,24 @@ import { displayHandle } from "@/utils/person";
 
 type DiscoverPostProps = {
   post: ApiPost;
-  onLike: () => Promise<void>;
-  onComment: (
-    content: string,
-    mentionedUserIds: string[],
-  ) => Promise<ApiComment>;
-  onReply: (
-    parent: ApiComment,
-    content: string,
-    mentionedUserIds: string[],
-  ) => Promise<ApiComment>;
-  onAuthorPress: () => void;
+  /** Aşağıdaki handler'lar post alan, kimliği sabit fonksiyonlar olmalı (memo). */
+  onLike: (post: ApiPost) => Promise<void>;
+  onOpenComments: (post: ApiPost) => void;
+  onAuthorPress: (post: ApiPost) => void;
+  onFriendRequested: (userId: string) => void;
   isFriend: boolean;
+  /** İstek gönderildi durumu üstte tutulur: kart geri dönüşümünde kaybolmaz. */
+  friendRequestSent: boolean;
 };
 
-export function DiscoverPost({
+function DiscoverPostComponent({
   post,
   onLike,
-  onComment,
-  onReply,
+  onOpenComments,
   onAuthorPress,
+  onFriendRequested,
   isFriend,
+  friendRequestSent,
 }: DiscoverPostProps) {
   const router = useRouter();
   const { width } = useWindowDimensions();
@@ -51,12 +47,17 @@ export function DiscoverPost({
   const { showToast } = useToast();
   const { t } = useTranslation(["social", "events", "common"]);
   const lastTap = useRef(0);
+  const heartTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [page, setPage] = useState(0);
-  const [commentsOpen, setCommentsOpen] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [heartBurst, setHeartBurst] = useState(false);
-  const [friendRequestSent, setFriendRequestSent] = useState(false);
   const [isAddingFriend, setIsAddingFriend] = useState(false);
+  useEffect(
+    () => () => {
+      if (heartTimeout.current) clearTimeout(heartTimeout.current);
+    },
+    [],
+  );
   const { user } = useSession();
   const isOwnPost = user?.id === post.userId;
   const canAddFriend = Boolean(user) && !isOwnPost && !isFriend;
@@ -69,11 +70,11 @@ export function DiscoverPost({
     setIsAddingFriend(true);
     try {
       await sendFriendRequest(post.userId);
-      setFriendRequestSent(true);
+      onFriendRequested(post.userId);
     } catch (error) {
       // Zaten istek varsa sunucu 409 döner; kullanıcı için sonuç yine "gönderildi".
       if (isApiError(error) && error.status === 409) {
-        setFriendRequestSent(true);
+        onFriendRequested(post.userId);
         return;
       }
       showToast({
@@ -106,7 +107,7 @@ export function DiscoverPost({
     setIsLiking(true);
     lightImpact();
     try {
-      await onLike();
+      await onLike(post);
     } catch (error) {
       showToast({
         type: "error",
@@ -126,7 +127,8 @@ export function DiscoverPost({
       if (!post.likedByMe) {
         void like();
       }
-      setTimeout(() => setHeartBurst(false), 650);
+      if (heartTimeout.current) clearTimeout(heartTimeout.current);
+      heartTimeout.current = setTimeout(() => setHeartBurst(false), 650);
       return;
     }
     lastTap.current = now;
@@ -140,7 +142,7 @@ export function DiscoverPost({
         }`}
       >
         <Pressable
-          onPress={onAuthorPress}
+          onPress={() => onAuthorPress(post)}
           className="flex-1 flex-row items-center gap-3 active:opacity-75"
         >
           <Avatar uri={post.profileImageUrl} name={author} size={38} />
@@ -297,7 +299,7 @@ export function DiscoverPost({
           </Pressable>
           <Pressable
             hitSlop={HIT_SLOP}
-            onPress={() => setCommentsOpen(true)}
+            onPress={() => onOpenComments(post)}
             className="min-h-9 flex-row items-center gap-2 rounded-full border border-border-default bg-background-secondary px-3"
           >
             <FontAwesome6
@@ -319,23 +321,15 @@ export function DiscoverPost({
         ) : null}
 
         {post.commentCount > 0 ? (
-          <Pressable onPress={() => setCommentsOpen(true)}>
+          <Pressable onPress={() => onOpenComments(post)}>
             <Text className="font-body text-body-sm text-text-secondary">
               {t("social:viewComments", { count: post.commentCount })}
             </Text>
           </Pressable>
         ) : null}
       </View>
-
-      {/* Yorumlar kartın içinde değil: yazarken ve okurken ekranın tamamı
-          kullanılıyor, klavye açıldığında yorumlar kaybolmuyor. */}
-      <CommentsSheet
-        visible={commentsOpen}
-        onClose={() => setCommentsOpen(false)}
-        post={post}
-        onComment={onComment}
-        onReply={onReply}
-      />
     </View>
   );
 }
+
+export const DiscoverPost = memo(DiscoverPostComponent);

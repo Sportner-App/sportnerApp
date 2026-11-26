@@ -38,16 +38,21 @@ export function useRefreshableLoad(
   const [isRefreshing, setIsRefreshing] = useState(false);
   const hasLoaded = useRef(false);
   const lastResetKey = useRef(resetKey);
+  // İki "initial" üst üste binerse (ör. resetKey değişimi) göstergeyi yalnızca
+  // sonuncusu kapatır; erken kapanınca ekran bir an "bulunamadı" gösteriyordu.
+  const latestInitial = useRef(0);
 
   const run = useCallback(
     async (mode: LoadMode) => {
+      const initialId = mode === "initial" ? ++latestInitial.current : 0;
       if (mode === "initial") setIsLoading(true);
       else if (mode === "refresh") setIsRefreshing(true);
       try {
         await load(mode);
       } finally {
-        if (mode === "initial") setIsLoading(false);
-        else if (mode === "refresh") setIsRefreshing(false);
+        if (mode === "initial") {
+          if (initialId === latestInitial.current) setIsLoading(false);
+        } else if (mode === "refresh") setIsRefreshing(false);
         hasLoaded.current = true;
       }
     },

@@ -7,7 +7,11 @@ import { getApiErrorMessage } from "@/lib/api/errors";
 import { getEvents } from "@/features/events/services/events-service";
 import type { EventSummary } from "@/features/events/types";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 20;
+/** API'nin kabul ettiği en büyük sayfa boyutu. */
+const MAX_PAGE_SIZE = 100;
+/** Odak tazelemesinde tek istekte yeniden alınabilecek en çok sayfa. */
+const MAX_SILENT_PAGES = MAX_PAGE_SIZE / PAGE_SIZE;
 export const DEFAULT_EVENT_FILTERS: EventListFilters = {
   city: null,
   minAge: 13,
@@ -68,6 +72,8 @@ export function useEvents(
   const [scope, setScope] = useState<EventFeedScope>(initialScope);
   const [filters, setFilters] = useState<EventListFilters>(DEFAULT_EVENT_FILTERS);
   const [error, setError] = useState<string | null>(null);
+  /** Son "daha fazla" sayfası hata verdi; liste ve hasNext olduğu gibi kalır. */
+  const [loadMoreFailed, setLoadMoreFailed] = useState(false);
 
   // Konum ortam bilgisi: her çağrı yerinde argüman olarak taşımak yerine
   // ref'ten okunuyor, böylece fetchPage'in imzası ve bağımlılıkları sabit kalır.
@@ -87,12 +93,42 @@ export function useEvents(
   // Filtre hızla değiştiğinde eski isteğin geç gelen yanıtı yeni listeyi
   // ezmesin, eski filtrenin "daha fazla" sayfası yeni listeye eklenmesin.
   const requestIdRef = useRef(0);
-  const latestModeRef = useRef<FetchMode>("initial");
+  // "initial" isteği başka bir istek tarafından geçersiz kılınırsa, o istek
+  // hata verdiğinde eski filtrenin etkinlikleri ekranda kalmasın diye tutulur.
+  const pendingResetRef = useRef(false);
+  // Başarıyla yüklenmiş sayfa sayısı; odak tazelemesi ("silent") listeyi
+  // kısaltmamak için bu kadar sayfayı tek istekte yeniden alır.
+  const pageRef = useRef(1);
+  // Süren "more" isteği hâlâ en güncel istekse true: odak tazelemesi onu
+  // geçersiz kılmasın diye atlanır.
+  const moreInFlightRef = useRef(false);
+  // Süren odak tazelemesi de "more" ile ezilmesin: detaydaki değişiklik
+  // (katılım, iptal) kartlara yansımadan düşerdi. Bitince sayfa istenir.
+  const silentInFlightRef = useRef(false);
 
   const fetchPage = useCallback(
     async (mode: FetchMode, query: EventQuery, nextPage: number) => {
+      if (mode === "silent" && moreInFlightRef.current) return;
+
       const requestId = ++requestIdRef.current;
-      latestModeRef.current = mode;
+      // Bekleyen sıfırlama varken (eski filtrenin listesi güvenilmez) tek sayfa.
+      const resetPending = pendingResetRef.current;
+      const loadedPages = pageRef.current;
+      const silentPages =
+        mode === "silent" && !resetPending
+          ? Math.min(loadedPages, MAX_SILENT_PAGES)
+          : 1;
+      // Yüklü sayfa sayısı sınırı aşıyorsa istek ilk 100 öğeyi alır, kuyruk korunur.
+      const mergeTail =
+        mode === "silent" && !resetPending && loadedPages > MAX_SILENT_PAGES;
+      moreInFlightRef.current = mode === "more";
+      silentInFlightRef.current = mode === "silent";
+      if (mode === "initial") {
+        pendingResetRef.current = true;
+      }
+      if (mode === "more" || mode === "initial" || mode === "refresh") {
+        setLoadMoreFailed(false);
+      }
       const isLatest = () => requestId === requestIdRef.current;
       const setFlag =
         mode === "initial"
@@ -105,7 +141,6 @@ export function useEvents(
       setFlag?.(true);
 
       try {
-        setError(null);
         const {
           categoryId,
           filters: activeFilters,
@@ -121,8 +156,8 @@ export function useEvents(
           city: activeFilters.city ?? undefined,
           lat: useLocationSort ? activeOrigin?.latitude : undefined,
           lng: useLocationSort ? activeOrigin?.longitude : undefined,
-          page: nextPage,
-          pageSize: PAGE_SIZE,
+          page: mode === "more" ? nextPage : 1,
+          pageSize: silentPages * PAGE_SIZE,
           minAge:
             activeFilters.minAge === DEFAULT_EVENT_FILTERS.minAge
               ? undefined
@@ -138,24 +173,73 @@ export function useEvents(
         });
         if (!isLatest()) return;
 
-        setEvents((prev) =>
-          mode === "more" ? [...prev, ...result.items] : result.items,
-        );
+        pendingResetRef.current = false;
+        setError(null);
+        setEvents((prev) => {
+          if (mode === "more") {
+            const known = new Set(prev.map((event) => event.id));
+            return [
+              ...prev,
+              ...result.items.filter((event) => !known.has(event.id)),
+            ];
+          }
+          if (mergeTail) {
+            const fresh = new Set(result.items.map((event) => event.id));
+            // Araya etkinlik girmiş/çıkmış olabilir: kuyruk, taze listenin son
+            // öğesinin eski yerinden sonra başlar.
+            const lastFreshId = result.items[result.items.length - 1]?.id;
+            const tailIndex = prev.findIndex(
+              (event) => event.id === lastFreshId,
+            );
+            const tailStart = tailIndex >= 0 ? tailIndex + 1 : MAX_PAGE_SIZE;
+            return [
+              ...result.items,
+              ...prev.slice(tailStart).filter((event) => !fresh.has(event.id)),
+            ];
+          }
+          return [...result.items];
+        });
         setTotalCount(result.totalCount);
-        setPage(result.page);
-        setHasNext(result.hasNext);
+        if (mode === "silent") {
+          setLoadMoreFailed(false);
+          // Kuyruk korunuyorsa sayfa ve hasNext olduğu gibi kalır.
+          if (!mergeTail) {
+            pageRef.current = silentPages;
+            setPage(silentPages);
+            setHasNext(result.hasNext);
+          }
+        } else {
+          pageRef.current = mode === "more" ? result.page : 1;
+          setPage(pageRef.current);
+          setHasNext(result.hasNext);
+        }
       } catch (err) {
         if (!isLatest()) return;
         setError(getApiErrorMessage(err, t("loadFailed")));
-        if (mode === "initial") {
+        if (mode === "more") {
+          setLoadMoreFailed(true);
+        }
+        if (mode === "silent") {
+          // Tazeleme sürerken yok sayılan "liste sonu" yeniden denetlensin.
+          setEvents((prev) => [...prev]);
+        }
+        if (pendingResetRef.current) {
+          pendingResetRef.current = false;
+          pageRef.current = 1;
+          setPage(1);
           setEvents([]);
           setTotalCount(0);
           setHasNext(false);
         }
       } finally {
-        // Aynı türden daha yeni bir istek sürüyorsa göstergeyi o kapatır.
-        if (isLatest() || latestModeRef.current !== mode) {
-          setFlag?.(false);
+        // Yerini yenisine bırakan istek hiçbir göstergeyi kapatmaz; en güncel
+        // istek bitince hepsi kapanır.
+        if (isLatest()) {
+          moreInFlightRef.current = false;
+          silentInFlightRef.current = false;
+          setIsLoading(false);
+          setIsRefreshing(false);
+          setIsLoadingMore(false);
         }
       }
     },
@@ -209,11 +293,44 @@ export function useEvents(
   }, [fetchPage]);
 
   const loadMore = useCallback(() => {
-    if (!hasNext || isLoadingMore) {
+    if (
+      !hasNext ||
+      isLoadingMore ||
+      isLoading ||
+      isRefreshing ||
+      loadMoreFailed ||
+      silentInFlightRef.current
+    ) {
       return;
     }
     void fetchPage("more", queryRef.current, page + 1);
-  }, [fetchPage, hasNext, isLoadingMore, page]);
+  }, [
+    fetchPage,
+    hasNext,
+    isLoadingMore,
+    isLoading,
+    isRefreshing,
+    loadMoreFailed,
+    page,
+  ]);
+
+  // Footer'daki dokunma/otomatik deneme: hata bayrağını yok sayar.
+  const retryLoadMore = useCallback(() => {
+    if (
+      !hasNext ||
+      isLoadingMore ||
+      isLoading ||
+      isRefreshing ||
+      silentInFlightRef.current
+    ) {
+      return;
+    }
+    void fetchPage("more", queryRef.current, page + 1);
+  }, [fetchPage, hasNext, isLoadingMore, isLoading, isRefreshing, page]);
+
+  const reload = useCallback(() => {
+    void fetchPage("initial", queryRef.current, 1);
+  }, [fetchPage]);
 
   const changeCategoryFilter = useCallback(
     (nextCategoryId: string | null) => {
@@ -254,6 +371,7 @@ export function useEvents(
     isLoading,
     isRefreshing,
     isLoadingMore,
+    loadMoreFailed,
     categoryFilter,
     setCategoryFilter: changeCategoryFilter,
     scope,
@@ -262,6 +380,8 @@ export function useEvents(
     applyFilters,
     refresh,
     loadMore,
+    retryLoadMore,
+    reload,
     error,
   };
 }

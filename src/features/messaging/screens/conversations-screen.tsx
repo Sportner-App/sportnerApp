@@ -1,8 +1,9 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useRouter } from "expo-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, View } from "react-native";
+import { AppState, Pressable, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
@@ -21,7 +22,15 @@ import {
   SegmentedTabs,
 } from "@/components";
 import { useConversationsTabCopy } from "@/features/messaging/copy";
-import { useToast } from "@/contexts";
+import { useSession, useToast } from "@/contexts";
+import {
+  useRefreshableLoad,
+  type LoadMode,
+} from "@/hooks/use-refreshable-load";
+import {
+  readConversationsCache,
+  writeConversationsCache,
+} from "@/features/messaging/conversations-cache";
 import { HIT_SLOP, palette, themeColors } from "@/constants/theme";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
@@ -32,6 +41,8 @@ import {
   CONVERSATION_TYPE,
   type ApiConversationListItem,
 } from "@/features/messaging/types";
+import { HubConnectionState } from "@microsoft/signalr";
+import { connectInbox } from "@/features/messaging/services/chat-realtime";
 import { formatConversationTime } from "@/features/messaging/messaging-time";
 
 import { NewConversationSheet } from "@/features/messaging/components/new-conversation-sheet";
@@ -39,51 +50,225 @@ import { confirmDestructive } from "@/utils/confirm";
 
 type InboxTab = "events" | "friends";
 
+type InboxData = {
+  /** Verinin sahibi; hesap değişirse başkasının sohbeti görünmesin. */
+  userId: string | null;
+  events: ApiConversationListItem[];
+  friends: ApiConversationListItem[];
+  /** En az bir başarılı yükleme ya da önbellekten başlama oldu mu. */
+  loaded: boolean;
+};
+
+function createInboxData(userId: string | null): InboxData {
+  const cached = readConversationsCache(userId);
+  return cached
+    ? { userId, events: cached.events, friends: cached.friends, loaded: true }
+    : { userId, events: [], friends: [], loaded: false };
+}
+
 export function ConversationsScreen() {
   const router = useRouter();
   const { t } = useTranslation(["messaging", "common"]);
   const TAB_COPY = useConversationsTabCopy();
   const { showToast } = useToast();
   const [tab, setTab] = useState<InboxTab>("friends");
-  const [eventItems, setEventItems] = useState<ApiConversationListItem[]>([]);
-  const [friendItems, setFriendItems] = useState<ApiConversationListItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const { user } = useSession();
+  const userId = user?.id ?? null;
+  const [data, setData] = useState<InboxData>(() => createInboxData(userId));
   const [error, setError] = useState<string | null>(null);
   const [composeOpen, setComposeOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const requestIdRef = useRef(0);
+
+  // Ekran açıkken kullanıcı değişirse eski kullanıcının listesi kalmasın.
+  if (data.userId !== userId) {
+    setData(createInboxData(userId));
+  }
+  const view = data.userId === userId ? data : createInboxData(userId);
+  const eventItems = view.events;
+  const friendItems = view.friends;
+
+  const dataRef = useRef(view);
+  dataRef.current = view;
 
   const load = useCallback(
-    async (refresh = false) => {
-      refresh ? setIsRefreshing(true) : setIsLoading(true);
+    async (mode: LoadMode) => {
+      const requestId = ++requestIdRef.current;
+      if (!userId) return;
+      if (mode === "initial") setError(null);
       try {
-        setError(null);
         const [events, friends] = await Promise.all([
           listMyConversations({ type: CONVERSATION_TYPE.event }),
           listMyConversations({ type: CONVERSATION_TYPE.direct }),
         ]);
-        setEventItems(events.items);
-        // Backend de boş birebir sohbetleri filtreliyor. Bu savunmacı filtre,
-        // eski API sürümüyle çalışan istemcilerde de mesaj atılmadan açılıp
-        // kapatılan sohbetlerin listede görünmesini engeller.
-        setFriendItems(
-          friends.items.filter((item) => item.lastMessageAt != null),
-        );
+        if (requestId !== requestIdRef.current) return;
+        setError(null);
+        setData({
+          userId,
+          events: events.items,
+          // Backend de boş birebir sohbetleri filtreliyor. Bu savunmacı filtre,
+          // eski API sürümüyle çalışan istemcilerde de mesaj atılmadan açılıp
+          // kapatılan sohbetlerin listede görünmesini engeller.
+          friends: friends.items.filter((item) => item.lastMessageAt != null),
+          loaded: true,
+        });
       } catch (loadError) {
-        setError(getApiErrorMessage(loadError, t("messaging:loadFailed")));
-      } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
+        if (requestId !== requestIdRef.current) return;
+        const current = dataRef.current;
+        const hasData = current.events.length > 0 || current.friends.length > 0;
+        const message = getApiErrorMessage(loadError, t("messaging:loadFailed"));
+        if (mode === "refresh" && hasData) {
+          showToast({
+            type: "error",
+            title: t("messaging:loadFailed"),
+            description: message,
+          });
+        } else if (!hasData && (mode !== "silent" || !current.loaded)) {
+          setError(message);
+        }
       }
     },
-    [t],
+    [showToast, t, userId],
   );
+
+  const { isRefreshing, refresh, reload } = useRefreshableLoad(load, {
+    trigger: "focus",
+    refocusMode: "silent",
+    enabled: Boolean(userId),
+    resetKey: userId,
+  });
+
+  // Canlı güncelleme: ekran odaktayken sohbet hub'ına bağlanır; olay gelince
+  // liste sessizce yeniden çekilir (önizleme olayda gelmez).
+  const reloadRef = useRef(reload);
+  reloadRef.current = reload;
 
   useFocusEffect(
     useCallback(() => {
-      void load();
-    }, [load]),
+      if (!userId) return;
+      let active = true;
+      let inFlight = false;
+      let dirty = false;
+      let timer: ReturnType<typeof setTimeout> | null = null;
+      let connection: Awaited<ReturnType<typeof connectInbox>> = null;
+
+      const refreshSilently = async () => {
+        if (!active) return;
+        if (inFlight) {
+          dirty = true;
+          return;
+        }
+        inFlight = true;
+        try {
+          await reloadRef.current("silent");
+        } finally {
+          inFlight = false;
+        }
+        if (active && dirty) {
+          dirty = false;
+          void refreshSilently();
+        }
+      };
+
+      // Aralıksız mesaj akan sohbette de liste yenilensin diye zamanlayıcı
+      // sıfırlanmaz; rastgele ek, büyük etkinlik sohbetinde tüm üyelerin aynı
+      // anda istek atmasını önler.
+      const scheduleRefresh = () => {
+        if (!active || timer) return;
+        timer = setTimeout(
+          () => {
+            timer = null;
+            void refreshSilently();
+          },
+          400 + Math.random() * 800,
+        );
+      };
+
+      // Otomatik yeniden bağlanma birkaç denemeden sonra bırakıyor (arka plan,
+      // süresi dolan anahtar); ekran açık kaldıkça bağlantı yeniden kurulur.
+      let connecting = false;
+      let retryTimer: ReturnType<typeof setTimeout> | null = null;
+      const scheduleReconnect = (delayMs: number) => {
+        if (!active || retryTimer) return;
+        retryTimer = setTimeout(() => {
+          retryTimer = null;
+          ensureConnected();
+        }, delayMs);
+      };
+      const ensureConnected = () => {
+        if (!active || connecting) return;
+        if (
+          connection &&
+          connection.state !== HubConnectionState.Disconnected
+        ) {
+          return;
+        }
+        connecting = true;
+        connectInbox(scheduleRefresh, scheduleRefresh)
+          .then((created) => {
+            if (!created) return;
+            if (!active) {
+              void created.stop();
+              return;
+            }
+            connection = created;
+            created.onclose(() => scheduleReconnect(5000));
+            // Bağlantı kurulurken gelen mesaj kaçmasın.
+            scheduleRefresh();
+          })
+          .catch((connectError) => {
+            console.warn("Inbox realtime connection failed", connectError);
+            scheduleReconnect(10000);
+          })
+          .finally(() => {
+            connecting = false;
+          });
+      };
+      ensureConnected();
+
+      const appStateSubscription = AppState.addEventListener(
+        "change",
+        (state) => {
+          if (state !== "active") return;
+          scheduleRefresh();
+          ensureConnected();
+        },
+      );
+
+      return () => {
+        active = false;
+        if (timer) clearTimeout(timer);
+        if (retryTimer) clearTimeout(retryTimer);
+        timer = null;
+        retryTimer = null;
+        appStateSubscription.remove();
+        void connection?.stop();
+      };
+    }, [userId]),
   );
+
+  // Önbellek: yalnızca başarılı yükleme/önbellekten başlama sonrası yazılır.
+  useEffect(() => {
+    if (userId && data.userId === userId && data.loaded) {
+      writeConversationsCache(userId, data.events, data.friends);
+    }
+  }, [data, userId]);
+
+  const markConversationReadLocally = useCallback((id: string) => {
+    const clear = (list: ApiConversationListItem[]) =>
+      list.some((item) => item.id === id && item.unreadCount > 0)
+        ? list.map((item) =>
+            item.id === id ? { ...item, unreadCount: 0 } : item,
+          )
+        : list;
+    setData((current) => {
+      const events = clear(current.events);
+      const friends = clear(current.friends);
+      return events === current.events && friends === current.friends
+        ? current
+        : { ...current, events, friends };
+    });
+  }, []);
 
   const confirmDelete = useCallback(
     (item: ApiConversationListItem) => {
@@ -96,12 +281,17 @@ export function ConversationsScreen() {
           setDeletingId(item.id);
           void deleteConversation(item.id)
             .then(() => {
-              setEventItems((current) =>
-                current.filter((candidate) => candidate.id !== item.id),
-              );
-              setFriendItems((current) =>
-                current.filter((candidate) => candidate.id !== item.id),
-              );
+              // Uçuştaki tazeleme silinen satırı geri getirmesin.
+              requestIdRef.current++;
+              setData((current) => ({
+                ...current,
+                events: current.events.filter(
+                  (candidate) => candidate.id !== item.id,
+                ),
+                friends: current.friends.filter(
+                  (candidate) => candidate.id !== item.id,
+                ),
+              }));
               showToast({
                 type: "success",
                 title: t("messaging:delete.success"),
@@ -121,6 +311,9 @@ export function ConversationsScreen() {
     [showToast, t],
   );
 
+  const hasData = eventItems.length > 0 || friendItems.length > 0;
+  // Oturum ekran açıkken düşerse yükleme çalışmaz; gösterge takılı kalmasın.
+  const showLoader = Boolean(userId) && !view.loaded && !error;
   const items = tab === "events" ? eventItems : friendItems;
   const copy = TAB_COPY[tab];
   const friendUnreadCount = useMemo(
@@ -161,7 +354,7 @@ export function ConversationsScreen() {
       contentClassName="gap-3 px-5 pt-3"
       refreshControl={brandRefreshControl({
         refreshing: isRefreshing,
-        onRefresh: () => void load(true),
+        onRefresh: () => void refresh(),
       })}
     >
       <View className="gap-1 pb-2">
@@ -190,13 +383,13 @@ export function ConversationsScreen() {
         onChange={setTab}
       />
 
-      {isLoading ? (
+      {showLoader ? (
         <ScreenLoader
           label={t("messaging:loading")}
           className="items-center py-3xl"
           size={132}
         />
-      ) : error ? (
+      ) : error && !hasData ? (
         <View className="items-center gap-4 rounded-[28px] border border-border-default bg-surface-primary px-6 py-10">
           <FontAwesome6
             name="triangle-exclamation"
@@ -207,7 +400,7 @@ export function ConversationsScreen() {
             {error}
           </Text>
           <Pressable
-            onPress={() => void load()}
+            onPress={() => void reload("initial")}
             className="rounded-full bg-brand-primary px-5 py-3 active:opacity-75"
           >
             <Text className="font-body-bold text-body-sm text-text-on-primary">
@@ -246,7 +439,10 @@ export function ConversationsScreen() {
           <ConversationRow
             key={item.id}
             item={item}
-            onPress={() => router.push(`/conversations/${item.id}`)}
+            onPress={() => {
+              markConversationReadLocally(item.id);
+              router.push(`/conversations/${item.id}`);
+            }}
             onDelete={() => confirmDelete(item)}
             deleting={deletingId === item.id}
           />

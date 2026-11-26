@@ -10,6 +10,7 @@
   "all": "Tümü",
   "clear": "Temizle",
   "apply": "Uygula",
+  "loadMoreRetry": "Devamı yüklenemedi. Tekrar denemek için dokun.",
   "loading": "Yükleniyor",
   "notFound": {
     "title": "Sayfa bulunamadı",

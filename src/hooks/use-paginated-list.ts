@@ -32,6 +32,7 @@ export function usePaginatedList<T, C>(
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [loadMoreFailed, setLoadMoreFailed] = useState(false);
   const requestIdRef = useRef(0);
   const latestModeRef = useRef<PaginatedMode>("initial");
 
@@ -45,6 +46,7 @@ export function usePaginatedList<T, C>(
     async (mode: PaginatedMode, cursor: C | null) => {
       const requestId = ++requestIdRef.current;
       latestModeRef.current = mode;
+      setLoadMoreFailed(false);
       const setFlag =
         mode === "initial"
           ? setIsLoading
@@ -71,6 +73,7 @@ export function usePaginatedList<T, C>(
         if (page.totalCount !== undefined) setTotalCount(page.totalCount);
       } catch (error) {
         if (requestId !== requestIdRef.current) return;
+        if (mode === "more") setLoadMoreFailed(true);
         onErrorRef.current?.(error, mode);
       } finally {
         // Aynı türden daha yeni bir istek sürüyorsa bayrağı o kapatır.
@@ -93,7 +96,22 @@ export function usePaginatedList<T, C>(
   const refresh = useCallback(() => run("refresh", null), [run]);
   const reload = useCallback(() => run("initial", null), [run]);
 
+  // Kaydırmayla çağrılan (AppScreen onScroll'u sık tetikler): hata varken
+  // sessiz kalır, tekrar deneme `retryLoadMore` ile (footer) yapılır.
   const loadMore = useCallback(() => {
+    if (
+      nextCursor === null ||
+      isLoading ||
+      isRefreshing ||
+      isLoadingMore ||
+      loadMoreFailed
+    ) {
+      return;
+    }
+    void run("more", nextCursor);
+  }, [isLoading, isLoadingMore, isRefreshing, loadMoreFailed, nextCursor, run]);
+
+  const retryLoadMore = useCallback(() => {
     if (nextCursor === null || isLoading || isRefreshing || isLoadingMore) {
       return;
     }
@@ -106,10 +124,12 @@ export function usePaginatedList<T, C>(
     isLoading,
     isRefreshing,
     isLoadingMore,
+    loadMoreFailed,
     hasMore: nextCursor !== null,
     totalCount,
     refresh,
     reload,
     loadMore,
+    retryLoadMore,
   };
 }
