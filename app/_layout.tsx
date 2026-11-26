@@ -28,6 +28,7 @@ import {
   KeyboardProvider,
   KeyboardToolbar,
   type KeyboardToolbarProps,
+  useKeyboardState,
 } from "react-native-keyboard-controller";
 import "react-native-reanimated";
 import "../global.css";
@@ -94,7 +95,7 @@ function RootLayoutNav() {
 
 function ThemedRootLayoutNav() {
   const { t } = useTranslation("common");
-  const keyboardToolbarVisible = useKeyboardToolbarVisible();
+  const keyboardToolbarVisible = useKeyboardToolbarMounted();
   const { resolvedScheme: colorScheme } = useThemePreference();
   const appColors =
     colorScheme === "dark" ? DARK_THEME_COLORS : LIGHT_THEME_COLORS;
@@ -146,6 +147,28 @@ function ThemedRootLayoutNav() {
       </KeyboardProvider>
     </GestureHandlerRootView>
   );
+}
+
+/**
+ * Sohbetten geri dönülürken klavye hâlâ kapanıyor olur. Araç çubuğu tam o anda
+ * mount edilirse klavye animasyonunu kaçırıp açık-klavye konumunda ekranın
+ * ortasında asılı kalıyor. Bu yüzden izinli bir ekrana geçince klavye
+ * kapanmadan mount etmiyoruz; bir kez mount olduktan sonra da açık kalıyor.
+ */
+function useKeyboardToolbarMounted() {
+  const allowed = useKeyboardToolbarVisible();
+  const keyboardVisible = useKeyboardState((state) => state.isVisible);
+  const [mounted, setMounted] = useState(allowed && !keyboardVisible);
+
+  useEffect(() => {
+    if (!allowed) {
+      setMounted(false);
+    } else if (!keyboardVisible) {
+      setMounted(true);
+    }
+  }, [allowed, keyboardVisible]);
+
+  return allowed && mounted;
 }
 
 const keyboardToolbarTheme: KeyboardToolbarProps["theme"] = {
