@@ -1,8 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { type AxiosInstance } from "axios";
+import { Platform } from "react-native";
 
 import { STORAGE_KEYS } from "@/constants/storage-keys";
-import { getCurrentAppLanguage, toAcceptLanguageHeader } from "@/i18n";
+import i18n, {
+  getCurrentAppLanguage,
+  toAcceptLanguageHeader,
+} from "@/i18n";
 import { toastService } from "@/lib/toast-bus";
 import type {
   ApiFeedbackMessage,
@@ -13,12 +17,21 @@ import type {
 
 import { API_URL } from "@/constants/env";
 
-import { normalizeApiError } from "./errors";
+import { ApiError, normalizeApiError } from "./errors";
 import {
   deleteSecureItem,
   getSecureItem,
   setSecureItem,
 } from "./secure-storage";
+
+/** Geçici sunucu hatası (ör. DB bağlantı havuzu dolu) sayılan durum kodları */
+const RETRYABLE_SERVER_STATUSES = new Set([500, 502, 503, 504]);
+/** GET için en fazla kaç kez yeniden denenir */
+const SERVER_RETRY_MAX = 2;
+/** Her deneme öncesi taban bekleme (ms): 1. tekrar ~400, 2. tekrar ~1200 */
+const SERVER_RETRY_BASE_DELAYS_MS = [400, 1200];
+/** Aynı anda düşen isteklerin birlikte dönmemesi için 0-N ms rastgele ek */
+const SERVER_RETRY_JITTER_MS = 300;
 
 function isFormData(value: unknown): value is FormData {
   return (
@@ -58,11 +71,11 @@ class APIClient {
   /** Aynı anda birden fazla 401 gelirse tek refresh paylaşılır */
   private refreshPromise: Promise<boolean> | null = null;
   /**
-   * Son yenileme sunucuya ulaşamadığı için mi başarısız oldu (ağ kopması,
-   * uygulamanın arka plana atılması)? O durumda oturum silinmez; yalnızca
-   * sunucu anahtarı açıkça reddederse çıkış yapılır.
+   * Son yenileme geçici bir nedenle mi başarısız oldu (ağ kopması, arka plana
+   * atılma, 5xx, 429, 408)? O durumda oturum silinmez; yalnızca sunucu
+   * anahtarı açıkça reddederse (ör. 401/400) çıkış yapılır.
    */
-  private lastRefreshWasNetworkFailure = false;
+  private lastRefreshWasTransientFailure = false;
 
   constructor() {
     this.instance = axios.create({
@@ -93,6 +106,18 @@ class APIClient {
         }
       } catch (error) {
         console.warn("Token okunamadi:", error);
+        // iOS'ta telefon kilitliyken Keychain okuması hata verir. İsteği
+        // token'sız göndermek 401 -> refresh -> oturum silme zincirini
+        // tetikler; bunun yerine ağ hatası gibi reddet. Giriş vb. auth
+        // istekleri token gerektirmez, devam eder.
+        if (Platform.OS === "ios" && !config.url?.startsWith("/api/auth/")) {
+          throw new ApiError({
+            message: i18n.t("api:networkError"),
+            code: "TOKEN_UNREADABLE",
+            isNetworkError: true,
+            cause: error,
+          });
+        }
       }
       return config;
     });
@@ -111,6 +136,29 @@ class APIClient {
         const config = error.config as ApiRequestConfig | undefined;
         const status = error.response?.status;
 
+        // Geçici sunucu hatasında GET'i gecikmeyle yeniden dene. Tekrar edilen
+        // istek kendi interceptor zincirinden geçer (feedback orada bir kez
+        // gösterilir); burada doğrudan sonucunu döndürüyoruz.
+        if (
+          config &&
+          config.method?.toLowerCase() === "get" &&
+          status !== undefined &&
+          RETRYABLE_SERVER_STATUSES.has(status) &&
+          !config.signal?.aborted &&
+          (config._serverRetryCount ?? 0) < SERVER_RETRY_MAX
+        ) {
+          const attempt = config._serverRetryCount ?? 0;
+          const delay =
+            SERVER_RETRY_BASE_DELAYS_MS[attempt] +
+            Math.random() * SERVER_RETRY_JITTER_MS;
+          await new Promise((resolve) => setTimeout(resolve, delay));
+
+          if (!config.signal?.aborted) {
+            config._serverRetryCount = attempt + 1;
+            return this.instance.request(config);
+          }
+        }
+
         if (
           status === 401 &&
           config &&
@@ -125,7 +173,7 @@ class APIClient {
           }
         }
 
-        if (status === 401 && !this.lastRefreshWasNetworkFailure) {
+        if (status === 401 && !this.lastRefreshWasTransientFailure) {
           await this.clearToken();
         }
 
@@ -163,9 +211,13 @@ class APIClient {
     }
 
     this.refreshPromise = (async () => {
-      this.lastRefreshWasNetworkFailure = false;
+      this.lastRefreshWasTransientFailure = false;
       try {
-        const refreshToken = await this.getRefreshToken();
+        // Kilitli Keychain hatası catch'e düşer; status olmadığı için geçici
+        // sayılır ve oturum korunur. Gerçekten null ise oturum yok demektir.
+        const refreshToken = await this.readStoredToken(
+          STORAGE_KEYS.refreshToken,
+        );
         const existingUser = await this.getUser();
 
         if (!refreshToken) {
@@ -199,9 +251,10 @@ class APIClient {
         return true;
       } catch (error) {
         console.warn("Token refresh failed:", error);
-        // Sunucudan yanıt yoksa (status yok) bu bir ağ hatası; oturumu koru.
+        // Yanıt yoksa (ağ hatası) ya da geçici sunucu durumuysa oturumu koru.
         const status = (error as { status?: number })?.status;
-        this.lastRefreshWasNetworkFailure = !status;
+        this.lastRefreshWasTransientFailure =
+          !status || status >= 500 || status === 429 || status === 408;
         return false;
       }
     })();
@@ -295,6 +348,28 @@ class APIClient {
       console.error("Kullanıcı bilgileri okunamadi:", error);
       return null;
     }
+  }
+
+  /**
+   * iOS'ta okuma hatasını FIRLATIR (kilitli Keychain geçicidir). Android'de
+   * hata kalıcı olabilir (çözülemeyen Keystore kaydı); kullanıcı bozuk oturumda
+   * takılmasın diye "kayıt yok" sayılır.
+   */
+  private async readStoredToken(key: string) {
+    try {
+      return await getSecureItem(key);
+    } catch (error) {
+      if (Platform.OS === "ios") throw error;
+      console.error("Token okunamadi:", error);
+      return null;
+    }
+  }
+
+  /** Saklı token'ları okur; iOS'ta okuma hatasını fırlatır. */
+  async readStoredTokens() {
+    const accessToken = await this.readStoredToken(STORAGE_KEYS.accessToken);
+    const refreshToken = await this.readStoredToken(STORAGE_KEYS.refreshToken);
+    return { accessToken, refreshToken };
   }
 
   async getToken() {

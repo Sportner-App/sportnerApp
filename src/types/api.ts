@@ -10,6 +10,8 @@ export type ApiRequestConfig<D = unknown> = AxiosRequestConfig<D> & {
   skipAuthRefresh?: boolean;
   /** Aynı isteğin sonsuz retry'ını engeller */
   _retry?: boolean;
+  /** Geçici sunucu hatasında (5xx) GET'in kaç kez yeniden denendiğini sayar */
+  _serverRetryCount?: number;
   feedback?: {
     success?: ApiFeedbackMessage;
     error?: ApiFeedbackMessage | false;

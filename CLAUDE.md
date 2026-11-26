@@ -71,6 +71,13 @@ Güvenli depoda değer bulunamazsa `getSecureItem` eski AsyncStorage kalıntıs�
 siler (geri yüklemez): kullanıcı yeniden giriş yapar, düz metin token cihazda
 kalmaz. Kalıcı bir temizlik, ileride kaldırılması gerekmiyor.
 
+iOS'ta kayıtlar `AFTER_FIRST_UNLOCK` ve ayrı `keychainService`
+(`sportner.session`) ile tutulur: varsayılan `WHEN_UNLOCKED` ile telefon
+kilitliyken okuma hata fırlatır. Ayrı servis şart çünkü `expo-secure-store`
+var olan kaydı güncellerken erişilebilirliği değiştirmez; eski kayıt ilk
+okumada yeni servise taşınır. Okuma HATASI "oturum yok" demek değildir: token
+silinmez, istek token'sız gönderilmez (bkz. `readStoredTokens`, `unreadable`).
+
 Kullanıcı profili (`api_user`) AsyncStorage'da kalır: hassas değil ve
 SecureStore'un 2 KB değer sınırını aşabilir.
 

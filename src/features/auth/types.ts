@@ -104,6 +104,8 @@ export type StoredSession = {
 export type SessionResult = {
   data: { session: StoredSession | null };
   error: null;
+  /** Token'lar okunamadı (ör. iOS kilitli Keychain); "oturum yok" DEĞİL. */
+  unreadable?: true;
 };
 
 export type AuthActionResult = {

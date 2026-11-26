@@ -1,4 +1,5 @@
 import type { PropsWithChildren } from "react";
+import { AppState } from "react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { apiClient } from "@/lib/api/client";
@@ -15,10 +16,24 @@ export function SessionProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<SessionData | null>(null);
   const [isReady, setIsReady] = useState(false);
   const sessionKeyRef = useRef<string | null>(null);
+  /** Token'lar okunamadıysa (kilitli Keychain) uygulama öne gelince yeniden yükle */
+  const pendingReloadRef = useRef(false);
+  /** Eş zamanlı yüklemelerde eski sonuç yenisini (ör. çıkışı) ezmesin */
+  const loadIdRef = useRef(0);
 
   const loadSession = useCallback(async () => {
+    const loadId = ++loadIdRef.current;
     try {
-      const { data } = await getSession();
+      const { data, unreadable } = await getSession();
+      if (loadId !== loadIdRef.current) return;
+
+      if (unreadable) {
+        // Oturum yok sayma: mevcut state'e dokunma, aktif olunca tekrar dene.
+        pendingReloadRef.current = true;
+        return;
+      }
+      pendingReloadRef.current = false;
+
       const nextSession = data.session ?? null;
       const nextKey = getSessionKey(nextSession);
 
@@ -29,6 +44,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
       sessionKeyRef.current = nextKey;
       setSession(nextSession);
     } catch (error) {
+      if (loadId !== loadIdRef.current) return;
       console.error("Session load error:", error);
       sessionKeyRef.current = null;
       setSession(null);
@@ -55,9 +71,19 @@ export function SessionProvider({ children }: PropsWithChildren) {
       void loadSession();
     });
 
+    const appStateSubscription = AppState.addEventListener(
+      "change",
+      (state) => {
+        if (state === "active" && pendingReloadRef.current) {
+          void loadSession();
+        }
+      },
+    );
+
     return () => {
       isMounted = false;
       unsubscribe();
+      appStateSubscription.remove();
     };
   }, [loadSession]);
 

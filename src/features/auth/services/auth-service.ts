@@ -14,6 +14,7 @@ import {
   validatePassword,
   validateUsername,
 } from "@/features/auth/validation";
+import { clearConversationsCache } from "@/features/messaging/conversations-cache";
 import { clearCurrentDevicePushToken } from "@/features/notifications/services/push-notifications-service";
 import i18n from "@/i18n";
 import { apiClient } from "@/lib/api/client";
@@ -198,6 +199,7 @@ export async function signOut(): Promise<AuthActionResult> {
     }
 
     await apiClient.clearToken();
+    clearConversationsCache();
     return { error: null };
   } catch (error) {
     return {
@@ -342,9 +344,16 @@ export async function syncPreferredLanguage(
 }
 
 export async function getSession(): Promise<SessionResult> {
+  let token: string | null;
+  let refreshToken: string | null;
   try {
-    const token = await apiClient.getToken();
-    const refreshToken = await apiClient.getRefreshToken();
+    ({ accessToken: token, refreshToken } = await apiClient.readStoredTokens());
+  } catch (error) {
+    console.warn("Session tokens unreadable:", error);
+    return { data: { session: null }, error: null, unreadable: true };
+  }
+
+  try {
     const user = await apiClient.getUser();
 
     if (token && user) {

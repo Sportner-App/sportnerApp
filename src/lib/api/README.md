@@ -5,7 +5,8 @@ Backend iletişiminin altyapısı burada tutulur. Ekran ve hook'lar doğrudan
 dosyasını kullanmalıdır.
 
 - `client.ts`: Base URL, timeout, token, GET/POST/PUT/PATCH/DELETE, 401 ve
-  servis feedback yönetimi.
+  servis feedback yönetimi. GET istekleri geçici sunucu hatasında (500/502/503/504)
+  gecikmeli en fazla 2 kez otomatik yeniden denenir.
 - `errors.ts`: Backend, ağ ve HTTP hatalarını tek tip `ApiError` nesnesine
   dönüştürür.
 - İstek tipleri (`ApiRequestConfig`, feedback mesajları) `src/types/api.ts`
